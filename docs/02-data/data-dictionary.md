@@ -18,6 +18,8 @@
 - slug: URL readable PDAM.
 - name: nama PDAM.
 - region: wilayah.
+- province_id: relasi ke provinsi.
+- regency_id: relasi ke kabupaten/kota.
 - logo_url: logo.
 - contact_name: nama perwakilan.
 - contact_phone: kontak perwakilan.

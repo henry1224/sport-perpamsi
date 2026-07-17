@@ -3,20 +3,21 @@
 ## Urutan Migration
 
 1. users, roles, permissions, role_user.
-2. events.
-3. pdams.
-4. sports, sport_categories.
-5. venues.
-6. teams, athletes, athlete_team.
-7. participant_documents, verification_records.
-8. matches, match_participants.
-9. match_scores, match_score_segments, match_results.
-10. brackets, bracket_nodes.
-11. standings, ranking_snapshots.
-12. committee_assignments.
-13. announcements, banners, livestream_links.
-14. imports, export_jobs.
-15. audit_logs.
+2. provinces, regencies.
+3. events.
+4. pdams.
+5. sports, sport_categories.
+6. venues.
+7. teams, athletes, athlete_team.
+8. participant_documents, verification_records.
+9. matches, match_participants.
+10. match_scores, match_score_segments, match_results.
+11. brackets, bracket_nodes.
+12. standings, ranking_snapshots.
+13. committee_assignments.
+14. announcements, banners, livestream_links.
+15. imports, export_jobs.
+16. audit_logs.
 
 ## Default Field
 
@@ -40,6 +41,7 @@
 
 - Role default.
 - Permission default.
+- Provinsi dan kabupaten/kota Indonesia.
 - Cabor v1: bulu tangkis, futsal, tenis meja, tenis lapangan, voli, catur.
 - Format kompetisi default.
 - Status dictionary aplikasi.

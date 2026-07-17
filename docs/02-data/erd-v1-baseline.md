@@ -5,6 +5,9 @@
 ```mermaid
 erDiagram
     USERS ||--o{ COMMITTEE_ASSIGNMENTS : has
+    PROVINCES ||--o{ REGENCIES : has
+    PROVINCES ||--o{ PDAMS : contains
+    REGENCIES ||--o{ PDAMS : contains
     EVENTS ||--o{ SPORTS : configures
     EVENTS ||--o{ VENUES : has
     EVENTS ||--o{ MATCHES : schedules

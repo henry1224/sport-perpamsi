@@ -30,6 +30,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [ERD v1 baseline](./02-data/erd-v1-baseline.md): ERD baseline development.
 - [Import template standard](./02-data/import-template-standard.md): kolom CSV/Excel data awal.
 - [Public identifier standard](./02-data/public-identifier-standard.md): aturan `slug`, `public_id`, dan larangan expose ID internal.
+- [Region standard](./02-data/region-standard.md): master provinsi/kabupaten-kota Indonesia dan relasi PDAM.
 
 ### 03 Product
 
