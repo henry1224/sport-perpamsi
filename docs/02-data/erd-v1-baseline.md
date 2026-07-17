@@ -23,6 +23,9 @@ erDiagram
     MATCHES ||--o{ BRACKET_NODES : appears_in
     BRACKETS ||--o{ BRACKET_NODES : has
     EVENTS ||--o{ RANKING_SNAPSHOTS : has
+    PDAMS ||--o{ RANKING_SNAPSHOTS : ranked_as_pdam
+    REGENCIES ||--o{ RANKING_SNAPSHOTS : ranked_as_regency
+    PROVINCES ||--o{ RANKING_SNAPSHOTS : ranked_as_province
     USERS ||--o{ AUDIT_LOGS : performs
 ```
 

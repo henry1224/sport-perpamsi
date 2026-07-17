@@ -9,6 +9,8 @@
 - [ ] Public bisa lihat bracket knockout.
 - [ ] Public bisa lihat lower bracket bila format dipakai.
 - [ ] Public bisa lihat ranking PDAM.
+- [ ] Public bisa lihat ranking kabupaten/kota.
+- [ ] Public bisa lihat ranking provinsi.
 - [ ] Public bisa lihat profil PDAM.
 
 ## Admin
@@ -39,4 +41,6 @@
 - [ ] Peserta menang lanjut pada knockout.
 - [ ] Peserta kalah masuk lower bracket bila format double elimination.
 - [ ] Ranking PDAM mengikuti emas, perak, perunggu.
+- [ ] Ranking kabupaten/kota mengakumulasi medali PDAM dalam kabupaten/kota tersebut.
+- [ ] Ranking provinsi mengakumulasi medali PDAM dalam provinsi tersebut.
 - [ ] Klasemen cabor mengikuti template ranking cabor.

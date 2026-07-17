@@ -31,6 +31,8 @@
 
 - Event memiliki banyak cabor, venue, jadwal, tim, match, dokumen, dan konten.
 - PDAM memiliki banyak tim, atlet, dokumen, dan hasil pertandingan.
+- Provinsi memiliki banyak kabupaten/kota dan PDAM.
+- Kabupaten/kota memiliki banyak PDAM.
 - Cabor memiliki banyak kategori, tim, match, bracket, dan klasemen.
 - Tim dimiliki satu PDAM dan mengikuti satu cabor/kategori pada event.
 - Atlet dimiliki satu PDAM dan dapat terhubung ke satu atau lebih tim sesuai aturan event.
@@ -68,3 +70,4 @@
 - Jadwal tidak boleh bentrok venue dan waktu.
 - Tim tidak boleh tampil di public sebelum diverifikasi.
 - Ranking hanya dihitung dari match final.
+- Ranking wilayah dihitung dari akumulasi medali/hasil PDAM yang terhubung ke provinsi dan kabupaten/kota.

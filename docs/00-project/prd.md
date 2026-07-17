@@ -31,7 +31,7 @@ Saat ini kebutuhan utama adalah satu aplikasi yang rapi, mudah dipakai saat even
 - Mempercepat publikasi hasil, jadwal, bracket, dan klasemen.
 - Mengurangi input manual berulang oleh panitia.
 - Mendukung verifikasi peserta dan dokumen PDAM.
-- Menyediakan insight publik seperti ranking PDAM, performa cabor, dan statistik dasar.
+- Menyediakan insight publik seperti ranking PDAM, ranking wilayah, performa cabor, dan statistik dasar.
 
 ## 4. Target Pengguna
 
@@ -67,7 +67,7 @@ Kebutuhan utama:
 
 - Melihat live score.
 - Melihat jadwal dan hasil pertandingan.
-- Melihat bracket, klasemen, dan ranking PDAM.
+- Melihat bracket, klasemen, ranking PDAM, ranking kabupaten/kota, dan ranking provinsi.
 - Membaca profil PDAM dan info event.
 - Mengakses link livestream bila tersedia.
 
@@ -97,6 +97,7 @@ Kebutuhan utama:
 - Menampilkan nama PDAM, wilayah, logo, daftar cabor, tim, dan atlet.
 - Menampilkan rekap hasil pertandingan PDAM.
 - Menampilkan ranking dan statistik dasar PDAM.
+- Menampilkan asal provinsi dan kabupaten/kota PDAM.
 
 ### 5.5 Livestream
 
@@ -328,6 +329,8 @@ Insight publik bertujuan membuat event terasa hidup dan mudah diikuti.
 Fitur awal:
 
 - Ranking PDAM berdasarkan medali, poin, atau jumlah kemenangan.
+- Ranking kabupaten/kota berdasarkan akumulasi medali PDAM dari wilayah tersebut.
+- Ranking provinsi berdasarkan akumulasi medali PDAM dari wilayah tersebut.
 - Rekap performa PDAM per cabor.
 - Statistik match: total pertandingan, pertandingan selesai, pertandingan berlangsung.
 - Highlight pertandingan final atau semifinal.
@@ -336,6 +339,7 @@ Fitur awal:
 Catatan v1:
 
 - Rumus ranking harus jelas di halaman public.
+- Ranking wilayah memakai data relasi PDAM ke provinsi dan kabupaten/kota.
 - Bila aturan ranking berbeda per event, admin perlu bisa memilih aturan dasar.
 - Insight lanjutan seperti prediksi, rating pemain, dan analitik mendalam ditunda.
 
@@ -500,6 +504,7 @@ Masuk v1:
 - Bracket knockout dasar.
 - Klasemen sederhana.
 - Halaman public untuk live score, jadwal, bracket, ranking, profil PDAM, dan info event.
+- Ranking medali per PDAM, kabupaten/kota, dan provinsi.
 - Audit log untuk perubahan skor dan finalisasi.
 - Link livestream eksternal.
 - Role dasar untuk admin, koordinator cabor, verifikator, scorekeeper, content officer.
@@ -530,6 +535,7 @@ Masuk v1:
 - Public bisa melihat skor match yang sedang berlangsung.
 - Public bisa melihat bracket dan hasil final match.
 - Public bisa melihat ranking PDAM.
+- Public bisa melihat ranking medali per kabupaten/kota dan provinsi.
 - Admin bisa membuat event, cabor, venue, PDAM, tim, atlet, dan match.
 - Admin bisa memverifikasi atau menolak peserta dengan catatan.
 - Scorekeeper bisa input skor untuk match yang dipilih.

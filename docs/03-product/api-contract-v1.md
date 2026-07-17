@@ -17,6 +17,9 @@
 | GET | `/matches/{public_id}` | Detail match public |
 | GET | `/brackets` | Bracket per cabor/kategori |
 | GET | `/standings` | Klasemen/ranking public |
+| GET | `/rankings/pdams` | Ranking medali per PDAM |
+| GET | `/rankings/regencies` | Ranking medali per kabupaten/kota |
+| GET | `/rankings/provinces` | Ranking medali per provinsi |
 | GET | `/pdams/{slug}` | Profil PDAM |
 | GET | `/info` | Info event dan pengumuman |
 

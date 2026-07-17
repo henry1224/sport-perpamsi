@@ -43,6 +43,20 @@
 - `pdams.regency_id` nullable FK ke `regencies.id`.
 - Field lama `region` boleh tetap sebagai fallback display v1, tapi sumber resmi wilayah memakai relasi.
 
+## Ranking Wilayah
+
+- Ranking provinsi dihitung dari akumulasi medali/hasil seluruh PDAM dalam provinsi tersebut.
+- Ranking kabupaten/kota dihitung dari akumulasi medali/hasil seluruh PDAM dalam kabupaten/kota tersebut.
+- Ranking wilayah hanya memakai hasil final.
+- Jika PDAM belum punya wilayah, hasilnya tetap masuk ranking PDAM, tapi tidak masuk ranking wilayah sampai wilayah dilengkapi.
+- Rumus ranking wilayah mengikuti ranking PDAM: emas, perak, perunggu, total medali, lalu nama wilayah.
+
+## Query View yang Disarankan
+
+- `medal_rankings_by_pdam`: agregasi medali per PDAM.
+- `medal_rankings_by_regency`: agregasi dari PDAM ke kabupaten/kota.
+- `medal_rankings_by_province`: agregasi dari PDAM ke provinsi.
+
 ## Seeder
 
 - Seeder Laravel: `database/seeders/IndonesiaRegionSeeder.php`.

@@ -13,7 +13,7 @@
 9. matches, match_participants.
 10. match_scores, match_score_segments, match_results.
 11. brackets, bracket_nodes.
-12. standings, ranking_snapshots.
+12. standings, ranking_snapshots, medal_rankings.
 13. committee_assignments.
 14. announcements, banners, livestream_links.
 15. imports, export_jobs.

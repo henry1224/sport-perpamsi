@@ -11,9 +11,11 @@ Required feature tests:
 5. Revisi skor final wajib alasan.
 6. Klasemen hanya memakai match final.
 7. Ranking hanya memakai match final.
-8. Import menolak baris invalid.
-9. Public tidak melihat data draft.
-10. Audit log tercatat saat skor/finalisasi berubah.
+8. Ranking kabupaten/kota mengakumulasi medali dari PDAM terkait.
+9. Ranking provinsi mengakumulasi medali dari PDAM terkait.
+10. Import menolak baris invalid.
+11. Public tidak melihat data draft.
+12. Audit log tercatat saat skor/finalisasi berubah.
 
 ## Frontend/E2E Tests
 
@@ -27,6 +29,7 @@ Critical flows:
 6. Scorekeeper input skor dan selesai match.
 7. Admin/Koordinator finalisasi match.
 8. Public melihat hasil final, bracket, ranking.
+9. Public mengganti ranking antara PDAM, kabupaten/kota, dan provinsi.
 
 ## UAT Criteria
 

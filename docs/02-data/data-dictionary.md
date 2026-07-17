@@ -77,3 +77,16 @@
 - before_value: nilai sebelum.
 - after_value: nilai sesudah.
 - created_at: waktu aksi.
+
+## RankingSnapshot
+
+- id: ID snapshot ranking.
+- event_id: event.
+- scope: pdam, regency, province.
+- scope_id: ID PDAM, kabupaten/kota, atau provinsi.
+- gold_count: jumlah emas.
+- silver_count: jumlah perak.
+- bronze_count: jumlah perunggu.
+- total_medals: total medali.
+- rank: peringkat.
+- calculated_at: waktu kalkulasi.

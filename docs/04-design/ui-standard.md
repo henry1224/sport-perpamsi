@@ -23,6 +23,7 @@
 - Match detail menampilkan skor, status, venue, waktu, peserta, dan update terakhir.
 - Bracket memakai horizontal scroll di mobile.
 - Ranking menampilkan rumus perhitungan.
+- Ranking dapat diganti tampilan: PDAM, kabupaten/kota, provinsi.
 
 ## Admin Page
 

@@ -38,6 +38,8 @@
 ### Standings / Ranking
 
 - Ranking PDAM medali.
+- Ranking kabupaten/kota medali.
+- Ranking provinsi medali.
 - Klasemen grup per cabor.
 - Rumus ranking tampil jelas.
 

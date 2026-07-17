@@ -20,6 +20,30 @@ Rekomendasi v1 memakai metode nasional/olahraga multi-event:
 
 Catatan: metode ini adalah lexicographic medal ranking, umum terlihat pada Olimpiade, SEA Games, PON, dan laporan klasemen kontingen.
 
+## Ranking Kabupaten/Kota
+
+Ranking kabupaten/kota memakai akumulasi medali seluruh PDAM yang berada di kabupaten/kota tersebut.
+
+Urutan:
+
+1. Total emas seluruh PDAM dalam kabupaten/kota.
+2. Jika sama, total perak.
+3. Jika sama, total perunggu.
+4. Jika sama, total medali.
+5. Jika masih sama, nama kabupaten/kota.
+
+## Ranking Provinsi
+
+Ranking provinsi memakai akumulasi medali seluruh PDAM yang berada di provinsi tersebut.
+
+Urutan:
+
+1. Total emas seluruh PDAM dalam provinsi.
+2. Jika sama, total perak.
+3. Jika sama, total perunggu.
+4. Jika sama, total medali.
+5. Jika masih sama, nama provinsi.
+
 ## Ranking Grup Sepak Bola/Futsal
 
 1. Poin: menang 3, seri 1, kalah 0.
