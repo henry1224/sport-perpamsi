@@ -22,21 +22,31 @@ Tema visual: **arena sport nasional tropis-futuristik**.
 
 ### Header Public Dark
 
-- Pakai `public/assets/brand/logos/porpamnas/white-horizontal-porpamnas-ix.png`.
-- Pasangkan dengan `public/assets/brand/logos/ptmb/white-logo-ptmb-landscape.png` bila background gelap.
+- Pakai logo full-color: `public/assets/brand/logos/porpamnas/porpamnas-ix.png` atau `public/assets/brand/logos/porpamnas/vertical-porpamnas-ix.png`.
+- Pasangkan dengan logo full-color PTMB: `public/assets/brand/logos/ptmb/logo-ptmb-landscape.png`.
+- Beri safe area berupa glass/white chip agar logo full-color tetap terbaca di background gelap.
 - Tinggi logo desktop: 40-56px.
 - Tinggi logo mobile: 32-40px.
 - Jarak antar logo minimal 24px desktop, 14px mobile.
 
 ### Header Light / Admin
 
-- Pakai `public/assets/brand/logos/porpamnas/black-horizontal-porpamnas-ix.png`.
-- Pakai `public/assets/brand/logos/ptmb/logo-ptmb-landscape.png` atau `black-logo-ptmb-landscape.png`.
+- Pakai logo full-color sebagai default.
+- Versi hitam hanya dipakai untuk dokumen/print/header admin yang benar-benar putih dan formal.
+- Versi putih hanya dipakai untuk overlay foto/video gelap bila full-color tidak terbaca.
 
 ### App Icon / Compact
 
 - Pakai `public/assets/brand/logos/porpamnas/porpamnas-ix.png`.
 - Pakai `public/assets/brand/logos/ptmb/only-logo-ptmb.png` bila perlu partner lockup kecil.
+
+## Aturan Varian Logo
+
+- Default sistem: logo full-color.
+- Varian hitam: print, dokumen formal, atau background putih murni.
+- Varian putih: background gelap solid, foto, atau hero tanpa white chip.
+- Jangan jadikan logo hitam/putih sebagai brand utama public page.
+- Jika memakai background gelap premium, gunakan full-color di atas white/glass chip.
 
 ## Maskot
 
@@ -141,6 +151,18 @@ Tema visual: **arena sport nasional tropis-futuristik**.
   border: 1px solid rgba(255,255,255,.16);
   border-radius: 28px;
   box-shadow: 0 24px 80px rgba(0,0,0,.28);
+}
+
+.brand-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .9);
+  border: 1px solid rgba(255, 255, 255, .42);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, .18);
+  backdrop-filter: blur(18px);
 }
 ```
 
