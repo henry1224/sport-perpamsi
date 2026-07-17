@@ -21,7 +21,8 @@ Sport PERPAMSI memakai PostgreSQL sebagai database utama v1.
 
 ## Tipe Data Awal
 
-- ID: `bigint` auto-increment atau UUID, pilih satu sebelum migration pertama.
+- ID internal: `bigint` auto-increment.
+- ID publik: `public_id` UUID untuk URL/link share.
 - Nama/kode: `varchar` dengan panjang jelas.
 - Deskripsi/catatan: `text`.
 - Tanggal/waktu pertandingan: `timestamptz`.
@@ -65,7 +66,6 @@ Sport PERPAMSI memakai PostgreSQL sebagai database utama v1.
 
 ## Yang Belum Dikunci
 
-- Pilihan ID: UUID atau bigint.
 - Struktur detail skor per cabor.
 - Apakah status memakai enum DB, lookup table, atau enum aplikasi.
 - Strategi read replica bila traffic public jauh di atas target.

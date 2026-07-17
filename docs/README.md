@@ -15,6 +15,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 ### 01 Architecture
 
 - [Architecture standard](./01-architecture/architecture-standard.md): arsitektur, performa, keamanan, operasional.
+- [Tech stack](./01-architecture/tech-stack.md): keputusan Laravel, Inertia, Vue, SSR, PostgreSQL, dan ID.
 - [Domain model](./01-architecture/domain-model.md): bounded context dan aturan lintas domain.
 - [ADR-001 fondasi v1](./01-architecture/adr-001-keputusan-fondasi.md): keputusan teknis awal.
 
@@ -32,6 +33,9 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 ### 05 Business Rules
 
 - [Match dan score rules](./05-business-rules/match-score-rules.md): status match, input skor, finalisasi, ranking.
+- [Competition format standard](./05-business-rules/competition-format-standard.md): format grup, knockout, round robin, ranking per jenis cabor.
+- [Ranking rules](./05-business-rules/ranking-rules.md): rumus ranking PDAM dan klasemen cabor.
+- [Score structure](./05-business-rules/score-structure.md): struktur skor utama dan detail segment per jenis cabor.
 
 ### 06 Security
 

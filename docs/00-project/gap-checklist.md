@@ -2,11 +2,11 @@
 
 ## Keputusan yang Masih Kurang
 
-- [ ] Stack backend dan frontend final.
-- [ ] Pilihan ID database: UUID atau bigint.
-- [ ] Struktur skor per cabor: skor sederhana, set, babak, ronde, atau poin detail.
-- [ ] Rumus ranking resmi: medali, poin, kemenangan, atau kombinasi.
-- [ ] Format kompetisi setiap cabor: knockout, grup, liga, atau campuran.
+- [x] Stack backend dan frontend final: Laravel + Inertia + Vue.js + SSR public.
+- [x] Pilihan ID database: `bigint` internal + UUID public.
+- [x] Struktur skor per cabor: skor utama + segment per set/babak/quarter/ronde.
+- [x] Rumus ranking resmi: medali untuk PDAM, aturan cabor untuk klasemen grup.
+- [x] Format kompetisi setiap cabor: knockout, grup, round robin, time/score ranking.
 - [ ] Template import Excel/CSV untuk PDAM, tim, atlet, jadwal.
 - [ ] PIC final sengketa skor.
 - [ ] Domain production dan environment hosting.
@@ -16,8 +16,8 @@
 ## Dokumen Teknis yang Masih Perlu Dibuat
 
 - [ ] API contract v1.
-- [ ] Migration plan.
-- [ ] ERD final setelah stack dipilih.
+- [ ] Migration plan Laravel/PostgreSQL.
+- [ ] ERD final setelah daftar cabor resmi masuk.
 - [ ] UI wireframe public, admin, panitia.
 - [ ] Test case UAT panitia.
 - [ ] Load test script.
