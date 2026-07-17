@@ -1,0 +1,27 @@
+# Match dan Score Rules
+
+## Status Match
+
+1. draft: match belum siap dipublish.
+2. terjadwal: match tampil di public jadwal.
+3. berlangsung: scorekeeper dapat input skor.
+4. jeda: scorekeeper dapat input koreksi skor sementara.
+5. selesai: pertandingan selesai, menunggu finalisasi.
+6. final: hasil resmi terkunci.
+7. revisi: hasil final sedang diperbaiki oleh role berwenang.
+
+## Aturan Input Skor
+
+- Scorekeeper hanya bisa input match yang ditugaskan.
+- Skor hanya bisa diubah pada status berlangsung atau jeda.
+- Match selesai bisa dikunci menjadi final oleh Koordinator Cabor atau Admin Event.
+- Match final tidak bisa diedit langsung.
+- Revisi skor final wajib memiliki alasan.
+- Semua perubahan skor penting masuk audit log.
+
+## Aturan Ranking
+
+- Ranking hanya memakai match final.
+- Rumus ranking harus tampil di public.
+- Jika aturan ranking berbeda per event, Admin Event memilih aturan dasar sebelum event dimulai.
+- Perubahan rumus setelah event berjalan harus disetujui PIC event.

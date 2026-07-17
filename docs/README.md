@@ -1,0 +1,56 @@
+# Dokumentasi Sport PERPAMSI
+
+Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor per domain, dokumen kecil per tanggung jawab, dan PRD tetap sebagai master produk.
+
+## Struktur Dokumen
+
+### 00 Project
+
+- [Piagam proyek](./00-project/charter.md): tujuan, scope, non-scope, metrik keberhasilan.
+- [PRD utama](./00-project/prd.md): visi produk, modul, scope v1, acceptance criteria.
+- [Delivery plan](./00-project/delivery-plan.md): fase pengembangan, prioritas, timeline awal September.
+- [Glossary](./00-project/glossary.md): istilah resmi produk dan event.
+
+### 01 Architecture
+
+- [Architecture standard](./01-architecture/architecture-standard.md): arsitektur, performa, keamanan, operasional.
+- [Domain model](./01-architecture/domain-model.md): bounded context dan aturan lintas domain.
+- [ADR-001 fondasi v1](./01-architecture/adr-001-keputusan-fondasi.md): keputusan teknis awal.
+
+### 02 Data
+
+- [Data standard](./02-data/data-standard.md): single source of truth, governance, import/export, audit.
+- [ERD konseptual](./02-data/erd.md): relasi utama.
+- [Data dictionary](./02-data/data-dictionary.md): field inti v1.
+
+### 04 Design
+
+- [UI standard](./04-design/ui-standard.md): public, admin, panitia, aksesibilitas, komponen utama.
+
+### 05 Business Rules
+
+- [Match dan score rules](./05-business-rules/match-score-rules.md): status match, input skor, finalisasi, ranking.
+
+### 06 Security
+
+- [RBAC matrix](./06-security/rbac-matrix.md): role, permission, matrix akses.
+- [Threat model](./06-security/threat-model.md): risiko utama dan mitigasi minimum.
+
+### 07 Operations
+
+- [Team plan](./07-operations/team-plan.md): struktur tim, ownership, support event.
+- [Runbook](./07-operations/runbook.md): prosedur sebelum, saat, dan setelah event.
+- [Deployment standard](./07-operations/deployment.md): environment dan checklist release.
+
+### 08 Testing
+
+- [Test strategy](./08-testing/test-strategy.md): backend, E2E, UAT, load test.
+
+## Aturan Pakai
+
+- Perubahan scope masuk ke PRD dan delivery plan.
+- Perubahan data masuk ke data standard, ERD, atau data dictionary.
+- Perubahan arsitektur masuk ke architecture standard atau ADR.
+- Perubahan UI masuk ke UI standard.
+- Perubahan akses masuk ke RBAC matrix.
+- Perubahan operasional event masuk ke runbook.
