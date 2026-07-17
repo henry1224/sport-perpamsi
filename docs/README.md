@@ -42,6 +42,8 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 
 - [UI standard](./04-design/ui-standard.md): public, admin, panitia, aksesibilitas, komponen utama.
 - [Wireframe map](./04-design/wireframe-map.md): screen map public, admin, panitia.
+- [Brand asset standard](./04-design/brand-asset-standard.md): penggunaan logo, maskot, warna, dan layout public.
+- [Public home concept](./04-design/public-home-concept.html): contoh layout HTML memakai logo dan maskot.
 
 ### 05 Business Rules
 
