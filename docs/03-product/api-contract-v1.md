@@ -14,6 +14,7 @@
 | GET | `/` | Public home event |
 | GET | `/live-score` | Match aktif/hasil terbaru |
 | GET | `/schedule` | Jadwal public dengan filter |
+| GET | `/agenda` | Agenda event per tanggal/venue/cabor |
 | GET | `/matches/{public_id}` | Detail match public |
 | GET | `/brackets` | Bracket per cabor/kategori |
 | GET | `/standings` | Klasemen/ranking public |
@@ -71,7 +72,7 @@ Contoh:
 ```text
 /events/perpamsi-2026
 /pdams/pdam-kota-makassar
-/sports/futsal
+/sports/mini-football
 /matches/018f8c2a-7b8e-7c3a-9d2f-6a4b1c0e9f11
 ```
 

@@ -58,13 +58,16 @@
 
 | Jenis Cabor | Skor Utama | Segment |
 |---|---|---|
-| Futsal/sepak bola | gol A-B | babak 1, babak 2, penalti opsional |
+| Mini Football | gol A-B | babak 1, babak 2, penalti opsional |
 | Basket | poin A-B | quarter 1-4, overtime opsional |
 | Voli | set menang A-B | set 1-5 berisi poin |
 | Bulutangkis/tenis meja | game/set menang A-B | game/set 1-3 atau 1-5 berisi poin |
 | Catur | poin match/game | board/round bila beregu |
 | Lari/renang | waktu | heat/final, lane opsional |
 | Panahan/menembak | total poin | ronde/seri |
+| Golf | total pukulan/nilai | ronde |
+| Padel | set menang A-B | set berisi game/poin |
+| Vokal | nilai juri | kategori/ronde penilaian |
 
 ## Keputusan v1
 

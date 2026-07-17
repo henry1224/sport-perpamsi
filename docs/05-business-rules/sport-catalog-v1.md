@@ -2,18 +2,22 @@
 
 ## Cabor Resmi Sementara
 
-| Kode | Nama | Format Default | Struktur Skor Default |
+| Kode | Nama | Tipe | Format Default | Struktur Skor Default |
 |---|---|---|---|
-| badminton | Bulu tangkis | Grup lalu knockout | Game/set, poin per game |
-| futsal | Futsal | Grup lalu knockout | Gol, babak 1-2, penalti opsional |
-| table-tennis | Tenis meja | Grup lalu knockout | Game/set, poin per game |
-| tennis | Tenis lapangan | Knockout atau grup lalu knockout | Set, game, tie-break opsional |
-| volleyball | Voli | Grup lalu knockout | Set menang, poin per set |
-| chess | Catur | Round robin atau Swiss | Match point/game point, tie-break |
+| volleyball | Voli | Sport | Grup lalu knockout | Set menang, poin per set |
+| chess | Catur | Sport | Round robin atau Swiss | Match point/game point, tie-break |
+| badminton | Bulu tangkis | Sport | Grup lalu knockout | Game/set, poin per game |
+| table-tennis | Tenis meja | Sport | Grup lalu knockout | Game/set, poin per game |
+| tennis | Tenis lapangan | Sport | Knockout atau grup lalu knockout | Set, game, tie-break opsional |
+| golf | Golf | Eksibisi | Score ranking | Stroke/score |
+| padel | Padel | Eksibisi | Knockout atau eksibisi | Set, game, tie-break opsional |
+| vocal | Vokal | Eksibisi | Score ranking | Nilai juri |
+| mini-football | Mini Football | Sport | Grup lalu knockout | Gol, babak 1-2, penalti opsional |
 
 ## Prinsip Penambahan Cabor
 
 - Cabor baru ditambah lewat master data admin.
+- Tipe aktivitas bisa `sport`, `exhibition`, atau `official` untuk agenda non-pertandingan.
 - Setiap cabor wajib punya format kompetisi default.
 - Setiap cabor wajib punya struktur skor default.
 - Aturan ranking cabor bisa memakai template umum atau konfigurasi manual.

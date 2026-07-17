@@ -532,6 +532,7 @@ Masuk v1:
 ## 16. Acceptance Criteria Awal
 
 - Public bisa melihat jadwal pertandingan tanpa login.
+- Public bisa melihat agenda event per tanggal, venue, dan cabor tanpa login.
 - Public bisa melihat skor match yang sedang berlangsung.
 - Public bisa melihat bracket dan hasil final match.
 - Public bisa melihat ranking PDAM.

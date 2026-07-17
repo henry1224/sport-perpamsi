@@ -42,6 +42,8 @@
 - Role default.
 - Permission default.
 - Provinsi dan kabupaten/kota Indonesia.
-- Cabor v1: bulu tangkis, futsal, tenis meja, tenis lapangan, voli, catur.
+- Cabor v1: voli, catur, bulu tangkis, tenis meja, tenis lapangan, golf, padel, vokal, mini football.
+- Cabor/aktivitas agenda terbaru: voli, catur, bulu tangkis, tenis meja, tenis lapangan, golf, padel, vokal, mini football.
+- Venue dan agenda awal dari screenshot PORPAMNAS IX Kaltim.
 - Format kompetisi default.
 - Status dictionary aplikasi.

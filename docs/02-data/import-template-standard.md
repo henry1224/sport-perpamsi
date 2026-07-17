@@ -21,7 +21,7 @@
 | Kolom | Wajib | Catatan |
 |---|---|---|
 | pdam_name | Ya | Harus cocok dengan master PDAM |
-| sport_code | Ya | Contoh `futsal` |
+| sport_code | Ya | Contoh `mini-football` |
 | category_name | Ya | Putra/Putri/Beregu |
 | team_name | Ya | Nama tim |
 
@@ -47,3 +47,17 @@
 | format | Ya | knockout/group/round_robin/double_elimination |
 | bracket_round | Tidak | Jika knockout |
 | group_name | Tidak | Jika group stage |
+
+## Template Agenda
+
+| Kolom | Wajib | Catatan |
+|---|---|---|
+| date | Ya | Tanggal agenda |
+| day | Ya | Nama hari |
+| title | Ya | Nama kegiatan/cabor |
+| type | Ya | sport/exhibition/official |
+| sport_code | Tidak | Wajib untuk sport/exhibition |
+| venue_code | Ya | Kode venue |
+| start_time | Ya | Jam mulai |
+| end_time | Tidak | Kosong bila sampai selesai |
+| time_note | Tidak | Sesi/Selesai/catatan jam |

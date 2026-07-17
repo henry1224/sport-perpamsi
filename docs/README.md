@@ -35,6 +35,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 ### 03 Product
 
 - [API contract v1](./03-product/api-contract-v1.md): endpoint public dan action admin/panitia baseline.
+- [Agenda standard](./03-product/agenda-standard.md): agenda, venue, cabor, jam dari screenshot awal.
 
 ### 04 Design
 

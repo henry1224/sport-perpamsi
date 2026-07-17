@@ -21,7 +21,7 @@
 - Semua peserta dalam grup saling bertanding satu kali.
 - Peringkat grup dihitung dari aturan ranking cabor.
 - Juara grup atau peringkat tertentu masuk knockout.
-- Cocok untuk futsal, basket, voli, bulutangkis beregu/perorangan, tenis meja.
+- Cocok untuk mini football, basket, voli, bulutangkis beregu/perorangan, tenis meja.
 
 ### Round Robin Penuh
 
@@ -38,7 +38,7 @@
 
 | Jenis Cabor | Format Disarankan v1 | Ranking Grup |
 |---|---|---|
-| Sepak bola/futsal | Grup lalu knockout | Poin, selisih gol, gol memasukkan, head-to-head |
+| Mini football | Grup lalu knockout | Poin, selisih gol, gol memasukkan, head-to-head |
 | Basket | Grup lalu knockout | Menang-kalah/poin klasifikasi, head-to-head, selisih poin, poin memasukkan |
 | Voli | Grup lalu knockout | Match point, jumlah kemenangan, set ratio, point ratio |
 | Bulutangkis/tenis meja | Grup lalu knockout | Jumlah menang, head-to-head, selisih game/set, selisih poin |

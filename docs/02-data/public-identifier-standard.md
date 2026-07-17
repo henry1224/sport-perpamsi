@@ -18,8 +18,8 @@
 
 - Event: `/events/perpamsi-2026`.
 - PDAM: `/pdams/pdam-kota-makassar`.
-- Cabor: `/sports/futsal`.
-- Kategori: `/brackets/futsal/putra`.
+- Cabor: `/sports/mini-football`.
+- Kategori: `/brackets/mini-football/putra`.
 - Venue: `/venues/gor-a` bila halaman venue dipublikasi.
 - Konten/info: `/info/peraturan-umum`.
 
@@ -35,11 +35,11 @@
 ```text
 /events/perpamsi-2026
 /pdams/pdam-kota-makassar
-/sports/futsal
-/schedule?date=2026-09-01&sport=futsal
+/sports/mini-football
+/schedule?date=2026-10-07&sport=mini-football
 /matches/018f8c2a-7b8e-7c3a-9d2f-6a4b1c0e9f11
-/brackets/futsal/putra
-/standings/futsal/putra
+/brackets/mini-football/putra
+/standings/mini-football/putra
 ```
 
 ## Aturan Slug

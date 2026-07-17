@@ -17,7 +17,7 @@
 
 ## Keputusan Baru
 
-- Cabor resmi sementara: bulu tangkis, futsal, tenis meja, tenis lapangan, voli, catur.
+- Cabor resmi sementara: voli, catur, bulu tangkis, tenis meja, tenis lapangan, golf, padel, vokal, mini football.
 - Cabor harus configurable agar bisa ditambahkan nanti tanpa ubah kode besar.
 - Panitia/scorekeeper v1 menginput hasil setelah pertandingan selesai, bukan live point-by-point.
 - Sistem tetap menyimpan waktu input, aktor, status, dan audit sebagai history record.

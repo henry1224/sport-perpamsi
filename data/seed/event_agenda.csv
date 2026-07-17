@@ -1,0 +1,35 @@
+date,day,title,type,sport_code,venue_code,start_time,end_time,time_note
+2026-10-06,Selasa,Technical Meeting,official,,hotel-platinum,09:00,,Selesai
+2026-10-06,Selasa,Welcome Dinner,official,,rujab-walikota,19:00,,Selesai
+2026-10-07,Rabu,Eksibisi Golf,exhibition,golf,royal-mahligai-golf,06:00,12:00,
+2026-10-07,Rabu,Mini Football,sport,mini-football,borneo-anfield-stadium,07:30,11:00,Sesi 1
+2026-10-07,Rabu,Mini Football,sport,mini-football,borneo-anfield-stadium,15:00,18:00,Sesi 2
+2026-10-07,Rabu,Bulu Tangkis,sport,badminton,balikpapan-tennis-stadium,08:00,17:00,
+2026-10-07,Rabu,Tenis Lapangan,sport,tennis,balikpapan-tennis-stadium,09:00,16:00,
+2026-10-07,Rabu,Tenis Meja,sport,table-tennis,gedung-knpi-balikpapan,09:00,16:00,
+2026-10-07,Rabu,Opening Ceremony,official,,bscc-dome,17:00,23:00,
+2026-10-08,Kamis,Mini Football,sport,mini-football,borneo-anfield-stadium,07:30,11:00,Sesi 1
+2026-10-08,Kamis,Mini Football,sport,mini-football,borneo-anfield-stadium,15:00,18:00,Sesi 2
+2026-10-08,Kamis,Catur,sport,chess,gedung-kesenian-balikpapan,08:00,16:00,
+2026-10-08,Kamis,Bulu Tangkis,sport,badminton,balikpapan-tennis-stadium,08:00,17:00,
+2026-10-08,Kamis,Eksibisi Padel,exhibition,padel,hola-padel-tennis-club,08:00,,Selesai
+2026-10-08,Kamis,Nusantara International Water Conference,official,,gedung-mfh-kemenko-2,09:00,16:00,
+2026-10-08,Kamis,Voli Putra,sport,volleyball,gor-banua-patra,09:00,16:00,
+2026-10-08,Kamis,Tenis Lapangan,sport,tennis,balikpapan-tennis-stadium,09:00,16:00,
+2026-10-08,Kamis,Tenis Meja,sport,table-tennis,gedung-knpi-balikpapan,09:00,16:00,
+2026-10-08,Kamis,Eksibisi Vokal,exhibition,vocal,gedung-kesenian-balikpapan,09:00,,Selesai
+2026-10-08,Kamis,Penanaman Pohon & City Tour,official,,ibu-kota-negara,13:00,,Selesai
+2026-10-09,Jumat,Mini Football,sport,mini-football,borneo-anfield-stadium,07:30,11:00,Sesi 1
+2026-10-09,Jumat,Mini Football,sport,mini-football,borneo-anfield-stadium,15:00,18:00,Sesi 2
+2026-10-09,Jumat,Catur,sport,chess,gedung-kesenian-balikpapan,08:00,16:00,
+2026-10-09,Jumat,Bulu Tangkis,sport,badminton,balikpapan-tennis-stadium,08:00,17:00,
+2026-10-09,Jumat,Voli Putra,sport,volleyball,gor-banua-patra,09:00,16:00,
+2026-10-09,Jumat,Tenis Lapangan,sport,tennis,balikpapan-tennis-stadium,09:00,16:00,
+2026-10-09,Jumat,Tenis Meja,sport,table-tennis,gedung-knpi-balikpapan,09:00,16:00,
+2026-10-10,Sabtu,Mini Football,sport,mini-football,borneo-anfield-stadium,07:30,11:00,Sesi 1
+2026-10-10,Sabtu,Mini Football,sport,mini-football,borneo-anfield-stadium,15:00,18:00,Sesi 2
+2026-10-10,Sabtu,Bulu Tangkis,sport,badminton,balikpapan-tennis-stadium,08:00,17:00,
+2026-10-10,Sabtu,Voli Putra,sport,volleyball,gor-banua-patra,09:00,16:00,
+2026-10-10,Sabtu,Ladies Program,official,,pasar-tumpah-pringgodani,09:00,16:00,
+2026-10-10,Sabtu,Ladies Program,official,,de-boekit-riverside,09:00,16:00,
+2026-10-10,Sabtu,Farewell Party,official,,bscc-dome,19:30,21:00,
