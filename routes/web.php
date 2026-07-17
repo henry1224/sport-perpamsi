@@ -51,6 +51,8 @@ Route::get('/', function () {
                 'mini-football' => '/assets/brand/mascots/mini-football.png',
                 'table-tennis' => '/assets/brand/mascots/tenis-meja.png',
                 'tennis' => '/assets/brand/mascots/tenis-lapangan.png',
+                'golf' => '/assets/brand/mascots/beru.png',
+                'padel' => '/assets/brand/mascots/ganga.png',
                 'vocal' => '/assets/brand/mascots/vokal.png',
                 'volleyball' => '/assets/brand/mascots/voli.png',
             ],
