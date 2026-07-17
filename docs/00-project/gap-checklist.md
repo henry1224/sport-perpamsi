@@ -15,13 +15,21 @@
 
 ## Dokumen Teknis yang Masih Perlu Dibuat
 
-- [ ] API contract v1.
-- [ ] Migration plan Laravel/PostgreSQL.
-- [ ] ERD final setelah daftar cabor resmi masuk.
-- [ ] UI wireframe public, admin, panitia.
-- [ ] Test case UAT panitia.
-- [ ] Load test script.
-- [ ] Deployment runbook detail sesuai hosting.
+- [x] API contract v1 baseline.
+- [x] Migration plan Laravel/PostgreSQL baseline.
+- [x] ERD v1 baseline setelah daftar cabor sementara masuk.
+- [x] UI wireframe map public, admin, panitia.
+- [x] Test case UAT panitia baseline.
+- [x] Load test plan baseline.
+- [x] Deployment runbook detail Laravel/Inertia/SSR/PostgreSQL baseline.
+
+## Masih Dibutuhkan Setelah App Dibuat
+
+- [ ] API contract detail per request/response final.
+- [ ] Migration Laravel nyata.
+- [ ] Wireframe high-fidelity.
+- [ ] Load test script k6/Artillery.
+- [ ] CI/CD pipeline.
 
 ## Risiko Jika Belum Diputuskan
 
