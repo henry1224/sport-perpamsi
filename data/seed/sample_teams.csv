@@ -1,0 +1,16 @@
+pdam_code,sport_code,category_name,team_name,verification_status
+pdam-balikpapan,mini-football,Putra,Balikpapan Mini Football Putra,verified
+pdam-samarinda,mini-football,Putra,Samarinda Mini Football Putra,verified
+pdam-bontang,volleyball,Putra,Bontang Voli Putra,verified
+pdam-kutai-kartanegara,volleyball,Putra,Kukar Voli Putra,verified
+pdam-berau,badminton,Beregu,Berau Bulu Tangkis Beregu,verified
+pdam-makassar,badminton,Beregu,Makassar Bulu Tangkis Beregu,verified
+pdam-surabaya,table-tennis,Beregu,Surabaya Tenis Meja Beregu,verified
+pdam-bandung,table-tennis,Beregu,Bandung Tenis Meja Beregu,verified
+pdam-balikpapan,tennis,Beregu,Balikpapan Tenis Lapangan Beregu,verified
+pdam-samarinda,tennis,Beregu,Samarinda Tenis Lapangan Beregu,verified
+pdam-bontang,chess,Beregu,Bontang Catur Beregu,verified
+pdam-kutai-kartanegara,chess,Beregu,Kukar Catur Beregu,verified
+pdam-berau,golf,Eksibisi,Berau Golf Eksibisi,verified
+pdam-makassar,padel,Eksibisi,Makassar Padel Eksibisi,verified
+pdam-surabaya,vocal,Eksibisi,Surabaya Vokal Eksibisi,verified

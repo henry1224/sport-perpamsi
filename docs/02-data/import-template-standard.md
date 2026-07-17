@@ -16,6 +16,8 @@
 | contact_name | Tidak | PIC |
 | contact_phone | Tidak | Kontak PIC |
 
+Contoh data: `data/seed/sample_pdams.csv`.
+
 ## Template Tim
 
 | Kolom | Wajib | Catatan |
@@ -25,6 +27,8 @@
 | category_name | Ya | Putra/Putri/Beregu |
 | team_name | Ya | Nama tim |
 
+Contoh data: `data/seed/sample_teams.csv`.
+
 ## Template Atlet
 
 | Kolom | Wajib | Catatan |
@@ -33,6 +37,8 @@
 | team_name | Tidak | Wajib bila atlet masuk tim |
 | athlete_name | Ya | Nama atlet |
 | identity_number | Tidak | Nomor internal event bila dipakai |
+
+Contoh data: `data/seed/sample_athletes.csv`.
 
 ## Template Jadwal
 

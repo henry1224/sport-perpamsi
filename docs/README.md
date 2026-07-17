@@ -29,6 +29,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [Migration plan](./02-data/migration-plan.md): urutan migration Laravel/PostgreSQL.
 - [ERD v1 baseline](./02-data/erd-v1-baseline.md): ERD baseline development.
 - [Import template standard](./02-data/import-template-standard.md): kolom CSV/Excel data awal.
+- [Sample participant data](./02-data/sample-participant-data.md): contoh data PDAM, tim, atlet untuk development/UAT.
 - [Public identifier standard](./02-data/public-identifier-standard.md): aturan `slug`, `public_id`, dan larangan expose ID internal.
 - [Region standard](./02-data/region-standard.md): master provinsi/kabupaten-kota Indonesia dan relasi PDAM.
 
@@ -49,6 +50,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [Ranking rules](./05-business-rules/ranking-rules.md): rumus ranking PDAM dan klasemen cabor.
 - [Score structure](./05-business-rules/score-structure.md): struktur skor utama dan detail segment per jenis cabor.
 - [Sport catalog v1](./05-business-rules/sport-catalog-v1.md): cabor resmi sementara dan format default.
+- [Regulation reference](./05-business-rules/regulation-reference.md): referensi regulasi resmi per cabor.
 
 ### 06 Security
 
