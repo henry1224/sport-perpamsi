@@ -29,6 +29,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [Migration plan](./02-data/migration-plan.md): urutan migration Laravel/PostgreSQL.
 - [ERD v1 baseline](./02-data/erd-v1-baseline.md): ERD baseline development.
 - [Import template standard](./02-data/import-template-standard.md): kolom CSV/Excel data awal.
+- [Public identifier standard](./02-data/public-identifier-standard.md): aturan `slug`, `public_id`, dan larangan expose ID internal.
 
 ### 03 Product
 

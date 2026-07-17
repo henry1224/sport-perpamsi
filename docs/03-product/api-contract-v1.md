@@ -17,7 +17,7 @@
 | GET | `/matches/{public_id}` | Detail match public |
 | GET | `/brackets` | Bracket per cabor/kategori |
 | GET | `/standings` | Klasemen/ranking public |
-| GET | `/pdams/{public_id}` | Profil PDAM |
+| GET | `/pdams/{slug}` | Profil PDAM |
 | GET | `/info` | Info event dan pengumuman |
 
 ## Admin/Panitia Write Actions
@@ -43,7 +43,7 @@
 
 ```json
 {
-  "public_id": "uuid",
+  "public_id": "018f8c2a-7b8e-7c3a-9d2f-6a4b1c0e9f11",
   "sport": "Futsal",
   "category": "Putra",
   "venue": "Venue A",
@@ -55,6 +55,21 @@
   "score_b": 1,
   "winner": "PDAM A"
 }
+```
+
+## Public URL Identifier
+
+- Event, PDAM, cabor, kategori, venue, dan konten memakai `slug`.
+- Match detail memakai `public_id` UUID.
+- `id` internal tidak boleh tampil pada endpoint public.
+
+Contoh:
+
+```text
+/events/perpamsi-2026
+/pdams/pdam-kota-makassar
+/sports/futsal
+/matches/018f8c2a-7b8e-7c3a-9d2f-6a4b1c0e9f11
 ```
 
 ## Error Format

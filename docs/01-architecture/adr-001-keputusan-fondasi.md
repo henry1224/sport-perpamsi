@@ -11,7 +11,7 @@ Accepted untuk v1.
 3. PostgreSQL menjadi database relasional utama.
 4. Laravel + Inertia + Vue.js menjadi stack aplikasi.
 5. SSR aktif untuk public page, tidak wajib untuk admin/panitia.
-6. Primary key internal memakai `bigint`; URL publik memakai `public_id` UUID.
+6. Primary key internal memakai `bigint`; URL publik memakai `slug` atau `public_id` UUID sesuai entity.
 7. Live score v1 memakai polling 5-15 detik.
 8. Websocket ditunda sampai load test membuktikan polling tidak cukup.
 9. Public endpoint dibuat cacheable.
@@ -26,7 +26,7 @@ Accepted untuk v1.
 - SSR memberi initial HTML lebih baik untuk public page dan SEO.
 - Polling lebih cepat dibangun dan cukup untuk 1.000 public user jika endpoint cacheable.
 - PostgreSQL cocok untuk relasi event, peserta, match, bracket, klasemen, audit, constraint, index, dan backup production.
-- `bigint` menjaga index kecil dan join cepat; UUID tetap dipakai sebagai public identifier.
+- `bigint` menjaga index kecil dan join cepat; `slug` dipakai untuk URL readable, UUID dipakai sebagai public identifier entity detail seperti match.
 
 ## Konsekuensi
 

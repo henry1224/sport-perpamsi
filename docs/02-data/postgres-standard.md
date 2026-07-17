@@ -23,6 +23,7 @@ Sport PERPAMSI memakai PostgreSQL sebagai database utama v1.
 
 - ID internal: `bigint` auto-increment.
 - ID publik: `public_id` UUID untuk URL/link share.
+- Slug publik: `slug` untuk halaman readable seperti event, PDAM, cabor, kategori, venue, dan konten.
 - Nama/kode: `varchar` dengan panjang jelas.
 - Deskripsi/catatan: `text`.
 - Tanggal/waktu pertandingan: `timestamptz`.
@@ -48,6 +49,8 @@ Sport PERPAMSI memakai PostgreSQL sebagai database utama v1.
 - Match tidak boleh punya peserta sama pada slot A dan B.
 - Score tidak boleh negatif.
 - Assignment panitia tidak boleh duplikat untuk user, event, scope, dan role yang sama.
+- Public entity wajib punya unique `slug` sesuai scope.
+- Entity dengan URL public non-readable wajib punya unique `public_id`.
 
 ## Transaction Rules
 

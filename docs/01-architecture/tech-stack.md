@@ -28,7 +28,8 @@
 ## Keputusan ID
 
 - Primary key internal memakai `bigint` auto-increment.
-- Public URL memakai `public_id` UUID.
+- URL detail non-readable memakai `public_id` UUID.
+- URL readable memakai `slug` untuk event, PDAM, cabor, kategori, venue, dan konten.
 - Relasi database memakai `bigint` agar index kecil, join cepat, dan migration sederhana.
 - UUID tidak dipakai sebagai primary key utama v1 karena dataset event belum membutuhkan distributed ID.
 - `public_id` dipakai untuk menghindari ID enumeration pada halaman public atau link share.

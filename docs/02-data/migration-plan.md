@@ -22,6 +22,7 @@
 
 - `id` sebagai `bigint` primary key.
 - `public_id` UUID untuk entity yang tampil di URL public.
+- `slug` untuk entity public yang readable.
 - `created_at` dan `updated_at`.
 - `deleted_at` hanya untuk entity yang boleh diarsipkan.
 
@@ -30,6 +31,7 @@
 - Foreign key untuk relasi inti.
 - Unique email user.
 - Unique `public_id` per table.
+- Unique `slug` sesuai scope.
 - Check score tidak negatif.
 - Unique assignment per user, role, event, scope.
 - Audit log tidak memakai soft delete.

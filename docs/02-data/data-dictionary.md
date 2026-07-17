@@ -3,6 +3,8 @@
 ## Event
 
 - id: ID event.
+- public_id: UUID untuk link publik bila diperlukan.
+- slug: URL readable event.
 - name: nama event.
 - start_date: tanggal mulai.
 - end_date: tanggal selesai.
@@ -12,6 +14,8 @@
 ## PDAM
 
 - id: ID PDAM.
+- public_id: UUID untuk link publik bila diperlukan.
+- slug: URL readable PDAM.
 - name: nama PDAM.
 - region: wilayah.
 - logo_url: logo.
@@ -39,6 +43,7 @@
 ## Match
 
 - id: ID match.
+- public_id: UUID untuk URL detail match public.
 - event_id: event.
 - sport_id: cabor.
 - category_id: kategori.
