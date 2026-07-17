@@ -9,7 +9,7 @@
 ## Prinsip Arsitektur
 
 - Satu aplikasi web responsive untuk public, admin, dan panitia.
-- Database relasional menjadi sumber data utama.
+- PostgreSQL menjadi database relasional utama.
 - Public hanya membaca data published atau final.
 - Data draft dan audit internal tidak boleh muncul di public.
 - Realtime v1 memakai polling ringan 5-15 detik.

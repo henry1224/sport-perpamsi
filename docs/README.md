@@ -10,6 +10,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [PRD utama](./00-project/prd.md): visi produk, modul, scope v1, acceptance criteria.
 - [Delivery plan](./00-project/delivery-plan.md): fase pengembangan, prioritas, timeline awal September.
 - [Glossary](./00-project/glossary.md): istilah resmi produk dan event.
+- [Gap checklist](./00-project/gap-checklist.md): keputusan dan dokumen yang masih kurang sebelum development.
 
 ### 01 Architecture
 
@@ -20,6 +21,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 ### 02 Data
 
 - [Data standard](./02-data/data-standard.md): single source of truth, governance, import/export, audit.
+- [Postgres standard](./02-data/postgres-standard.md): keputusan PostgreSQL, index, constraint, transaksi, backup.
 - [ERD konseptual](./02-data/erd.md): relasi utama.
 - [Data dictionary](./02-data/data-dictionary.md): field inti v1.
 

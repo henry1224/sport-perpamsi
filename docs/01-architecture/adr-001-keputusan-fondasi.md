@@ -8,7 +8,7 @@ Accepted untuk v1.
 
 1. Aplikasi v1 berupa web responsive, bukan mobile native.
 2. Public, admin, dan panitia berada dalam satu sistem aplikasi.
-3. Database relasional menjadi sumber data utama.
+3. PostgreSQL menjadi database relasional utama.
 4. Live score v1 memakai polling 5-15 detik.
 5. Websocket ditunda sampai load test membuktikan polling tidak cukup.
 6. Public endpoint dibuat cacheable.
@@ -20,7 +20,7 @@ Accepted untuk v1.
 - Deadline awal September butuh scope kecil dan stabil.
 - Web responsive cukup untuk public dan panitia lapangan.
 - Polling lebih cepat dibangun dan cukup untuk 1.000 public user jika endpoint cacheable.
-- Database relasional cocok untuk relasi event, peserta, match, bracket, klasemen, dan audit.
+- PostgreSQL cocok untuk relasi event, peserta, match, bracket, klasemen, audit, constraint, index, dan backup production.
 
 ## Konsekuensi
 
