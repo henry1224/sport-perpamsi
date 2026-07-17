@@ -2,7 +2,7 @@
 
 ## 1. Ringkasan
 
-Aplikasi Sport PERPAMSI adalah platform manajemen event olahraga PERPAMSI untuk panitia, peserta PDAM, dan publik. Fokus v1 adalah mengelola event, peserta, pertandingan, skor realtime, bracket, jadwal, dan publikasi informasi event dalam satu tempat.
+Aplikasi Sport PERPAMSI adalah platform manajemen event olahraga PERPAMSI untuk panitia, peserta PDAM, dan publik. Fokus v1 adalah mengelola event, peserta, pertandingan, input hasil setelah pertandingan selesai, bracket, jadwal, dan publikasi informasi event dalam satu tempat.
 
 Dokumen ini menjadi PRD awal untuk menyatukan arah produk, data, operasional panitia, UI, dan arsitektur v1. Detail teknis final seperti migration, API contract, dan desain high-fidelity tetap dibuat pada tahap berikutnya.
 
@@ -19,7 +19,7 @@ Dokumen pendukung:
 Event olahraga PERPAMSI membutuhkan sistem yang bisa:
 
 - Menampilkan jadwal, hasil, bracket, dan klasemen secara cepat.
-- Membantu panitia input skor realtime dengan alur yang aman.
+- Membantu panitia input hasil pertandingan dengan alur yang aman.
 - Memberi publik akses mudah ke informasi pertandingan dan profil PDAM.
 - Menjadi arsip data event, peserta, dokumen, dan audit keputusan skor.
 
@@ -28,7 +28,7 @@ Saat ini kebutuhan utama adalah satu aplikasi yang rapi, mudah dipakai saat even
 ## 3. Tujuan Produk
 
 - Menyediakan pusat informasi resmi event olahraga PERPAMSI.
-- Mempercepat publikasi skor, jadwal, bracket, dan klasemen.
+- Mempercepat publikasi hasil, jadwal, bracket, dan klasemen.
 - Mengurangi input manual berulang oleh panitia.
 - Mendukung verifikasi peserta dan dokumen PDAM.
 - Menyediakan insight publik seperti ranking PDAM, performa cabor, dan statistik dasar.
@@ -54,7 +54,7 @@ Panitia bertugas menginput skor pertandingan di lapangan.
 Kebutuhan utama:
 
 - Melihat daftar match sesuai cabor atau venue.
-- Input skor realtime.
+- Input hasil setelah pertandingan selesai.
 - Menandai match selesai.
 - Mengajukan revisi skor bila terjadi kesalahan.
 - Melihat status finalisasi pertandingan.
@@ -73,10 +73,10 @@ Kebutuhan utama:
 
 ## 5. Modul Public
 
-### 5.1 Live Score
+### 5.1 Hasil Terbaru
 
-- Menampilkan pertandingan yang sedang berlangsung.
-- Memperbarui skor secara realtime atau near-realtime.
+- Menampilkan hasil pertandingan terbaru.
+- Memperbarui hasil setelah panitia menyimpan input.
 - Menampilkan status match: belum mulai, berlangsung, jeda, selesai, final.
 - Menampilkan nama PDAM, tim, cabor, kategori, venue, dan waktu.
 
@@ -153,12 +153,12 @@ Kebutuhan utama:
 
 ## 7. Modul Panitia / Scorekeeper
 
-### 7.1 Input Skor Realtime
+### 7.1 Input Hasil Pertandingan
 
-- Scorekeeper memilih match dari daftar yang ditugaskan.
-- Scorekeeper mengubah skor sesuai format cabor.
+- Scorekeeper memilih match selesai dari daftar yang ditugaskan.
+- Scorekeeper menginput hasil sesuai format cabor.
 - Sistem menyimpan waktu update terakhir.
-- Public melihat skor terbaru setelah update tersimpan.
+- Public melihat hasil terbaru setelah update tersimpan.
 
 ### 7.2 Finalisasi Match
 
@@ -191,7 +191,7 @@ Kebutuhan utama:
 ### 7.6 Workflow Skor
 
 - Status match: draft, terjadwal, berlangsung, jeda, selesai, final, revisi.
-- Scorekeeper hanya bisa input skor saat match berlangsung atau jeda.
+- Scorekeeper input hasil setelah match selesai.
 - Scorekeeper menandai match selesai setelah pertandingan berakhir.
 - Koordinator Cabor atau Admin Event mengunci hasil menjadi final.
 - Revisi setelah final wajib memiliki alasan dan aktor berwenang.

@@ -16,7 +16,7 @@ Entities: Pdam, Team, Athlete, ParticipantDocument, VerificationRecord.
 
 ### Match Operation
 
-Mengelola match, assignment scorekeeper, input skor, status match, finalisasi, dan revisi.
+Mengelola match, assignment scorekeeper, input hasil setelah pertandingan selesai, status match, finalisasi, dan revisi.
 
 Entities: Match, MatchParticipant, Score, ScoreRevision, CommitteeAssignment.
 

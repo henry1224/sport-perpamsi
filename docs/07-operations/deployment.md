@@ -10,6 +10,7 @@
 
 - Domain dan SSL aktif.
 - Database backup otomatis.
+- PostgreSQL restore test minimal sekali sebelum go-live.
 - Error monitoring aktif.
 - Log aplikasi bisa dibaca admin teknis.
 - File upload tersimpan di storage yang dibackup.

@@ -1,0 +1,31 @@
+# ERD v1 Baseline
+
+## Core Tables
+
+```mermaid
+erDiagram
+    USERS ||--o{ COMMITTEE_ASSIGNMENTS : has
+    EVENTS ||--o{ SPORTS : configures
+    EVENTS ||--o{ VENUES : has
+    EVENTS ||--o{ MATCHES : schedules
+    PDAMS ||--o{ TEAMS : owns
+    PDAMS ||--o{ ATHLETES : owns
+    SPORTS ||--o{ SPORT_CATEGORIES : has
+    SPORT_CATEGORIES ||--o{ MATCHES : groups
+    TEAMS ||--o{ MATCH_PARTICIPANTS : plays
+    MATCHES ||--o{ MATCH_PARTICIPANTS : has
+    MATCHES ||--o{ MATCH_SCORES : records
+    MATCHES ||--o{ MATCH_SCORE_SEGMENTS : details
+    MATCHES ||--o{ MATCH_RESULTS : finalizes
+    MATCHES ||--o{ BRACKET_NODES : appears_in
+    BRACKETS ||--o{ BRACKET_NODES : has
+    EVENTS ||--o{ RANKING_SNAPSHOTS : has
+    USERS ||--o{ AUDIT_LOGS : performs
+```
+
+## Catatan
+
+- `MATCH_PARTICIPANTS` menjaga fleksibilitas peserta tim/individu.
+- `MATCH_SCORE_SEGMENTS` menyimpan set, game, quarter, babak, ronde.
+- `MATCH_RESULTS` menyimpan keputusan akhir, walkover, diskualifikasi, atau no contest.
+- `BRACKET_NODES` mendukung knockout dan lower bracket lewat field `bracket_type`.

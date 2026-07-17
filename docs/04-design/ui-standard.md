@@ -11,14 +11,14 @@
 
 - Mobile-first untuk public.
 - Admin-first untuk data table, filter, dan aksi cepat.
-- Scorekeeper-first untuk input cepat dan minim salah tekan.
+- Scorekeeper-first untuk input hasil selesai pertandingan dan minim salah tekan.
 - Status tidak boleh hanya memakai warna; wajib ada teks status.
 - Tombol kritis wajib punya konfirmasi.
 
 ## Public Page
 
-- Home menampilkan live score, jadwal hari ini, highlight, ranking ringkas.
-- Live score menampilkan status, skor, peserta, cabor, kategori, venue, waktu update.
+- Home menampilkan hasil terbaru, jadwal hari ini, highlight, ranking ringkas.
+- Hasil terbaru menampilkan status, skor, peserta, cabor, kategori, venue, waktu update.
 - Jadwal punya filter tanggal, cabor, venue, PDAM, status.
 - Match detail menampilkan skor, status, venue, waktu, peserta, dan update terakhir.
 - Bracket memakai horizontal scroll di mobile.
@@ -33,7 +33,7 @@
 
 ## Panitia / Scorekeeper Page
 
-- Layar utama hanya menampilkan match yang ditugaskan.
+- Layar utama hanya menampilkan match selesai/terjadwal yang ditugaskan.
 - Input skor memakai tombol dan field besar.
 - Status match terlihat jelas: terjadwal, berlangsung, jeda, selesai, final, revisi.
 - Setelah simpan skor, tampilkan waktu update dan aktor terakhir.

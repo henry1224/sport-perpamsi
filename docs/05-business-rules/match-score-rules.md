@@ -12,8 +12,8 @@
 
 ## Aturan Input Skor
 
-- Scorekeeper hanya bisa input match yang ditugaskan.
-- Skor hanya bisa diubah pada status berlangsung atau jeda.
+- Scorekeeper hanya bisa input hasil match yang ditugaskan.
+- Input hasil v1 dilakukan setelah pertandingan selesai, bukan live point-by-point.
 - Match selesai bisa dikunci menjadi final oleh Koordinator Cabor atau Admin Event.
 - Match final tidak bisa diedit langsung.
 - Revisi skor final wajib memiliki alasan.
