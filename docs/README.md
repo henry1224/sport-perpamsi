@@ -46,6 +46,10 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 
 - [Test strategy](./08-testing/test-strategy.md): backend, E2E, UAT, load test.
 
+### 09 Development
+
+- [Git workflow](./09-development/git-workflow.md): standar branch, commit, push, dan merge.
+
 ## Aturan Pakai
 
 - Perubahan scope masuk ke PRD dan delivery plan.
@@ -54,3 +58,4 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - Perubahan UI masuk ke UI standard.
 - Perubahan akses masuk ke RBAC matrix.
 - Perubahan operasional event masuk ke runbook.
+- Perubahan workflow development masuk ke git workflow.
