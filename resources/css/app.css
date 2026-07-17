@@ -1,0 +1,22 @@
+@import 'tailwindcss';
+
+:root {
+  --porpamnas-navy: #071126;
+  --porpamnas-blue: #1946A3;
+  --porpamnas-sky: #36C2F0;
+  --porpamnas-aqua: #20C6B7;
+  --porpamnas-flame: #F05A28;
+  --porpamnas-gold: #F6C64A;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: #fff;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #071126;
+}
+
+button, input, select { font: inherit; }
