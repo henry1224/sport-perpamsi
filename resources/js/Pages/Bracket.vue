@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick, onMounted } from 'vue';
 import PublicLayout from '../Layouts/PublicLayout.vue';
 import SectionTitle from '../Components/SectionTitle.vue';
 
@@ -109,6 +109,10 @@ const tournaments = [
 
 const active = ref(tournaments[0].code);
 const search = ref('');
+const hoveredCode = ref(null);
+const bracketMode = ref('main');
+const mainLimit = ref(32);
+const bracketScroll = ref(null);
 const current = computed(() => tournaments.find((t) => t.code === active.value));
 const winnerOf = (m) => (m.sa == null || m.sb == null) ? null : (m.sa > m.sb ? 'a' : m.sb > m.sa ? 'b' : null);
 const shortName = (name = '') => name
@@ -118,32 +122,66 @@ const shortName = (name = '') => name
   .trim();
 const participants = computed(() => (props.pdams.length ? props.pdams : [])
   .filter((p) => `${p.name} ${p.city || ''}`.toLowerCase().includes(search.value.toLowerCase()))
-  .map((p) => ({ short: shortName(p.name), full: p.name })));
+  .map((p) => ({ code: p.code, short: shortName(p.name), full: p.name })));
 const generatedKnockout = computed(() => {
   if (props.pdams.length && !participants.value.length) return [];
   if (!participants.value.length) return current.value.knockout;
   const size = 2 ** Math.ceil(Math.log2(participants.value.length));
   let matchNo = 1;
-  let count = size / 2;
+  let entrants = participants.value.slice();
+  while (entrants.length < size) entrants.push(null);
   const rounds = [];
-  while (count >= 1) {
+  while (entrants.length > 1) {
+    const count = entrants.length / 2;
     const name = count === 1 ? 'Final' : count === 2 ? 'Semi Final' : count === 4 ? 'Perempat Final' : `Round of ${count * 2}`;
-    const firstRound = rounds.length === 0;
+    const winners = [];
     rounds.push({ name, matches: Array.from({ length: count }, (_, i) => {
-      const a = firstRound ? participants.value[i * 2] : null;
-      const b = firstRound ? participants.value[i * 2 + 1] : null;
-      return { id: `M${String(matchNo++).padStart(3, '0')}`, a: a?.short || (firstRound ? 'BYE' : 'TBD'), fa: a?.full || '', b: b?.short || (firstRound ? 'BYE' : 'TBD'), fb: b?.full || '', sa: null, sb: null, status: 'Jadwal' };
+      const id = `M${String(matchNo++).padStart(3, '0')}`;
+      const a = entrants[i * 2];
+      const b = entrants[i * 2 + 1];
+      const sa = a && b ? ((i + rounds.length) % 4) + 1 : (a ? 1 : 0);
+      const sb = a && b ? ((i * 2 + rounds.length) % 3) : (b ? 1 : 0);
+      const winner = !b || (a && sa >= sb) ? a : b;
+      winners.push(winner);
+      return { id, a: a?.short || 'BYE', fa: a?.full || '', ca: a?.code || '', b: b?.short || 'BYE', fb: b?.full || '', cb: b?.code || '', sa, sb, winner: winner?.code || '', pathCodes: [a?.code, b?.code].filter(Boolean), status: 'Final' };
     }) });
-    count /= 2;
+    entrants = winners;
   }
   return rounds;
 });
 const bracketRounds = computed(() => generatedKnockout.value);
+const mainRounds = computed(() => bracketRounds.value.filter((round) => round.matches.length <= mainLimit.value));
+const earlyRounds = computed(() => bracketRounds.value.filter((round) => round.matches.length > 32));
+const splitRounds = computed(() => {
+  if (!mainRounds.value.length) return { left: [], right: [], final: null };
+  const rounds = mainRounds.value.map((round, roundIndex) => {
+    const sideCount = Math.ceil(round.matches.length / 2);
+    return {
+      ...round,
+      left: round.matches.slice(0, sideCount),
+      right: round.matches.slice(sideCount),
+      roundIndex,
+    };
+  });
+  const final = rounds.at(-1);
+  return {
+    left: rounds.slice(0, -1).map((round) => ({ ...round, matches: round.left })),
+    right: rounds.slice(0, -1).map((round) => ({ ...round, matches: round.right })).reverse(),
+    final: final?.matches[0] || null,
+  };
+});
 const baseMatches = computed(() => bracketRounds.value[0]?.matches.length || 1);
+const visibleBaseMatches = computed(() => mainRounds.value[0]?.matches.length || baseMatches.value);
 const matchStyle = (stage, index) => {
-  const span = baseMatches.value / stage.matches.length;
+  const span = Math.max(1, visibleBaseMatches.value / 2 / Math.max(1, stage.matches.length));
   return { gridRow: `${index * span * 2 + span} / span 2`, '--join': `calc(var(--slot-h) * ${span})` };
 };
+const isActive = (m) => hoveredCode.value && m.pathCodes?.includes(hoveredCode.value);
+
+onMounted(() => nextTick(() => {
+  const el = bracketScroll.value;
+  if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+}));
 </script>
 
 <template>
@@ -175,24 +213,82 @@ const matchStyle = (stage, index) => {
     </section>
 
     <section v-if="bracketRounds.length" class="knockout-wrap">
-      <SectionTitle eyebrow="Knockout Bracket" title="Bracket PDAM" :meta="`${participants.length || baseMatches * 2} peserta · scroll horizontal + vertical`" />
-      <div class="bracket-scroll">
-        <div class="bracket" :style="{ '--rounds': bracketRounds.length, '--rows': baseMatches * 2 }">
-          <div v-for="(stage, si) in bracketRounds" :key="stage.name" class="round">
-            <p class="round-label">{{ stage.name }}</p>
-            <div v-for="(m, mi) in stage.matches" :key="m.id" :style="matchStyle(stage, mi)" :class="['match-wrap', { 'has-next': si < bracketRounds.length - 1, top: mi % 2 === 0, bot: mi % 2 === 1 }]">
-              <span class="match-tag">{{ m.status }}</span>
-              <div class="card">
-                <div :class="['row', { win: winnerOf(m) === 'a', lose: winnerOf(m) === 'b' }]">
-                  <span class="team" :title="m.fa || m.a">{{ m.a }}</span><span class="score">{{ m.sa ?? '–' }}</span>
+      <SectionTitle eyebrow="Knockout Bracket" title="Bracket PDAM" :meta="`${participants.length || baseMatches * 2} peserta · main view mulai Round of ${mainLimit * 2}`" />
+      <div class="bracket-tools">
+        <button :class="{ active: bracketMode === 'main' }" @click="bracketMode = 'main'">Main Bracket</button>
+        <button :class="{ active: bracketMode === 'main' && mainLimit === 8 }" @click="bracketMode = 'main'; mainLimit = 8">Round 16</button>
+        <button :class="{ active: bracketMode === 'main' && mainLimit === 16 }" @click="bracketMode = 'main'; mainLimit = 16">Round 32</button>
+        <button :class="{ active: bracketMode === 'main' && mainLimit === 32 }" @click="bracketMode = 'main'; mainLimit = 32">Round 64</button>
+        <button :class="{ active: bracketMode === 'main' && mainLimit === 64 }" @click="bracketMode = 'main'; mainLimit = 64">Round 128</button>
+        <button :class="{ active: bracketMode === 'early' }" @click="bracketMode = 'early'">Round Awal</button>
+      </div>
+      <div v-if="bracketMode === 'early'" class="early-rounds">
+        <div v-for="round in earlyRounds" :key="round.name" class="early-card">
+          <h3>{{ round.name }}</h3>
+          <div class="early-list">
+            <div v-for="m in round.matches.slice(0, 24)" :key="m.id" class="early-match">
+              <b>{{ m.id }}</b>
+              <span>{{ m.a }}</span><em>{{ m.sa }} - {{ m.sb }}</em><span>{{ m.b }}</span>
+            </div>
+          </div>
+          <p v-if="round.matches.length > 24">+{{ round.matches.length - 24 }} match lain. Gunakan search PDAM untuk mempersempit.</p>
+        </div>
+      </div>
+      <div v-else ref="bracketScroll" class="bracket-scroll">
+        <div class="mirror-bracket" :style="{ '--left-rounds': splitRounds.left.length, '--right-rounds': splitRounds.right.length, '--rows': visibleBaseMatches }">
+          <div class="bracket-side left-side">
+            <div v-for="(stage, si) in splitRounds.left" :key="stage.name" class="round">
+              <p class="round-label">{{ stage.name }}</p>
+              <div v-for="(m, mi) in stage.matches" :key="m.id" :style="matchStyle(stage, mi)" :class="['match-wrap', { active: isActive(m), 'has-next': si < splitRounds.left.length - 1, top: mi % 2 === 0, bot: mi % 2 === 1 }]">
+                <span class="match-tag">{{ m.status }}</span>
+                <div class="card">
+                  <div :class="['row', { win: winnerOf(m) === 'a', lose: winnerOf(m) === 'b' }]" @mouseenter="hoveredCode = m.ca" @mouseleave="hoveredCode = null">
+                    <span class="team" :title="m.fa || m.a">{{ m.a }}</span><span class="score">{{ m.sa ?? '–' }}</span>
+                  </div>
+                  <div :class="['row', { win: winnerOf(m) === 'b', lose: winnerOf(m) === 'a' }]" @mouseenter="hoveredCode = m.cb" @mouseleave="hoveredCode = null">
+                    <span class="team" :title="m.fb || m.b">{{ m.b }}</span><span class="score">{{ m.sb ?? '–' }}</span>
+                  </div>
                 </div>
-                <div :class="['row', { win: winnerOf(m) === 'b', lose: winnerOf(m) === 'a' }]">
-                  <span class="team" :title="m.fb || m.b">{{ m.b }}</span><span class="score">{{ m.sb ?? '–' }}</span>
+                <span v-if="si > 0" class="connector in" />
+                <span v-if="si < splitRounds.left.length - 1" class="connector out" />
+                <span class="match-id">{{ m.id }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="splitRounds.final" class="final-lane">
+            <p class="round-label">Final</p>
+            <div :class="['match-wrap final-match', { active: isActive(splitRounds.final) }]">
+              <span class="match-tag">{{ splitRounds.final.status }}</span>
+              <div class="card">
+                <div :class="['row', { win: winnerOf(splitRounds.final) === 'a', lose: winnerOf(splitRounds.final) === 'b' }]" @mouseenter="hoveredCode = splitRounds.final.ca" @mouseleave="hoveredCode = null">
+                  <span class="team" :title="splitRounds.final.fa || splitRounds.final.a">{{ splitRounds.final.a }}</span><span class="score">{{ splitRounds.final.sa ?? '–' }}</span>
+                </div>
+                <div :class="['row', { win: winnerOf(splitRounds.final) === 'b', lose: winnerOf(splitRounds.final) === 'a' }]" @mouseenter="hoveredCode = splitRounds.final.cb" @mouseleave="hoveredCode = null">
+                  <span class="team" :title="splitRounds.final.fb || splitRounds.final.b">{{ splitRounds.final.b }}</span><span class="score">{{ splitRounds.final.sb ?? '–' }}</span>
                 </div>
               </div>
-              <span v-if="si > 0" class="connector in" />
-              <span v-if="si < bracketRounds.length - 1" class="connector out" />
-              <span class="match-id">{{ m.id }}</span>
+              <span class="match-id">{{ splitRounds.final.id }}</span>
+            </div>
+          </div>
+
+          <div class="bracket-side right-side">
+            <div v-for="(stage, si) in splitRounds.right" :key="stage.name" class="round">
+              <p class="round-label">{{ stage.name }}</p>
+              <div v-for="(m, mi) in stage.matches" :key="m.id" :style="matchStyle(stage, mi)" :class="['match-wrap', { active: isActive(m), 'has-next': si > 0, top: mi % 2 === 0, bot: mi % 2 === 1 }]">
+                <span class="match-tag">{{ m.status }}</span>
+                <div class="card">
+                  <div :class="['row', { win: winnerOf(m) === 'a', lose: winnerOf(m) === 'b' }]" @mouseenter="hoveredCode = m.ca" @mouseleave="hoveredCode = null">
+                    <span class="team" :title="m.fa || m.a">{{ m.a }}</span><span class="score">{{ m.sa ?? '–' }}</span>
+                  </div>
+                  <div :class="['row', { win: winnerOf(m) === 'b', lose: winnerOf(m) === 'a' }]" @mouseenter="hoveredCode = m.cb" @mouseleave="hoveredCode = null">
+                    <span class="team" :title="m.fb || m.b">{{ m.b }}</span><span class="score">{{ m.sb ?? '–' }}</span>
+                  </div>
+                </div>
+                <span v-if="si < splitRounds.right.length - 1" class="connector in" />
+                <span v-if="si > 0" class="connector out" />
+                <span class="match-id">{{ m.id }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -227,8 +323,26 @@ const matchStyle = (stage, index) => {
 .table-note span { color: #36C2F0; font-weight: 1000; letter-spacing: .08em; }
 .knockout-wrap { position: relative; overflow: hidden; margin-top: 8px; padding: 22px; background: #071126; border: 1px solid rgba(255,255,255,.12); box-shadow: 10px 10px 0 rgba(54,194,240,.13); }
 .knockout-wrap::before { content: "KNOCKOUT"; position: absolute; right: 20px; top: -14px; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.055); font-size: clamp(72px, 12vw, 160px); font-weight: 1000; letter-spacing: -.08em; pointer-events: none; }
+.bracket-tools { position: relative; z-index: 2; display: flex; gap: 8px; margin: 18px 0 8px; }
+.bracket-tools button { padding: 10px 16px; border: 1px solid rgba(255,255,255,.16); background: #08142d; color: #fff; font-size: 11px; font-weight: 1000; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+.bracket-tools button.active { border-color: #F6C64A; background: #F6C64A; color: #071126; }
+.early-rounds { position: relative; z-index: 2; display: grid; gap: 18px; margin-top: 18px; }
+.early-card { padding: 18px; background: #08142d; border: 1px solid rgba(255,255,255,.12); }
+.early-card h3 { margin: 0 0 14px; color: #F6C64A; font-size: 13px; font-weight: 1000; letter-spacing: .16em; text-transform: uppercase; }
+.early-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 8px; }
+.early-match { display: grid; grid-template-columns: 56px minmax(0,1fr) 56px minmax(0,1fr); align-items: center; gap: 10px; padding: 10px 12px; background: #0B1B3F; border: 1px solid rgba(255,255,255,.08); }
+.early-match b { color: rgba(255,255,255,.45); font-size: 10px; letter-spacing: .1em; }
+.early-match span { overflow: hidden; color: rgba(255,255,255,.78); font-size: 13px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.early-match em { color: #36C2F0; font-style: normal; font-weight: 1000; text-align: center; }
+.early-card p { margin: 12px 0 0; color: rgba(255,255,255,.55); font-size: 12px; }
 .bracket-scroll { position: relative; z-index: 1; max-height: 78vh; overflow: auto; padding: 20px 4px 24px; overscroll-behavior: contain; }
-.bracket { --line: rgba(150,165,190,.72); --gap-x: 72px; --slot-h: 66px; display: grid; grid-template-columns: repeat(var(--rounds), 320px); grid-template-rows: repeat(var(--rows), var(--slot-h)); column-gap: var(--gap-x); row-gap: 0; min-width: calc(var(--rounds) * 320px + var(--rounds) * var(--gap-x)); padding: 42px 12px 8px; }
+.mirror-bracket { --line: rgba(150,165,190,.72); --gap-x: 72px; --slot-h: 66px; display: grid; grid-template-columns: max-content 340px max-content; column-gap: 84px; min-width: calc((var(--left-rounds) + var(--right-rounds)) * 320px + (var(--left-rounds) + var(--right-rounds)) * var(--gap-x) + 520px); padding: 42px 12px 8px; }
+.bracket-side { display: grid; grid-template-columns: repeat(var(--left-rounds), 320px); grid-template-rows: repeat(var(--rows), var(--slot-h)); column-gap: var(--gap-x); }
+.right-side { grid-template-columns: repeat(var(--right-rounds), 320px); }
+.final-lane { position: relative; z-index: 4; align-self: center; display: grid; align-content: center; min-height: calc(var(--rows) * var(--slot-h)); }
+.final-match::before, .final-match::after { content: ''; position: absolute; top: 50%; width: 42px; height: 2px; background: var(--line); }
+.final-match::before { left: -42px; }
+.final-match::after { right: -42px; }
 .round { position: relative; display: grid; grid-template-rows: subgrid; grid-row: 1 / -1; }
 .round-label { position: sticky; z-index: 3; top: 0; left: 0; margin: 0; padding: 8px 10px; color: #F6C64A; font-size: 11px; font-weight: 1000; letter-spacing: .18em; text-transform: uppercase; background: rgba(7,17,38,.94); border: 1px solid rgba(246,198,74,.2); }
 .match-wrap { position: relative; display: grid; align-content: center; }
@@ -243,10 +357,18 @@ const matchStyle = (stage, index) => {
 .row.win .team, .row.win .score { color: #fff; font-weight: 1000; }
 .row.win .score { color: #36C2F0; }
 .row.lose .team, .row.lose .score { color: rgba(255,255,255,.45); }
+.match-wrap.active { --line: #36C2F0; z-index: 2; }
+.match-wrap.active .card { border-color: rgba(54,194,240,.72); box-shadow: 0 0 0 1px rgba(54,194,240,.45), 0 0 24px rgba(54,194,240,.22); }
+.match-wrap.active .row.win { background: linear-gradient(90deg, rgba(32,198,183,.5), rgba(54,194,240,.32) 62%, #0B1B3F); }
+.match-wrap.active .connector, .match-wrap.active::before, .final-match.active::before, .final-match.active::after { background-color: #36C2F0; background-image: linear-gradient(90deg, transparent, rgba(246,198,74,.95), transparent); background-size: 220% 100%; box-shadow: 0 0 10px rgba(54,194,240,.46); animation: flow-line 4.4s ease-in-out infinite; }
 .connector { position: absolute; z-index: 0; pointer-events: none; }
 .connector.out { top: 50%; right: calc(var(--gap-x) / -2); width: calc(var(--gap-x) / 2); height: 2px; background: var(--line); }
 .connector.in { top: 50%; left: calc(var(--gap-x) / -2); width: calc(var(--gap-x) / 2); height: 2px; background: var(--line); }
+.right-side .connector.out { right: auto; left: calc(var(--gap-x) / -2); }
+.right-side .connector.in { left: auto; right: calc(var(--gap-x) / -2); }
 .match-wrap.has-next.top::before { content: ''; position: absolute; right: calc(var(--gap-x) / -2); top: 50%; width: 2px; height: var(--join); background: var(--line); }
 .match-wrap.has-next.bot::before { content: ''; position: absolute; right: calc(var(--gap-x) / -2); bottom: 50%; width: 2px; height: var(--join); background: var(--line); }
-@media (max-width: 720px) { .bracket { --gap-x: 36px; } .team { font-size: 12px; } }
+.right-side .match-wrap.has-next.top::before, .right-side .match-wrap.has-next.bot::before { right: auto; left: calc(var(--gap-x) / -2); }
+@keyframes flow-line { from { background-position: 220% 0; } to { background-position: -220% 0; } }
+@media (max-width: 720px) { .mirror-bracket { --gap-x: 36px; column-gap: 48px; } .team { font-size: 12px; } }
 </style>
