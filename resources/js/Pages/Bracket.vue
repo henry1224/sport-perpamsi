@@ -3,6 +3,8 @@ import { ref, computed } from 'vue';
 import PublicLayout from '../Layouts/PublicLayout.vue';
 import SectionTitle from '../Components/SectionTitle.vue';
 
+const props = defineProps({ pdams: { type: Array, default: () => [] } });
+
 // ponytail: hardcoded demo. Replace with real tournaments/groups/matches data model.
 const tournaments = [
   {
@@ -106,9 +108,38 @@ const tournaments = [
 ];
 
 const active = ref(tournaments[0].code);
+const search = ref('');
 const current = computed(() => tournaments.find((t) => t.code === active.value));
 const winnerOf = (m) => (m.sa == null || m.sb == null) ? null : (m.sa > m.sb ? 'a' : m.sb > m.sa ? 'b' : null);
-const baseMatches = computed(() => current.value.knockout[0]?.matches.length || 1);
+const shortName = (name = '') => name
+  .replace(/^(perumda|perumdam|perusahaan umum daerah|pdam|pt)\s+(air\s+minum\s+)?/i, '')
+  .replace(/\b(kabupaten|kota)\b/gi, '')
+  .replace(/\s+/g, ' ')
+  .trim();
+const participants = computed(() => (props.pdams.length ? props.pdams : [])
+  .filter((p) => `${p.name} ${p.city || ''}`.toLowerCase().includes(search.value.toLowerCase()))
+  .map((p) => ({ short: shortName(p.name), full: p.name })));
+const generatedKnockout = computed(() => {
+  if (props.pdams.length && !participants.value.length) return [];
+  if (!participants.value.length) return current.value.knockout;
+  const size = 2 ** Math.ceil(Math.log2(participants.value.length));
+  let matchNo = 1;
+  let count = size / 2;
+  const rounds = [];
+  while (count >= 1) {
+    const name = count === 1 ? 'Final' : count === 2 ? 'Semi Final' : count === 4 ? 'Perempat Final' : `Round of ${count * 2}`;
+    const firstRound = rounds.length === 0;
+    rounds.push({ name, matches: Array.from({ length: count }, (_, i) => {
+      const a = firstRound ? participants.value[i * 2] : null;
+      const b = firstRound ? participants.value[i * 2 + 1] : null;
+      return { id: `M${String(matchNo++).padStart(3, '0')}`, a: a?.short || (firstRound ? 'BYE' : 'TBD'), fa: a?.full || '', b: b?.short || (firstRound ? 'BYE' : 'TBD'), fb: b?.full || '', sa: null, sb: null, status: 'Jadwal' };
+    }) });
+    count /= 2;
+  }
+  return rounds;
+});
+const bracketRounds = computed(() => generatedKnockout.value);
+const baseMatches = computed(() => bracketRounds.value[0]?.matches.length || 1);
 const matchStyle = (stage, index) => {
   const span = baseMatches.value / stage.matches.length;
   return { gridRow: `${index * span * 2 + span} / span 2`, '--join': `calc(var(--slot-h) * ${span})` };
@@ -123,6 +154,7 @@ const matchStyle = (stage, index) => {
 
     <nav class="tabs">
       <button v-for="t in tournaments" :key="t.code" :class="{ active: active === t.code }" @click="active = t.code">{{ t.name }}</button>
+      <input v-model="search" type="search" placeholder="Cari PDAM" aria-label="Cari PDAM" />
     </nav>
 
     <section v-if="current.groups.length" class="groups">
@@ -142,24 +174,24 @@ const matchStyle = (stage, index) => {
       </div>
     </section>
 
-    <section v-if="current.knockout.length" class="knockout-wrap">
-      <SectionTitle eyebrow="Knockout Bracket" title="Bracket" />
+    <section v-if="bracketRounds.length" class="knockout-wrap">
+      <SectionTitle eyebrow="Knockout Bracket" title="Bracket PDAM" :meta="`${participants.length || baseMatches * 2} peserta · scroll horizontal + vertical`" />
       <div class="bracket-scroll">
-        <div class="bracket" :style="{ '--rounds': current.knockout.length, '--rows': baseMatches * 2 }">
-          <div v-for="(stage, si) in current.knockout" :key="stage.name" class="round">
+        <div class="bracket" :style="{ '--rounds': bracketRounds.length, '--rows': baseMatches * 2 }">
+          <div v-for="(stage, si) in bracketRounds" :key="stage.name" class="round">
             <p class="round-label">{{ stage.name }}</p>
-            <div v-for="(m, mi) in stage.matches" :key="m.id" :style="matchStyle(stage, mi)" :class="['match-wrap', { 'has-next': si < current.knockout.length - 1, top: mi % 2 === 0, bot: mi % 2 === 1 }]">
+            <div v-for="(m, mi) in stage.matches" :key="m.id" :style="matchStyle(stage, mi)" :class="['match-wrap', { 'has-next': si < bracketRounds.length - 1, top: mi % 2 === 0, bot: mi % 2 === 1 }]">
               <span class="match-tag">{{ m.status }}</span>
               <div class="card">
                 <div :class="['row', { win: winnerOf(m) === 'a', lose: winnerOf(m) === 'b' }]">
-                  <span class="team">{{ m.a }}</span><span class="score">{{ m.sa ?? '–' }}</span>
+                  <span class="team" :title="m.fa || m.a">{{ m.a }}</span><span class="score">{{ m.sa ?? '–' }}</span>
                 </div>
                 <div :class="['row', { win: winnerOf(m) === 'b', lose: winnerOf(m) === 'a' }]">
-                  <span class="team">{{ m.b }}</span><span class="score">{{ m.sb ?? '–' }}</span>
+                  <span class="team" :title="m.fb || m.b">{{ m.b }}</span><span class="score">{{ m.sb ?? '–' }}</span>
                 </div>
               </div>
               <span v-if="si > 0" class="connector in" />
-              <span v-if="si < current.knockout.length - 1" class="connector out" />
+              <span v-if="si < bracketRounds.length - 1" class="connector out" />
               <span class="match-id">{{ m.id }}</span>
             </div>
           </div>
@@ -174,6 +206,7 @@ const matchStyle = (stage, index) => {
 .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; padding: 16px; background: rgba(5,11,28,.56); border: 1px solid rgba(255,255,255,.12); }
 .tabs button { padding: 10px 16px; border: 1px solid rgba(255,255,255,.16); background: #08142d; color: white; font-weight: 900; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; clip-path: polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%); }
 .tabs button.active { background: #F6C64A; color: #071126; border-color: #F6C64A; box-shadow: 6px 6px 0 rgba(240,90,40,.35); }
+.tabs input { flex: 1 1 220px; min-width: 180px; padding: 10px 14px; border: 1px solid rgba(54,194,240,.3); background: #071126; color: #fff; font-weight: 800; outline: none; }
 .groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 18px; margin-bottom: 40px; }
 .group-card { position: relative; overflow: hidden; padding: 20px; background: #071126; border: 1px solid rgba(255,255,255,.12); box-shadow: 8px 8px 0 rgba(54,194,240,.13); clip-path: polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px); }
 .group-card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(54,194,240,.11), transparent 46%); pointer-events: none; }
@@ -194,15 +227,15 @@ const matchStyle = (stage, index) => {
 .table-note span { color: #36C2F0; font-weight: 1000; letter-spacing: .08em; }
 .knockout-wrap { position: relative; overflow: hidden; margin-top: 8px; padding: 22px; background: #071126; border: 1px solid rgba(255,255,255,.12); box-shadow: 10px 10px 0 rgba(54,194,240,.13); }
 .knockout-wrap::before { content: "KNOCKOUT"; position: absolute; right: 20px; top: -14px; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.055); font-size: clamp(72px, 12vw, 160px); font-weight: 1000; letter-spacing: -.08em; pointer-events: none; }
-.bracket-scroll { position: relative; z-index: 1; overflow-x: auto; padding: 20px 4px 24px; }
-.bracket { --line: rgba(150,165,190,.72); --gap-x: 72px; --slot-h: 48px; display: grid; grid-template-columns: repeat(var(--rounds), minmax(220px, 1fr)); grid-template-rows: repeat(var(--rows), var(--slot-h)); column-gap: var(--gap-x); row-gap: 0; min-width: calc(var(--rounds) * 260px + var(--rounds) * var(--gap-x)); padding: 38px 12px 8px; }
+.bracket-scroll { position: relative; z-index: 1; max-height: 78vh; overflow: auto; padding: 20px 4px 24px; overscroll-behavior: contain; }
+.bracket { --line: rgba(150,165,190,.72); --gap-x: 72px; --slot-h: 66px; display: grid; grid-template-columns: repeat(var(--rounds), 320px); grid-template-rows: repeat(var(--rows), var(--slot-h)); column-gap: var(--gap-x); row-gap: 0; min-width: calc(var(--rounds) * 320px + var(--rounds) * var(--gap-x)); padding: 42px 12px 8px; }
 .round { position: relative; display: grid; grid-template-rows: subgrid; grid-row: 1 / -1; }
-.round-label { position: absolute; top: -28px; left: 0; margin: 0; color: #F6C64A; font-size: 11px; font-weight: 1000; letter-spacing: .18em; text-transform: uppercase; }
-.match-wrap { position: relative; display: grid; align-content: center; gap: 1px; }
-.match-tag { color: rgba(255,255,255,.5); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-.match-id { color: rgba(255,255,255,.35); font-size: 10px; font-weight: 900; letter-spacing: .1em; }
+.round-label { position: sticky; z-index: 3; top: 0; left: 0; margin: 0; padding: 8px 10px; color: #F6C64A; font-size: 11px; font-weight: 1000; letter-spacing: .18em; text-transform: uppercase; background: rgba(7,17,38,.94); border: 1px solid rgba(246,198,74,.2); }
+.match-wrap { position: relative; display: grid; align-content: center; }
+.match-tag { position: absolute; top: 3px; left: 0; color: rgba(255,255,255,.5); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.match-id { position: absolute; bottom: 3px; left: 0; color: rgba(255,255,255,.35); font-size: 10px; font-weight: 900; letter-spacing: .1em; }
 .card { display: grid; gap: 1px; overflow: hidden; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); box-shadow: 6px 6px 0 rgba(0,0,0,.22); clip-path: polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px); }
-.row { display: grid; grid-template-columns: 1fr 48px; align-items: center; padding: 12px 14px; background: #0B1B3F; border-left: 3px solid transparent; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) 34px; align-items: center; min-height: 43px; padding: 10px 12px 10px 14px; background: #0B1B3F; border-left: 3px solid transparent; }
 .row + .row { border-top: 1px solid rgba(255,255,255,.08); }
 .team { font-size: 14px; font-weight: 750; color: rgba(255,255,255,.75); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .score { text-align: right; font-size: 16px; font-weight: 950; color: rgba(255,255,255,.55); font-variant-numeric: tabular-nums; }
