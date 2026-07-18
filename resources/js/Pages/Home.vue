@@ -1,300 +1,194 @@
 <script setup>
+import PublicLayout from '../Layouts/PublicLayout.vue';
+import SectionTitle from '../Components/SectionTitle.vue';
+import Panel from '../Components/Panel.vue';
+import MatchCard from '../Components/MatchCard.vue';
+import StatusBadge from '../Components/StatusBadge.vue';
+import { Link } from '@inertiajs/vue3';
+
 const props = defineProps({
-  agenda: Array,
-  sports: Array,
-  results: Array,
-  provinceRankings: Array,
-  assets: Object,
+  agenda: Array, sports: Array, results: Array, provinceRankings: Array, assets: Object,
 });
 
-const dateLabels = [...new Set(props.agenda.map((item) => item.date))].map((date) => {
-  const item = props.agenda.find((agenda) => agenda.date === date);
-  return { date, day: item.day, count: props.agenda.filter((agenda) => agenda.date === date).length };
+const dateLabels = [...new Set(props.agenda.map((i) => i.date))].map((date) => {
+  const item = props.agenda.find((a) => a.date === date);
+  return { date, day: item.day, count: props.agenda.filter((a) => a.date === date).length };
 });
-
-const featuredAgenda = props.agenda.slice(0, 6);
-const sportCards = props.sports.filter((sport) => sport.type !== 'official');
-const venueCount = new Set(props.agenda.map((item) => item.venue)).size;
+const featuredAgenda = props.agenda.slice(0, 7);
+const sportCards = props.sports.filter((s) => s.type !== 'official');
+const venueCount = new Set(props.agenda.map((i) => i.venue)).size;
 const activityCount = props.agenda.length;
-const sportCount = props.sports.filter((sport) => sport.type === 'sport').length;
-const exhibitionCount = props.sports.filter((sport) => sport.type === 'exhibition').length;
+const sportCount = props.sports.filter((s) => s.type === 'sport').length;
+const exhibitionCount = props.sports.filter((s) => s.type === 'exhibition').length;
+const topResults = props.results.slice(0, 3);
 </script>
 
 <template>
-  <main class="event-shell">
-    <aside class="rail" aria-label="Navigasi public">
-      <div class="rail-brand">
-        <img :src="assets.porpamnas" alt="PORPAMNAS IX" />
+  <PublicLayout>
+    <section class="hero-arena">
+      <div class="hero-copy">
+        <p class="eyebrow">PORPAMNAS IX KALTIM · BALIKPAPAN</p>
+        <h1><span>Pekan Olahraga Antar</span><span>Perusahaan Air Minum</span><span>Nasional.</span></h1>
+        <p>Public board untuk agenda, hasil, cabor, venue, bracket, dan ranking wilayah. Padat, cepat dibaca, tetap resmi.</p>
+        <div class="hero-actions">
+          <Link class="primary-button" href="/hasil">Hasil Terbaru</Link>
+          <Link class="secondary-button" href="/agenda">Agenda Kegiatan</Link>
+        </div>
       </div>
-      <a href="#hero">Home</a>
-      <a href="#agenda">Agenda</a>
-      <a href="#hasil">Hasil</a>
-      <a href="#cabor">Cabor</a>
-      <a href="#ranking">Ranking</a>
-    </aside>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="power-ring" />
+        <img class="mascot beru" :src="assets.beru" alt="" />
+        <img class="mascot ganga" :src="assets.ganga" alt="" />
+      </div>
+      <div class="hero-stats">
+        <div><strong>{{ activityCount }}</strong><span>Agenda</span></div>
+        <div><strong>{{ sportCount }}</strong><span>Cabor</span></div>
+        <div><strong>{{ exhibitionCount }}</strong><span>Eksibisi</span></div>
+        <div><strong>{{ venueCount }}</strong><span>Venue</span></div>
+      </div>
+    </section>
 
-    <div class="content">
-      <nav class="topbar" aria-label="Brand PORPAMNAS">
-        <div class="brand-chip">
-          <img class="brand-mark porpamnas" :src="assets.porpamnas" alt="PORPAMNAS IX" />
-          <span class="brand-divider" aria-hidden="true" />
-          <img class="brand-mark ptmb" :src="assets.ptmb" alt="PTMB dan TRUST" />
+    <section class="match-strip">
+      <MatchCard v-for="r in topResults" :key="`${r.sport}-${r.team_a}`"
+        :sport="r.sport" :team-a="r.team_a" :team-b="r.team_b"
+        :score="r.score" :status="r.status" :venue="r.venue" :time="r.time" />
+    </section>
+
+    <section class="content-grid">
+      <Panel>
+        <SectionTitle eyebrow="Tournament Schedule" title="Agenda Kegiatan" meta="06–10 Okt" />
+        <div class="date-tabs">
+          <button v-for="d in dateLabels" :key="d.date" type="button">
+            <small>{{ d.day }}</small>
+            <strong>{{ d.date.slice(8, 10) }}</strong>
+            <span>{{ d.count }} acara</span>
+          </button>
         </div>
-        <div class="top-meta">
-          <span>Balikpapan</span>
-          <strong>06–10 Okt 2026</strong>
-        </div>
-      </nav>
-
-      <section id="hero" class="hero-grid">
-        <div class="hero-copy panel hero-panel">
-          <p class="eyebrow">PORPAMNAS IX KALTIM</p>
-          <h1>Agenda, hasil, dan ranking dalam satu arena.</h1>
-          <p class="hero-lead">
-            Portal public untuk mengikuti semua kegiatan: venue, jam pertandingan, hasil final, bracket, cabor, dan ranking PDAM hingga provinsi.
-          </p>
-          <div class="hero-actions">
-            <a class="primary-button" href="#agenda">Lihat Agenda</a>
-            <a class="secondary-button" href="#hasil">Hasil Terbaru</a>
-            <a class="secondary-button" href="#ranking">Ranking Wilayah</a>
-          </div>
-          <div class="metrics-strip" aria-label="Statistik event">
-            <div><strong>{{ activityCount }}</strong><span>Agenda</span></div>
-            <div><strong>{{ sportCount }}</strong><span>Cabor</span></div>
-            <div><strong>{{ exhibitionCount }}</strong><span>Eksibisi</span></div>
-            <div><strong>{{ venueCount }}</strong><span>Venue</span></div>
-          </div>
-        </div>
-
-        <div class="mascot-panel panel" aria-hidden="true">
-          <div class="orbital-ring" />
-          <img class="mascot mascot-beru" :src="assets.beru" alt="" />
-          <img class="mascot mascot-ganga" :src="assets.ganga" alt="" />
-          <div class="floating-ticket">
-            <span>Opening</span>
-            <strong>BSCC Dome</strong>
-            <small>17.00–23.00 WITA</small>
-          </div>
-        </div>
-      </section>
-
-      <section class="marquee" aria-label="Highlight cabor">
-        <span v-for="sport in sportCards" :key="sport.code">{{ sport.name }}</span>
-      </section>
-
-      <section class="dashboard-grid">
-        <article id="agenda" class="panel agenda-board">
-          <div class="section-heading split">
+        <div class="agenda-list">
+          <div v-for="item in featuredAgenda" :key="`${item.date}-${item.title}-${item.start_time}`" class="agenda-row">
+            <span :class="['type-pill', item.type]">{{ item.type }}</span>
             <div>
-              <p>Weekly Schedule</p>
-              <h2>Agenda Kegiatan</h2>
+              <strong>{{ item.title }}</strong>
+              <small>{{ item.venue }}</small>
             </div>
-            <a href="#cabor">Lihat Cabor</a>
+            <time>{{ item.start_time }}<template v-if="item.end_time">–{{ item.end_time }}</template></time>
           </div>
-          <div class="date-tabs">
-            <button v-for="date in dateLabels" :key="date.date" type="button">
-              <span>{{ date.day }}</span>
-              <strong>{{ date.date.slice(8, 10) }}</strong>
-              <small>{{ date.count }} acara</small>
-            </button>
-          </div>
-          <div class="agenda-list">
-            <div v-for="item in featuredAgenda" :key="`${item.date}-${item.title}-${item.start_time}`" class="agenda-card">
-              <span :class="['badge', item.type]">{{ item.type }}</span>
-              <div>
-                <strong>{{ item.title }}</strong>
-                <small>{{ item.venue }}</small>
-              </div>
-              <time>{{ item.start_time }}<template v-if="item.end_time">–{{ item.end_time }}</template></time>
-            </div>
-          </div>
-        </article>
+        </div>
+      </Panel>
 
-        <article id="hasil" class="panel result-board">
-          <div class="section-heading">
-            <p>Final Record</p>
-            <h2>Hasil Terbaru</h2>
-          </div>
-          <div v-for="result in results" :key="`${result.sport}-${result.team_a}`" class="result-card">
-            <span>{{ result.sport }}</span>
-            <div class="teams">
-              <strong>{{ result.team_a }}</strong>
-              <small>vs</small>
-              <strong>{{ result.team_b }}</strong>
-            </div>
-            <b>{{ result.score }}</b>
-          </div>
-        </article>
-
-        <article id="ranking" class="panel ranking-board">
-          <div class="section-heading">
-            <p>Medal Table</p>
-            <h2>Ranking Provinsi</h2>
-          </div>
-          <div v-for="(rank, index) in provinceRankings" :key="rank.name" class="ranking-card">
-            <span class="rank-no">{{ index + 1 }}</span>
-            <div>
-              <strong>{{ rank.name }}</strong>
-              <small>{{ rank.gold }} emas · {{ rank.silver }} perak · {{ rank.bronze }} perunggu</small>
-            </div>
+      <aside class="side-stack">
+        <Panel>
+          <SectionTitle eyebrow="Medal Table" title="Provinsi" />
+          <div v-for="(rank, i) in provinceRankings.slice(0,4)" :key="rank.name" class="rank-row">
+            <span>{{ i + 1 }}</span>
+            <div><strong>{{ rank.name }}</strong><small>{{ rank.gold }}G · {{ rank.silver }}S · {{ rank.bronze }}B</small></div>
             <b>{{ rank.gold }}</b>
           </div>
-        </article>
-      </section>
+          <Link class="panel-more" href="/ranking">Lihat semua →</Link>
+        </Panel>
+        <Panel class="featured-panel">
+          <p>Featured Event</p>
+          <h2>Opening Ceremony</h2>
+          <span>BSCC Dome · 17.00–23.00 WITA</span>
+          <StatusBadge status="scheduled" />
+        </Panel>
+      </aside>
+    </section>
 
-      <section id="cabor" class="sports-section">
-        <div class="section-heading split">
-          <div>
-            <p>Game Titles</p>
-            <h2>Cabor & Eksibisi</h2>
-          </div>
-          <span>{{ sportCards.length }} aktivitas</span>
-        </div>
-        <div class="sport-grid">
-          <article v-for="sport in sportCards" :key="sport.code" class="sport-card">
-            <img v-if="assets.mascots[sport.code]" :src="assets.mascots[sport.code]" alt="" />
-            <span>{{ sport.type }}</span>
-            <h3>{{ sport.name }}</h3>
-            <p>{{ sport.default_format.replaceAll('_', ' ') }}</p>
-          </article>
-        </div>
-      </section>
-    </div>
-  </main>
+    <section class="game-section">
+      <SectionTitle eyebrow="Game Roster" title="Cabor & Eksibisi" :meta="`${sportCards.length} aktivitas`" />
+      <div class="game-grid">
+        <Link v-for="sport in sportCards" :key="sport.code" href="/cabor" class="game-card">
+          <img v-if="assets.mascots[sport.code]" :src="assets.mascots[sport.code]" alt="" />
+          <span>{{ sport.type }}</span>
+          <h3>{{ sport.name }}</h3>
+          <p>{{ sport.default_format.replaceAll('_', ' ') }}</p>
+        </Link>
+      </div>
+    </section>
+  </PublicLayout>
 </template>
 
 <style scoped>
-.event-shell {
-  min-height: 100vh;
-  background:
-    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 64px 64px,
-    radial-gradient(circle at 76% 10%, rgba(54, 194, 240, .26), transparent 32rem),
-    radial-gradient(circle at 12% 76%, rgba(240, 90, 40, .18), transparent 28rem),
-    linear-gradient(135deg, #061025 0%, #0A1D4B 48%, #10275C 100%);
-  color: #fff;
-  display: grid;
-  grid-template-columns: 92px 1fr;
+.hero-arena { position: relative; display: grid; min-height: 900px; padding: 70px 0 270px; }
+.hero-arena::before { content: "PORPAMNAS"; position: absolute; left: -12px; top: 74px; z-index: 0; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.07); font-size: clamp(80px, 15vw, 220px); font-weight: 1000; letter-spacing: -.09em; line-height: .7; pointer-events: none; }
+.hero-copy { position: relative; z-index: 3; align-self: center; max-width: 900px; padding-bottom: 42px; }
+.eyebrow { width: fit-content; margin: 0 0 18px; padding: 8px 12px; color: #071126; background: #F6C64A; font-size: 12px; font-weight: 1000; letter-spacing: .18em; text-transform: uppercase; transform: skew(-10deg); }
+h1 { max-width: 1120px; margin: 0 0 22px; color: #fff; font-size: clamp(46px, 6.2vw, 100px); line-height: .86; letter-spacing: -.078em; text-transform: uppercase; text-shadow: 9px 9px 0 rgba(240,90,40,.35), -2px -2px 0 rgba(54,194,240,.3), 0 0 28px rgba(5,11,28,.92); }
+h1 span { display: block; white-space: nowrap; }
+.hero-copy p:not(.eyebrow) { max-width: 590px; color: rgba(255,255,255,.72); font-size: 18px; line-height: 1.7; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.primary-button, .secondary-button { padding: 15px 22px; text-decoration: none; font-size: 12px; font-weight: 1000; letter-spacing: .14em; text-transform: uppercase; clip-path: polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%); }
+.primary-button { color: #071126; background: #F6C64A; box-shadow: 10px 10px 0 rgba(240,90,40,.55); }
+.secondary-button { color: #fff; background: rgba(7,17,38,.72); border: 1px solid rgba(255,255,255,.22); }
+.hero-visual { position: absolute; inset: 0; z-index: 2; overflow: visible; isolation: isolate; pointer-events: none; }
+.hero-visual::before { content: ""; position: absolute; inset: 10% 0 6% 34%; background: linear-gradient(150deg, rgba(54,194,240,.22), rgba(7,17,38,.18)); border: 1px solid rgba(255,255,255,.14); clip-path: polygon(10% 0,100% 0,90% 100%,0 100%); box-shadow: inset 0 0 0 9px rgba(255,255,255,.025), 0 34px 90px rgba(0,0,0,.35); }
+.power-ring { position: absolute; inset: 20% 5% 16% 46%; border: 1px solid rgba(246,198,74,.34); border-radius: 999px; transform: rotate(-16deg); box-shadow: inset 0 0 80px rgba(54,194,240,.18), 0 0 70px rgba(246,198,74,.12); }
+.mascot { position: absolute; bottom: 0; z-index: 2; object-fit: contain; filter: drop-shadow(0 38px 48px rgba(0,0,0,.5)); }
+.mascot.beru { right: 19%; max-height: 680px; transform: rotate(-4deg); }
+.mascot.ganga { right: -5%; max-height: 610px; transform: rotate(5deg); }
+.hero-stats { position: absolute; left: 0; bottom: 16px; z-index: 4; display: grid; grid-template-columns: repeat(4, 1fr); width: min(720px, 54vw); gap: 0; background: #08142d; border: 1px solid rgba(255,255,255,.16); box-shadow: 12px 12px 0 rgba(54,194,240,.18); }
+.hero-stats div { padding: 18px 20px; border-right: 1px dashed rgba(255,255,255,.18); }
+.hero-stats div:last-child { border-right: 0; }
+.hero-stats strong { display: block; color: #36C2F0; font-size: 38px; line-height: 1; }
+.hero-stats span { color: rgba(255,255,255,.62); font-size: 11px; font-weight: 1000; letter-spacing: .15em; text-transform: uppercase; }
+
+.match-strip { position: relative; z-index: 5; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 24px 0 72px; }
+.content-grid { display: grid; grid-template-columns: 1.42fr .78fr; gap: 24px; margin-bottom: 190px; }
+.side-stack { display: grid; gap: 18px; }
+:deep(.panel) { border-radius: 0; background: linear-gradient(180deg, rgba(11,31,77,.9), rgba(5,11,28,.92)); border: 1px solid rgba(255,255,255,.13); box-shadow: 8px 8px 0 rgba(0,0,0,.22); }
+
+.date-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-bottom: 16px; }
+.date-tabs button { display: grid; gap: 2px; padding: 14px; color: white; background: #0a1938; border: 1px solid rgba(255,255,255,.12); text-align: left; cursor: pointer; clip-path: polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%); }
+.date-tabs button:first-child { color: #071126; background: #F6C64A; border-color: #F6C64A; }
+.date-tabs button:first-child strong, .date-tabs button:first-child small, .date-tabs button:first-child span { color: #071126; }
+.date-tabs strong { color: #F6C64A; font-size: 28px; line-height: 1; }
+.date-tabs small, .date-tabs span { color: rgba(255,255,255,.65); font-size: 11px; }
+.agenda-list { display: grid; gap: 8px; }
+.agenda-row { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 13px 14px; background: rgba(255,255,255,.055); border-left: 4px solid rgba(54,194,240,.75); }
+.type-pill { width: fit-content; padding: 6px 9px; font-size: 10px; font-weight: 1000; text-transform: uppercase; }
+.type-pill.sport { color: #BFEFFF; background: rgba(54,194,240,.16); }
+.type-pill.exhibition { color: #FFE6A3; background: rgba(246,198,74,.18); }
+.type-pill.official { color: #FFD4C2; background: rgba(240,90,40,.18); }
+.agenda-row div { display: grid; align-content: center; gap: 4px; }
+.agenda-row small { color: rgba(255,255,255,.64); }
+.agenda-row time { color: #F6C64A; font-weight: 1000; }
+
+.rank-row { display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center; padding: 15px 0; border-top: 1px dashed rgba(255,255,255,.16); }
+.rank-row:first-of-type { border-top: 0; padding-top: 0; }
+.rank-row > span { color: #071126; background: #F6C64A; display: grid; width: 30px; height: 30px; place-items: center; font-weight: 1000; clip-path: polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%); }
+.rank-row div { display: grid; gap: 6px; }
+.rank-row small { color: rgba(255,255,255,.6); font-size: 11px; }
+.rank-row b { color: #F6C64A; font-size: 30px; }
+.panel-more { display: inline-block; margin-top: 14px; color: #36C2F0; font-weight: 1000; letter-spacing: .12em; text-transform: uppercase; font-size: 12px; text-decoration: none; }
+
+.featured-panel { min-height: 220px; display: grid; align-content: end; gap: 10px; background: linear-gradient(150deg, rgba(240,90,40,.45), rgba(8,20,45,.92)); }
+.featured-panel p { margin: 0; color: #F6C64A; font-weight: 1000; letter-spacing: .14em; text-transform: uppercase; font-size: 12px; }
+.featured-panel h2 { margin: 0; font-size: 34px; line-height: 1; }
+.featured-panel span { color: rgba(255,255,255,.72); }
+
+.game-section { margin-top: 0; }
+.game-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 18px; }
+.game-card { position: relative; display: block; min-height: 226px; overflow: hidden; padding: 24px; background: #071126; border: 1px solid rgba(255,255,255,.12); box-shadow: 8px 8px 0 rgba(54,194,240,.13); text-decoration: none; color: inherit; clip-path: polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px); }
+.game-card::after { content: ""; position: absolute; inset: auto -20% -40% auto; width: 210px; height: 210px; background: radial-gradient(circle, rgba(246,198,74,.28), transparent 62%); }
+.game-card img { position: absolute; right: -18px; bottom: -24px; z-index: 1; max-height: 194px; filter: drop-shadow(0 18px 32px rgba(0,0,0,.38)); transition: transform .25s ease; }
+.game-card:hover img { transform: translateY(-10px) rotate(3deg); }
+.game-card span { color: #F6C64A; font-size: 12px; font-weight: 1000; letter-spacing: .14em; text-transform: uppercase; }
+.game-card h3 { position: relative; z-index: 2; max-width: 62%; margin: 8px 0; font-size: 30px; line-height: 1; }
+.game-card p { position: relative; z-index: 2; max-width: 58%; color: rgba(255,255,255,.68); text-transform: capitalize; }
+
+@media (max-width: 1080px) {
+  .content-grid, .match-strip, .game-grid { grid-template-columns: 1fr; }
+  .hero-stats { position: static; width: 100%; grid-column: 1 / -1; }
+  .hero-visual { inset: auto 0 110px; height: 420px; }
+  .mascot { bottom: -40px; }
+  .mascot.beru { right: 6%; max-height: 390px; }
+  .mascot.ganga { display: none; }
 }
-
-.rail {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  padding: 24px 14px;
-  background: rgba(4, 12, 30, .62);
-  border-right: 1px solid rgba(255,255,255,.12);
-  backdrop-filter: blur(18px);
-  z-index: 5;
-}
-.rail-brand { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 20px; background: rgba(255,255,255,.92); }
-.rail-brand img { width: 44px; }
-.rail a { writing-mode: vertical-rl; transform: rotate(180deg); color: rgba(255,255,255,.66); text-decoration: none; font-size: 11px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
-.rail a:hover { color: #F6C64A; }
-
-.content { width: min(1280px, calc(100vw - 132px)); margin: 0 auto; padding: 26px 0 72px; }
-.topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
-.brand-chip { display: inline-flex; align-items: center; gap: 16px; padding: 10px 16px; border-radius: 24px; background: rgba(255,255,255,.92); box-shadow: 0 20px 60px rgba(0,0,0,.2); backdrop-filter: blur(18px); }
-.brand-mark { object-fit: contain; }
-.brand-mark.porpamnas { width: 74px; height: 52px; }
-.brand-mark.ptmb { width: 184px; height: 48px; }
-.brand-divider { width: 1px; align-self: stretch; background: rgba(7, 17, 38, .18); }
-.top-meta { display: grid; gap: 3px; text-align: right; color: rgba(255,255,255,.64); text-transform: uppercase; letter-spacing: .1em; font-size: 11px; }
-.top-meta strong { color: white; font-size: 14px; }
-
-.panel {
-  background: linear-gradient(160deg, rgba(255,255,255,.13), rgba(255,255,255,.045));
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 34px;
-  box-shadow: 0 24px 80px rgba(0,0,0,.28);
-  backdrop-filter: blur(18px);
-}
-.hero-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: 22px; align-items: stretch; }
-.hero-panel { padding: clamp(28px, 4vw, 54px); }
-.eyebrow { margin: 0; color: #F6C64A; font-weight: 950; letter-spacing: .18em; text-transform: uppercase; }
-h1 { max-width: 780px; margin: 14px 0 20px; font-size: clamp(44px, 6.4vw, 96px); line-height: .86; letter-spacing: -.07em; }
-.hero-lead { max-width: 660px; color: rgba(255,255,255,.76); font-size: 18px; line-height: 1.75; }
-.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
-.primary-button, .secondary-button { border-radius: 999px; padding: 14px 22px; text-decoration: none; font-weight: 950; }
-.primary-button { color: #161006; background: linear-gradient(135deg, #F05A28, #F6C64A); }
-.secondary-button { color: white; border: 1px solid rgba(255,255,255,.22); }
-.metrics-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 36px; }
-.metrics-strip div { padding: 16px; border-radius: 20px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1); }
-.metrics-strip strong { display: block; color: #36C2F0; font-size: 30px; }
-.metrics-strip span { color: rgba(255,255,255,.64); font-size: 12px; text-transform: uppercase; letter-spacing: .12em; }
-
-.mascot-panel { position: relative; min-height: 560px; overflow: hidden; isolation: isolate; }
-.orbital-ring { position: absolute; inset: 13% 8%; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; transform: rotate(-14deg); box-shadow: inset 0 0 80px rgba(54,194,240,.22); }
-.mascot { position: absolute; bottom: -18px; max-height: 505px; object-fit: contain; filter: drop-shadow(0 28px 42px rgba(0,0,0,.42)); }
-.mascot-beru { left: 2%; transform: rotate(-4deg); }
-.mascot-ganga { right: -4%; transform: rotate(5deg); }
-.floating-ticket { position: absolute; left: 26px; bottom: 28px; padding: 18px 20px; border-radius: 24px; background: rgba(255,255,255,.9); color: #071126; box-shadow: 0 24px 60px rgba(0,0,0,.28); }
-.floating-ticket span { display: block; color: #F05A28; font-size: 11px; font-weight: 950; letter-spacing: .14em; text-transform: uppercase; }
-.floating-ticket strong { display: block; margin: 4px 0; }
-
-.marquee { display: flex; gap: 10px; overflow: hidden; margin: 22px 0; padding: 12px; border-radius: 24px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); }
-.marquee span { flex: 0 0 auto; padding: 10px 14px; border-radius: 999px; background: rgba(54,194,240,.13); color: #BFEFFF; font-size: 12px; font-weight: 950; letter-spacing: .12em; text-transform: uppercase; }
-
-.dashboard-grid { display: grid; grid-template-columns: 1.36fr .9fr .88fr; gap: 18px; }
-.agenda-board, .result-board, .ranking-board { padding: 24px; }
-.section-heading { margin-bottom: 18px; }
-.section-heading p { margin: 0; color: #36C2F0; font-size: 12px; font-weight: 950; letter-spacing: .16em; text-transform: uppercase; }
-.section-heading h2 { margin: 4px 0 0; font-size: 30px; letter-spacing: -.04em; }
-.section-heading.split { display: flex; justify-content: space-between; align-items: end; gap: 18px; }
-.section-heading a, .section-heading span { color: #F6C64A; font-size: 12px; font-weight: 950; text-decoration: none; text-transform: uppercase; letter-spacing: .12em; }
-.date-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
-.date-tabs button { display: grid; gap: 2px; padding: 14px; border: 1px solid rgba(255,255,255,.13); border-radius: 18px; color: white; background: rgba(255,255,255,.07); text-align: left; }
-.date-tabs strong { color: #F6C64A; font-size: 26px; line-height: 1; }
-.date-tabs span, .date-tabs small { color: rgba(255,255,255,.65); }
-.agenda-list { display: grid; gap: 10px; }
-.agenda-card { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 14px; border-radius: 20px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); }
-.badge { border-radius: 999px; padding: 6px 9px; font-size: 10px; font-weight: 950; text-transform: uppercase; }
-.badge.sport { color: #BFEFFF; background: rgba(54,194,240,.16); }
-.badge.exhibition { color: #FFE6A3; background: rgba(246,198,74,.18); }
-.badge.official { color: #FFD4C2; background: rgba(240,90,40,.18); }
-.agenda-card strong, .result-card strong, .ranking-card strong { display: block; }
-.agenda-card small, .result-card small, .ranking-card small { color: rgba(255,255,255,.64); }
-.agenda-card time { color: #F6C64A; font-weight: 950; }
-.result-card, .ranking-card { padding: 16px 0; border-top: 1px solid rgba(255,255,255,.13); }
-.result-card:first-of-type, .ranking-card:first-of-type { border-top: 0; padding-top: 0; }
-.result-card > span { color: #36C2F0; font-size: 12px; font-weight: 950; text-transform: uppercase; letter-spacing: .12em; }
-.teams { margin: 8px 0; display: grid; gap: 4px; }
-.result-card b { color: #F6C64A; font-size: 38px; line-height: 1; }
-.ranking-card { display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center; }
-.rank-no { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 50%; background: rgba(246,198,74,.18); color: #F6C64A; font-weight: 950; }
-.ranking-card b { color: #F6C64A; font-size: 28px; }
-
-.sports-section { margin-top: 22px; }
-.sport-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-.sport-card { position: relative; min-height: 220px; padding: 24px; overflow: hidden; background: linear-gradient(160deg, rgba(255,255,255,.12), rgba(255,255,255,.045)); border: 1px solid rgba(255,255,255,.14); border-radius: 30px; box-shadow: 0 24px 80px rgba(0,0,0,.24); }
-.sport-card img { position: absolute; right: -16px; bottom: -20px; max-height: 190px; filter: drop-shadow(0 18px 32px rgba(0,0,0,.35)); transition: transform .25s ease; }
-.sport-card:hover img { transform: translateY(-10px) rotate(3deg); }
-.sport-card span { color: #F6C64A; font-size: 12px; font-weight: 950; letter-spacing: .14em; text-transform: uppercase; }
-.sport-card h3 { max-width: 62%; margin: 8px 0; font-size: 28px; line-height: 1; }
-.sport-card p { max-width: 58%; color: rgba(255,255,255,.68); text-transform: capitalize; }
-
-@media (max-width: 1020px) {
-  .event-shell { grid-template-columns: 1fr; }
-  .rail { position: static; height: auto; flex-direction: row; overflow-x: auto; justify-content: flex-start; }
-  .rail a { writing-mode: horizontal-tb; transform: none; }
-  .content { width: min(100% - 28px, 1280px); }
-  .hero-grid, .dashboard-grid, .sport-grid { grid-template-columns: 1fr; }
-  .mascot-panel { min-height: 340px; }
-  .mascot { max-height: 320px; }
-  .mascot-ganga { display: none; }
-  .date-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .metrics-strip { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 620px) {
-  .brand-chip { gap: 10px; padding: 8px 10px; }
-  .brand-mark.porpamnas { width: 54px; height: 40px; }
-  .brand-mark.ptmb { width: 118px; }
-  .top-meta { display: none; }
-  h1 { font-size: 46px; }
-  .agenda-card { grid-template-columns: 1fr; }
+@media (max-width: 640px) {
+  h1 { font-size: 50px; }
+  .hero-arena { padding-top: 36px; }
+  .hero-stats, .date-tabs { grid-template-columns: repeat(2, 1fr); }
+  .agenda-row { grid-template-columns: 1fr; }
 }
 </style>

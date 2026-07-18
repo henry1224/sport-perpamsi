@@ -16,6 +16,10 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->foreignId('province_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('regency_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('city')->nullable();
+            $table->string('address')->nullable();
+            $table->string('website')->nullable();
+            $table->string('logo_path')->nullable();
             $table->string('contact_name')->nullable();
             $table->string('contact_phone')->nullable();
             $table->timestamps();

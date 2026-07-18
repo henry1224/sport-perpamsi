@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             SportMasterSeeder::class,
             VenueSeeder::class,
             EventAgendaSeeder::class,
+            PdamSeeder::class,
         ]);
     }
 }
