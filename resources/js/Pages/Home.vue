@@ -29,9 +29,9 @@ const topResults = props.results.slice(0, 3);
       <div class="hero-copy">
         <p class="eyebrow">PORPAMNAS IX KALTIM · BALIKPAPAN</p>
         <h1><span>Pekan Olahraga Antar</span><span>Perusahaan Air Minum</span><span>Nasional.</span></h1>
-        <p>Public board untuk agenda, hasil, cabor, venue, bracket, dan ranking wilayah. Padat, cepat dibaca, tetap resmi.</p>
+        <p>Pusat informasi resmi PORPAMNAS IX untuk jadwal pertandingan, hasil skor, venue, bracket, cabor, dan klasemen wilayah. Semua ringkas, akurat, dan mudah dipantau publik.</p>
         <div class="hero-actions">
-          <Link class="primary-button" href="/hasil">Hasil Terbaru</Link>
+          <Link class="primary-button" href="/hasil">Lihat Hasil</Link>
           <Link class="secondary-button" href="/agenda">Agenda Kegiatan</Link>
         </div>
       </div>
@@ -114,7 +114,7 @@ const topResults = props.results.slice(0, 3);
 .hero-arena::before { content: "PORPAMNAS"; position: absolute; left: -12px; top: 74px; z-index: 0; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.07); font-size: clamp(80px, 15vw, 220px); font-weight: 1000; letter-spacing: -.09em; line-height: .7; pointer-events: none; }
 .hero-copy { position: relative; z-index: 3; align-self: center; max-width: 900px; padding-bottom: 42px; }
 .eyebrow { width: fit-content; margin: 0 0 18px; padding: 8px 12px; color: #071126; background: #F6C64A; font-size: 12px; font-weight: 1000; letter-spacing: .18em; text-transform: uppercase; transform: skew(-10deg); }
-h1 { max-width: 1120px; margin: 0 0 22px; color: #fff; font-size: clamp(46px, 6.2vw, 100px); line-height: .86; letter-spacing: -.078em; text-transform: uppercase; text-shadow: 9px 9px 0 rgba(240,90,40,.35), -2px -2px 0 rgba(54,194,240,.3), 0 0 28px rgba(5,11,28,.92); }
+h1 { max-width: 1120px; margin: 0 0 26px; color: #fff; font-size: clamp(46px, 6vw, 94px); line-height: .98; letter-spacing: -.052em; text-transform: uppercase; text-shadow: 9px 9px 0 rgba(240,90,40,.35), -2px -2px 0 rgba(54,194,240,.3), 0 0 28px rgba(5,11,28,.92); }
 h1 span { display: block; white-space: nowrap; }
 .hero-copy p:not(.eyebrow) { max-width: 590px; color: rgba(255,255,255,.72); font-size: 18px; line-height: 1.7; }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }

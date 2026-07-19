@@ -1,5 +1,7 @@
 # Git Workflow Sport PERPAMSI
 
+Setiap perubahan kode wajib mengikuti `docs/09-development/coding-standard.md` dan setiap perubahan tampilan wajib mengikuti `docs/04-design/public-admin-ui-standard.md`.
+
 ## Prinsip
 
 - Branch harus mencerminkan jenis pekerjaan.

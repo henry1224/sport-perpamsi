@@ -37,9 +37,9 @@ const save = (row) => {
             <span>{{ row.sport }}</span>
             <small>{{ [row.venue, row.time].filter(Boolean).join(' · ') }}</small>
           </div>
-          <input v-model="row.team_a" aria-label="Tim A" />
+          <input v-model="row.team_a" aria-label="Tim A" readonly />
           <input v-model="row.score" class="score-input" aria-label="Skor" />
-          <input v-model="row.team_b" aria-label="Tim B" />
+          <input v-model="row.team_b" aria-label="Tim B" readonly />
           <select v-model="row.status" aria-label="Status">
             <option v-for="status in statusOptions" :key="status" :value="status">{{ status }}</option>
           </select>
@@ -74,6 +74,7 @@ const save = (row) => {
 .meta-col span { color: #36C2F0; font-size: 11px; font-weight: 1000; letter-spacing: .12em; text-transform: uppercase; }
 .meta-col small, .audit-row small { color: rgba(255,255,255,.54); font-size: 11px; }
 input, select { width: 100%; padding: 11px 12px; color: #fff; background: #08142d; border: 1px solid rgba(255,255,255,.14); font: inherit; }
+input[readonly] { color: rgba(255,255,255,.72); background: rgba(8,20,45,.58); }
 .score-input { color: #F6C64A; font-size: 20px; font-weight: 1000; text-align: center; }
 button { padding: 11px 14px; color: #071126; background: #F6C64A; border: 0; font-size: 12px; font-weight: 1000; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; box-shadow: 5px 5px 0 rgba(240,90,40,.35); }
 button:disabled { opacity: .55; cursor: wait; }

@@ -86,3 +86,43 @@ Contoh:
   }
 }
 ```
+
+## Addendum v2: Query Public dan Throttle
+
+### Public List Query
+
+| Endpoint | Query |
+|---|---|
+| `GET /pdams` | `page`, `per_page`, `search`, `province`, `regency` |
+| `GET /rankings/pdams` | `page`, `per_page`, `event`, `sport`, `category`, `province`, `regency`, `search` |
+| `GET /brackets` | `event`, `sport`, `category`, `round`, `mode` |
+| `GET /matches` | `page`, `per_page`, `event`, `sport`, `category`, `venue`, `status`, `date`, `search` |
+
+### Bracket Response Shape
+
+```json
+{
+  "event": "porpamnas-ix-kaltim",
+  "sport": "badminton",
+  "category": "ganda-campuran",
+  "mode": "round-64",
+  "rounds": [],
+  "left_rounds": [],
+  "right_rounds": [],
+  "final_match": null,
+  "early_rounds_url": "/brackets?mode=early&sport=badminton&category=ganda-campuran"
+}
+```
+
+### Throttle Minimum
+
+- Public search: 30 request/menit/IP.
+- Public bracket/ranking cacheable: 120 request/menit/IP.
+- Admin write score: 20 request/menit/user.
+- Login: gunakan throttle Laravel default atau lebih ketat.
+
+### SSR dan Cache Header
+
+- SSR untuk initial public page.
+- Data sering berubah pakai short cache dan ETag bila memungkinkan.
+- Admin/panitia write tidak boleh cache.

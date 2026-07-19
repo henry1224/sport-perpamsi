@@ -3,7 +3,12 @@ import { ref, computed, nextTick, onMounted } from 'vue';
 import PublicLayout from '../Layouts/PublicLayout.vue';
 import SectionTitle from '../Components/SectionTitle.vue';
 
-const props = defineProps({ pdams: { type: Array, default: () => [] } });
+const props = defineProps({
+  pdams: { type: Array, default: () => [] },
+  sports: { type: Array, default: () => [] },
+  sportCategories: { type: Array, default: () => [] },
+  tournamentEvents: { type: Array, default: () => [] },
+});
 
 // ponytail: hardcoded demo. Replace with real tournaments/groups/matches data model.
 const tournaments = [
@@ -108,12 +113,26 @@ const tournaments = [
 ];
 
 const active = ref(tournaments[0].code);
+const activeCategory = ref(props.sportCategories.find((category) => category.sport_code === active.value)?.code || null);
 const search = ref('');
 const hoveredCode = ref(null);
 const bracketMode = ref('main');
 const mainLimit = ref(32);
 const bracketScroll = ref(null);
-const current = computed(() => tournaments.find((t) => t.code === active.value));
+const allTournaments = computed(() => (props.sports.length ? props.sports : tournaments).map((sport) => ({
+  code: sport.code,
+  name: sport.name,
+  format: sport.default_format || sport.format || 'Knockout',
+  groups: tournaments.find((t) => t.code === sport.code)?.groups || [],
+  knockout: tournaments.find((t) => t.code === sport.code)?.knockout || [],
+})));
+const current = computed(() => allTournaments.value.find((t) => t.code === active.value) || allTournaments.value[0]);
+const currentCategories = computed(() => props.sportCategories.filter((category) => category.sport_code === active.value));
+const currentEvent = computed(() => props.tournamentEvents.find((event) => event.sport_code === active.value && (event.category_code || null) === activeCategory.value));
+const selectSport = (code) => {
+  active.value = code;
+  activeCategory.value = props.sportCategories.find((category) => category.sport_code === code)?.code || null;
+};
 const winnerOf = (m) => (m.sa == null || m.sb == null) ? null : (m.sa > m.sb ? 'a' : m.sb > m.sa ? 'b' : null);
 const shortName = (name = '') => name
   .replace(/^(perumda|perumdam|perusahaan umum daerah|pdam|pt)\s+(air\s+minum\s+)?/i, '')
@@ -191,8 +210,14 @@ onMounted(() => nextTick(() => {
     </div>
 
     <nav class="tabs">
-      <button v-for="t in tournaments" :key="t.code" :class="{ active: active === t.code }" @click="active = t.code">{{ t.name }}</button>
+      <button v-for="t in allTournaments" :key="t.code" :class="{ active: active === t.code }" @click="selectSport(t.code)">{{ t.name }}</button>
       <input v-model="search" type="search" placeholder="Cari PDAM" aria-label="Cari PDAM" />
+    </nav>
+
+    <nav v-if="currentCategories.length" class="category-tabs" aria-label="Kategori cabor">
+      <button v-for="category in currentCategories" :key="category.code" :class="{ active: activeCategory === category.code }" @click="activeCategory = category.code">
+        {{ category.name }}
+      </button>
     </nav>
 
     <section v-if="current.groups.length" class="groups">
@@ -213,7 +238,7 @@ onMounted(() => nextTick(() => {
     </section>
 
     <section v-if="bracketRounds.length" class="knockout-wrap">
-      <SectionTitle eyebrow="Knockout Bracket" title="Bracket PDAM" :meta="`${participants.length || baseMatches * 2} peserta · main view mulai Round of ${mainLimit * 2}`" />
+      <SectionTitle eyebrow="Knockout Bracket" title="Bracket PDAM" :meta="`${currentEvent?.name || current?.name} · ${participants.length || baseMatches * 2} peserta · main view mulai Round of ${mainLimit * 2}`" />
       <div class="bracket-tools">
         <button :class="{ active: bracketMode === 'main' }" @click="bracketMode = 'main'">Main Bracket</button>
         <button :class="{ active: bracketMode === 'main' && mainLimit === 8 }" @click="bracketMode = 'main'; mainLimit = 8">Round 16</button>
@@ -303,6 +328,9 @@ onMounted(() => nextTick(() => {
 .tabs button { padding: 10px 16px; border: 1px solid rgba(255,255,255,.16); background: #08142d; color: white; font-weight: 900; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; clip-path: polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%); }
 .tabs button.active { background: #F6C64A; color: #071126; border-color: #F6C64A; box-shadow: 6px 6px 0 rgba(240,90,40,.35); }
 .tabs input { flex: 1 1 220px; min-width: 180px; padding: 10px 14px; border: 1px solid rgba(54,194,240,.3); background: #071126; color: #fff; font-weight: 800; outline: none; }
+.category-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: -14px 0 28px; padding: 12px; background: rgba(8,20,45,.72); border: 1px solid rgba(54,194,240,.18); }
+.category-tabs button { padding: 9px 13px; border: 1px solid rgba(255,255,255,.14); background: #071126; color: rgba(255,255,255,.72); font-size: 11px; font-weight: 1000; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+.category-tabs button.active { background: linear-gradient(135deg, #20C6B7, #36C2F0); color: #071126; border-color: transparent; }
 .groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 18px; margin-bottom: 40px; }
 .group-card { position: relative; overflow: hidden; padding: 20px; background: #071126; border: 1px solid rgba(255,255,255,.12); box-shadow: 8px 8px 0 rgba(54,194,240,.13); clip-path: polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px); }
 .group-card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(54,194,240,.11), transparent 46%); pointer-events: none; }

@@ -71,3 +71,45 @@
 - Tim tidak boleh tampil di public sebelum diverifikasi.
 - Ranking hanya dihitung dari match final.
 - Ranking wilayah dihitung dari akumulasi medali/hasil PDAM yang terhubung ke provinsi dan kabupaten/kota.
+
+## Addendum v2: Data Public Besar, Pagination, Filter, dan SSR
+
+### Pagination Public
+
+- Semua list besar wajib server-side pagination.
+- Halaman public PDAM default: 24 atau 36 item per page.
+- Ranking default: 50 row per page.
+- Round awal bracket default: 24 match per round, dengan pagination/filter.
+- Query parameter standar:
+
+```text
+?page=1&per_page=24&search=&sport=&category=&province=&regency=&sort=
+```
+
+### Search dan Filter
+
+- Frontend wajib debounce minimal 400 ms.
+- Backend wajib throttle public search.
+- Search tidak boleh request per keypress tanpa debounce.
+- Filter harus mempertahankan URL agar SSR dan share link tetap benar.
+- Empty query tampilkan data default cacheable.
+
+### Cache
+
+- Public home, cabor, venue, dan ranking cache pendek: 30-120 detik.
+- Bracket cache per `tournament_event_id` dan invalidasi saat skor final/verified berubah.
+- Admin tidak memakai cache public untuk write flow.
+
+### Naming Public
+
+- Public list tampilkan `display_name` ringkas.
+- Nama lengkap tetap tersedia di detail/tooltip.
+- Prefix legal seperti `PDAM`, `Perumda`, `Perumdam`, `PT` boleh disembunyikan di display publik bila membuat card terlalu panjang.
+
+### Data Lock
+
+- `registration_open`: data peserta bisa berubah.
+- `registration_closed`: data diverifikasi.
+- `bracket_locked`: seed dan bracket tidak berubah tanpa role super admin.
+- `running`: hanya skor dan status match yang berubah.
+- `completed`: semua perubahan wajib lewat koreksi audit.

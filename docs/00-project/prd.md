@@ -572,3 +572,78 @@ Masuk v1:
 - Tidak membuat aplikasi mobile native.
 - Tidak membuat sistem livestream sendiri.
 - Tidak membuat rule engine semua cabor.
+
+## 15. Addendum Lead Architect: Cabor, Kategori, Bracket, Public Data, dan Integrasi Admin
+
+### 15.1 Prinsip Produk
+
+- Cabor tidak selalu langsung punya bracket.
+- Jika cabor punya kategori, public wajib memilih kategori lebih dulu.
+- Jika cabor tidak punya kategori, public langsung melihat bracket, klasemen, atau ranking sesuai format cabor.
+- Bracket adalah milik `tournament_event`, bukan langsung milik `sports`.
+- Admin dan public harus memakai sumber data yang sama agar perubahan skor tidak membuat data ganda.
+
+### 15.2 Alur Public Cabor
+
+```text
+Pilih Cabor
+→ Ada kategori?
+  → Ya: pilih kategori
+      → tampil bracket/klasemen kategori
+  → Tidak: tampil bracket/klasemen langsung
+```
+
+Contoh kategori awal:
+
+| Cabor | Kategori |
+|---|---|
+| Bulu Tangkis | Tunggal Putra, Tunggal Putri, Ganda Putra, Ganda Putri, Ganda Campuran, Beregu |
+| Tenis Meja | Tunggal Putra, Tunggal Putri, Ganda Putra, Ganda Putri, Ganda Campuran, Beregu |
+| Tenis Lapangan | Tunggal Putra, Tunggal Putri, Ganda Putra, Ganda Putri, Ganda Campuran |
+| Padel | Ganda Putra, Ganda Putri, Ganda Campuran |
+| Voli | Putra, Putri bila tersedia |
+| Mini Football | Umum/Putra sesuai regulasi panitia |
+| Golf | Individual, Team |
+| Vokal | Solo, Duet, Grup |
+| Catur | Langsung tampil, kategori opsional bila regulasi menambah kelompok |
+
+### 15.3 Bracket Besar 500+ Peserta
+
+- Data bracket boleh dimulai dari `Round of 512` atau `Round of 1024` sesuai jumlah peserta.
+- Public default tidak menampilkan semua round besar sebagai bracket visual.
+- Public default menampilkan `Main Bracket` mulai `Round 64`.
+- Opsi public: `Round 16`, `Round 32`, `Round 64`, `Round 128`, dan `Round Awal`.
+- `Round Awal` tampil sebagai list/table compact, bukan full bracket.
+- Mirror bracket dipakai untuk main bracket: kiri dan kanan bertemu di final tengah.
+- Hover card harus menampilkan jalur history pemenang ke ronde berikutnya dengan line aktif.
+
+### 15.4 Skor dan Winner
+
+- Panitia input skor setelah pertandingan selesai.
+- Sistem menghitung winner dari `score_payload` sesuai aturan cabor/kategori.
+- Winner otomatis masuk ke `next_match_id` dan `next_slot`.
+- Jika skor dikoreksi, sistem recalculation dari match yang berubah sampai downstream terakhir.
+- Semua koreksi wajib tersimpan di audit log.
+
+### 15.5 Public Data Banyak
+
+- Halaman PDAM public wajib pagination server-side.
+- Search dan filter memakai debounce minimal 400 ms.
+- Public ranking wajib filter: event, cabor, kategori, provinsi, kabupaten/kota, PDAM.
+- Public list besar tidak boleh render semua data sekaligus.
+- SSR digunakan untuk first page dan state filter awal.
+- Query filter harus memakai index database.
+
+### 15.6 Keamanan dan Anti-Spam Search
+
+- Public search dibatasi debounce di frontend dan throttle di backend.
+- Endpoint public read tetap cacheable.
+- Admin write wajib auth, role, CSRF, validasi, dan audit.
+- Input skor wajib idempotent untuk mencegah double submit.
+- Public tidak boleh menerima internal integer `id`; gunakan `slug` atau `public_id`.
+
+### 15.7 Kesiapan September
+
+- Freeze data peserta dan kategori wajib sebelum bracket lock.
+- Setelah bracket locked, peserta baru hanya boleh masuk waiting list atau mengisi slot `BYE` bila match belum dimulai.
+- Sebelum go-live wajib UAT panitia: input skor, koreksi skor, bracket update, ranking update, dan pagination public.

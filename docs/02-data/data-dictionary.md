@@ -90,3 +90,25 @@
 - total_medals: total medali.
 - rank: peringkat.
 - calculated_at: waktu kalkulasi.
+
+## Addendum v2: Seed Kategori Cabor
+
+File referensi: `data/seed/sport_categories.csv`.
+
+Kolom:
+
+| Kolom | Fungsi |
+|---|---|
+| `sport_code` | Relasi ke `sports.code` |
+| `code` | Kode kategori unik per cabor |
+| `name` | Nama kategori public |
+| `competition_type` | `individual`, `doubles`, `team`, `ranking` |
+| `scoring_type` | Tipe skor untuk kalkulasi winner |
+| `bracket_enabled` | `1` bila memakai bracket, `0` bila ranking/penilaian |
+| `sort_order` | Urutan tampil kategori |
+
+Catatan:
+
+- Cabor tanpa kategori aktif boleh langsung memakai `tournament_event` tanpa `sport_category_id`.
+- Kategori adalah master data, bukan hasil pertandingan.
+- Bracket tetap dibuat dari `tournament_events` agar tiap kategori punya bracket sendiri.

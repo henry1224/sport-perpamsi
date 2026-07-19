@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             VenueSeeder::class,
             EventAgendaSeeder::class,
             PdamSeeder::class,
+            TournamentDomainSeeder::class,
             TournamentBracketDemoSeeder::class,
         ]);
     }

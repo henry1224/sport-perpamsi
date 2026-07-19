@@ -40,6 +40,16 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 
 ### 04 Design
 
+- [UI standard](./04-design/ui-standard.md): standar UI umum public, admin, dan panitia.
+- [Public/Admin UI standard](./04-design/public-admin-ui-standard.md): token visual, spacing, component, dan checklist konsistensi tampilan.
+
+### 09 Development
+
+- [Git workflow](./09-development/git-workflow.md): branch, commit, merge, dan push.
+- [Coding standard](./09-development/coding-standard.md): struktur backend/frontend, route, controller, service, action, dan review checklist.
+
+### 04 Design
+
 - [UI standard](./04-design/ui-standard.md): public, admin, panitia, aksesibilitas, komponen utama.
 - [Wireframe map](./04-design/wireframe-map.md): screen map public, admin, panitia.
 - [Brand asset standard](./04-design/brand-asset-standard.md): penggunaan logo, maskot, warna, dan layout public.
@@ -87,3 +97,18 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - Perubahan akses masuk ke RBAC matrix.
 - Perubahan operasional event masuk ke runbook.
 - Perubahan workflow development masuk ke git workflow.
+
+## Addendum v2: Peta Dokumen Terintegrasi
+
+- PRD utama: `docs/00-project/prd.md`.
+- Fase kerja: `docs/00-project/delivery-plan.md`.
+- Relasi data: `docs/02-data/erd.md`.
+- Standar data besar, pagination, filter: `docs/02-data/data-standard.md`.
+- Kamus data kategori cabor: `docs/02-data/data-dictionary.md`.
+- API public/admin: `docs/03-product/api-contract-v1.md`.
+- Standar UI public: `docs/04-design/ui-standard.md`.
+- Aturan skor dan format kompetisi: `docs/05-business-rules/`.
+- Security dan throttle: `docs/06-security/threat-model.md`.
+- Load test: `docs/08-testing/load-test-plan.md`.
+
+Setiap perubahan fitur bracket, kategori cabor, ranking, atau public list besar wajib memperbarui minimal PRD, ERD/data standard, API contract, UI standard, security, dan load test.
