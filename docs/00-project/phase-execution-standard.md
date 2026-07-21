@@ -11,17 +11,18 @@ Dokumen ini mengontrol urutan pengembangan agar pekerjaan tidak melompat ke phas
 
 ## Phase Aktif
 
-**Phase 4 — Registrasi Cabor dan Pemain.**
+**Phase 5 — Venue, Agenda, dan Panitia.**
 
 Pekerjaan yang boleh dimulai:
 
-- Draft roster sebelum submit.
-- Permintaan dan pengiriman perbaikan roster.
-- Pembatalan registrasi sesuai status yang diizinkan.
-- Audit submit, verifikasi, penolakan, perbaikan, dan pembatalan.
-- Test, UAT, dan dokumentasi yang diperlukan exit criteria Phase 4.
+- CRUD venue lengkap dan status aktif.
+- Agenda/jadwal dengan publikasi dan deteksi konflik waktu.
+- Kamus label status Indonesia.
+- Aktivasi assignment panitia yang sudah tersedia.
+- Policy dan menu panitia berdasarkan scope cabor dan venue.
+- Test, UAT, dan dokumentasi yang diperlukan exit criteria Phase 5.
 
-Pekerjaan Phase 5–7 tidak boleh diperluas sebelum Phase 4 selesai. Implementasi assignment cabor/venue yang sudah terlanjur dibuat tetap **dibekukan** sampai Phase 5 aktif.
+Pekerjaan Phase 6–7 tidak boleh diperluas sebelum Phase 5 selesai. Assignment cabor/venue yang sudah tersedia sekarang boleh dilanjutkan dan wajib dihubungkan ke agenda serta policy akses.
 
 ## Gate Sebelum Mulai Pekerjaan
 
@@ -64,11 +65,11 @@ Pengecualian wajib dicatat pada roadmap dengan alasan, scope minimum, dan phase 
 Gunakan format ini sebelum coding:
 
 ```text
-Phase: 4
-Task: Draft dan perbaikan roster
-Dependency: kompetisi dan snapshot regulasi sudah dipublikasikan
-Acceptance: PD menyimpan draft, submit, memperbaiki roster, dan membatalkan sesuai status
-Test: ownership PD, transisi status, snapshot roster, dan audit perubahan
+Phase: 5
+Task: Venue dan agenda pertandingan
+Dependency: kompetisi dan roster terverifikasi tersedia
+Acceptance: Admin mengelola venue, membuat agenda tanpa konflik, dan menetapkan scope panitia
+Test: konflik waktu, venue aktif, assignment scope, dan audit perubahan
 Dokumen: roadmap, data dictionary, risk register, test strategy, UAT
 ```
 
@@ -76,7 +77,6 @@ Task tanpa nomor phase tidak boleh masuk branch fitur.
 
 ## Urutan Saat Ini
 
-1. Selesaikan Phase 4.
-2. Lanjutkan Phase 5.
-3. Kerjakan Phase 6.
-4. Selesaikan Phase 7 dan go-live.
+1. Selesaikan Phase 5.
+2. Kerjakan Phase 6.
+3. Selesaikan Phase 7 dan go-live.
