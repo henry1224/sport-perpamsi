@@ -1,77 +1,24 @@
-# Region Standard Indonesia v1
+# Region Standard
 
-## Keputusan
+## Master Wilayah
 
-- Sistem menyimpan master provinsi dan kabupaten/kota Indonesia.
-- PDAM terhubung ke provinsi dan kabupaten/kota.
-- Setiap provinsi memiliki satu Kontingen Provinsi PERPAMSI.
-- Kode wilayah memakai kode Kemendagri sebagai natural key.
-- Primary key internal tetap `bigint`.
-- URL public wilayah memakai `slug` bila nanti ada halaman wilayah.
+- `provinces` adalah sumber nama provinsi resmi.
+- `regencies` tetap tersedia untuk kebutuhan alamat/venue, bukan identitas peserta.
+- Satu `regional_committee` wajib terhubung unik ke satu provinsi.
 
-## Data Awal
+## Nama PD PERPAMSI
 
-- Provinsi: 38 data.
-- Kabupaten/kota: 514 data.
-- Sumber seed: dataset wilayah berbasis Kepmendagri No 300.2.2-2138 Tahun 2025.
-- Referensi dataset: https://github.com/cahyadsn/wilayah
-- File seed:
-  - `data/seed/indonesia_provinces.csv`
-  - `data/seed/indonesia_regencies.csv`
+- Dibentuk server: `PD PERPAMSI {provinces.name}`.
+- Tidak dapat diedit bebas oleh Pengurus Daerah.
+- Dipakai pada portal, peserta, bracket, hasil, klasemen, dan laporan.
 
-## Tabel
+## Pengajuan
 
-### provinces
+- Pengguna memilih provinsi dari master aktif.
+- Sistem mengarahkan pengajuan ke PD yang sudah ada.
+- Unique pengajuan aktif mencegah klaim provinsi ganda.
+- Perubahan master wilayah dilakukan Admin dan diaudit.
 
-- id: `bigint` primary key.
-- code: kode Kemendagri, unique.
-- name: nama provinsi.
-- slug: URL readable, unique.
-- timestamps.
+## Data Legacy
 
-### regencies
-
-- id: `bigint` primary key.
-- province_id: FK ke `provinces.id`.
-- code: kode Kemendagri, unique.
-- name: nama kabupaten/kota.
-- slug: URL readable, unique per province.
-- timestamps.
-
-## Relasi ke PDAM
-
-- `pdams.province_id` nullable FK ke `provinces.id`.
-- `pdams.regency_id` nullable FK ke `regencies.id`.
-- Field lama `region` boleh tetap sebagai fallback display v1, tapi sumber resmi wilayah memakai relasi.
-
-## Relasi ke Kontingen Provinsi
-
-- `regional_committees.province_id` adalah FK unik ke `provinces.id`.
-- Nama default: `{NAMA PROVINSI}`.
-- `event_entries.regional_committee_id` diturunkan otomatis dari `pdams.province_id`.
-- Detail alur: [delegation-standard.md](./delegation-standard.md).
-
-## Klasemen Medali
-
-- Klasemen resmi dihitung per Kontingen Provinsi dari hasil final seluruh PDAM dalam provinsi tersebut.
-- PDAM tanpa provinsi tidak boleh lolos verifikasi registrasi cabor.
-- Urutan: emas, perak, perunggu, total medali, lalu nama Kontingen Provinsi.
-
-## Query View yang Disarankan
-
-- `medal_rankings_by_regional_committee`: agregasi hasil final dari `event_entries` ke Kontingen Provinsi.
-
-## Seeder
-
-- Seeder Laravel: `database/seeders/IndonesiaRegionSeeder.php`.
-- Migration stub:
-  - `database/migrations/2026_01_01_000001_create_provinces_table.php`
-  - `database/migrations/2026_01_01_000002_create_regencies_table.php`
-  - `database/migrations/2026_07_20_000001_add_regional_committees_to_event_entries.php`
-- Seeder membaca CSV agar data tidak membengkakkan file PHP.
-- Seeder memakai `updateOrInsert` agar bisa dijalankan ulang.
-
-## Catatan
-
-- Data kecamatan/desa tidak masuk v1.
-- Jika nanti butuh alamat detail venue/PDAM, tambah kecamatan/desa sebagai phase berikutnya.
+Tabel PDAM dan relasi kabupaten/kota yang sudah ada diperlakukan sebagai legacy selama transisi. Keduanya tidak menjadi bagian alur registrasi target dan tidak dihapus sebelum audit migrasi selesai.

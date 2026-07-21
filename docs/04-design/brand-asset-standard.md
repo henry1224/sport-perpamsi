@@ -100,9 +100,9 @@ Tema visual: **arena sport nasional tropis-futuristik**.
 
 ### Ranking
 
-- Klasemen Kontingen Provinsi memakai table gelap dengan podium top 3.
+- Klasemen PD PERPAMSI memakai table gelap dengan podium top 3.
 - Top 1 punya gold glow tipis, bukan warna penuh berlebihan.
-- Tidak memakai toggle scope; klasemen resmi memakai Kontingen Provinsi.
+- Tidak memakai toggle scope; klasemen resmi memakai PD PERPAMSI.
 
 ## Token Warna
 

@@ -23,7 +23,7 @@ Sport PERPAMSI memakai PostgreSQL sebagai database utama v1.
 
 - ID internal: `bigint` auto-increment.
 - ID publik: `public_id` UUID untuk URL/link share.
-- Slug publik: `slug` untuk halaman readable seperti event, PDAM, cabor, kategori, venue, dan konten.
+- Slug publik: `slug` untuk halaman readable seperti event, PD PERPAMSI, cabor, kategori, venue, dan konten.
 - Nama/kode: `varchar` dengan panjang jelas.
 - Deskripsi/catatan: `text`.
 - Tanggal/waktu pertandingan: `timestamptz`.
@@ -36,7 +36,7 @@ Sport PERPAMSI memakai PostgreSQL sebagai database utama v1.
 - `matches(event_id, scheduled_at)` untuk jadwal.
 - `matches(event_id, status)` untuk live score.
 - `matches(sport_id, category_id, status)` untuk cabor/kategori.
-- `teams(event_id, pdam_id)` untuk profil PDAM.
+- `event_entries(tournament_event_id, regional_committee_id)` untuk registrasi PD.
 - `committee_assignments(user_id, event_id)` untuk akses panitia.
 - `audit_logs(entity_type, entity_id, created_at)` untuk audit detail.
 - `audit_logs(actor_id, created_at)` untuk audit per aktor.
@@ -44,8 +44,8 @@ Sport PERPAMSI memakai PostgreSQL sebagai database utama v1.
 ## Constraint Minimum
 
 - User email unik.
-- Nama PDAM unik per event bila data event-specific.
-- Team unik per event, PDAM, cabor, kategori, nama.
+- Satu pengajuan aktif unik per provinsi.
+- Registrasi unik per PD PERPAMSI dan kompetisi sesuai aturan kategori.
 - Match tidak boleh punya peserta sama pada slot A dan B.
 - Score tidak boleh negatif.
 - Assignment panitia tidak boleh duplikat untuk user, event, scope, dan role yang sama.

@@ -1,131 +1,75 @@
-# Data Dictionary v1
+# Data Dictionary Target
 
-## Event
+## RegionalCommittee / PD PERPAMSI
 
-- id: ID event.
-- public_id: UUID untuk link publik bila diperlukan.
-- slug: URL readable event.
-- name: nama event.
-- start_date: tanggal mulai.
-- end_date: tanggal selesai.
-- location: lokasi utama.
-- status: draft, published, archived.
+- `id`: ID internal.
+- `public_id`: UUID publik bila dibutuhkan.
+- `province_id`: FK unik ke provinsi.
+- `name`: `PD PERPAMSI {nama provinsi}`, dibentuk server.
+- `is_active`: status penggunaan.
 
-## PDAM
+## CommitteeApplication
 
-- id: ID PDAM.
-- public_id: UUID untuk link publik bila diperlukan.
-- slug: URL readable PDAM.
-- name: nama PDAM.
-- region: wilayah.
-- province_id: relasi ke provinsi.
-- regency_id: relasi ke kabupaten/kota.
-- logo_url: logo.
-- contact_name: nama perwakilan.
-- contact_phone: kontak perwakilan.
+- `regional_committee_id`: PD yang diajukan.
+- `applicant_name`, `position`, `email`, `phone`.
+- `mandate_document_path`: dokumen privat opsional/wajib sesuai kebijakan.
+- `status`: pending, revision_required, verified, rejected.
+- `review_note`, `reviewed_by`, `reviewed_at`, `submitted_at`.
 
-## RegionalCommittee
+## User
 
-- id: ID Kontingen Provinsi.
-- province_id: relasi unik ke provinsi.
-- name: nama resmi, default `{NAMA PROVINSI}`.
+- `regional_committee_id`: scope PD untuk Pengurus Daerah.
+- `role`, `account_status`, `email_verified_at`, `last_login_at`.
+- Password disimpan hashed; tidak pernah diexport.
+
+## Sport dan Category
+
+- `sports`: code, name, type, description, active.
+- `sport_categories`: sport_id, code, name, competition_type, scoring_type, min_members, max_members, active.
+
+## SportRule
+
+- `sport_id`, `sport_category_id` nullable.
+- `version`, `title`, `content`, `document_path`, `effective_at`, `is_active`.
+
+## TournamentEvent
+
+- `sport_id`, `sport_category_id`, `sport_rule_id`.
+- `code`, `name`, `format`, `status`, `registration_open_at`, `registration_close_at`, `seed_locked_at`.
 
 ## EventEntry
 
-- id: ID registrasi cabor.
-- tournament_event_id: kompetisi/cabor yang diikuti.
-- pdam_id: instansi asal peserta.
-- regional_committee_id: Kontingen Provinsi saat registrasi.
-- province_id: snapshot provinsi PDAM saat registrasi.
-- regency_id: snapshot kabupaten/kota PDAM saat registrasi.
-- display_name: nama peserta yang tampil pada match/bracket.
-- verification_status: status verifikasi registrasi.
+- `regional_committee_id`: PD peserta.
+- `tournament_event_id`: kompetisi.
+- `display_name`: snapshot nama PD PERPAMSI.
+- `status`, `submitted_at`, `verified_by`, `verified_at`, `verification_note`, `cancelled_at`.
 
-## Team
+## EntryMember
 
-- id: ID tim.
-- event_id: event.
-- pdam_id: pemilik tim.
-- sport_id: cabor.
-- category_id: kategori.
-- name: nama tim.
-- verification_status: draft, diajukan, diverifikasi, ditolak, revisi.
+- `event_entry_id`, `name`, `member_type`, `gender`, `shirt_number`, `position`.
+- `identity_hash`/identitas terkontrol untuk pencegahan duplikasi sesuai kebijakan privasi.
+- `status` dan catatan verifikasi bila verifikasi per pemain dipakai.
 
-## Athlete
+## Venue
 
-- id: ID atlet.
-- pdam_id: PDAM.
-- name: nama atlet.
-- identity_number: nomor identitas internal event bila dipakai.
-- verification_status: status verifikasi.
+- `code`, `name`, `address`, `city`, `capacity`, `contact_name`, `contact_phone`.
+- `latitude`, `longitude`, `map_url`, `facilities`, `access_notes`, `photo_path`, `is_active`.
 
-## Match
+## EventAgenda
 
-- id: ID match.
-- public_id: UUID untuk URL detail match public.
-- event_id: event.
-- sport_id: cabor.
-- category_id: kategori.
-- venue_id: venue.
-- participant_a_id: peserta A.
-- participant_b_id: peserta B.
-- scheduled_at: waktu pertandingan.
-- status: draft, terjadwal, berlangsung, jeda, selesai, final, revisi.
-- winner_id: pemenang.
-- finalized_at: waktu finalisasi.
+- `tournament_event_id` nullable, `sport_id` nullable, `venue_id`.
+- `date`, `start_time`, `end_time`, `title`, `type`, `description`, `status`, `published_at`.
+- Hari diturunkan dari tanggal.
 
-## Score
+## SportAssignment
 
-- id: ID skor.
-- match_id: match.
-- participant_a_score: skor peserta A.
-- participant_b_score: skor peserta B.
-- period_label: set/babak/ronde bila perlu.
-- updated_by: user terakhir.
-- updated_at: waktu update.
+- `user_id`, `sport_id`, `tournament_event_id` nullable, `match_id` nullable.
+- `assignment_role`, `is_active`, `assigned_by`, `assigned_at`, `revoked_at`.
 
-## AuditLog
+## Match, Score, Audit
 
-- id: ID audit.
-- actor_id: user.
-- action: aksi.
-- entity_type: tipe entitas.
-- entity_id: ID entitas.
-- before_value: nilai sebelum.
-- after_value: nilai sesudah.
-- created_at: waktu aksi.
+- Match menyimpan event, venue, slot entry, jadwal, status, pemenang.
+- MatchScore menyimpan payload skor dan aktor verifikasi.
+- Audit menyimpan before/after, alasan, aktor, dan waktu secara append-only.
 
-## RankingSnapshot
-
-- id: ID snapshot ranking.
-- event_id: event.
-- scope: `regional_committee` untuk klasemen medali; scope cabor mengikuti format kompetisi.
-- scope_id: ID Kontingen Provinsi.
-- gold_count: jumlah emas.
-- silver_count: jumlah perak.
-- bronze_count: jumlah perunggu.
-- total_medals: total medali.
-- rank: peringkat.
-- calculated_at: waktu kalkulasi.
-
-## Addendum v2: Seed Kategori Cabor
-
-File referensi: `data/seed/sport_categories.csv`.
-
-Kolom:
-
-| Kolom | Fungsi |
-|---|---|
-| `sport_code` | Relasi ke `sports.code` |
-| `code` | Kode kategori unik per cabor |
-| `name` | Nama kategori public |
-| `competition_type` | `individual`, `doubles`, `team`, `ranking` |
-| `scoring_type` | Tipe skor untuk kalkulasi winner |
-| `bracket_enabled` | `1` bila memakai bracket, `0` bila ranking/penilaian |
-| `sort_order` | Urutan tampil kategori |
-
-Catatan:
-
-- Cabor tanpa kategori aktif boleh langsung memakai `tournament_event` tanpa `sport_category_id`.
-- Kategori adalah master data, bukan hasil pertandingan.
-- Bracket tetap dibuat dari `tournament_events` agar tiap kategori punya bracket sendiri.
+Label Indonesia untuk seluruh status mengikuti `docs/00-project/glossary.md`.

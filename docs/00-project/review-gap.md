@@ -12,7 +12,7 @@
 - CI/CD belum wajib sekarang; checklist manual cukup sampai repo aplikasi dibuat.
 - Env config masih kurang; perlu daftar environment Laravel, PostgreSQL, SSR, cache, mail, storage.
 - Observability masih umum; perlu health check, error log, backup check, queue check.
-- Data import template masih kurang; perlu kolom CSV/Excel untuk PDAM, tim, atlet, jadwal.
+- Data import template masih kurang; perlu kolom CSV/Excel untuk PD PERPAMSI, pemain, agenda, dan jadwal.
 - Daftar cabor resmi sementara sudah ditentukan dan harus dibuat mudah ditambah.
 
 ## Keputusan Baru

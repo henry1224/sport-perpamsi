@@ -1,128 +1,68 @@
-# API Contract v1
+# API Contract Target
 
 ## Prinsip
 
-- Contract ini baseline untuk Laravel/Inertia dan endpoint public ringan.
-- Admin/panitia boleh memakai Inertia page props.
-- Public data yang sering diakses wajib bisa cacheable.
-- Semua write action wajib cek permission backend.
+- Write wajib auth, status akun, permission, assignment, validasi, transaksi, dan audit.
+- Public hanya memakai `public_id`/slug dan data terbit/final.
+- Status response memiliki `code` internal dan `label` Indonesia.
 
-## Public Read Endpoints
-
-| Method | Path | Fungsi |
-|---|---|---|
-| GET | `/` | Public home event |
-| GET | `/live-score` | Match aktif/hasil terbaru |
-| GET | `/schedule` | Jadwal public dengan filter |
-| GET | `/agenda` | Agenda event per tanggal/venue/cabor |
-| GET | `/seminar` | Informasi Nusantara International Water Conference |
-| GET | `/matches/{public_id}` | Detail match public |
-| GET | `/brackets` | Bracket per cabor/kategori |
-| GET | `/standings` | Klasemen/ranking public |
-| GET | `/rankings/regional-committees` | Klasemen medali Kontingen Provinsi |
-| GET | `/pdams/{slug}` | Profil PDAM |
-| GET | `/info` | Info event dan pengumuman |
-
-## Admin/Panitia Write Actions
+## Auth dan Pengajuan PD
 
 | Method | Path | Fungsi |
 |---|---|---|
-| POST | `/admin/events` | Buat event |
-| POST | `/admin/pdams` | Buat PDAM |
-| POST | `/admin/event-entries` | Daftarkan PDAM/tim/atlet ke cabor; Kontingen Provinsi ditetapkan otomatis |
-| POST | `/admin/sports` | Buat cabor |
-| POST | `/admin/teams` | Buat tim |
-| POST | `/admin/athletes` | Buat atlet |
-| POST | `/admin/matches` | Buat match |
-| POST | `/admin/assignments` | Assign panitia |
-| POST | `/committee/matches/{id}/result` | Input hasil setelah pertandingan selesai |
-| POST | `/admin/matches/{id}/finalize` | Finalisasi hasil |
-| POST | `/admin/matches/{id}/revision` | Revisi hasil final |
-| POST | `/admin/imports/{type}` | Import data |
-| GET | `/admin/exports/{type}` | Export data |
+| GET | `/login` | Form masuk |
+| GET | `/register` | Form daftar Pengurus Daerah |
+| POST | `/register` | Buat pengajuan akses PD |
+| GET | `/registration-status` | Lihat status pengajuan |
+| GET | `/admin/committee-applications` | Daftar pengajuan |
+| POST | `/admin/committee-applications/{id}/verify` | Verifikasi |
+| POST | `/admin/committee-applications/{id}/revision` | Minta perbaikan |
+| POST | `/admin/committee-applications/{id}/reject` | Tolak dengan alasan |
 
-## Response Public Ringkas
+## Portal Pengurus Daerah
 
-### Match Card
+| Method | Path | Fungsi |
+|---|---|---|
+| GET | `/pd/dashboard` | Ringkasan PD |
+| GET | `/pd/events` | Kompetisi yang dapat didaftarkan |
+| POST | `/pd/events/{event}/entries` | Buat registrasi PD |
+| PUT | `/pd/entries/{entry}` | Ubah draft registrasi |
+| POST | `/pd/entries/{entry}/members` | Tambah pemain |
+| PUT | `/pd/entries/{entry}/members/{member}` | Ubah pemain |
+| DELETE | `/pd/entries/{entry}/members/{member}` | Hapus pemain sebelum submit |
+| POST | `/pd/entries/{entry}/submit` | Ajukan verifikasi |
 
-```json
-{
-  "public_id": "018f8c2a-7b8e-7c3a-9d2f-6a4b1c0e9f11",
-  "sport": "Futsal",
-  "category": "Putra",
-  "venue": "Venue A",
-  "scheduled_at": "2026-09-01T10:00:00+08:00",
-  "status": "final",
-  "participant_a": "PDAM A",
-  "participant_b": "PDAM B",
-  "score_a": 3,
-  "score_b": 1,
-  "winner": "PDAM A"
-}
-```
+## Master Admin
 
-## Public URL Identifier
+CRUD resource tersedia untuk `sports`, `sport-categories`, `sport-rules`, `tournament-events`, `venues`, dan `agendas`. Delete master yang sudah dipakai harus ditolak; gunakan nonaktif/arsip.
 
-- Event, PDAM, cabor, kategori, venue, dan konten memakai `slug`.
-- Match detail memakai `public_id` UUID.
-- `id` internal tidak boleh tampil pada endpoint public.
+## Panitia dan Pertandingan
 
-Contoh:
+| Method | Path | Fungsi |
+|---|---|---|
+| POST | `/admin/sport-assignments` | Tugaskan panitia ke cabor/scope |
+| DELETE | `/admin/sport-assignments/{id}` | Nonaktifkan assignment |
+| GET | `/committee/matches` | Match sesuai assignment |
+| POST | `/committee/matches/{match}/score` | Input skor |
+| POST | `/committee/matches/{match}/finalize` | Finalisasi sesuai permission |
+| POST | `/admin/matches/{match}/revision` | Revisi final beralasan |
 
-```text
-/events/perpamsi-2026
-/pdams/pdam-kota-makassar
-/sports/mini-football
-/matches/018f8c2a-7b8e-7c3a-9d2f-6a4b1c0e9f11
-```
+## Public
 
-## Error Format
+- `/agenda`, `/venue`, `/cabor`, `/peserta`, `/bracket`, `/hasil`, `/ranking`.
+- Nama peserta menggunakan `PD PERPAMSI {provinsi}`.
+- Filter: event, cabor, kategori, venue, tanggal, status, dan pencarian.
+- Throttle dan cache mengikuti data standard.
+
+## Status Response
 
 ```json
 {
-  "message": "Validasi gagal",
-  "errors": {
-    "score_a": ["Skor tidak boleh negatif"]
+  "status": {
+    "code": "registration_open",
+    "label": "Pendaftaran Dibuka"
   }
 }
 ```
 
-## Addendum v2: Query Public dan Throttle
-
-### Public List Query
-
-| Endpoint | Query |
-|---|---|
-| `GET /pdams` | `page`, `per_page`, `search`, `province`, `regency` |
-| `GET /rankings/regional-committees` | `page`, `per_page`, `event`, `sport`, `category`, `province`, `search` |
-| `GET /brackets` | `event`, `sport`, `category`, `round`, `mode` |
-| `GET /matches` | `page`, `per_page`, `event`, `sport`, `category`, `venue`, `status`, `date`, `search` |
-
-### Bracket Response Shape
-
-```json
-{
-  "event": "porpamnas-ix-kaltim",
-  "sport": "badminton",
-  "category": "ganda-campuran",
-  "mode": "round-64",
-  "rounds": [],
-  "left_rounds": [],
-  "right_rounds": [],
-  "final_match": null,
-  "early_rounds_url": "/brackets?mode=early&sport=badminton&category=ganda-campuran"
-}
-```
-
-### Throttle Minimum
-
-- Public search: 30 request/menit/IP.
-- Public bracket/ranking cacheable: 120 request/menit/IP.
-- Admin write score: 20 request/menit/user.
-- Login: gunakan throttle Laravel default atau lebih ketat.
-
-### SSR dan Cache Header
-
-- SSR untuk initial public page.
-- Data sering berubah pakai short cache dan ETag bila memungkinkan.
-- Admin/panitia write tidak boleh cache.
+UI tidak boleh menampilkan `code` secara langsung.

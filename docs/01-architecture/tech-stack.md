@@ -21,7 +21,7 @@
 ## Batasan SSR
 
 - SSR membutuhkan Node.js server/process di production.
-- SSR dipakai untuk public route: home, live score, jadwal, bracket, ranking, profil PDAM, info event.
+- SSR dipakai untuk public route: home, hasil, jadwal, bracket, ranking, profil PD PERPAMSI, dan info event.
 - SSR tidak wajib untuk admin dan panitia karena halaman login/private tidak butuh SEO.
 - SSR process wajib dimonitor dan direstart saat deploy.
 
@@ -29,7 +29,7 @@
 
 - Primary key internal memakai `bigint` auto-increment.
 - URL detail non-readable memakai `public_id` UUID.
-- URL readable memakai `slug` untuk event, PDAM, cabor, kategori, venue, dan konten.
+- URL readable memakai `slug` untuk event, PD PERPAMSI, cabor, kategori, venue, dan konten.
 - Relasi database memakai `bigint` agar index kecil, join cepat, dan migration sederhana.
 - UUID tidak dipakai sebagai primary key utama v1 karena dataset event belum membutuhkan distributed ID.
 - `public_id` dipakai untuk menghindari ID enumeration pada halaman public atau link share.

@@ -1,159 +1,125 @@
 # Peta Aplikasi dan Alur End-to-End
 
-## Cara Membaca
+## Sumber Kebenaran
 
-- `Done`: sudah tersedia pada aplikasi saat ini.
-- `Partial`: fondasi data atau tampilan tersedia, tetapi alur admin belum lengkap.
-- `Planned`: baru menjadi target dalam dokumen v1.
+- Identitas dan registrasi: [delegation-standard.md](../02-data/delegation-standard.md).
+- Risiko: [risk-register.md](../06-security/risk-register.md).
+- Status implementasi: `Done`, `Partial`, `Planned`.
 
-## Gambaran Aplikasi
+## Gambaran
 
 ```text
-MASTER DATA
-Provinsi ── Kontingen Provinsi ── PDAM
-                       └────── registrasi cabor ── tim/atlet
-                                                    │
-                                                    ▼
-OPERASIONAL                                  seeding/bracket
-                                                    │
-                                             jadwal dan match
-                                                    │
-                                             input/finalisasi skor
-                                                    │
-                           ┌────────────────────────┴──────────────────────┐
-                           ▼                                               ▼
-PUBLIC               hasil/bracket provinsi                  klasemen medali provinsi
-                                                                    │
-                                      seluruh PDAM satu provinsi dijumlahkan
+MASTER
+Provinsi ── PD PERPAMSI ── Pengurus Daerah terverifikasi
+             │
+             └── Registrasi Cabor ── Pemain
+                         │
+                         ├── Verifikasi
+                         ├── Seed/Bracket/Grup
+                         ├── Agenda/Venue/Match
+                         └── Skor/Finalisasi/Audit
+                                      │
+                                      ▼
+PUBLIC: agenda, peserta PD PERPAMSI, bracket, hasil, klasemen
 ```
 
 ## Alur Utama
 
-### 1. Persiapan Master
+### 1. Master Admin
 
-1. Admin menyiapkan provinsi dan kabupaten/kota.
-2. Sistem menyediakan satu Kontingen Provinsi untuk setiap provinsi.
-3. Admin menyiapkan PDAM dan wilayahnya.
-4. Admin menyiapkan cabor, kategori, venue, agenda, dan kompetisi.
+1. Sistem menyediakan master provinsi dan satu PD PERPAMSI per provinsi.
+2. Admin mengelola cabor, kategori, versi peraturan, venue, agenda, dan kompetisi.
+3. Master yang sudah dipakai hanya dapat dinonaktifkan/diarsipkan.
+4. Seeder mengisi baseline dan tidak menimpa data operasional.
 
-Status: `Partial` — tabel, migration, dan seeder tersedia; halaman admin master belum tersedia.
+Status: `Partial` — tabel dan seeder dasar tersedia; CRUD Admin belum lengkap.
 
-### 2. Registrasi Peserta
+### 2. Daftar dan Verifikasi Pengurus Daerah
 
-1. Admin memilih PDAM dan cabor/kategori.
-2. Sistem menurunkan Kontingen Provinsi dari provinsi PDAM.
-3. Sistem menyimpan `pdam_id`, `province_id`, dan `regional_committee_id` pada `event_entries`.
-4. Tim/atlet dan dokumen melengkapi registrasi.
-5. Verifikator menerima, menolak, atau meminta revisi.
+1. Pengguna memilih `Masuk` atau `Daftar Pengurus Daerah`.
+2. Pendaftaran membuat pengajuan akses ke PD PERPAMSI provinsi terpilih.
+3. Sistem menolak pengajuan aktif duplikat untuk provinsi sama.
+4. Admin memverifikasi, meminta perbaikan, atau menolak dengan alasan.
+5. Hanya akun terverifikasi yang dapat masuk portal PD.
 
-Status: `Partial` — dashboard PD, form registrasi, kontingen otomatis, hapus entry, serta verifikasi/tolak admin tersedia. Upload dokumen dan riwayat revisi verifikasi belum tersedia.
+Status: `Planned`.
 
-### 3. Penyusunan Kompetisi
+### 3. Registrasi Cabor dan Pemain
 
-1. Registrasi terverifikasi menjadi peserta kompetisi.
-2. Panitia menentukan seed dan mengunci bracket atau grup.
-3. Sistem membuat match dan hubungan pemenang ke ronde berikutnya.
+1. Pengurus Daerah memilih kompetisi/cabor/kategori yang dibuka.
+2. Sistem membuat registrasi atas nama PD PERPAMSI.
+3. Pengurus Daerah memasukkan daftar pemain sesuai batas versi peraturan.
+4. Admin/verifikator memeriksa dan memberi status Indonesia.
+5. Hanya registrasi terverifikasi masuk kompetisi.
 
-Status: `Partial` — data kompetisi, entry, bracket demo, dan match tersedia; pengelolaan admin belum lengkap.
+Status: `Partial` — form lama tersedia, tetapi masih perlu migrasi dari kolom/relasi PDAM ke entry dan anggota pemain.
 
-### 4. Operasional Pertandingan
+### 4. Penugasan Panitia
 
-1. Scorekeeper membuka match.
-2. Scorekeeper memasukkan skor.
-3. Sistem menentukan pemenang dan menyimpan audit skor.
-4. Hasil final menjadi sumber bracket dan klasemen.
-5. Koreksi hasil final harus melalui revisi beralasan.
+1. Admin membuat akun panitia.
+2. Admin memberi assignment cabor atau match.
+3. Policy backend membatasi menu dan action berdasarkan assignment.
+4. Penonaktifan akun langsung memblokir akses.
 
-Status: `Partial` — login, pembatasan `pd_admin`/`super_admin`, halaman input skor, penyimpanan pemenang, dan audit dasar tersedia. Assignment scorekeeper dan workflow revisi formal belum tersedia.
+Status: `Planned`.
 
-### 5. Publikasi
+### 5. Agenda dan Pertandingan
 
-1. Public melihat agenda, hasil, cabor, bracket, venue, dan peserta PDAM.
-2. Match dan bracket menampilkan PDAM/tim/atlet yang bertanding.
-3. Hasil babak final memberi emas dan perak kepada Kontingen Provinsi peserta.
-4. Seluruh hasil PDAM dalam provinsi sama dijumlahkan pada satu klasemen Kontingen Provinsi.
+1. Admin/Koordinator menyusun agenda dan match pada venue aktif.
+2. Sistem menolak bentrok venue/waktu.
+3. Bracket hanya dapat dikunci setelah verifikasi registrasi selesai.
+4. Scorekeeper memasukkan skor match tugasnya.
+5. Finalisasi dan revisi memakai permission, alasan, dan audit.
 
-Status: `Done` untuk halaman public dasar dan klasemen Kontingen Provinsi. Perunggu masih `Planned` sampai aturan penetapan juara ketiga tersedia.
+Status: `Partial` — input skor dasar tersedia; CRUD agenda, assignment, lock, dan revisi formal belum lengkap.
 
-## Contoh Relasi
+### 6. Publikasi
 
-```text
-Kalimantan Timur
-└── Kalimantan Timur
-    ├── PDAM Balikpapan ── Futsal ── Emas
-    └── PDAM Samarinda  ── Badminton ── Emas
+1. Public hanya membaca agenda terbit serta hasil final/terverifikasi.
+2. Peserta, bracket, hasil, dan klasemen memakai `PD PERPAMSI {provinsi}`.
+3. Draft, data pribadi, ID internal, dan audit tidak tampil publik.
+4. Cache diinvalidasi saat publikasi/finalisasi/revisi.
 
-Klasemen:
-Kalimantan Timur = 2 emas
-```
+Status: `Partial` — halaman publik tersedia, tetapi identitas lama masih perlu migrasi implementasi.
 
-## Status Modul
+## Menu Target
 
-| Modul | Status | Sumber Utama |
-|---|---|---|
-| Public home, agenda, seminar, hasil, cabor, bracket, venue, peserta | Done | `routes/web.php`, `resources/js/Pages` |
-| Klasemen Kontingen Provinsi | Done | `PublicDataService`, `Ranking.vue` |
-| Master wilayah, PDAM, cabor, venue | Partial | migration dan seeder |
-| Registrasi cabor dan kontingen otomatis | Done | dashboard PD, `PdEntryController`, `event_entries` |
-| Verifikasi/tolak registrasi | Done | `AdminEntryVerificationController`, `Admin/Entries.vue` |
-| Input dan audit skor dasar | Done | `ScoreController`, `SubmitMatchScore` |
-| Login dan role dasar | Done | `AuthController`, middleware `pd.admin`/`super.admin` |
-| RBAC granular | Planned | RBAC matrix |
-| Dokumen peserta | Planned | PRD dan delegation standard |
-| Assignment scorekeeper | Planned | domain model dan RBAC matrix |
-| Revisi skor final formal | Planned | match score rules |
-| Import/export operasional | Planned | import template standard |
-| Penetapan medali perunggu | Planned | ranking rules per cabor |
-| Monitoring, backup, deployment production | Planned | operations docs |
+### Pengurus Daerah
 
-## Status Role dan Menu
+- Ringkasan.
+- Registrasi Cabor.
+- Daftar Pemain.
+- Status Verifikasi.
+- Profil dan Pengguna PD.
 
-| Role | Status | Menu/Akses Saat Ini | Kekurangan |
-|---|---|---|---|
-| Public | Done | home, agenda, hasil, cabor, bracket, ranking, venue, peserta | Konten masih memiliki fallback demo |
-| Admin PD (`pd_admin`) | Done | login, dashboard PD, daftar cabor, registrasi/hapus peserta milik PD | Belum ada dokumen peserta dan revisi registrasi |
-| Super Admin (`super_admin`) | Partial | dashboard admin, verifikasi/tolak registrasi, input skor, dan menu pusat kendali | Master data, jadwal, bracket, panitia, laporan, dan audit masih ditandai `Segera` |
-| Admin Event | Planned | belum ada role/route khusus | Perlu pengelolaan event dan master data |
-| Koordinator Cabor | Planned | belum ada role/route khusus | Perlu scope cabor, jadwal, finalisasi, dan revisi |
-| Verifikator Peserta | Planned | fungsi masih digabung ke Super Admin | Perlu role dan permission khusus verifikasi |
-| Scorekeeper | Planned | fungsi input skor masih digabung ke Super Admin | Perlu assignment match dan akses terbatas |
-| Content Officer | Planned | belum ada role/route khusus | Perlu pengelolaan banner, info, dan livestream |
-| Auditor/Read Only | Planned | belum ada role/route khusus | Perlu audit log dan export read-only |
+### Admin
 
-Implementasi saat ini memakai pemeriksaan role langsung pada middleware, belum permission per action seperti target [RBAC matrix](../06-security/rbac-matrix.md).
+- Dashboard.
+- Verifikasi Pengurus Daerah.
+- Verifikasi Peserta.
+- Master Cabor.
+- Kategori dan Peraturan.
+- Kompetisi.
+- Venue.
+- Agenda dan Jadwal.
+- Panitia dan Penugasan.
+- Pertandingan dan Skor.
+- Laporan dan Audit.
 
-## Hubungan Dokumen
+### Panitia
 
-```text
-Charter/PRD
-  └── Application Flow
-       ├── Domain Model
-       ├── Delegation Standard
-       ├── ERD + Data Dictionary
-       ├── API Contract
-       ├── UI/Wireframe
-       ├── Business Rules
-       ├── RBAC/Threat Model
-       ├── Operations Runbook
-       └── Test Strategy/UAT
-```
+- Dashboard tugas.
+- Cabor yang ditugaskan.
+- Jadwal/match tugas.
+- Input skor.
+- Riwayat dan audit sesuai scope.
 
-## Sumber Kebenaran per Perubahan
+## Dependency Implementasi
 
-| Perubahan | Dokumen wajib diperbarui |
-|---|---|
-| Scope/modul | PRD, delivery plan, application flow |
-| Relasi data | delegation standard, ERD, data dictionary, migration plan |
-| Registrasi/verifikasi | delegation standard, API contract, UI standard, RBAC, UAT |
-| Skor/finalisasi | match score rules, API contract, RBAC, test strategy |
-| Klasemen medali | ranking rules, API contract, UI standard, UAT |
-| Deployment/backup | deployment, runbook, observability checklist |
-
-## Gap Prioritas Pengembangan
-
-1. Bangun form master Kontingen Provinsi, PDAM, cabor, kategori, dan venue.
-2. Tambah upload dokumen dan riwayat revisi registrasi.
-3. Bangun assignment scorekeeper dan role granular.
-4. Bangun revisi hasil final beralasan.
-5. Tetapkan model juara ketiga/perunggu per cabor.
-6. Hubungkan seluruh halaman public ke data operasional tanpa fallback demo.
+1. Dokumen dan constraint.
+2. Pengajuan/verifikasi akun PD.
+3. Migrasi entry tanpa PDAM dan tabel pemain.
+4. Master Admin dan label status Indonesia.
+5. Assignment panitia dan policy.
+6. Agenda, bracket lock, skor, audit, laporan.
+7. UAT, load test, backup/restore, go-live.
