@@ -38,5 +38,5 @@ const review = (id, action) => {
 </template>
 
 <style scoped>
-.page-head { padding: 44px 0 24px; }
+.page-head { padding: 8px 0 24px; }
 </style>

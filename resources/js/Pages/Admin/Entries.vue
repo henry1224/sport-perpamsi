@@ -51,8 +51,8 @@ const eventStatus = (status) => ({
 </template>
 
 <style scoped>
-.page-head { padding: 44px 0 24px; }
-.flash { margin-bottom: 14px; padding: 12px 16px; color: #087365; background: #dff7f2; border-left: 4px solid #20c6b7; font-weight: 800; }
+.page-head { padding: 8px 0 24px; }
+.flash { margin-bottom: 14px; padding: 12px 16px; color: #087365; background: #eefaf6; border: 1px solid #b9e3d6; border-radius: 10px; font-weight: 750; }
 .members { max-height: 104px; margin: 0; padding-left: 18px; overflow: auto; color: #526573; }
 .members li + li { margin-top: 3px; }
 </style>

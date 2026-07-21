@@ -27,8 +27,8 @@ const save = (row) => {
 
     <section class="score-board">
       <div class="board-note">
-        <strong>Alur panitia</strong>
-        <span>Input setelah pertandingan selesai. Simpan otomatis membuat audit log.</span>
+        <div><strong>Meja Skor</strong><span>Input setelah pertandingan selesai. Setiap penyimpanan otomatis masuk audit.</span></div>
+        <b>{{ rows.length }} pertandingan</b>
       </div>
 
       <div class="score-list">
@@ -49,7 +49,7 @@ const save = (row) => {
     </section>
 
     <section class="audit-board">
-      <SectionTitle eyebrow="Audit Trail" title="Riwayat Perubahan" :meta="`${audit.length} log`" />
+      <header><div><span>Audit Trail</span><h2>Riwayat Perubahan</h2></div><b>{{ audit.length }} log</b></header>
       <div class="audit-list">
         <div v-for="item in audit.slice(0, 12)" :key="`${item.match_id}-${item.at}`" class="audit-row">
           <strong>{{ item.match_id }}</strong>
@@ -62,25 +62,23 @@ const save = (row) => {
 </template>
 
 <style scoped>
-.page-head { padding: 44px 0 24px; }
-.score-board, .audit-board { position: relative; overflow: hidden; padding: 20px; background: #071126; border: 1px solid rgba(255,255,255,.12); box-shadow: 10px 10px 0 rgba(54,194,240,.13); }
-.score-board::before { content: "ADMIN"; position: absolute; right: 18px; top: -14px; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.055); font-size: clamp(80px, 13vw, 170px); font-weight: 1000; letter-spacing: -.08em; pointer-events: none; }
-.board-note { position: relative; z-index: 1; display: grid; gap: 4px; margin-bottom: 18px; padding: 14px 16px; background: rgba(5,11,28,.6); border-left: 5px solid #F6C64A; }
-.board-note strong { color: #F6C64A; font-size: 12px; font-weight: 1000; letter-spacing: .12em; text-transform: uppercase; }
-.board-note span { color: rgba(255,255,255,.66); font-size: 13px; }
-.score-list, .audit-list { position: relative; z-index: 1; display: grid; gap: 0; border-top: 1px solid rgba(255,255,255,.12); }
-.score-row { display: grid; grid-template-columns: 190px 1fr 110px 1fr 150px 110px; gap: 10px; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.1); }
+.page-head { padding: 8px 0 24px; }
+.score-board, .audit-board { overflow: hidden; background: #fff; border: 1px solid #d9e3e9; border-radius: 14px; box-shadow: 0 8px 24px rgba(25,53,76,.07); }
+.board-note,.audit-board > header { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:18px 20px; background:#fbfcfd; border-bottom:1px solid #e2e9ed; }
+.board-note > div { display:grid; gap:5px; }.board-note strong,.audit-board header span { color:#1946a3; font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }.board-note span { color:#687985; font-size:12px; }.board-note > b,.audit-board header > b { padding:6px 9px; color:#536571; background:#edf2f5; border-radius:999px; font-size:10px; }
+.score-list, .audit-list { display: grid; gap: 0; }
+.score-row { display: grid; grid-template-columns: 170px 1fr 100px 1fr 145px 100px; gap: 10px; align-items: center; padding: 13px 16px; border-bottom: 1px solid #e7edf0; transition:background .15s; }.score-row:hover { background:#fbfdfe; }
 .meta-col { display: grid; gap: 4px; }
-.meta-col span { color: #36C2F0; font-size: 11px; font-weight: 1000; letter-spacing: .12em; text-transform: uppercase; }
-.meta-col small, .audit-row small { color: rgba(255,255,255,.54); font-size: 11px; }
-input, select { width: 100%; padding: 11px 12px; color: #fff; background: #08142d; border: 1px solid rgba(255,255,255,.14); font: inherit; }
-input[readonly] { color: rgba(255,255,255,.72); background: rgba(8,20,45,.58); }
-.score-input { color: #F6C64A; font-size: 20px; font-weight: 1000; text-align: center; }
-button { padding: 11px 14px; color: #071126; background: #F6C64A; border: 0; font-size: 12px; font-weight: 1000; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; box-shadow: 5px 5px 0 rgba(240,90,40,.35); }
+.meta-col span { color: #1946a3; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.meta-col small, .audit-row small { color: #7a8993; font-size: 11px; }
+input, select { width: 100%; padding: 10px 11px; color: #243747; background: #fff; border: 1px solid #cbd7de; border-radius: 8px; font: inherit; outline:none; }
+input:focus,select:focus { border-color:#2a68b7; box-shadow:0 0 0 3px rgba(42,104,183,.11); }
+input[readonly] { color: #536571; background: #f7f9fa; }
+.score-input { color: #1946a3; font-size: 18px; font-weight: 800; text-align: center; }
+button { padding: 10px 13px; color: #fff; background: #1946a3; border: 0; border-radius:8px; font-size: 11px; font-weight: 800; cursor: pointer; }
 button:disabled { opacity: .55; cursor: wait; }
-.audit-board { margin-top: 34px; }
-.audit-row { display: grid; grid-template-columns: 90px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
-.audit-row strong { color: #F6C64A; }
-.audit-row span { color: rgba(255,255,255,.78); }
+.audit-board { margin-top: 24px; }.audit-board h2 { margin:4px 0 0; color:#142536; font-size:17px; }
+.audit-row { display: grid; grid-template-columns: 90px 1fr auto; gap: 12px; align-items: center; padding: 13px 20px; border-bottom: 1px solid #e7edf0; }
+.audit-row strong { color: #1946a3; }.audit-row span { color: #405361; }
 @media (max-width: 1100px) { .score-row, .audit-row { grid-template-columns: 1fr; } }
 </style>

@@ -59,11 +59,11 @@ const close = (event) => {
 </template>
 
 <style scoped>
-.page-head { padding: 44px 0 24px; }
-.notice { margin: 0 0 16px; padding: 14px 16px; color: #655000; background: #fff8dc; border: 1px solid #f0df9e; border-left: 5px solid #f6c64a; font-size: 13px; font-weight: 800; }
+.page-head { padding: 8px 0 24px; }
+.notice { margin: 0 0 16px; padding: 14px 16px; color: #655000; background: #fff9e8; border: 1px solid #eedb94; border-radius: 10px; font-size: 13px; font-weight: 750; line-height:1.55; }
 .period-fields { display: grid; grid-template-columns: minmax(165px,1fr) auto minmax(165px,1fr); gap: 8px; align-items: center; }
 .period-fields span { color: #82909a; font-size: 11px; }
-.period-fields input { min-height: 36px; padding: 7px 8px; color: #334553; background: #fff; border: 1px solid #cbd8df; color-scheme: light; }
+.period-fields input { min-height: 36px; padding: 7px 8px; color: #334553; background: #fff; border: 1px solid #cbd8df; border-radius:7px; color-scheme: light; outline:none; }.period-fields input:focus { border-color:#2a68b7; box-shadow:0 0 0 3px rgba(42,104,183,.11); }
 .count-cell { display: grid; gap: 2px; }
 .count-cell strong { color: #1946a3; font-size: 22px; }
 .count-cell small { color: #738390; }
