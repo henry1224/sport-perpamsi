@@ -11,17 +11,17 @@ Dokumen ini mengontrol urutan pengembangan agar pekerjaan tidak melompat ke phas
 
 ## Phase Aktif
 
-**Phase 3 — Kompetisi dan Publikasi Registrasi.**
+**Phase 4 — Registrasi Cabor dan Pemain.**
 
 Pekerjaan yang boleh dimulai:
 
-- Preview paket kompetisi sebelum publikasi.
-- Penetapan versi regulasi ke kompetisi.
-- Tarik publikasi sebelum ada pendaftaran.
-- Audit publikasi, penutupan, dan penarikan kompetisi.
-- Test, UAT, dan dokumentasi yang diperlukan exit criteria Phase 3.
+- Draft roster sebelum submit.
+- Permintaan dan pengiriman perbaikan roster.
+- Pembatalan registrasi sesuai status yang diizinkan.
+- Audit submit, verifikasi, penolakan, perbaikan, dan pembatalan.
+- Test, UAT, dan dokumentasi yang diperlukan exit criteria Phase 4.
 
-Pekerjaan Phase 4–7 tidak boleh diperluas sebelum Phase 3 selesai. Implementasi assignment cabor/venue yang sudah terlanjur dibuat dicatat sebagai pekerjaan awal Phase 5 dan **dibekukan** sampai Phase 5 aktif.
+Pekerjaan Phase 5–7 tidak boleh diperluas sebelum Phase 4 selesai. Implementasi assignment cabor/venue yang sudah terlanjur dibuat tetap **dibekukan** sampai Phase 5 aktif.
 
 ## Gate Sebelum Mulai Pekerjaan
 
@@ -64,11 +64,11 @@ Pengecualian wajib dicatat pada roadmap dengan alasan, scope minimum, dan phase 
 Gunakan format ini sebelum coding:
 
 ```text
-Phase: 3
-Task: Preview dan publikasi kompetisi
-Dependency: master cabor, kategori, dan regulasi tersedia
-Acceptance: Admin memilih versi regulasi, preview snapshot, publish, dan tarik publikasi sebelum ada entry
-Test: snapshot regulasi, audit publikasi, larangan tarik setelah entry
+Phase: 4
+Task: Draft dan perbaikan roster
+Dependency: kompetisi dan snapshot regulasi sudah dipublikasikan
+Acceptance: PD menyimpan draft, submit, memperbaiki roster, dan membatalkan sesuai status
+Test: ownership PD, transisi status, snapshot roster, dan audit perubahan
 Dokumen: roadmap, data dictionary, risk register, test strategy, UAT
 ```
 
@@ -76,8 +76,7 @@ Task tanpa nomor phase tidak boleh masuk branch fitur.
 
 ## Urutan Saat Ini
 
-1. Selesaikan Phase 3.
-2. Tutup gap Phase 4.
-3. Lanjutkan Phase 5.
-4. Kerjakan Phase 6.
-5. Selesaikan Phase 7 dan go-live.
+1. Selesaikan Phase 4.
+2. Lanjutkan Phase 5.
+3. Kerjakan Phase 6.
+4. Selesaikan Phase 7 dan go-live.
