@@ -112,7 +112,7 @@ class RegionalCommitteeRegistrationTest extends TestCase
             ->get(route('pd.dashboard'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
-                ->where('events', fn ($events) => collect($events)->pluck('code')->contains($published->code)
+                ->where('events.data', fn ($events) => collect($events)->pluck('code')->contains($published->code)
                     && ! collect($events)->pluck('code')->contains($hidden->code)));
 
         $this->actingAs($admin)->get(route('pd.events.show', $hidden))->assertNotFound();

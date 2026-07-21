@@ -15,6 +15,9 @@ class PdDashboardController extends Controller
     {
         $user = $request->user()->loadMissing('committee.province');
         $committee = $user->committee;
+        $search = trim((string) $request->query('search'));
+        $status = (string) $request->query('status');
+        $perPage = min(max($request->integer('per_page', 10), 10), 100);
 
         $counts = EventEntry::query()
             ->where('regional_committee_id', $committee->id)
@@ -26,9 +29,17 @@ class PdDashboardController extends Controller
         $events = TournamentEvent::query()
             ->with(['sport:id,code,name', 'category:id,name,competition_type,min_members,max_members'])
             ->whereNotNull('registration_published_at')
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
+                $query->whereLike('name', "%{$search}%", caseSensitive: false)
+                    ->orWhereLike('code', "%{$search}%", caseSensitive: false)
+                    ->orWhereHas('sport', fn ($query) => $query->whereLike('name', "%{$search}%", caseSensitive: false))
+                    ->orWhereHas('category', fn ($query) => $query->whereLike('name', "%{$search}%", caseSensitive: false));
+            }))
             ->orderBy('name')
-            ->get(['id', 'code', 'name', 'sport_id', 'sport_category_id', 'status', 'format', 'registration_rules', 'registration_published_at', 'registration_open_at', 'registration_close_at'])
-            ->map(function ($event) use ($counts) {
+            ->paginate($perPage, ['id', 'code', 'name', 'sport_id', 'sport_category_id', 'status', 'format', 'registration_rules', 'registration_published_at', 'registration_open_at', 'registration_close_at'])
+            ->withQueryString()
+            ->through(function ($event) use ($counts) {
                 $eventCounts = collect($counts->get($event->id, []))->pluck('total', 'verification_status');
                 $rules = $event->registration_rules ?? [];
 
@@ -59,6 +70,11 @@ class PdDashboardController extends Controller
                 'province' => $committee->province?->name,
             ],
             'events' => $events,
+            'filters' => ['search' => $search, 'status' => $status, 'per_page' => $perPage],
+            'summary' => [
+                'events' => TournamentEvent::query()->whereNotNull('registration_published_at')->count(),
+                'entries' => EventEntry::query()->where('regional_committee_id', $committee->id)->whereIn('verification_status', ['pending', 'verified'])->count(),
+            ],
         ]);
     }
 }
