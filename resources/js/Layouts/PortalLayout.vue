@@ -25,7 +25,7 @@ const menuGroups = computed(() => isAdmin.value ? [
     { label: 'Verifikasi Peserta', href: '/admin/entries', code: '05' },
   ] },
   { label: 'Operasional', items: [
-    { label: 'Panitia & Akses', code: '06', planned: true },
+    { label: 'Panitia & Akses', href: '/admin/assignments', code: '06' },
     { label: 'Pertandingan & Skor', href: '/admin/skor', code: '07' },
   ] },
   { label: 'Pelaporan', items: [
@@ -49,8 +49,7 @@ const logout = () => router.post('/logout');
     <div v-if="open" class="portal-overlay" @click="open = false" />
     <aside :class="['portal-sidebar', { open }]">
       <Link href="/" class="portal-brand">
-        <img :src="page.props.assets?.porpamnas" alt="PORPAMNAS" />
-        <span><b>SPORT</b><small>PERPAMSI</small></span>
+        <img :src="'/assets/brand/logos/porpamnas/vertical-porpamnas-ix.png'" alt="Logo PORPAMNAS IX" />
       </Link>
 
       <div class="portal-identity">
@@ -103,8 +102,8 @@ const logout = () => router.post('/logout');
 .portal-shell { min-height: 100vh; background: #eef3f6; color: #152331; }
 .portal-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 50; display: flex; width: 286px; flex-direction: column; overflow: hidden; color: #fff; background: #071126; border-right: 1px solid rgba(54,194,240,.22); }
 .portal-sidebar::after { content: ""; position: absolute; right: -90px; bottom: 80px; width: 220px; height: 220px; border: 34px solid rgba(54,194,240,.06); transform: rotate(18deg); pointer-events: none; }
-.portal-brand { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; min-height: 82px; padding: 16px 22px; color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.1); }
-.portal-brand img { width: 48px; height: 48px; object-fit: contain; }
+.portal-brand { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; min-height: 82px; padding: 10px 22px; color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.1); }
+.portal-brand img { width: 168px; height: 64px; object-fit: contain; }
 .portal-brand span { display: grid; line-height: 1; }
 .portal-brand b { font-size: 20px; letter-spacing: .08em; }
 .portal-brand small { margin-top: 6px; color: #36c2f0; font-size: 10px; font-weight: 900; letter-spacing: .22em; }

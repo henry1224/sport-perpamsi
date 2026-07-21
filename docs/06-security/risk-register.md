@@ -67,6 +67,7 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Admin menonaktifkan panitia tetapi sesi tetap aktif | Tinggi | Status pengguna dicek tiap request dan sesi dapat dicabut | Feature test suspended user |
 | Finalisasi atau revisi tanpa kewenangan | Kritis | Permission action dan approval terpisah | Feature test RBAC |
 | Role berubah tanpa jejak | Tinggi | Audit perubahan role dan assignment | Audit test |
+| Panitia ditetapkan ke venue/cabor salah | Tinggi | Pilihan memakai ID master tervalidasi dan perubahan assignment tercatat audit | Feature test assignment Admin |
 
 ## Pertandingan, Skor, dan Klasemen
 

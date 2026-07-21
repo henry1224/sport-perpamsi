@@ -31,7 +31,7 @@
 
 ## Panitia
 
-- [ ] Admin dapat membuat akun dan assignment panitia per cabor.
+- [x] Admin dapat membuat akun dan assignment panitia per cabor dan venue.
 - [ ] Panitia hanya melihat cabor/match tugasnya.
 - [ ] Scorekeeper dapat input skor match tugasnya.
 - [ ] Koordinator dapat finalisasi sesuai permission.

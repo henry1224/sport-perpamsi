@@ -15,7 +15,7 @@ Penghapusan struktur wajib mengikuti [database-lifecycle-standard.md](./database
 8. `entry_members`: daftar pemain fleksibel.
 9. `event_agendas`: relasi kompetisi, status publikasi, dan deskripsi.
 10. `matches`, `match_scores`, `score_audits`.
-11. `sport_assignments`: panitia per cabor/match.
+11. `sport_assignments`: panitia per cabor dan venue, dilengkapi audit assignment; scope match mengikuti jadwal venue.
 12. `audit_logs`, import, dan export jobs.
 
 ## Migrasi Data Lama

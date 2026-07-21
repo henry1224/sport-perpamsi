@@ -68,8 +68,9 @@
 
 ## SportAssignment
 
-- `user_id`, `sport_id`, `tournament_event_id` nullable, `match_id` nullable.
+- `user_id`, `sport_id`, `venue_id`; scope event/match ditambahkan saat jadwal pertandingan memakai relasi venue.
 - `assignment_role`, `is_active`, `assigned_by`, `assigned_at`, `revoked_at`.
+- `sport_assignment_audits` mencatat penetapan, aktivasi ulang, dan pencabutan.
 
 ## Match, Score, Audit
 
