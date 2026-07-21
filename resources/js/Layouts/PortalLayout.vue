@@ -17,7 +17,7 @@ const menuGroups = computed(() => isAdmin.value ? [
     { label: 'Ringkasan', href: '/admin/dashboard', code: '01' },
   ] },
   { label: 'Persiapan Lomba', items: [
-    { label: 'Master Data', code: '02', planned: true },
+    { label: 'Master Data', href: '/admin/master-data', code: '02' },
     { label: 'Data Lomba', href: '/admin/events', code: '03' },
   ] },
   { label: 'Registrasi', items: [

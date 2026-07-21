@@ -20,8 +20,8 @@
 
 ## Master Admin
 
-- [ ] Admin dapat mengelola cabor dan kategori tanpa menghapus histori.
-- [ ] Admin dapat membuat versi peraturan dan menetapkannya ke kompetisi.
+- [x] Admin dapat mengelola cabor dan kategori tanpa menghapus histori.
+- [-] Admin dapat membuat versi peraturan; penetapan versi ke kompetisi masuk penyelesaian Phase 3.
 - [x] Admin dapat mempublikasikan dan menutup registrasi kompetisi.
 - [ ] Admin dapat preview, menarik publikasi sebelum ada entry, dan melihat audit publikasi.
 - [ ] Admin dapat mengelola venue beserta detail dan status aktif.

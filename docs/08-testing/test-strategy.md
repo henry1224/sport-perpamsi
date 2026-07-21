@@ -27,6 +27,7 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 21. Public tidak melihat draft, data pribadi, ID internal, atau audit.
 22. Seeder dapat dijalankan ulang tanpa menimpa data operasional.
 23. Hanya Admin terverifikasi dapat membuat akun panitia serta menetapkan atau mencabut assignment cabor dan venue.
+24. Admin dapat mengelola cabor/kategori, regulasi selalu membuat versi baru, dan seluruh perubahan master tercatat audit.
 
 ## Frontend/E2E
 

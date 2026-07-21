@@ -33,9 +33,9 @@ Exit: akun belum terverifikasi tidak dapat masuk; race condition provinsi diuji.
 
 - [x] Master cabor dan kategori dari baseline seed.
 - [x] Batas jumlah pemain pada kategori.
-- [ ] CRUD Admin cabor dan kategori.
-- [ ] Regulasi berversi dan dokumen technical meeting.
-- [ ] Restrict delete dan audit perubahan master.
+- [x] CRUD Admin cabor dan kategori.
+- [x] Regulasi berversi dan referensi dokumen technical meeting.
+- [x] Master tidak memiliki delete permanen dan setiap perubahan tercatat audit.
 
 Exit: Admin dapat menyiapkan master valid tanpa membuatnya otomatis terlihat PD.
 

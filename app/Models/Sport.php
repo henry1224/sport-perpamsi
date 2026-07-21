@@ -9,6 +9,8 @@ class Sport extends Model
 {
     protected $guarded = [];
 
+    protected $casts = ['is_active' => 'boolean'];
+
     public function categories(): HasMany
     {
         return $this->hasMany(SportCategory::class);
@@ -17,5 +19,10 @@ class Sport extends Model
     public function events(): HasMany
     {
         return $this->hasMany(TournamentEvent::class);
+    }
+
+    public function regulations(): HasMany
+    {
+        return $this->hasMany(SportRegulation::class);
     }
 }
