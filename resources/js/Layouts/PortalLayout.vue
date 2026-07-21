@@ -12,18 +12,32 @@ const identity = computed(() => isAdmin.value
   ? { eyebrow: 'Pusat Kendali', title: 'Admin PORPAMNAS', subtitle: 'Seluruh data event dan operasional' }
   : { eyebrow: 'Portal Delegasi', title: user.value?.committee?.name || 'Pengurus Daerah', subtitle: 'Registrasi atlet dan cabang olahraga' });
 
-const menus = computed(() => isAdmin.value ? [
-  { label: 'Ringkasan', href: '/admin/dashboard', code: '01' },
-  { label: 'Verifikasi Pengurus Daerah', href: '/admin/committee-applications', code: '02' },
-  { label: 'Verifikasi Peserta', href: '/admin/entries', code: '03' },
-  { label: 'Pertandingan & Skor', href: '/admin/skor', code: '04' },
-  { label: 'Data Lomba', href: '/admin/events', code: '05' },
-  { label: 'Master Data', code: '06', planned: true },
-  { label: 'Panitia & Akses', code: '07', planned: true },
-  { label: 'Laporan & Audit', code: '08', planned: true },
+const menuGroups = computed(() => isAdmin.value ? [
+  { label: 'Umum', items: [
+    { label: 'Ringkasan', href: '/admin/dashboard', code: '01' },
+  ] },
+  { label: 'Persiapan Lomba', items: [
+    { label: 'Master Data', code: '02', planned: true },
+    { label: 'Data Lomba', href: '/admin/events', code: '03' },
+  ] },
+  { label: 'Registrasi', items: [
+    { label: 'Verifikasi Pengurus Daerah', href: '/admin/committee-applications', code: '04' },
+    { label: 'Verifikasi Peserta', href: '/admin/entries', code: '05' },
+  ] },
+  { label: 'Operasional', items: [
+    { label: 'Panitia & Akses', code: '06', planned: true },
+    { label: 'Pertandingan & Skor', href: '/admin/skor', code: '07' },
+  ] },
+  { label: 'Pelaporan', items: [
+    { label: 'Laporan & Audit', code: '08', planned: true },
+  ] },
 ] : [
-  { label: 'Ringkasan', href: '/pd/dashboard', code: '01' },
-  { label: 'Registrasi Cabor', href: '/pd/dashboard#cabor', code: '02' },
+  { label: 'Umum', items: [
+    { label: 'Ringkasan', href: '/pd/dashboard', code: '01' },
+  ] },
+  { label: 'Pendaftaran', items: [
+    { label: 'Registrasi Cabor', href: '/pd/dashboard#cabor', code: '02' },
+  ] },
 ]);
 
 const active = (href) => href && page.url.split('#')[0] === href.split('#')[0];
@@ -46,19 +60,21 @@ const logout = () => router.post('/logout');
       </div>
 
       <nav class="portal-nav" aria-label="Menu portal">
-        <p>Menu Utama</p>
-        <component
-          :is="item.planned ? 'div' : Link"
-          v-for="item in menus"
-          :key="item.label"
-          :href="item.href"
-          :class="['portal-link', { active: active(item.href), planned: item.planned }]"
-          @click="open = false"
-        >
-          <span>{{ item.code }}</span>
-          <b>{{ item.label }}</b>
-          <small v-if="item.planned">Segera</small>
-        </component>
+        <section v-for="group in menuGroups" :key="group.label" class="portal-group">
+          <p>{{ group.label }}</p>
+          <component
+            :is="item.planned ? 'div' : Link"
+            v-for="item in group.items"
+            :key="item.label"
+            :href="item.href"
+            :class="['portal-link', { active: active(item.href), planned: item.planned }]"
+            @click="open = false"
+          >
+            <span>{{ item.code }}</span>
+            <b>{{ item.label }}</b>
+            <small v-if="item.planned">Segera</small>
+          </component>
+        </section>
       </nav>
 
       <div class="portal-sidebar-foot">
@@ -93,11 +109,12 @@ const logout = () => router.post('/logout');
 .portal-brand b { font-size: 20px; letter-spacing: .08em; }
 .portal-brand small { margin-top: 6px; color: #36c2f0; font-size: 10px; font-weight: 900; letter-spacing: .22em; }
 .portal-identity { position: relative; z-index: 1; display: grid; gap: 5px; margin: 22px 16px 12px; padding: 18px; background: linear-gradient(135deg, rgba(25,70,163,.72), rgba(8,20,45,.92)); border: 1px solid rgba(54,194,240,.25); box-shadow: 6px 6px 0 rgba(240,90,40,.16); }
-.portal-identity span, .portal-nav > p { color: #f6c64a; font-size: 10px; font-weight: 1000; letter-spacing: .18em; text-transform: uppercase; }
+.portal-identity span, .portal-group > p { color: #f6c64a; font-size: 10px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
 .portal-identity strong { font-size: 15px; line-height: 1.3; }
 .portal-identity small { color: rgba(255,255,255,.6); line-height: 1.45; }
-.portal-nav { position: relative; z-index: 1; display: grid; gap: 5px; padding: 12px 14px; overflow-y: auto; }
-.portal-nav > p { padding: 0 10px; }
+.portal-nav { position: relative; z-index: 1; display: grid; gap: 16px; padding: 12px 14px 22px; overflow-y: auto; }
+.portal-group { display: grid; gap: 5px; }
+.portal-group > p { margin: 0 0 3px; padding: 0 10px; }
 .portal-link { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; min-height: 48px; padding: 8px 10px; color: rgba(255,255,255,.68); text-decoration: none; border: 1px solid transparent; transition: .18s ease; }
 .portal-link > span { display: grid; place-items: center; width: 30px; height: 30px; color: #36c2f0; font-size: 10px; font-weight: 1000; background: rgba(54,194,240,.08); border: 1px solid rgba(54,194,240,.18); }
 .portal-link b { font-size: 13px; }

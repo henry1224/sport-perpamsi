@@ -12,15 +12,27 @@ use Inertia\Response;
 
 class TournamentEventController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $perPage = min($request->integer('per_page', 10), 100);
+        $search = trim((string) $request->query('search'));
+        $status = (string) $request->query('status');
+
         return Inertia::render('Admin/Events', [
             'events' => TournamentEvent::query()
                 ->with(['sport:id,name', 'category:id,sport_id,name,competition_type,scoring_type,min_members,max_members,is_active'])
                 ->withCount('entries')
+                ->when($status, fn ($query) => $query->where('status', $status))
+                ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
+                    $query->whereLike('name', "%{$search}%", caseSensitive: false)
+                        ->orWhereLike('code', "%{$search}%", caseSensitive: false)
+                        ->orWhereHas('sport', fn ($query) => $query->whereLike('name', "%{$search}%", caseSensitive: false))
+                        ->orWhereHas('category', fn ($query) => $query->whereLike('name', "%{$search}%", caseSensitive: false));
+                }))
                 ->orderBy('name')
-                ->get()
-                ->map(fn (TournamentEvent $event) => [
+                ->paginate($perPage)
+                ->withQueryString()
+                ->through(fn (TournamentEvent $event) => [
                     'code' => $event->code,
                     'name' => $event->name,
                     'sport' => $event->sport?->name,
@@ -32,6 +44,7 @@ class TournamentEventController extends Controller
                     'close_at' => $event->registration_close_at?->format('Y-m-d\TH:i'),
                     'entries_count' => $event->entries_count,
                 ]),
+            'filters' => ['search' => $search, 'status' => $status, 'per_page' => $perPage],
         ]);
     }
 

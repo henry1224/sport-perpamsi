@@ -11,8 +11,12 @@ use Inertia\Response;
 
 class AdminEntryVerificationController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $perPage = min($request->integer('per_page', 10), 100);
+        $search = trim((string) $request->query('search'));
+        $status = (string) $request->query('status');
+
         $entries = EventEntry::query()
             ->with([
                 'members:id,event_entry_id,name',
@@ -20,10 +24,17 @@ class AdminEntryVerificationController extends Controller
                 'tournamentEvent:id,code,name,status',
             ])
             ->where('verification_status', 'pending')
+            ->when($status, fn ($query) => $query->whereHas('tournamentEvent', fn ($query) => $query->where('status', $status)))
+            ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
+                $query->whereLike('display_name', "%{$search}%", caseSensitive: false)
+                    ->orWhereHas('regionalCommittee', fn ($query) => $query->whereLike('name', "%{$search}%", caseSensitive: false))
+                    ->orWhereHas('tournamentEvent', fn ($query) => $query->whereLike('name', "%{$search}%", caseSensitive: false))
+                    ->orWhereHas('members', fn ($query) => $query->whereLike('name', "%{$search}%", caseSensitive: false));
+            }))
             ->latest('id')
-            ->limit(200)
-            ->get()
-            ->map(fn ($entry) => [
+            ->paginate($perPage)
+            ->withQueryString()
+            ->through(fn ($entry) => [
                 'id' => $entry->id,
                 'display_name' => $entry->display_name,
                 'members' => $entry->members->pluck('name'),
@@ -36,6 +47,7 @@ class AdminEntryVerificationController extends Controller
 
         return Inertia::render('Admin/Entries', [
             'entries' => $entries,
+            'filters' => ['search' => $search, 'status' => $status, 'per_page' => $perPage],
         ]);
     }
 
