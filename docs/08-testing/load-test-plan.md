@@ -33,7 +33,7 @@
 
 ### Skenario Tambahan
 
-1. 1.000 user membuka `/pdams?page=1` bersamaan.
+1. 1.000 user membuka `/peserta?page=1` bersamaan.
 2. 1.000 user membuka ranking dengan filter provinsi dan cabor.
 3. 500 user membuka bracket `Round 64` cabor populer.
 4. 200 user membuka `Round Awal` dan mengganti page.

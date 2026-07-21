@@ -1,27 +1,7 @@
-# Sample Participant Data v1
+# Sample Participant Data
 
-## Tujuan
+Data contoh target memakai PD PERPAMSI, pengajuan akun, registrasi cabor, pemain pada `entry_members`, serta status verifikasi.
 
-Data ini hanya contoh untuk development, demo UI, dan UAT awal. Bukan data peserta resmi.
+File seed PDAM lama hanya data legacy untuk pengujian migrasi. File tersebut tidak boleh menjadi sumber registrasi target atau UI baru.
 
-## File
-
-- `data/seed/sample_pdams.csv`: contoh PDAM beserta provinsi/kabupaten-kota.
-- `regional_committees`: dibuat otomatis satu per provinsi oleh seeder.
-- `data/seed/sample_teams.csv`: contoh tim per cabor.
-- `data/seed/sample_athletes.csv`: contoh atlet.
-
-## Isi Sample
-
-- 8 PDAM contoh.
-- 15 tim contoh.
-- 19 atlet contoh.
-- Cabor yang terwakili: mini football, voli, bulu tangkis, tenis meja, tenis lapangan, catur, golf, padel, vokal.
-
-## Catatan
-
-- Nama atlet dummy.
-- Nomor identitas dummy.
-- Data wilayah memakai kode seed provinsi/kabupaten-kota.
-- Seluruh registrasi PDAM dari provinsi sama memakai `regional_committee_id` yang sama.
-- Ganti dengan data resmi saat panitia menyerahkan peserta final.
+Data contoh production tidak boleh berisi password default, nomor pribadi nyata, atau dokumen mandat nyata.

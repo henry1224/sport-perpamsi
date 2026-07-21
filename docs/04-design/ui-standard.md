@@ -21,11 +21,11 @@ Dokumen detail pendamping: `docs/04-design/public-admin-ui-standard.md`.
 
 - Home menampilkan hasil terbaru, jadwal hari ini, highlight, ranking ringkas.
 - Hasil terbaru menampilkan status, skor, peserta, cabor, kategori, venue, waktu update.
-- Jadwal punya filter tanggal, cabor, venue, PDAM, status.
+- Jadwal punya filter tanggal, cabor, venue, PD PERPAMSI, dan status.
 - Match detail menampilkan skor, status, venue, waktu, peserta, dan update terakhir.
 - Bracket memakai horizontal scroll di mobile.
 - Ranking menampilkan rumus perhitungan.
-- Peserta, match, bracket, hasil, dan klasemen medali menampilkan nama provinsi.
+- Peserta, match, bracket, hasil, dan klasemen medali menampilkan nama PD PERPAMSI.
 
 ## Admin Page
 
@@ -57,7 +57,7 @@ Dokumen detail pendamping: `docs/04-design/public-admin-ui-standard.md`.
 - Schedule filter.
 - Bracket view.
 - Ranking table.
-- PDAM profile card.
+- PD PERPAMSI profile card.
 - Admin data table.
 - Score input panel.
 - Status badge.
@@ -86,11 +86,11 @@ Dokumen detail pendamping: `docs/04-design/public-admin-ui-standard.md`.
 - Pagination tidak boleh memakai style browser/default polos.
 - Gunakan button clipped-corner seperti nav/tab.
 - State wajib: normal, hover, active, disabled, loading.
-- Letakkan pagination di atas dan bawah list besar untuk PDAM/ranking bila data panjang.
+- Letakkan pagination di atas dan bawah list besar untuk peserta/ranking bila data panjang.
 
 ### Ranking Public
 
-- Klasemen medali wajib punya filter: event, cabor, kategori, provinsi, dan pencarian Kontingen Provinsi.
+- Klasemen medali wajib punya filter: event, cabor, kategori, provinsi, dan pencarian PD PERPAMSI.
 - Tampilkan medal table ringkas dengan jarak teks cukup.
 - Jangan rapatkan jumlah medali dengan nama wilayah.
 - Empty state harus informatif, bukan blank.

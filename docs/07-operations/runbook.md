@@ -4,7 +4,7 @@
 
 - Pastikan domain dan SSL aktif.
 - Pastikan backup database berjalan.
-- Import data PDAM, tim, atlet, jadwal.
+- Import data PD PERPAMSI, registrasi cabor, pemain, agenda, dan jadwal.
 - Verifikasi data peserta.
 - Buat akun panitia.
 - Assign panitia ke cabor, venue, atau match.

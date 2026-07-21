@@ -33,13 +33,13 @@ Bame cocok sebagai arah visual karena PORPAMNAS butuh public board yang terasa s
 ### Team / Gamer
 
 - Bame menampilkan team/player profile.
-- Adaptasi PORPAMNAS: PDAM sebagai kontingen, atlet sebagai peserta, official sebagai pendamping.
+- Adaptasi PORPAMNAS: PD PERPAMSI sebagai kontingen, pemain sebagai peserta, official sebagai pendamping.
 - Public cukup tampilkan nama provinsi, cabang, hasil pertandingan, dan raihan medali.
 
 ### Ranking / Standing
 
 - Bame kuat di leaderboard visual.
-- Adaptasi PORPAMNAS: nama provinsi tampil sebagai kontingen pertandingan dan klasemen; instansi asal tidak menjadi nama peserta public.
+- Adaptasi PORPAMNAS: nama `PD PERPAMSI {provinsi}` tampil sebagai kontingen pertandingan dan klasemen.
 - Urutan resmi: emas, perak, perunggu, total, lalu aturan tie-breaker dokumen regulasi.
 
 ### Streaming / Media
@@ -69,7 +69,7 @@ Bame cocok sebagai arah visual karena PORPAMNAS butuh public board yang terasa s
 - Hasil: daftar hasil selesai, status verifikasi, link detail pertandingan.
 - Cabor: format kompetisi, regulasi ringkas, venue, jadwal.
 - Bracket: knockout, lower bracket jika cabor memakai double elimination.
-- Ranking: medali per Kontingen Provinsi.
+- Ranking: medali per PD PERPAMSI.
 - Venue: lokasi, alamat, cabor, jadwal kegiatan.
 - Info: pengumuman, kontak, aturan umum.
 
@@ -111,6 +111,6 @@ Bame cocok sebagai arah visual karena PORPAMNAS butuh public board yang terasa s
 
 - Pecah public page: `/agenda`, `/hasil`, `/cabor`, `/ranking`, `/venue`, `/bracket`.
 - Tambah admin: input hasil, verifikasi hasil, upload bukti, koreksi sengketa.
-- Tambah data kontingen: PDAM, kota/kabupaten, provinsi, logo.
+- Tambah data kontingen: PD PERPAMSI, provinsi, logo, dan cabor yang diikuti.
 - Tambah format cabor: round robin, knockout, double elimination, swiss, stroke play.
 - Tambah audit trail: siapa update skor, kapan, sebelum/sesudah.

@@ -1,56 +1,39 @@
-# Model Domain Sport PERPAMSI
+# Domain Model Sport PERPAMSI
 
-## Bounded Context
+## Identity and Access
 
-### Event Management
+Entities: User, CommitteeApplication, Role, Permission, SportAssignment.
 
-Mengelola event, cabor, kategori, venue, jadwal, dan konfigurasi publikasi.
+Aturan: status akun dan scope PD/cabor/match diperiksa pada setiap write.
 
-Entities: Event, Sport, Category, Venue, Schedule, EventSetting.
+## Regional Delegation
 
-### Participant Management
+Entities: Province, RegionalCommittee, EventEntry, EntryMember, VerificationRecord.
 
-Mengelola Kontingen Provinsi, PDAM, registrasi cabor, tim, atlet, dokumen, dan verifikasi.
+Aturan: satu provinsi satu PD PERPAMSI; entry dan pemain tidak bergantung pada PDAM.
 
-Entities: RegionalCommittee, Pdam, EventEntry, Team, Athlete, ParticipantDocument, VerificationRecord.
+## Competition Master
 
-### Match Operation
+Entities: Sport, SportCategory, SportRule, TournamentEvent, Venue, EventAgenda.
 
-Mengelola match, assignment scorekeeper, input hasil setelah pertandingan selesai, status match, finalisasi, dan revisi.
+Aturan: peraturan berversi, venue tidak bentrok, master terpakai tidak dihapus.
 
-Entities: Match, MatchParticipant, Score, ScoreRevision, CommitteeAssignment.
+## Tournament Operations
 
-### Competition Result
+Entities: Match, MatchScore, ScoreAudit, Bracket, Standing, MedalRanking.
 
-Mengelola bracket, klasemen, ranking, dan rekap hasil.
+Aturan: bracket lock memiliki precondition, skor final direvisi melalui workflow audit.
 
-Entities: Bracket, BracketNode, Standing, RankingSnapshot, MedalStanding.
+## Public and Reporting
 
-### Public Content
+Entities: PublishedView, AuditLog, ExportJob, ReportSnapshot.
 
-Mengelola info event, pengumuman, banner, livestream URL, dan konten publik.
-
-Entities: Announcement, Banner, LivestreamLink, PublicPageConfig.
-
-### Identity and Access
-
-Mengelola user, role, permission, dan scope akses panitia.
-
-Entities: User, Role, Permission, UserAssignment.
-
-### Audit and Reporting
-
-Mengelola audit log, export, dan snapshot laporan.
-
-Entities: AuditLog, ExportJob, ReportSnapshot.
+Aturan: public hanya membaca data terbit/final dan memakai identitas PD PERPAMSI.
 
 ## Aturan Lintas Context
 
-1. Public hanya membaca data published atau final.
-2. Match final hanya bisa berubah lewat score revision.
-3. Klasemen cabor dihitung dari match final; klasemen medali diagregasi ke `RegionalCommittee` melalui `EventEntry`.
-4. Assignment panitia membatasi akses scorekeeper ke match tertentu.
-5. Audit log wajib untuk perubahan skor, jadwal, verifikasi, assignment, dan finalisasi.
-6. Import data tidak langsung commit sebelum preview dan validasi.
-7. Reporting membaca data operasional; reporting tidak mengubah source data.
-8. `EventEntry` menyimpan snapshot PDAM, provinsi, dan Kontingen Provinsi saat registrasi diverifikasi.
+1. Client tidak menentukan identitas, scope, status, atau aktor verifikasi.
+2. Audit wajib untuk verifikasi, assignment, jadwal, pemain, skor, finalisasi, dan revisi.
+3. Import memakai preview, validasi, transaksi, dan rollback.
+4. Reporting tidak mengubah source data.
+5. Risiko kritis/tinggi harus memiliki kontrol dan test sebelum phase selesai.

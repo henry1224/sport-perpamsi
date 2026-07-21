@@ -2,6 +2,8 @@
 
 Setiap perubahan kode wajib mengikuti `docs/09-development/coding-standard.md` dan setiap perubahan tampilan wajib mengikuti `docs/04-design/public-admin-ui-standard.md`.
 
+Dokumen ini **wajib dibaca sebelum setiap perubahan aplikasi**, terutama perubahan migration, model, seeder, master data, relasi, role, status, registrasi, jadwal, dan skor. Instruksi ini juga dicatat pada `AGENTS.md` di root repository agar berlaku otomatis untuk seluruh pekerjaan.
+
 ## Prinsip
 
 - Branch harus mencerminkan jenis pekerjaan.
@@ -34,16 +36,18 @@ Setiap perubahan kode wajib mengikuti `docs/09-development/coding-standard.md` d
 
 ## Workflow Harian
 
-1. Sync branch target.
-2. Buat branch sesuai kategori.
-3. Baca dokumen relevan saja dari `docs/README.md`.
-4. Kerjakan perubahan kecil dan terarah.
-5. Jalankan test/check relevan.
-6. Review diff sendiri.
-7. Commit dengan pesan jelas.
-8. Push branch.
-9. Buat PR bila memakai review flow.
-10. Merge setelah review/check selesai.
+1. Baca `AGENTS.md` dan dokumen ini.
+2. Pastikan working tree bersih dan sync `main`.
+3. Buat branch sesuai kategori; jangan mengubah `main` langsung.
+4. Baca dokumen relevan dari `docs/README.md`.
+5. Kerjakan perubahan kecil dan terarah.
+6. Perbarui dokumen dan risk register bila data/alur berubah.
+7. Jalankan test/check relevan.
+8. Review diff sendiri.
+9. Commit dengan pesan jelas.
+10. Push branch.
+11. Buat PR bila memakai review flow.
+12. Merge setelah review/check selesai.
 
 ## Commit Message
 
@@ -82,6 +86,7 @@ chore: setup deployment config
 - [ ] Tidak ada credential atau data sensitif.
 - [ ] Test/check relevan sudah dijalankan.
 - [ ] Dokumentasi/progress diperbarui bila behavior berubah.
+- [ ] Perubahan data sudah dicek terhadap ERD, migration plan, test strategy, UAT, dan risk register.
 
 ## Sebelum Push
 

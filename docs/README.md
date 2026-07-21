@@ -31,10 +31,10 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [Migration plan](./02-data/migration-plan.md): urutan migration Laravel/PostgreSQL.
 - [ERD v1 baseline](./02-data/erd-v1-baseline.md): ERD baseline development.
 - [Import template standard](./02-data/import-template-standard.md): kolom CSV/Excel data awal.
-- [Sample participant data](./02-data/sample-participant-data.md): contoh data PDAM, tim, atlet untuk development/UAT.
+- [Sample participant data](./02-data/sample-participant-data.md): contoh PD PERPAMSI, registrasi cabor, dan pemain untuk development/UAT.
 - [Public identifier standard](./02-data/public-identifier-standard.md): aturan `slug`, `public_id`, dan larangan expose ID internal.
-- [Region standard](./02-data/region-standard.md): master provinsi/kabupaten-kota Indonesia dan relasi PDAM.
-- [Delegation standard](./02-data/delegation-standard.md): relasi provinsi, Kontingen Provinsi, PDAM, registrasi cabor, dan klasemen medali.
+- [Region standard](./02-data/region-standard.md): master provinsi dan identitas PD PERPAMSI.
+- [Delegation standard](./02-data/delegation-standard.md): pengajuan akun, registrasi cabor, pemain, dan identitas PD PERPAMSI.
 
 ### 03 Product
 
@@ -63,7 +63,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 
 - [Match dan score rules](./05-business-rules/match-score-rules.md): status match, input skor, finalisasi, ranking.
 - [Competition format standard](./05-business-rules/competition-format-standard.md): format grup, knockout, round robin, ranking per jenis cabor.
-- [Ranking rules](./05-business-rules/ranking-rules.md): rumus klasemen medali Kontingen Provinsi dan klasemen cabor.
+- [Ranking rules](./05-business-rules/ranking-rules.md): rumus klasemen medali PD PERPAMSI dan klasemen cabor.
 - [Score structure](./05-business-rules/score-structure.md): struktur skor utama dan detail segment per jenis cabor.
 - [Sport catalog v1](./05-business-rules/sport-catalog-v1.md): cabor resmi sementara dan format default.
 - [Regulation reference](./05-business-rules/regulation-reference.md): referensi regulasi resmi per cabor.
@@ -72,6 +72,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 
 - [RBAC matrix](./06-security/rbac-matrix.md): role, permission, matrix akses.
 - [Threat model](./06-security/threat-model.md): risiko utama dan mitigasi minimum.
+- [Risk register](./06-security/risk-register.md): risiko rinci, kontrol wajib, dan verifikasi per modul.
 
 ### 07 Operations
 
@@ -116,3 +117,5 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - Load test: `docs/08-testing/load-test-plan.md`.
 
 Setiap perubahan fitur bracket, kategori cabor, ranking, atau public list besar wajib memperbarui minimal PRD, ERD/data standard, API contract, UI standard, security, dan load test.
+
+Setiap pekerjaan wajib dimulai dengan membaca `AGENTS.md` dan [Git workflow](./09-development/git-workflow.md). Perubahan data/alur juga wajib memperbarui risk register, test strategy, dan UAT.

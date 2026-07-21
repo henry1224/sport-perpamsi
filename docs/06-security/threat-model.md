@@ -1,5 +1,7 @@
 # Threat Model v1
 
+Daftar risiko rinci, kontrol, dan verifikasi dipelihara pada [risk-register.md](./risk-register.md).
+
 ## Risiko Utama
 
 1. User tanpa hak mengubah skor.

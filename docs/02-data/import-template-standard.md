@@ -1,85 +1,58 @@
-# Import Template Standard v1
+# Import Template Standard
 
-## Prinsip
+Import hanya untuk data yang sudah memiliki owner dan aturan validasi. Semua import wajib preview, dry-run, transaksi, audit, dan hasil baris error.
 
-- Import hanya untuk data awal dan koreksi massal yang disetujui admin.
-- Import wajib preview sebelum commit.
-- Baris invalid tidak boleh masuk diam-diam.
-- Template dikunci sebelum data dikumpulkan dari PDAM/panitia.
+## PD PERPAMSI
 
-## Template PDAM
+PD dibuat dari master provinsi; tidak diimpor sebagai entitas bebas.
 
-| Kolom | Wajib | Catatan |
+| Kolom | Wajib | Aturan |
 |---|---|---|
-| pdam_name | Ya | Nama resmi PDAM |
-| region | Tidak | Wilayah |
-| contact_name | Tidak | PIC |
-| contact_phone | Tidak | Kontak PIC |
+| province_code | Ya | Harus cocok master provinsi |
+| display_name | Tidak | Diabaikan; sistem membentuk nama resmi |
 
-`province_code` wajib pada import operasional agar sistem dapat menetapkan Kontingen Provinsi. `regional_committee_id` tidak diisi dari file; sistem menurunkannya dari provinsi PDAM.
+## Pengajuan Pengurus Daerah
 
-## Template Registrasi Cabor
+| Kolom | Wajib |
+|---|---|
+| province_code | Ya |
+| applicant_name | Ya |
+| position | Ya |
+| email | Ya |
+| phone | Ya |
 
-| Kolom | Wajib | Catatan |
-|---|---|---|
-| pdam_name | Ya | Harus cocok dengan master PDAM |
-| sport_code | Ya | Cabor tujuan |
-| category_name | Tidak | Wajib bila cabor punya kategori |
-| display_name | Ya | Nama provinsi pada bracket |
-| athlete_1 | Tidak | Peserta pertama |
-| athlete_2 | Tidak | Peserta kedua untuk ganda |
-| team_name | Tidak | Wajib untuk kompetisi beregu |
+Import akun tidak mengaktifkan pengguna otomatis; tetap membutuhkan verifikasi Admin dan mekanisme set password aman.
 
-Preview import wajib menampilkan Kontingen Provinsi hasil resolusi provinsi sebelum commit.
+## Registrasi dan Pemain
 
-Contoh data: `data/seed/sample_pdams.csv`.
+| Kolom | Wajib |
+|---|---|
+| province_code | Ya |
+| tournament_event_code | Ya |
+| member_name | Ya |
+| member_type | Ya |
+| gender | Sesuai kategori |
+| shirt_number | Sesuai cabor |
+| position | Sesuai cabor |
 
-## Template Tim
+Validasi duplikasi dan jumlah anggota memakai versi peraturan kompetisi.
 
-| Kolom | Wajib | Catatan |
-|---|---|---|
-| pdam_name | Ya | Harus cocok dengan master PDAM |
-| sport_code | Ya | Contoh `mini-football` |
-| category_name | Ya | Putra/Putri/Beregu |
-| team_name | Ya | Nama tim |
+## Agenda/Jadwal
 
-Contoh data: `data/seed/sample_teams.csv`.
+| Kolom | Wajib |
+|---|---|
+| date | Ya |
+| start_time | Ya |
+| end_time | Tidak |
+| title | Ya |
+| type | Ya |
+| venue_code | Ya |
+| sport_code | Tidak |
+| tournament_event_code | Tidak |
+| status | Ya |
 
-## Template Atlet
+Hari tidak diimpor. Sistem menolak bentrok venue dan waktu selesai sebelum waktu mulai.
 
-| Kolom | Wajib | Catatan |
-|---|---|---|
-| pdam_name | Ya | Harus cocok dengan master PDAM |
-| team_name | Tidak | Wajib bila atlet masuk tim |
-| athlete_name | Ya | Nama atlet |
-| identity_number | Tidak | Nomor internal event bila dipakai |
+## Match
 
-Contoh data: `data/seed/sample_athletes.csv`.
-
-## Template Jadwal
-
-| Kolom | Wajib | Catatan |
-|---|---|---|
-| sport_code | Ya | Cabor |
-| category_name | Ya | Kategori |
-| venue_name | Ya | Venue |
-| participant_a | Ya | Tim/PDAM/peserta A |
-| participant_b | Ya | Tim/PDAM/peserta B |
-| scheduled_at | Ya | Format ISO atau template tanggal resmi |
-| format | Ya | knockout/group/round_robin/double_elimination |
-| bracket_round | Tidak | Jika knockout |
-| group_name | Tidak | Jika group stage |
-
-## Template Agenda
-
-| Kolom | Wajib | Catatan |
-|---|---|---|
-| date | Ya | Tanggal agenda |
-| day | Ya | Nama hari |
-| title | Ya | Nama kegiatan/cabor |
-| type | Ya | sport/exhibition/official |
-| sport_code | Tidak | Wajib untuk sport/exhibition |
-| venue_code | Ya | Kode venue |
-| start_time | Ya | Jam mulai |
-| end_time | Tidak | Kosong bila sampai selesai |
-| time_note | Tidak | Sesi/Selesai/catatan jam |
+Peserta memakai kode/public ID `event_entry`, bukan nama bebas. Import tidak boleh melewati assignment, status, atau audit.

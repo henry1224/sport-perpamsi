@@ -1,117 +1,74 @@
 # Data Standard Sport PERPAMSI
 
-Sumber kebenaran relasi kontingen dan registrasi: [delegation-standard.md](./delegation-standard.md).
+Sumber kebenaran identitas dan registrasi: [delegation-standard.md](./delegation-standard.md). Kontrol risiko wajib: [risk-register.md](../06-security/risk-register.md).
 
 ## Single Source of Truth
 
-- Aplikasi menjadi sumber resmi untuk jadwal, peserta, skor, hasil final, bracket, klasemen, dan ranking.
-- Data public hanya berasal dari data published atau final.
-- Data draft tidak muncul di public.
-- Hasil final hanya dikunci oleh role berwenang.
+- Aplikasi menjadi sumber resmi akun PD, peserta, agenda, jadwal, skor, hasil, bracket, dan klasemen.
+- Data publik hanya berasal dari data terbit, terverifikasi, atau final.
+- Kode internal tidak ditampilkan mentah; UI memakai label Indonesia dari glossary.
+- Pengguna tidak boleh mengirim identitas PD, scope cabor, atau status yang seharusnya diturunkan server.
 
 ## Entitas Utama
 
-- Event.
-- PDAM.
-- Cabang olahraga.
-- Kategori.
-- Venue.
-- Tim.
-- Atlet.
-- Dokumen.
-- Match.
-- Score.
-- Bracket.
-- Klasemen.
-- Ranking.
-- User.
-- Role.
-- Assignment panitia.
-- Audit log.
+- Province dan RegionalCommittee/PD PERPAMSI.
+- CommitteeApplication dan User.
+- Sport, SportCategory, SportRule, TournamentEvent.
+- EventEntry dan EntryMember.
+- Venue dan EventAgenda.
+- Match, MatchScore, Bracket, Standing, MedalRanking.
+- SportAssignment dan AuditLog.
 
 ## Relasi Inti
 
-- Event memiliki banyak cabor, venue, jadwal, tim, match, dokumen, dan konten.
-- PDAM memiliki banyak tim, atlet, dokumen, dan hasil pertandingan.
-- Provinsi memiliki banyak kabupaten/kota dan PDAM.
-- Kabupaten/kota memiliki banyak PDAM.
-- Cabor memiliki banyak kategori, tim, match, bracket, dan klasemen.
-- Tim dimiliki satu PDAM dan mengikuti satu cabor/kategori pada event.
-- Atlet dimiliki satu PDAM dan dapat terhubung ke satu atau lebih tim sesuai aturan event.
-- Match terhubung ke event, cabor, kategori, venue, dua peserta, skor, status, dan pemenang.
-- Bracket terhubung ke match sebelumnya dan match berikutnya.
-- Klasemen dihitung dari hasil match final.
-- Audit log terhubung ke aktor, aksi, dan entitas yang berubah.
+- Satu provinsi memiliki satu PD PERPAMSI.
+- Satu PD PERPAMSI memiliki banyak pengguna, pengajuan, registrasi cabor, dan pemain melalui entry.
+- Satu cabor memiliki banyak kategori, versi peraturan, kompetisi, agenda, pertandingan, dan assignment panitia.
+- Satu registrasi menghubungkan PD PERPAMSI dengan satu kompetisi dan memiliki banyak pemain.
+- Satu agenda dapat terkait cabor, kompetisi, dan satu venue.
+- Satu match terkait kompetisi, venue, dua entry, skor, status, dan pemenang.
+- Panitia hanya mengelola cabor atau match yang ditugaskan.
 
 ## Status Data
 
-- Peserta: draft, diajukan, diverifikasi, ditolak, revisi.
-- Match: draft, terjadwal, berlangsung, jeda, selesai, final, revisi.
-- Konten: draft, published, archived.
-- Dokumen: pending, valid, rejected, revision_required.
+- Akun/pengajuan: `pending`, `revision_required`, `verified`, `rejected`, `suspended`, `inactive`.
+- Registrasi: `draft`, `pending`, `revision_required`, `verified`, `rejected`, `cancelled`.
+- Kompetisi: `draft`, `registration_open`, `registration_closed`, `bracket_locked`, `running`, `completed`.
+- Agenda: `draft`, `published`, `cancelled`.
+- Match: `scheduled`, `live`, `final`, `verified`, `disputed`, `postponed`, `walkover`.
+
+## Master Data
+
+- Cabor, kategori, peraturan, venue, dan agenda dikelola Admin melalui CRUD dengan status aktif/arsip.
+- Master yang sudah dipakai tidak dihapus; gunakan nonaktif/arsip.
+- Peraturan memakai versi dan tanggal berlaku. Kompetisi menyimpan versi yang digunakan.
+- Hari agenda diturunkan dari tanggal.
+- Jadwal wajib menolak bentrok waktu pada venue sama.
 
 ## Import dan Export
 
-- Data awal PDAM, tim, atlet, dan jadwal dapat diimpor dari CSV atau Excel.
-- Import wajib punya preview sebelum simpan.
-- Baris invalid ditolak dengan alasan error.
-- Export tersedia untuk peserta, jadwal, hasil, ranking.
-- Format template import harus dikunci sebelum pengumpulan data.
+- Import peserta, pemain, agenda, dan jadwal wajib memiliki preview, validasi, dry-run, transaksi, dan audit.
+- Seeder hanya mengisi baseline secara idempotent dan tidak menimpa data operasional Admin.
+- Export memakai label Indonesia dan tidak memuat data pribadi yang tidak diperlukan.
 
-## Audit
+## Audit dan Retensi
 
-- Audit wajib untuk skor, jadwal, verifikasi, assignment panitia, finalisasi, revisi.
-- Audit mencatat aktor, aksi, waktu, entitas, nilai sebelum, nilai sesudah.
-- Audit log append-only.
-- Public hanya melihat status final, bukan audit internal.
+- Audit wajib untuk verifikasi, role, assignment, pemain, jadwal, skor, finalisasi, revisi, dan publikasi.
+- Audit mencatat aktor, aksi, waktu, entitas, alasan, nilai sebelum, dan nilai sesudah.
+- Audit append-only dan tidak memakai soft delete.
+- Entry yang sudah masuk match tidak boleh dihapus fisik.
 
-## Kualitas Data
+## Query dan Performa
 
-- Nama PDAM harus konsisten.
-- Cabor dan kategori harus dikunci sebelum jadwal dibuat.
-- Jadwal tidak boleh bentrok venue dan waktu.
-- Tim tidak boleh tampil di public sebelum diverifikasi.
-- Ranking hanya dihitung dari match final.
-- Ranking wilayah dihitung dari akumulasi medali/hasil PDAM yang terhubung ke provinsi dan kabupaten/kota.
+- List besar memakai pagination server-side.
+- Search memakai debounce frontend, limit backend, rate limit, dan index.
+- Public cache 30–120 detik; invalidasi saat publikasi, finalisasi, atau revisi.
+- Admin write tidak membaca cache publik.
 
-## Addendum v2: Data Public Besar, Pagination, Filter, dan SSR
+## Data Lock
 
-### Pagination Public
-
-- Semua list besar wajib server-side pagination.
-- Halaman public PDAM default: 24 atau 36 item per page.
-- Ranking default: 50 row per page.
-- Round awal bracket default: 24 match per round, dengan pagination/filter.
-- Query parameter standar:
-
-```text
-?page=1&per_page=24&search=&sport=&category=&province=&regency=&sort=
-```
-
-### Search dan Filter
-
-- Frontend wajib debounce minimal 400 ms.
-- Backend wajib throttle public search.
-- Search tidak boleh request per keypress tanpa debounce.
-- Filter harus mempertahankan URL agar SSR dan share link tetap benar.
-- Empty query tampilkan data default cacheable.
-
-### Cache
-
-- Public home, cabor, venue, dan ranking cache pendek: 30-120 detik.
-- Bracket cache per `tournament_event_id` dan invalidasi saat skor final/verified berubah.
-- Admin tidak memakai cache public untuk write flow.
-
-### Naming Public
-
-- Public list tampilkan `display_name` sesuai nama provinsi.
-- Nama lengkap tetap tersedia di detail/tooltip.
-- Prefix legal seperti `PDAM`, `Perumda`, `Perumdam`, `PT` boleh disembunyikan di display publik bila membuat card terlalu panjang.
-
-### Data Lock
-
-- `registration_open`: data peserta bisa berubah.
-- `registration_closed`: data diverifikasi.
-- `bracket_locked`: seed dan bracket tidak berubah tanpa role super admin.
-- `running`: hanya skor dan status match yang berubah.
-- `completed`: semua perubahan wajib lewat koreksi audit.
+- `Pendaftaran Dibuka`: registrasi boleh berubah.
+- `Pendaftaran Ditutup`: registrasi baru ditolak; verifikasi dapat diselesaikan.
+- `Bracket Dikunci`: tidak boleh ada registrasi belum selesai dan seed tidak berubah tanpa kewenangan.
+- `Sedang Berlangsung`: hanya operasi pertandingan yang diizinkan.
+- `Selesai`: perubahan wajib melalui koreksi beralasan dan audit.

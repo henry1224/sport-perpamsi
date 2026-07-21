@@ -1,68 +1,70 @@
-# Standar Kontingen Provinsi
+# Standar PD PERPAMSI dan Registrasi Peserta
 
 ## Tujuan
 
-Menetapkan identitas peserta publik dan relasi data registrasi agar nama instansi asal tidak disalahgunakan sebagai nama kontingen.
+Menetapkan identitas, registrasi akun, registrasi cabor, pemain, verifikasi, dan nama publik tanpa ketergantungan pada PDAM atau instansi asal.
 
-## Istilah Kanonik
+## Identitas Kanonik
 
-- Pengurus Daerah: pengguna yang mengelola registrasi satu provinsi.
-- Kontingen Provinsi: identitas pertandingan dan klasemen yang memakai `provinces.name`.
-- Instansi Asal: PDAM/Perumda Air Minum asal atlet atau tim; hanya metadata internal registrasi.
-
-Contoh benar:
-
-```text
-Pengurus Daerah Aceh
-└── Kontingen: Aceh
-    ├── Atlet A — asal Perumda Air Minum Kabupaten Aceh
-    └── Tim B  — asal PDAM lain dalam Provinsi Aceh
-
-Nama di bracket/klasemen: Aceh
-```
+- Satu provinsi memiliki satu PD PERPAMSI.
+- Nama resmi: `PD PERPAMSI {provinces.name}`.
+- Contoh: `PD PERPAMSI Aceh`, `PD PERPAMSI Kalimantan Timur`.
+- Nama ini dipakai pada portal, peserta, bracket, hasil, klasemen, dan laporan.
+- `regional_committees` tetap nama teknis tabel sampai refactor terpisah disetujui.
 
 ## Relasi Kanonik
 
 ```text
 Province 1 ── 1 RegionalCommittee
-Province 1 ── N Pdam
+RegionalCommittee 1 ── N User
+RegionalCommittee 1 ── N CommitteeApplication
 RegionalCommittee 1 ── N EventEntry
-Pdam 1 ── N EventEntry
 TournamentEvent 1 ── N EventEntry
+EventEntry 1 ── N EntryMember
 EventEntry 1 ── N MatchParticipant/Match
-Final Match ── MedalStanding Province
+Final Match ── MedalStanding RegionalCommittee
 ```
 
-`regional_committees` tetap nama teknis tabel saat ini. Nilai `regional_committees.name` wajib sama dengan `provinces.name`.
+## Pengajuan Akun Pengurus Daerah
 
-## Aturan Data
+1. Master provinsi dan PD PERPAMSI dibuat lebih dulu oleh sistem/admin.
+2. Registrasi publik tidak membuat PD PERPAMSI baru; registrasi membuat pengajuan akses.
+3. Pengguna memilih provinsi, lalu mengisi penanggung jawab, jabatan, email, telepon, kata sandi, dan dokumen mandat bila diwajibkan.
+4. Satu provinsi hanya boleh memiliki satu pengajuan aktif pada saat yang sama.
+5. Akun berstatus menunggu, perlu perbaikan, ditolak, nonaktif, atau ditangguhkan tidak dapat masuk portal.
+6. Admin wajib memberi alasan saat menolak atau meminta perbaikan.
+7. Setelah verifikasi, pengguna ditautkan ke PD PERPAMSI provinsinya.
+8. Penambahan pengguna kedua pada PD yang sama harus melalui undangan atau persetujuan Admin.
 
-1. Satu provinsi memiliki satu akun/ruang kerja Pengurus Daerah.
-2. Nama kontingen selalu memakai nama resmi provinsi tanpa awalan `PD`, `PERPAMSI`, `PDAM`, atau `Perumda Air Minum`.
-3. `event_entries.display_name` memakai nama provinsi.
-4. `event_entries.pdam_id` menyimpan instansi asal untuk administrasi dan verifikasi internal.
-5. `regional_committee_id` diturunkan otomatis dari provinsi yang dikelola pengguna.
-6. Operator tidak boleh memilih kontingen provinsi lain.
-7. Atlet, tim, dokumen, seed, match, dan hasil terhubung ke `event_entries`.
-8. Bracket, hasil, peserta public, dan klasemen menampilkan nama provinsi.
-9. Detail instansi asal hanya tampil pada portal internal bila dibutuhkan.
-10. Medali seluruh entry dari provinsi sama diakumulasi ke provinsi tersebut.
+## Registrasi Cabor dan Pemain
 
-## Alur Registrasi
+1. Pengurus Daerah masuk ke portal PD PERPAMSI.
+2. Pengurus Daerah memilih cabor dan kategori yang pendaftarannya dibuka.
+3. Sistem membuat satu `event_entry` untuk PD PERPAMSI pada kompetisi tersebut.
+4. Nama tampil diturunkan dari PD PERPAMSI; client tidak boleh mengirim nama bebas.
+5. Pemain disimpan sebagai banyak `entry_members`, bukan kolom pemain tetap.
+6. Jumlah dan atribut pemain divalidasi dari kategori dan versi peraturan cabor.
+7. Registrasi diajukan, diperbaiki bila perlu, lalu diverifikasi.
+8. Hanya registrasi terverifikasi yang dapat masuk seed, grup, bracket, match, dan klasemen.
+9. Registrasi tidak dihapus setelah dipakai pertandingan; gunakan status pembatalan dan audit.
 
-1. Pengurus Daerah masuk ke portal provinsinya.
-2. Pengurus Daerah memilih instansi asal atlet/tim.
-3. Sistem menetapkan `province_id`, `regional_committee_id`, dan `display_name` dari provinsi akun.
-4. Pengurus Daerah memilih event, cabor, kategori, tim/atlet, dan dokumen.
-5. Verifikator memeriksa data internal tanpa mengubah nama kontingen.
-6. Entry terverifikasi masuk ke seeding, bracket, atau klasemen cabor.
-7. Hasil final masuk ke klasemen medali provinsi.
+## Constraint Wajib
+
+- Unique `regional_committees.province_id`.
+- Unique pengajuan aktif per provinsi.
+- Unique email pengguna.
+- Unique registrasi PD PERPAMSI per kompetisi, kecuali aturan kategori mengizinkan lebih dari satu entry.
+- Unique pemain pada scope event/cabor/kategori sesuai identitas yang disepakati.
+- Foreign key memakai restrict untuk master yang sudah dipakai.
+- Perubahan status, verifikasi, role, pemain, dan pembatalan tercatat pada audit log.
 
 ## Sumber Kebenaran
 
-- Nama kontingen: `provinces.name`.
-- Ruang kerja Pengurus Daerah: `regional_committees`.
-- Instansi asal: `pdams`.
+- Nama PD: `PD PERPAMSI {provinces.name}`.
+- Ruang kerja: `regional_committees`.
+- Pengajuan akses: `committee_applications`.
+- Pengguna: `users`.
 - Registrasi cabor: `event_entries`.
-- Hasil pertandingan: `matches`, `match_scores`, `score_audits`.
-- Rekap publik: agregasi hasil final berdasarkan provinsi.
+- Pemain: `entry_members`.
+- Hasil: `matches`, `match_scores`, `score_audits`.
+- Risiko dan kontrol: `docs/06-security/risk-register.md`.

@@ -69,7 +69,7 @@ Dilarang:
 - Hover winner path line aktif halus dan tidak putus.
 - Final tidak sticky terhadap scroll horizontal.
 
-### Peserta PDAM
+### Peserta PD PERPAMSI
 
 - Server-side pagination.
 - Search debounce minimal 400 ms.
@@ -78,7 +78,7 @@ Dilarang:
 
 ### Ranking
 
-- Filter: event, cabor, kategori, provinsi, kabupaten/kota, PDAM.
+- Filter: event, cabor, kategori, provinsi, dan PD PERPAMSI.
 - Medal count tidak boleh terlalu dekat dengan nama wilayah.
 - Sorting harus jelas.
 

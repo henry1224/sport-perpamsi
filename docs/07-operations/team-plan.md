@@ -12,7 +12,7 @@
 - Backend Developer 2: match, skor, bracket, klasemen, ranking, audit log.
 - QA Engineer: test plan, regression, UAT, load test sederhana.
 - DevOps/Infrastructure: deployment, domain, SSL, backup, monitoring.
-- Data/Event Coordinator: data PDAM, cabor, venue, peserta, jadwal, aturan ranking.
+- Data/Event Coordinator: data PD PERPAMSI, cabor, peraturan, venue, peserta, jadwal, dan ranking.
 - Support Event: standby saat event dan bantu panitia.
 
 ## Tim Minimum
