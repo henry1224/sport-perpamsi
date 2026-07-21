@@ -4,6 +4,8 @@ Setiap perubahan kode wajib mengikuti `docs/09-development/coding-standard.md` d
 
 Dokumen ini **wajib dibaca sebelum setiap perubahan aplikasi**, terutama perubahan migration, model, seeder, master data, relasi, role, status, registrasi, jadwal, dan skor. Instruksi ini juga dicatat pada `AGENTS.md` di root repository agar berlaku otomatis untuk seluruh pekerjaan.
 
+Perubahan database atau seeder juga wajib membaca `docs/02-data/database-lifecycle-standard.md`. Tidak boleh drop tabel/kolom hanya karena disebut legacy atau belum memiliki menu UI.
+
 ## Prinsip
 
 - Branch harus mencerminkan jenis pekerjaan.
@@ -87,6 +89,7 @@ chore: setup deployment config
 - [ ] Test/check relevan sudah dijalankan.
 - [ ] Dokumentasi/progress diperbarui bila behavior berubah.
 - [ ] Perubahan data sudah dicek terhadap ERD, migration plan, test strategy, UAT, dan risk register.
+- [ ] Penghapusan database lolos seluruh gate pada database lifecycle standard.
 
 ## Sebelum Push
 

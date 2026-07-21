@@ -1,6 +1,7 @@
 # Migration Plan Laravel/PostgreSQL
 
 Migration wajib mengikuti [delegation-standard.md](./delegation-standard.md) dan [risk-register.md](../06-security/risk-register.md).
+Penghapusan struktur wajib mengikuti [database-lifecycle-standard.md](./database-lifecycle-standard.md).
 
 ## Urutan Migration Target
 

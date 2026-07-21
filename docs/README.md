@@ -29,6 +29,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [ERD konseptual](./02-data/erd.md): relasi utama.
 - [Data dictionary](./02-data/data-dictionary.md): field inti v1.
 - [Migration plan](./02-data/migration-plan.md): urutan migration Laravel/PostgreSQL.
+- [Database lifecycle standard](./02-data/database-lifecycle-standard.md): klasifikasi active/legacy/dead dan gate wajib sebelum drop atau perubahan seeder.
 - [ERD v1 baseline](./02-data/erd-v1-baseline.md): ERD baseline development.
 - [Import template standard](./02-data/import-template-standard.md): kolom CSV/Excel data awal.
 - [Sample participant data](./02-data/sample-participant-data.md): contoh PD PERPAMSI, registrasi cabor, dan pemain untuk development/UAT.
