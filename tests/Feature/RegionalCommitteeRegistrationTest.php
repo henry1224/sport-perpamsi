@@ -18,48 +18,34 @@ class RegionalCommitteeRegistrationTest extends TestCase
     {
         $this->seed();
 
-        $provinceId = DB::table('pdams')
-            ->whereNotNull('province_id')
-            ->groupBy('province_id')
-            ->havingRaw('count(*) > 1')
-            ->value('province_id');
-
-        $committeeIds = DB::table('event_entries')
-            ->join('pdams', 'event_entries.pdam_id', '=', 'pdams.id')
-            ->where('pdams.province_id', $provinceId)
-            ->pluck('event_entries.regional_committee_id')
-            ->filter()
-            ->unique();
-
-        $this->assertNotNull($provinceId);
-        $this->assertCount(1, $committeeIds);
-        $committee = DB::table('regional_committees')->where('id', $committeeIds->first())->first();
+        $entry = DB::table('event_entries')->whereNull('pdam_id')->firstOrFail();
+        $committee = DB::table('regional_committees')->find($entry->regional_committee_id);
         $province = DB::table('provinces')->find($committee->province_id);
 
+        $this->assertSame($committee->province_id, $entry->province_id);
         $this->assertSame('PD PERPAMSI '.$province->name, $committee->name);
     }
 
-    public function test_pd_admin_can_register_only_their_province_and_entry_starts_pending(): void
+    public function test_pd_admin_registers_members_without_pdam_and_entry_starts_pending(): void
     {
         $this->seed();
 
         $admin = User::query()->where('role', 'pd_admin')->with('committee')->firstOrFail();
-        $event = TournamentEvent::query()->where('status', 'registration_open')->with('category')->firstOrFail();
-        $existingPdamIds = EventEntry::query()->where('tournament_event_id', $event->id)->pluck('pdam_id');
-        $pdam = DB::table('pdams')
-            ->where('province_id', $admin->committee->province_id)
-            ->whereNotIn('id', $existingPdamIds)
-            ->first();
-
-        if (! $pdam) {
-            EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $admin->regional_committee_id)->firstOrFail()->delete();
-            $pdam = DB::table('pdams')->where('province_id', $admin->committee->province_id)->firstOrFail();
-        }
-
-        $payload = ['pdam_id' => $pdam->id];
-        if (in_array($event->category?->competition_type, ['individual', 'doubles'], true)) $payload['athlete_1'] = 'Atlet Uji';
-        if ($event->category?->competition_type === 'doubles') $payload['athlete_2'] = 'Atlet Uji Dua';
-        if ($event->category?->competition_type === 'team') $payload['team_name'] = 'Tim Uji';
+        $event = TournamentEvent::query()->with('category')->firstOrFail();
+        $event->update([
+            'status' => 'registration_open',
+            'registration_published_at' => now(),
+            'registration_rules' => [
+                'category_name' => $event->category->name,
+                'competition_type' => $event->category->competition_type,
+                'scoring_type' => $event->category->scoring_type,
+                'format' => $event->format,
+                'min_members' => $event->category->min_members,
+                'max_members' => $event->category->max_members,
+            ],
+        ]);
+        EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $admin->regional_committee_id)->delete();
+        $payload = ['members' => collect(range(1, $event->category->min_members))->map(fn ($number) => ['name' => 'Pemain Uji '.$number])->all()];
 
         $this->actingAs($admin)
             ->post(route('pd.events.entries.store', $event), $payload)
@@ -67,21 +53,109 @@ class RegionalCommitteeRegistrationTest extends TestCase
 
         $this->assertDatabaseHas('event_entries', [
             'tournament_event_id' => $event->id,
-            'pdam_id' => $pdam->id,
+            'pdam_id' => null,
             'regional_committee_id' => $admin->regional_committee_id,
+            'registration_key' => $event->id.':'.$admin->regional_committee_id,
             'display_name' => $admin->committee->name,
             'verification_status' => 'pending',
         ]);
+        $this->assertDatabaseHas('entry_members', ['name' => 'Pemain Uji 1']);
 
         $this->assertSame(
             'PD PERPAMSI '.DB::table('provinces')->find($admin->committee->province_id)->name,
             $admin->committee->name
         );
 
-        $foreignPdam = DB::table('pdams')->where('province_id', '!=', $admin->committee->province_id)->firstOrFail();
         $this->actingAs($admin)
-            ->post(route('pd.events.entries.store', $event), [...$payload, 'pdam_id' => $foreignPdam->id])
-            ->assertSessionHasErrors('pdam_id');
+            ->post(route('pd.events.entries.store', $event), $payload)
+            ->assertSessionHasErrors('members');
+    }
+
+    public function test_member_limits_and_duplicate_names_are_validated(): void
+    {
+        $this->seed();
+
+        $admin = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereHas('category', fn ($query) => $query->where('min_members', 2))->with('category')->firstOrFail();
+        $event->update([
+            'status' => 'registration_open',
+            'registration_published_at' => now(),
+            'registration_rules' => [
+                'category_name' => $event->category->name,
+                'competition_type' => $event->category->competition_type,
+                'scoring_type' => $event->category->scoring_type,
+                'format' => $event->format,
+                'min_members' => $event->category->min_members,
+                'max_members' => $event->category->max_members,
+            ],
+        ]);
+        EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $admin->regional_committee_id)->delete();
+
+        $this->actingAs($admin)
+            ->post(route('pd.events.entries.store', $event), ['members' => [['name' => 'Pemain Sama'], ['name' => ' pemain sama ']]])
+            ->assertSessionHasErrors('members');
+
+        $this->actingAs($admin)
+            ->post(route('pd.events.entries.store', $event), ['members' => []])
+            ->assertSessionHasErrors('members');
+    }
+
+    public function test_pd_only_sees_registration_published_by_admin(): void
+    {
+        $this->seed();
+
+        $admin = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $published = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
+        $hidden = TournamentEvent::query()->whereNull('registration_published_at')->firstOrFail();
+
+        $this->actingAs($admin)
+            ->get(route('pd.dashboard'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('events', fn ($events) => collect($events)->pluck('code')->contains($published->code)
+                    && ! collect($events)->pluck('code')->contains($hidden->code)));
+
+        $this->actingAs($admin)->get(route('pd.events.show', $hidden))->assertNotFound();
+    }
+
+    public function test_published_registration_uses_locked_rule_snapshot(): void
+    {
+        $this->seed();
+
+        $admin = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereNotNull('registration_published_at')->with('category')->firstOrFail();
+        $lockedMinimum = $event->registration_rules['min_members'];
+        $event->category->update(['min_members' => $lockedMinimum + 5, 'max_members' => $lockedMinimum + 5]);
+        EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $admin->regional_committee_id)->delete();
+        $payload = ['members' => collect(range(1, $lockedMinimum))->map(fn ($number) => ['name' => 'Pemain Snapshot '.$number])->all()];
+
+        $this->actingAs($admin)
+            ->post(route('pd.events.entries.store', $event), $payload)
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('event_entries', [
+            'tournament_event_id' => $event->id,
+            'regional_committee_id' => $admin->regional_committee_id,
+        ]);
+    }
+
+    public function test_admin_verification_records_actor_and_time(): void
+    {
+        $this->seed();
+
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $entry = EventEntry::query()->firstOrFail();
+        $entry->update(['verification_status' => 'pending', 'verified_by' => null, 'verified_at' => null]);
+
+        $this->actingAs($admin)->post(route('admin.entries.verify', $entry))->assertRedirect();
+
+        $this->assertDatabaseHas('event_entries', [
+            'id' => $entry->id,
+            'verification_status' => 'verified',
+            'verified_by' => $admin->id,
+        ]);
+        $this->assertNotNull($entry->fresh()->verified_at);
     }
 
     public function test_seeded_semifinal_losers_are_counted_as_bronze(): void

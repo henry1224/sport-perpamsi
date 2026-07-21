@@ -15,12 +15,17 @@ class DatabaseSeeder extends Seeder
             VenueSeeder::class,
             EventAgendaSeeder::class,
             PdamSeeder::class,
-            TournamentDomainSeeder::class,
-            TournamentBracketDemoSeeder::class,
-            MedalDemoSeeder::class,
-            RegistrationDemoSeeder::class,
-            UserSeeder::class,
-            PendingEntriesSeeder::class,
         ]);
+
+        if (app()->environment(['local', 'testing'])) {
+            $this->call([
+                TournamentDomainSeeder::class,
+                TournamentBracketDemoSeeder::class,
+                MedalDemoSeeder::class,
+                RegistrationDemoSeeder::class,
+                UserSeeder::class,
+                PendingEntriesSeeder::class,
+            ]);
+        }
     }
 }

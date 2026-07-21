@@ -7,6 +7,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 ### 00 Project
 
 - [Roadmap pengembangan terkendali](./00-project/development-roadmap.md): phase aktif, dependency, checklist, dan exit criteria.
+- [Standar eksekusi phase](./00-project/phase-execution-standard.md): gate wajib sebelum task, aturan phase aktif, dan larangan melompat phase.
 - [Peta aplikasi dan alur end-to-end](./00-project/application-flow.md): fitur saat ini, target v1, relasi data, dan gap pengembangan.
 - [Piagam proyek](./00-project/charter.md): tujuan, scope, non-scope, metrik keberhasilan.
 - [PRD utama](./00-project/prd.md): visi produk, modul, scope v1, acceptance criteria.
@@ -95,6 +96,8 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [Git workflow](./09-development/git-workflow.md): standar branch, commit, push, dan merge.
 
 ## Aturan Pakai
+
+- Sumber kebenaran publikasi cabor untuk portal PD: `03-product/registration-publication-standard.md`.
 
 - Perubahan scope masuk ke PRD dan delivery plan.
 - Perubahan data masuk ke data standard, ERD, atau data dictionary.

@@ -10,12 +10,12 @@ Penghapusan struktur wajib mengikuti [database-lifecycle-standard.md](./database
 3. `committee_applications`: pengajuan akses PD PERPAMSI.
 4. `sports`, `sport_categories`, `sport_rules`.
 5. `venues`: detail lokasi, fasilitas, peta, kontak, dan status aktif.
-6. `tournament_events`: status, batas registrasi, dan versi peraturan.
+6. `tournament_events`: status draft, snapshot regulasi, aktor/waktu publikasi, dan batas registrasi.
 7. `event_entries`: relasi PD PERPAMSI tanpa PDAM.
 8. `entry_members`: daftar pemain fleksibel.
 9. `event_agendas`: relasi kompetisi, status publikasi, dan deskripsi.
 10. `matches`, `match_scores`, `score_audits`.
-11. `sport_assignments`: panitia per cabor/match.
+11. `sport_assignments`: panitia per cabor dan venue, dilengkapi audit assignment; scope match mengikuti jadwal venue.
 12. `audit_logs`, import, dan export jobs.
 
 ## Migrasi Data Lama
@@ -28,6 +28,14 @@ Penghapusan struktur wajib mengikuti [database-lifecycle-standard.md](./database
 6. Ubah aplikasi membaca model baru.
 7. Hapus ketergantungan `pdam_id`, `province_id`, `regency_id`, `athlete_1`, `athlete_2`, dan `team_name` setelah verifikasi produksi.
 8. Tabel PDAM legacy tidak dihapus pada migration yang sama; arsipkan setelah tidak ada referensi.
+
+## Status Phase 2 — 21 Juli 2026
+
+- Registrasi baru menulis `regional_committee_id`, `registration_key`, dan `entry_members`; `pdam_id` bernilai null.
+- Data legacy tidak dipublikasikan otomatis; Admin meninjau dan mempublikasikan kompetisi yang sah.
+- `athlete_1` dan `athlete_2` lama dibackfill ke `entry_members` tanpa menghapus kolom sumber.
+- Seeder demo masih menulis kolom legacy untuk kompatibilitas bracket, lalu membuat roster pada `entry_members`.
+- Penghapusan kolom/tabel legacy ditunda sampai audit referensi, observasi rilis, backup, dan upgrade test lulus.
 
 ## Constraint Wajib
 

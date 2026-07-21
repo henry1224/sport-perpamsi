@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminEntryVerificationController;
 use App\Http\Controllers\Admin\CommitteeApplicationController;
-use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\ScoreController;
+use App\Http\Controllers\Admin\SportAssignmentController;
+use App\Http\Controllers\Admin\TournamentEventController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\CommitteeRegistrationController;
 use App\Http\Controllers\Pd\PdDashboardController;
@@ -51,4 +53,11 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/committee-applications/{application}/verify', [CommitteeApplicationController::class, 'verify'])->name('committee-applications.verify');
     Route::post('/committee-applications/{application}/revision', [CommitteeApplicationController::class, 'revision'])->name('committee-applications.revision');
     Route::post('/committee-applications/{application}/reject', [CommitteeApplicationController::class, 'reject'])->name('committee-applications.reject');
+    Route::get('/events', [TournamentEventController::class, 'index'])->name('events.index');
+    Route::post('/events/{event:code}/publish', [TournamentEventController::class, 'publish'])->name('events.publish');
+    Route::post('/events/{event:code}/close', [TournamentEventController::class, 'close'])->name('events.close');
+    Route::get('/assignments', [SportAssignmentController::class, 'index'])->name('assignments.index');
+    Route::post('/assignments/users', [SportAssignmentController::class, 'storeUser'])->name('assignments.users.store');
+    Route::post('/assignments', [SportAssignmentController::class, 'store'])->name('assignments.store');
+    Route::post('/assignments/{assignment}/revoke', [SportAssignmentController::class, 'revoke'])->name('assignments.revoke');
 });

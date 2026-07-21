@@ -6,7 +6,6 @@ import SectionTitle from '../../Components/SectionTitle.vue';
 
 const props = defineProps({
   committee: Object,
-  pdams: Array,
   events: Array,
 });
 
@@ -15,12 +14,19 @@ const filtered = computed(() => props.events.filter((e) =>
   [e.name, e.sport, e.category].filter(Boolean).join(' ').toLowerCase().includes(q.value.toLowerCase())
 ));
 const totalEntries = computed(() => props.events.reduce((a, e) => a + e.entries.verified + e.entries.pending, 0));
+const statusLabel = (status) => ({
+  registration_open: 'Pendaftaran Dibuka',
+  registration_closed: 'Pendaftaran Ditutup',
+  bracket_locked: 'Bracket Dikunci',
+  ongoing: 'Sedang Berlangsung',
+  completed: 'Selesai',
+}[status] || status);
 </script>
 
 <template>
   <PortalLayout portal="pd">
     <div class="page-head">
-      <SectionTitle eyebrow="Panel Pengurus Daerah" :title="committee.name" :meta="`${pdams.length} data asal · ${totalEntries} entry`" />
+      <SectionTitle eyebrow="Panel Pengurus Daerah" :title="committee.name" :meta="`${totalEntries} pendaftaran cabor`" />
     </div>
 
     <section class="dash-panel">
@@ -30,11 +36,11 @@ const totalEntries = computed(() => props.events.reduce((a, e) => a + e.entries.
           <b>{{ committee.province || '—' }}</b>
         </div>
         <div class="pill">
-          <span>Data Asal Wilayah</span>
-          <b>{{ pdams.length }}</b>
+          <span>Cabor Tersedia</span>
+          <b>{{ events.length }}</b>
         </div>
         <div class="pill">
-          <span>Total Entry</span>
+          <span>Total Pendaftaran</span>
           <b>{{ totalEntries }}</b>
         </div>
       </div>
@@ -50,24 +56,17 @@ const totalEntries = computed(() => props.events.reduce((a, e) => a + e.entries.
         <div v-for="ev in filtered" :key="ev.code" class="event-row">
           <div class="event-main">
             <strong>{{ ev.name }}</strong>
-            <small>{{ ev.sport }} · {{ ev.category || 'Umum' }} · {{ ev.format }} · <em>{{ ev.status }}</em></small>
+            <small>{{ ev.sport }} · {{ ev.category || 'Umum' }} · {{ ev.member_limit }} · <em>{{ statusLabel(ev.status) }}</em></small>
           </div>
           <div class="event-counts">
-            <span class="tag verified">Verified: {{ ev.entries.verified }}</span>
-            <span class="tag pending">Pending: {{ ev.entries.pending }}</span>
+            <span class="tag verified">Terverifikasi: {{ ev.entries.verified }}</span>
+            <span class="tag pending">Menunggu: {{ ev.entries.pending }}</span>
             <span v-if="ev.entries.rejected" class="tag rejected">Ditolak: {{ ev.entries.rejected }}</span>
           </div>
-          <Link :href="`/pd/events/${ev.code}`" class="event-cta">Kelola</Link>
+          <Link :href="`/pd/events/${ev.code}`" class="event-cta">{{ ev.registration_open ? 'Daftar' : 'Lihat' }}</Link>
         </div>
         <p v-if="!filtered.length" class="empty">Tidak ada event sesuai filter.</p>
       </div>
-    </section>
-
-    <section class="pdam-panel">
-      <h3>Instansi Asal Wilayah Anda</h3>
-      <ul>
-        <li v-for="p in pdams" :key="p.code"><b>{{ p.name }}</b><small>{{ p.city || '—' }}</small></li>
-      </ul>
     </section>
   </PortalLayout>
 </template>
@@ -93,10 +92,5 @@ input, select { width: 100%; padding: 12px 14px; color: #fff; background: #08142
 .tag.rejected { background: rgba(240,90,40,.22); color: #F05A28; }
 .event-cta { padding: 10px 16px; background: #F6C64A; color: #071126; text-decoration: none; font-weight: 1000; letter-spacing: .12em; text-transform: uppercase; font-size: 12px; box-shadow: 5px 5px 0 rgba(240,90,40,.35); clip-path: polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%); }
 .empty { text-align: center; padding: 30px; color: rgba(255,255,255,.5); }
-.pdam-panel { margin-top: 24px; padding: 18px; background: rgba(5,11,28,.56); border: 1px solid rgba(255,255,255,.12); }
-.pdam-panel h3 { margin: 0 0 12px; color: #F6C64A; letter-spacing: .1em; text-transform: uppercase; font-size: 12px; }
-.pdam-panel ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
-.pdam-panel li { padding: 10px 12px; background: #08142d; border: 1px solid rgba(255,255,255,.1); display: grid; gap: 4px; }
-.pdam-panel small { color: rgba(255,255,255,.55); font-weight: 700; }
 @media (max-width: 900px) { .event-row { grid-template-columns: 1fr; } }
 </style>

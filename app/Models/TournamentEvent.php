@@ -12,7 +12,19 @@ class TournamentEvent extends Model
 
     protected $casts = [
         'seed_locked_at' => 'datetime',
+        'registration_rules' => 'array',
+        'registration_published_at' => 'datetime',
+        'registration_open_at' => 'datetime',
+        'registration_close_at' => 'datetime',
     ];
+
+    public function registrationIsOpen(): bool
+    {
+        return $this->registration_published_at
+            && $this->status === 'registration_open'
+            && (! $this->registration_open_at || $this->registration_open_at->isPast())
+            && (! $this->registration_close_at || $this->registration_close_at->isFuture());
+    }
 
     public function sport(): BelongsTo
     {

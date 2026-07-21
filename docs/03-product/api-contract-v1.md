@@ -24,7 +24,7 @@
 | Method | Path | Fungsi |
 |---|---|---|
 | GET | `/pd/dashboard` | Ringkasan PD |
-| GET | `/pd/events` | Kompetisi yang dapat didaftarkan |
+| GET | `/pd/events/{event}` | Detail kompetisi terpublikasi |
 | POST | `/pd/events/{event}/entries` | Buat registrasi PD |
 | PUT | `/pd/entries/{entry}` | Ubah draft registrasi |
 | POST | `/pd/entries/{entry}/members` | Tambah pemain |
@@ -35,6 +35,14 @@
 ## Master Admin
 
 CRUD resource tersedia untuk `sports`, `sport-categories`, `sport-rules`, `tournament-events`, `venues`, dan `agendas`. Delete master yang sudah dipakai harus ditolak; gunakan nonaktif/arsip.
+
+| Method | Path | Fungsi |
+|---|---|---|
+| GET | `/admin/events` | Daftar draft dan kompetisi terpublikasi |
+| POST | `/admin/events/{event}/publish` | Validasi dan simpan snapshot regulasi serta periode |
+| POST | `/admin/events/{event}/close` | Tutup registrasi tanpa menghapus entry |
+
+Publish ditolak bila kategori tidak aktif, cabor tidak cocok, periode invalid, atau regulasi belum lengkap. Publikasi ulang ditolak setelah entry masuk.
 
 ## Panitia dan Pertandingan
 

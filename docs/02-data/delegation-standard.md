@@ -39,11 +39,11 @@ Final Match ── MedalStanding RegionalCommittee
 ## Registrasi Cabor dan Pemain
 
 1. Pengurus Daerah masuk ke portal PD PERPAMSI.
-2. Pengurus Daerah memilih cabor dan kategori yang pendaftarannya dibuka.
+2. Pengurus Daerah memilih paket kompetisi/cabor/kategori yang telah dipublikasikan Admin.
 3. Sistem membuat satu `event_entry` untuk PD PERPAMSI pada kompetisi tersebut.
 4. Nama tampil diturunkan dari PD PERPAMSI; client tidak boleh mengirim nama bebas.
 5. Pemain disimpan sebagai banyak `entry_members`, bukan kolom pemain tetap.
-6. Jumlah dan atribut pemain divalidasi dari kategori dan versi peraturan cabor.
+6. Jumlah dan atribut pemain divalidasi dari snapshot regulasi kompetisi, bukan membaca ulang master kategori.
 7. Registrasi diajukan, diperbaiki bila perlu, lalu diverifikasi.
 8. Hanya registrasi terverifikasi yang dapat masuk seed, grup, bracket, match, dan klasemen.
 9. Registrasi tidak dihapus setelah dipakai pertandingan; gunakan status pembatalan dan audit.
@@ -54,6 +54,7 @@ Final Match ── MedalStanding RegionalCommittee
 - Unique pengajuan aktif per provinsi.
 - Unique email pengguna.
 - Unique registrasi PD PERPAMSI per kompetisi, kecuali aturan kategori mengizinkan lebih dari satu entry.
+- Kompetisi tanpa waktu publikasi tidak boleh tampil atau menerima registrasi.
 - Unique pemain pada scope event/cabor/kategori sesuai identitas yang disepakati.
 - Foreign key memakai restrict untuk master yang sudah dipakai.
 - Perubahan status, verifikasi, role, pemain, dan pembatalan tercatat pada audit log.

@@ -25,9 +25,14 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Risiko | Dampak | Kontrol wajib | Verifikasi |
 |---|---|---|---|
 | Pemain ganda pada cabor/kategori sama | Tinggi | Identitas pemain ternormalisasi dan unique sesuai aturan event | Feature test duplikasi |
+| Satu PD mendaftarkan cabor sama berulang | Tinggi | `registration_key` unik dan validasi registrasi aktif per PD/event | Feature test registrasi ulang |
+| Request memalsukan PD atau instansi asal | Kritis | Scope PD diambil dari pengguna terautentikasi; request tidak menerima `pdam_id` atau PD | Feature test payload |
 | Jumlah pemain melebihi aturan cabor | Tinggi | Batas min/max berasal dari master kategori/peraturan | Boundary test |
 | Registrasi dilakukan setelah penutupan | Tinggi | Status event dicek backend, bukan hanya tombol UI | Feature test status |
 | Kategori berubah setelah peserta terdaftar | Tinggi | Kategori terkunci setelah registrasi pertama atau memakai workflow migrasi | Test lock kategori |
+| Seluruh master kategori tampil sebagai pilihan PD | Tinggi | Dashboard hanya membaca kompetisi dengan `registration_published_at`; detail unpublished 404 | Feature test publikasi |
+| Master kategori berubah setelah publish | Tinggi | Snapshot `registration_rules` pada kompetisi | Feature test snapshot |
+| Kompetisi baru otomatis terbuka | Tinggi | Default status `registration_draft`; publish action eksplisit | Migration dan feature test |
 | Bracket dikunci sebelum verifikasi selesai | Kritis | Precondition: tidak ada pengajuan menunggu/perbaikan | Feature test bracket lock |
 | Penghapusan peserta merusak histori match | Kritis | Restrict delete; gunakan pembatalan/status dan audit | FK test dan UAT |
 
@@ -40,6 +45,7 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Cabor dihapus saat dipakai | Kritis | `restrictOnDelete` dan arsip/nonaktif | Migration test |
 | Status internal tampil mentah | Sedang | Satu kamus label Indonesia untuk seluruh UI/export | UI test/status audit |
 | Seeder menimpa perubahan admin | Tinggi | Seeder idempotent hanya mengisi baseline; data operasional tidak ditimpa | Rerun seeder test |
+| Publish dilakukan tanpa kategori/regulasi valid | Tinggi | Action Admin memvalidasi kategori aktif, cabor cocok, periode, dan snapshot | Feature test publish |
 
 ## Venue, Agenda, dan Jadwal
 
@@ -61,6 +67,7 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Admin menonaktifkan panitia tetapi sesi tetap aktif | Tinggi | Status pengguna dicek tiap request dan sesi dapat dicabut | Feature test suspended user |
 | Finalisasi atau revisi tanpa kewenangan | Kritis | Permission action dan approval terpisah | Feature test RBAC |
 | Role berubah tanpa jejak | Tinggi | Audit perubahan role dan assignment | Audit test |
+| Panitia ditetapkan ke venue/cabor salah | Tinggi | Pilihan memakai ID master tervalidasi dan perubahan assignment tercatat audit | Feature test assignment Admin |
 
 ## Pertandingan, Skor, dan Klasemen
 

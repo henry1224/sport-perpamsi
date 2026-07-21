@@ -14,7 +14,8 @@
 ## Portal Pengurus Daerah
 
 - Ringkasan status akun dan registrasi.
-- Daftar cabor/kategori yang dibuka.
+- Daftar paket kompetisi/cabor/kategori yang dipublikasikan Admin.
+- Ringkasan regulasi fix: format, tipe kompetisi, min/max pemain, dan periode registrasi.
 - Form registrasi cabor.
 - Daftar pemain dinamis.
 - Status verifikasi dan catatan perbaikan.
@@ -28,6 +29,7 @@
 - Master Cabor.
 - Kategori dan Peraturan.
 - Kompetisi.
+- Publikasi Registrasi: draft, preview, periode, publish, dan tutup.
 - Venue.
 - Agenda dan Jadwal.
 - Panitia dan Penugasan.

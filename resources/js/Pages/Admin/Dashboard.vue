@@ -6,7 +6,6 @@ defineProps({ stats: Object, recentEntries: Array });
 
 const cards = [
   ['Kontingen Provinsi', 'committees', 'Peserta daerah'],
-  ['PDAM', 'pdams', 'Instansi peserta'],
   ['Data Lomba', 'events', 'Cabor dan kategori'],
   ['Registrasi', 'entries', 'Seluruh entry'],
   ['Menunggu Verifikasi', 'pending', 'Perlu tindakan'],
@@ -36,7 +35,7 @@ const cards = [
         <header><div><span>Registrasi Terbaru</span><h2>Aktivitas Daerah</h2></div><Link href="/admin/entries">Lihat Semua</Link></header>
         <div class="entry-list">
           <article v-for="entry in recentEntries" :key="entry.id">
-            <div><strong>{{ entry.name }}</strong><span>{{ entry.pdam }} · {{ entry.event }}</span></div>
+            <div><strong>{{ entry.name }}</strong><span>{{ entry.event }}</span></div>
             <small :class="entry.status">{{ entry.status }}</small>
           </article>
           <p v-if="!recentEntries.length">Belum ada registrasi.</p>

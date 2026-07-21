@@ -13,23 +13,25 @@
 
 - [ ] Nama portal memakai `PD PERPAMSI {provinsi}`.
 - [ ] Pengurus Daerah hanya melihat data PD sendiri.
-- [ ] Pengurus Daerah dapat memilih cabor/kategori yang dibuka.
-- [ ] Pengurus Daerah dapat menambah, mengubah, dan mengajukan daftar pemain sebelum batas waktu.
-- [ ] Jumlah dan duplikasi pemain divalidasi sesuai peraturan.
-- [ ] Status tampil dalam Bahasa Indonesia.
+- [x] Pengurus Daerah hanya melihat kompetisi yang dipublikasikan Admin.
+- [-] Pengurus Daerah dapat menambah dan mengajukan daftar pemain; edit draft belum tersedia.
+- [x] Jumlah dan duplikasi pemain divalidasi sesuai snapshot regulasi kompetisi.
+- [x] Status registrasi dan event pada portal PD tampil dalam Bahasa Indonesia.
 
 ## Master Admin
 
 - [ ] Admin dapat mengelola cabor dan kategori tanpa menghapus histori.
 - [ ] Admin dapat membuat versi peraturan dan menetapkannya ke kompetisi.
+- [x] Admin dapat mempublikasikan dan menutup registrasi kompetisi.
+- [ ] Admin dapat preview, menarik publikasi sebelum ada entry, dan melihat audit publikasi.
 - [ ] Admin dapat mengelola venue beserta detail dan status aktif.
 - [ ] Admin dapat mengelola agenda tanpa bentrok venue/waktu.
 - [ ] Admin dapat mengelola kompetisi dan status pendaftaran.
-- [ ] Admin dapat melihat registrasi serta pemain per PD PERPAMSI.
+- [x] Admin dapat melihat, menyetujui, atau menolak registrasi serta pemain per PD PERPAMSI.
 
 ## Panitia
 
-- [ ] Admin dapat membuat akun dan assignment panitia per cabor.
+- [x] Admin dapat membuat akun dan assignment panitia per cabor dan venue.
 - [ ] Panitia hanya melihat cabor/match tugasnya.
 - [ ] Scorekeeper dapat input skor match tugasnya.
 - [ ] Koordinator dapat finalisasi sesuai permission.
@@ -49,4 +51,5 @@
 - [ ] Import memiliki preview dan rollback saat invalid.
 - [ ] Backup dan restore sudah diuji.
 - [ ] Tidak ada status kode mentah pada UI/export.
+- [x] Perubahan master kategori tidak mengubah snapshot kompetisi terpublikasi.
 - [ ] `git diff`, test, build, migration upgrade, dan security review lulus sebelum merge.

@@ -2,6 +2,8 @@
 
 Eksekusi teknis dan status phase mengikuti [development-roadmap.md](./development-roadmap.md). Dokumen ini hanya menyimpan target delivery tingkat tinggi.
 
+Nomor fase pada dokumen ini adalah kelompok delivery. Branch dan urutan coding wajib memakai phase teknis pada [standar eksekusi phase](./phase-execution-standard.md).
+
 ## Target
 
 - Go-live awal September.

@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('name');
             $table->string('format');
-            $table->string('status')->default('registration_open');
+            $table->string('status')->default('registration_draft');
             $table->unsignedSmallInteger('bracket_size')->nullable();
             $table->timestamp('seed_locked_at')->nullable();
             $table->timestamps();

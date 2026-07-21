@@ -36,17 +36,22 @@
 
 - `sport_id`, `sport_category_id`, `sport_rule_id`.
 - `code`, `name`, `format`, `status`, `registration_open_at`, `registration_close_at`, `seed_locked_at`.
+- `registration_published_at`, `registration_published_by`: waktu dan Admin yang menetapkan paket registrasi resmi.
+- `registration_rules`: snapshot kategori, format, tipe skor, serta batas pemain saat publikasi.
 
 ## EventEntry
 
 - `regional_committee_id`: PD peserta.
 - `tournament_event_id`: kompetisi.
+- `registration_key`: key unik `{event_id}:{regional_committee_id}` untuk registrasi baru; null pada data legacy.
 - `display_name`: snapshot nama PD PERPAMSI.
-- `status`, `submitted_at`, `verified_by`, `verified_at`, `verification_note`, `cancelled_at`.
+- `verification_status`, `submitted_at`, `verified_by`, `verified_at`, `verification_note`.
+- `pdam_id`, `province_id`, `regency_id`, `athlete_1`, `athlete_2`, `team_name`: kolom legacy sementara, tidak ditulis flow baru.
 
 ## EntryMember
 
-- `event_entry_id`, `name`, `member_type`, `gender`, `shirt_number`, `position`.
+- `event_entry_id`, `name`, `normalized_name`, `member_type`, `gender`, `shirt_number`, `position`.
+- Unique `event_entry_id + normalized_name` mencegah nama pemain ganda dalam satu roster.
 - `identity_hash`/identitas terkontrol untuk pencegahan duplikasi sesuai kebijakan privasi.
 - `status` dan catatan verifikasi bila verifikasi per pemain dipakai.
 
@@ -63,8 +68,9 @@
 
 ## SportAssignment
 
-- `user_id`, `sport_id`, `tournament_event_id` nullable, `match_id` nullable.
+- `user_id`, `sport_id`, `venue_id`; scope event/match ditambahkan saat jadwal pertandingan memakai relasi venue.
 - `assignment_role`, `is_active`, `assigned_by`, `assigned_at`, `revoked_at`.
+- `sport_assignment_audits` mencatat penetapan, aktivasi ulang, dan pencabutan.
 
 ## Match, Score, Audit
 

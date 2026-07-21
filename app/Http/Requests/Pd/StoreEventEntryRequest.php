@@ -2,10 +2,8 @@
 
 namespace App\Http\Requests\Pd;
 
-use App\Models\Pdam;
 use App\Models\TournamentEvent;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class StoreEventEntryRequest extends FormRequest
@@ -17,13 +15,11 @@ class StoreEventEntryRequest extends FormRequest
 
     public function rules(): array
     {
-        $type = $this->competitionType();
+        $rules = $this->rulesSnapshot();
 
         return [
-            'pdam_id' => ['required', 'integer', Rule::exists('pdams', 'id')],
-            'athlete_1' => [Rule::requiredIf(in_array($type, ['individual', 'doubles'], true)), 'nullable', 'string', 'max:120'],
-            'athlete_2' => [Rule::requiredIf($type === 'doubles'), 'nullable', 'string', 'max:120'],
-            'team_name' => [Rule::requiredIf($type === 'team'), 'nullable', 'string', 'max:160'],
+            'members' => ['required', 'array', 'min:'.($rules['min_members'] ?? 1), 'max:'.($rules['max_members'] ?? 1)],
+            'members.*.name' => ['required', 'string', 'max:120'],
         ];
     }
 
@@ -31,23 +27,24 @@ class StoreEventEntryRequest extends FormRequest
     {
         $validator->after(function (Validator $v) {
             $user = $this->user();
-            $pdam = Pdam::find($this->input('pdam_id'));
             $event = $this->route('event');
+            $names = collect($this->input('members', []))
+                ->pluck('name')
+                ->map(fn ($name) => mb_strtolower(trim((string) $name)))
+                ->filter();
 
-            if (! $pdam || $pdam->province_id !== $user->committee?->province_id) {
-                $v->errors()->add('pdam_id', 'Instansi asal harus berada dalam provinsi yang Anda kelola.');
-
-                return;
+            if ($names->duplicates()->isNotEmpty()) {
+                $v->errors()->add('members', 'Nama pemain tidak boleh sama dalam satu pendaftaran.');
             }
 
             if ($event instanceof TournamentEvent) {
                 $exists = $event->entries()
-                    ->where('pdam_id', $pdam->id)
+                    ->where('regional_committee_id', $user->regional_committee_id)
                     ->where('verification_status', '!=', 'rejected')
                     ->exists();
 
                 if ($exists) {
-                    $v->errors()->add('pdam_id', 'Instansi asal ini sudah terdaftar pada event tersebut.');
+                    $v->errors()->add('members', 'PD Anda sudah terdaftar pada cabor ini.');
                 }
             }
         });
@@ -56,19 +53,17 @@ class StoreEventEntryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'athlete_1.required' => 'Nama atlet wajib diisi.',
-            'athlete_2.required' => 'Nama atlet kedua wajib diisi untuk kategori ganda.',
-            'team_name.required' => 'Nama tim wajib diisi untuk kategori beregu.',
-            'pdam_id.required' => 'Pilih instansi asal peserta.',
+            'members.required' => 'Daftar pemain wajib diisi.',
+            'members.min' => 'Jumlah pemain belum memenuhi batas minimum.',
+            'members.max' => 'Jumlah pemain melebihi batas maksimum.',
+            'members.*.name.required' => 'Nama pemain wajib diisi.',
         ];
     }
 
-    private function competitionType(): ?string
+    private function rulesSnapshot(): array
     {
         $event = $this->route('event');
 
-        return $event instanceof TournamentEvent
-            ? $event->loadMissing('category')->category?->competition_type
-            : null;
+        return $event instanceof TournamentEvent ? ($event->registration_rules ?? []) : [];
     }
 }

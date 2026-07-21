@@ -7,26 +7,31 @@ import SectionTitle from '../../Components/SectionTitle.vue';
 const props = defineProps({
   event: Object,
   category: Object,
-  pdams: Array,
   entries: Array,
 });
 
 const page = usePage();
 const flash = computed(() => page.props.flash || {});
-const type = computed(() => props.category?.competition_type || 'individual');
-const canRegister = computed(() => props.event.status === 'registration_open');
+const canRegister = computed(() => props.event.registration_open);
+const minMembers = computed(() => props.category?.min_members || 1);
+const maxMembers = computed(() => props.category?.max_members || 1);
 
 const form = useForm({
-  pdam_id: '',
-  athlete_1: '',
-  athlete_2: '',
-  team_name: '',
+  members: Array.from({ length: minMembers.value }, () => ({ name: '' })),
 });
+
+const addMember = () => {
+  if (form.members.length < maxMembers.value) form.members.push({ name: '' });
+};
+
+const removeMember = (index) => {
+  if (form.members.length > minMembers.value) form.members.splice(index, 1);
+};
 
 const submit = () => {
   form.post(`/pd/events/${props.event.code}/entries`, {
     preserveScroll: true,
-    onSuccess: () => form.reset(),
+    onSuccess: () => { form.members = Array.from({ length: minMembers.value }, () => ({ name: '' })); },
   });
 };
 
@@ -50,39 +55,22 @@ const statusLabel = (s) => ({ verified: 'Terverifikasi', pending: 'Menunggu', re
 
     <section class="entry-panel">
       <form @submit.prevent="submit" class="entry-form" v-if="canRegister">
-        <h3>Daftarkan Peserta Baru</h3>
-        <label>
-          <span>Instansi Asal</span>
-          <select v-model="form.pdam_id" required>
-            <option value="" disabled>— Pilih instansi asal —</option>
-            <option v-for="p in pdams" :key="p.id" :value="p.id">{{ p.name }} · {{ p.city }}</option>
-          </select>
-          <small v-if="form.errors.pdam_id" class="err">{{ form.errors.pdam_id }}</small>
-        </label>
+        <div>
+          <h3>Daftarkan Pemain</h3>
+          <p class="hint">{{ minMembers }}–{{ maxMembers }} pemain untuk kategori ini.</p>
+        </div>
+        <div v-for="(member, index) in form.members" :key="index" class="member-row">
+          <label>
+            <span>Nama Pemain {{ index + 1 }}</span>
+            <input v-model="member.name" type="text" maxlength="120" required />
+            <small v-if="form.errors[`members.${index}.name`]" class="err">{{ form.errors[`members.${index}.name`] }}</small>
+          </label>
+          <button v-if="form.members.length > minMembers" type="button" class="remove" @click="removeMember(index)">Hapus</button>
+        </div>
+        <small v-if="form.errors.members" class="err">{{ form.errors.members }}</small>
+        <button v-if="form.members.length < maxMembers" type="button" class="add" @click="addMember">+ Tambah Pemain</button>
 
-        <template v-if="type === 'individual' || type === 'doubles'">
-          <label>
-            <span>Nama Atlet {{ type === 'doubles' ? '(1)' : '' }}</span>
-            <input v-model="form.athlete_1" type="text" maxlength="120" required />
-            <small v-if="form.errors.athlete_1" class="err">{{ form.errors.athlete_1 }}</small>
-          </label>
-        </template>
-        <template v-if="type === 'doubles'">
-          <label>
-            <span>Nama Atlet (2)</span>
-            <input v-model="form.athlete_2" type="text" maxlength="120" required />
-            <small v-if="form.errors.athlete_2" class="err">{{ form.errors.athlete_2 }}</small>
-          </label>
-        </template>
-        <template v-if="type === 'team'">
-          <label>
-            <span>Nama Tim</span>
-            <input v-model="form.team_name" type="text" maxlength="160" required />
-            <small v-if="form.errors.team_name" class="err">{{ form.errors.team_name }}</small>
-          </label>
-        </template>
-
-        <button type="submit" :disabled="form.processing">
+        <button type="submit" class="submit" :disabled="form.processing">
           {{ form.processing ? 'Mengirim…' : 'Ajukan Pendaftaran' }}
         </button>
         <p class="hint">Status awal: <b>Menunggu</b>. Super admin akan memverifikasi.</p>
@@ -90,13 +78,11 @@ const statusLabel = (s) => ({ verified: 'Terverifikasi', pending: 'Menunggu', re
       <div v-else class="locked-notice">Pendaftaran ditutup untuk event ini.</div>
 
       <div class="entry-list">
-        <h3>Entry PD Anda ({{ entries.length }})</h3>
+        <h3>Pendaftaran PD Anda ({{ entries.length }})</h3>
         <div v-for="e in entries" :key="e.id" class="entry-row" :class="e.verification_status">
           <div class="entry-main">
             <strong>{{ e.display_name }}</strong>
-            <small>{{ e.pdam }}</small>
-            <small v-if="e.athlete_1">Atlet: {{ e.athlete_1 }}<span v-if="e.athlete_2"> & {{ e.athlete_2 }}</span></small>
-            <small v-if="e.team_name">Tim: {{ e.team_name }}</small>
+            <ol class="members"><li v-for="member in e.members" :key="member">{{ member }}</li></ol>
             <small v-if="e.verification_note" class="note">Catatan: {{ e.verification_note }}</small>
           </div>
           <span class="tag" :class="e.verification_status">{{ statusLabel(e.verification_status) }}</span>
@@ -118,9 +104,12 @@ const statusLabel = (s) => ({ verified: 'Terverifikasi', pending: 'Menunggu', re
 .entry-form, .entry-list { padding: 18px; background: rgba(5,11,28,.56); border: 1px solid rgba(255,255,255,.12); display: grid; gap: 14px; }
 h3 { margin: 0 0 4px; color: #F6C64A; letter-spacing: .1em; text-transform: uppercase; font-size: 12px; }
 label { display: grid; gap: 8px; color: #36C2F0; font-size: 11px; font-weight: 1000; letter-spacing: .16em; text-transform: uppercase; }
-input, select { width: 100%; padding: 12px 14px; color: #fff; background: #08142d; border: 1px solid rgba(255,255,255,.16); font: inherit; }
+input { width: 100%; padding: 12px 14px; color: #fff; background: #08142d; border: 1px solid rgba(255,255,255,.16); font: inherit; }
 button { padding: 12px 16px; background: #F6C64A; color: #071126; border: 0; font-weight: 1000; letter-spacing: .12em; text-transform: uppercase; box-shadow: 6px 6px 0 rgba(240,90,40,.45); cursor: pointer; }
 button:disabled { opacity: .6; cursor: not-allowed; }
+.member-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+.member-row .remove, .add { box-shadow: none; background: rgba(54,194,240,.12); color: #36C2F0; border: 1px solid rgba(54,194,240,.35); }
+.members { margin: 4px 0 0; padding-left: 20px; color: rgba(255,255,255,.72); font-size: 13px; line-height: 1.65; }
 .hint { color: rgba(255,255,255,.6); font-size: 12px; font-weight: 700; }
 .locked-notice { padding: 18px; background: rgba(240,90,40,.14); color: #F05A28; border-left: 4px solid #F05A28; font-weight: 800; }
 .entry-row { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; padding: 12px; background: #08142d; border: 1px solid rgba(255,255,255,.1); border-left: 4px solid #36C2F0; }

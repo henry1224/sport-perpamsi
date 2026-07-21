@@ -12,14 +12,24 @@ use Inertia\Response;
 
 class CommitteeApplicationController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $perPage = min($request->integer('per_page', 10), 100);
+        $search = trim((string) $request->query('search'));
+        $status = (string) $request->query('status');
+
         return Inertia::render('Admin/CommitteeApplications', [
             'applications' => CommitteeApplication::query()
                 ->with(['committee:id,name', 'user:id,name,email,phone,position'])
+                ->when($status, fn ($query) => $query->where('status', $status))
+                ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
+                    $query->whereHas('committee', fn ($query) => $query->whereLike('name', "%{$search}%", caseSensitive: false))
+                        ->orWhereHas('user', fn ($query) => $query->whereLike('name', "%{$search}%", caseSensitive: false)->orWhereLike('email', "%{$search}%", caseSensitive: false));
+                }))
                 ->latest()
-                ->get()
-                ->map(fn ($application) => [
+                ->paginate($perPage)
+                ->withQueryString()
+                ->through(fn ($application) => [
                     'id' => $application->id,
                     'committee' => $application->committee->name,
                     'name' => $application->user->name,
@@ -29,6 +39,7 @@ class CommitteeApplicationController extends Controller
                     'status' => $application->status,
                     'review_note' => $application->review_note,
                 ]),
+            'filters' => ['search' => $search, 'status' => $status, 'per_page' => $perPage],
         ]);
     }
 
