@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\EventEntry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -53,6 +54,8 @@ class AdminEntryVerificationController extends Controller
 
     public function verify(Request $request, EventEntry $entry): RedirectResponse
     {
+        abort_unless($entry->verification_status === 'pending', 422, 'Hanya entry menunggu yang dapat diverifikasi.');
+        $before = $this->state($entry);
         // ponytail: bracket tidak di-rebuild otomatis walau event sudah bracket_locked; tambahkan RebuildBracket action jika late-registration jadi kebutuhan.
         $entry->update([
             'verification_status' => 'verified',
@@ -60,15 +63,18 @@ class AdminEntryVerificationController extends Controller
             'verified_by' => $request->user()->id,
             'verified_at' => now(),
         ]);
+        $this->audit($entry, 'verified', $before, $request);
 
         return back()->with('success', 'Entry disetujui.');
     }
 
     public function reject(Request $request, EventEntry $entry): RedirectResponse
     {
+        abort_unless($entry->verification_status === 'pending', 422, 'Hanya entry menunggu yang dapat ditolak.');
         $data = $request->validate([
             'note' => ['required', 'string', 'max:255'],
         ]);
+        $before = $this->state($entry);
 
         $entry->update([
             'verification_status' => 'rejected',
@@ -76,7 +82,29 @@ class AdminEntryVerificationController extends Controller
             'verified_by' => null,
             'verified_at' => null,
         ]);
+        $this->audit($entry, 'rejected', $before, $request);
 
         return back()->with('success', 'Entry ditolak.');
+    }
+
+    public function revision(Request $request, EventEntry $entry): RedirectResponse
+    {
+        abort_unless($entry->verification_status === 'pending', 422, 'Hanya entry menunggu yang dapat diminta perbaikan.');
+        $data = $request->validate(['note' => ['required', 'string', 'max:255']]);
+        $before = $this->state($entry);
+        $entry->update(['verification_status' => 'revision_required', 'verification_note' => $data['note'], 'verified_by' => null, 'verified_at' => null]);
+        $this->audit($entry, 'revision_required', $before, $request);
+
+        return back()->with('success', 'Perbaikan roster diminta.');
+    }
+
+    private function audit(EventEntry $entry, string $action, array $before, Request $request): void
+    {
+        DB::table('entry_registration_audits')->insert(['event_entry_id' => $entry->id, 'action' => $action, 'before_json' => json_encode($before), 'after_json' => json_encode($this->state($entry)), 'user_id' => $request->user()->id, 'created_at' => now(), 'updated_at' => now()]);
+    }
+
+    private function state(EventEntry $entry): array
+    {
+        return ['status' => $entry->verification_status, 'note' => $entry->verification_note, 'members' => $entry->members()->pluck('name')->all()];
     }
 }

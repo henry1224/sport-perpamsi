@@ -15,9 +15,13 @@ const flash = computed(() => page.props.flash || {});
 const canRegister = computed(() => props.event.registration_open);
 const minMembers = computed(() => props.category?.min_members || 1);
 const maxMembers = computed(() => props.category?.max_members || 1);
+const editableEntry = computed(() => props.entries.find((entry) => ['draft', 'revision_required', 'rejected', 'cancelled'].includes(entry.verification_status)));
+const lockedEntry = computed(() => props.entries.find((entry) => ['pending', 'verified'].includes(entry.verification_status)));
+const initialMembers = editableEntry.value?.members?.length ? editableEntry.value.members.map((name) => ({ name })) : Array.from({ length: minMembers.value }, () => ({ name: '' }));
 
 const form = useForm({
-  members: Array.from({ length: minMembers.value }, () => ({ name: '' })),
+  intent: 'draft',
+  members: initialMembers,
 });
 
 const addMember = () => {
@@ -28,10 +32,10 @@ const removeMember = (index) => {
   if (form.members.length > minMembers.value) form.members.splice(index, 1);
 };
 
-const submit = () => {
+const submit = (intent) => {
+  form.intent = intent;
   form.post(`/pd/events/${props.event.code}/entries`, {
     preserveScroll: true,
-    onSuccess: () => { form.members = Array.from({ length: minMembers.value }, () => ({ name: '' })); },
   });
 };
 
@@ -40,7 +44,7 @@ const cancel = (id) => {
   router.delete(`/pd/entries/${id}`, { preserveScroll: true });
 };
 
-const statusLabel = (s) => ({ verified: 'Terverifikasi', pending: 'Menunggu', rejected: 'Ditolak' }[s] || s);
+const statusLabel = (s) => ({ draft: 'Draft', verified: 'Terverifikasi', pending: 'Menunggu', revision_required: 'Perlu Perbaikan', rejected: 'Ditolak', cancelled: 'Dibatalkan' }[s] || s);
 </script>
 
 <template>
@@ -54,9 +58,9 @@ const statusLabel = (s) => ({ verified: 'Terverifikasi', pending: 'Menunggu', re
     <div v-if="flash.error" class="flash err">{{ flash.error }}</div>
 
     <section class="entry-panel">
-      <form @submit.prevent="submit" class="entry-form" v-if="canRegister">
+      <form class="entry-form" v-if="(canRegister || editableEntry?.verification_status === 'revision_required') && !lockedEntry">
         <div>
-          <h3>Daftarkan Pemain</h3>
+          <h3>{{ editableEntry ? 'Perbarui Roster' : 'Daftarkan Pemain' }}</h3>
           <p class="hint">{{ minMembers }}–{{ maxMembers }} pemain untuk kategori ini.</p>
         </div>
         <div v-for="(member, index) in form.members" :key="index" class="member-row">
@@ -70,10 +74,8 @@ const statusLabel = (s) => ({ verified: 'Terverifikasi', pending: 'Menunggu', re
         <small v-if="form.errors.members" class="err">{{ form.errors.members }}</small>
         <button v-if="form.members.length < maxMembers" type="button" class="add" @click="addMember">+ Tambah Pemain</button>
 
-        <button type="submit" class="submit" :disabled="form.processing">
-          {{ form.processing ? 'Mengirim…' : 'Ajukan Pendaftaran' }}
-        </button>
-        <p class="hint">Status awal: <b>Menunggu</b>. Super admin akan memverifikasi.</p>
+        <div class="form-actions"><button type="button" class="draft" :disabled="form.processing" @click="submit('draft')">Simpan Draft</button><button type="button" class="submit" :disabled="form.processing" @click="submit('submit')">{{ form.processing ? 'Mengirim…' : editableEntry?.verification_status === 'revision_required' ? 'Kirim Ulang' : 'Ajukan Pendaftaran' }}</button></div>
+        <p class="hint">Draft dapat diubah. Setelah diajukan, roster terkunci sampai Admin meminta perbaikan.</p>
       </form>
       <div v-else class="locked-notice">Pendaftaran ditutup untuk event ini.</div>
 
@@ -86,7 +88,7 @@ const statusLabel = (s) => ({ verified: 'Terverifikasi', pending: 'Menunggu', re
             <small v-if="e.verification_note" class="note">Catatan: {{ e.verification_note }}</small>
           </div>
           <span class="tag" :class="e.verification_status">{{ statusLabel(e.verification_status) }}</span>
-          <button v-if="e.verification_status === 'pending'" class="del" @click="cancel(e.id)">Batalkan</button>
+          <button v-if="['draft', 'pending', 'revision_required', 'rejected'].includes(e.verification_status)" class="del" @click="cancel(e.id)">Batalkan</button>
         </div>
         <p v-if="!entries.length" class="empty">Belum ada pendaftaran untuk event ini.</p>
       </div>
@@ -109,12 +111,14 @@ button { padding: 12px 16px; background: #F6C64A; color: #071126; border: 0; fon
 button:disabled { opacity: .6; cursor: not-allowed; }
 .member-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
 .member-row .remove, .add { box-shadow: none; background: rgba(54,194,240,.12); color: #36C2F0; border: 1px solid rgba(54,194,240,.35); }
+.form-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.draft { box-shadow:none; color:#36C2F0; background:rgba(54,194,240,.12); border:1px solid rgba(54,194,240,.35); }
 .members { margin: 4px 0 0; padding-left: 20px; color: rgba(255,255,255,.72); font-size: 13px; line-height: 1.65; }
 .hint { color: rgba(255,255,255,.6); font-size: 12px; font-weight: 700; }
 .locked-notice { padding: 18px; background: rgba(240,90,40,.14); color: #F05A28; border-left: 4px solid #F05A28; font-weight: 800; }
 .entry-row { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; padding: 12px; background: #08142d; border: 1px solid rgba(255,255,255,.1); border-left: 4px solid #36C2F0; }
 .entry-row.pending { border-left-color: #F6C64A; }
 .entry-row.rejected { border-left-color: #F05A28; }
+.entry-row.draft,.entry-row.cancelled { border-left-color:#71808a; }.entry-row.revision_required { border-left-color:#F05A28; }
 .entry-main { display: grid; gap: 4px; }
 .entry-main small { color: rgba(255,255,255,.6); font-weight: 700; }
 .entry-main small.note { color: #F05A28; }
@@ -122,6 +126,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .tag.verified { background: rgba(54,194,240,.18); color: #36C2F0; }
 .tag.pending { background: rgba(246,198,74,.22); color: #F6C64A; }
 .tag.rejected { background: rgba(240,90,40,.22); color: #F05A28; }
+.tag.draft,.tag.cancelled { background:rgba(113,128,138,.2); color:#aebbc4; }.tag.revision_required { background:rgba(240,90,40,.22); color:#F05A28; }
 .del { padding: 6px 10px; background: rgba(240,90,40,.2); color: #F05A28; box-shadow: none; font-size: 11px; }
 .err { color: #F05A28; text-transform: none; letter-spacing: 0; font-weight: 700; }
 .empty { text-align: center; padding: 20px; color: rgba(255,255,255,.5); }

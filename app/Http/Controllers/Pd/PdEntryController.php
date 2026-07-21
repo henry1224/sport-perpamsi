@@ -9,6 +9,7 @@ use App\Models\EventEntry;
 use App\Models\TournamentEvent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 use InvalidArgumentException;
@@ -67,7 +68,7 @@ class PdEntryController extends Controller
             return back()->with('error', $e->getMessage())->withInput();
         }
 
-        return back()->with('success', 'Pendaftaran diajukan. Menunggu verifikasi.');
+        return back()->with('success', $request->validated('intent') === 'draft' ? 'Draft roster disimpan.' : 'Pendaftaran diajukan. Menunggu verifikasi.');
     }
 
     public function destroy(Request $request, EventEntry $entry): RedirectResponse
@@ -75,12 +76,14 @@ class PdEntryController extends Controller
         $user = $request->user();
 
         abort_unless(
-            $entry->regional_committee_id === $user->regional_committee_id && $entry->verification_status === 'pending',
+            $entry->regional_committee_id === $user->regional_committee_id && in_array($entry->verification_status, ['draft', 'pending', 'revision_required', 'rejected'], true),
             403,
-            'Hanya entry pending milik PD Anda yang bisa dihapus.'
+            'Pendaftaran ini tidak dapat dibatalkan.'
         );
 
-        $entry->delete();
+        $before = ['status' => $entry->verification_status, 'note' => $entry->verification_note, 'members' => $entry->members()->pluck('name')->all()];
+        $entry->update(['verification_status' => 'cancelled', 'submitted_at' => null, 'verified_by' => null, 'verified_at' => null]);
+        DB::table('entry_registration_audits')->insert(['event_entry_id' => $entry->id, 'action' => 'cancelled', 'before_json' => json_encode($before), 'after_json' => json_encode(['status' => 'cancelled', 'note' => $entry->verification_note, 'members' => $before['members']]), 'user_id' => $user->id, 'created_at' => now(), 'updated_at' => now()]);
 
         return back()->with('success', 'Pendaftaran dibatalkan.');
     }

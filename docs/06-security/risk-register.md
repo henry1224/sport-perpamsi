@@ -26,6 +26,10 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 |---|---|---|---|
 | Pemain ganda pada cabor/kategori sama | Tinggi | Identitas pemain ternormalisasi dan unique sesuai aturan event | Feature test duplikasi |
 | Satu PD mendaftarkan cabor sama berulang | Tinggi | `registration_key` unik dan validasi registrasi aktif per PD/event | Feature test registrasi ulang |
+| PD mengubah roster saat pending/verified | Kritis | Backend hanya menerima perubahan draft, revisi, ditolak, atau dibatalkan | Feature test transisi status |
+| PD mengubah atau membatalkan roster daerah lain | Kritis | Scope `regional_committee_id` dari session diperiksa backend | Feature test horizontal access |
+| Pembatalan menghapus histori roster | Tinggi | Pembatalan mengubah status menjadi `cancelled` dan menulis audit | Feature test cancellation |
+| Perubahan roster tidak terlacak | Tinggi | Audit before/after untuk seluruh transisi roster | Audit test |
 | Request memalsukan PD atau instansi asal | Kritis | Scope PD diambil dari pengguna terautentikasi; request tidak menerima `pdam_id` atau PD | Feature test payload |
 | Jumlah pemain melebihi aturan cabor | Tinggi | Batas min/max berasal dari master kategori/peraturan | Boundary test |
 | Registrasi dilakukan setelah penutupan | Tinggi | Status event dicek backend, bukan hanya tombol UI | Feature test status |

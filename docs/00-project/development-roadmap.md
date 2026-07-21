@@ -55,7 +55,7 @@ Exit: hanya paket kompetisi yang disahkan Admin dapat dipilih PD.
 - [x] Tabel `entry_members` dan backfill pemain legacy.
 - [x] Validasi jumlah/duplikasi pemain dari master kategori.
 - [x] Validasi memakai snapshot regulasi kompetisi.
-- [-] Workflow submit, verifikasi, penolakan, dan pembatalan pending; draft/perbaikan roster belum tersedia.
+- [x] Workflow draft, submit, verifikasi, perbaikan, penolakan, kirim ulang, pembatalan, dan audit roster.
 
 Exit: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy terverifikasi aman.
 

@@ -29,6 +29,8 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 23. Hanya Admin terverifikasi dapat membuat akun panitia serta menetapkan atau mencabut assignment cabor dan venue.
 24. Admin dapat mengelola cabor/kategori, regulasi selalu membuat versi baru, dan seluruh perubahan master tercatat audit.
 25. Publish wajib memakai regulasi dari cabor yang sama, snapshot menyimpan versinya, dan unpublish ditolak setelah entry tersedia.
+26. PD dapat menyimpan draft, submit, memperbaiki, mengirim ulang, dan membatalkan roster sendiri tanpa menghapus histori.
+27. PD tidak dapat mengubah atau membatalkan roster milik PD lain maupun roster pending/verified.
 
 ## Frontend/E2E
 
