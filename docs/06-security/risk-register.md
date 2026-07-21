@@ -25,6 +25,8 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Risiko | Dampak | Kontrol wajib | Verifikasi |
 |---|---|---|---|
 | Pemain ganda pada cabor/kategori sama | Tinggi | Identitas pemain ternormalisasi dan unique sesuai aturan event | Feature test duplikasi |
+| Satu PD mendaftarkan cabor sama berulang | Tinggi | `registration_key` unik dan validasi registrasi aktif per PD/event | Feature test registrasi ulang |
+| Request memalsukan PD atau instansi asal | Kritis | Scope PD diambil dari pengguna terautentikasi; request tidak menerima `pdam_id` atau PD | Feature test payload |
 | Jumlah pemain melebihi aturan cabor | Tinggi | Batas min/max berasal dari master kategori/peraturan | Boundary test |
 | Registrasi dilakukan setelah penutupan | Tinggi | Status event dicek backend, bukan hanya tombol UI | Feature test status |
 | Kategori berubah setelah peserta terdaftar | Tinggi | Kategori terkunci setelah registrasi pertama atau memakai workflow migrasi | Test lock kategori |

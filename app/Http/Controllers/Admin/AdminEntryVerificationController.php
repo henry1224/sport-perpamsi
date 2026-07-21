@@ -15,7 +15,7 @@ class AdminEntryVerificationController extends Controller
     {
         $entries = EventEntry::query()
             ->with([
-                'pdam:id,name,city',
+                'members:id,event_entry_id,name',
                 'regionalCommittee:id,name',
                 'tournamentEvent:id,code,name,status',
             ])
@@ -26,11 +26,7 @@ class AdminEntryVerificationController extends Controller
             ->map(fn ($entry) => [
                 'id' => $entry->id,
                 'display_name' => $entry->display_name,
-                'athlete_1' => $entry->athlete_1,
-                'athlete_2' => $entry->athlete_2,
-                'team_name' => $entry->team_name,
-                'pdam' => $entry->pdam?->name,
-                'city' => $entry->pdam?->city,
+                'members' => $entry->members->pluck('name'),
                 'committee' => $entry->regionalCommittee?->name,
                 'event' => $entry->tournamentEvent?->name,
                 'event_code' => $entry->tournamentEvent?->code,
@@ -43,12 +39,14 @@ class AdminEntryVerificationController extends Controller
         ]);
     }
 
-    public function verify(EventEntry $entry): RedirectResponse
+    public function verify(Request $request, EventEntry $entry): RedirectResponse
     {
         // ponytail: bracket tidak di-rebuild otomatis walau event sudah bracket_locked; tambahkan RebuildBracket action jika late-registration jadi kebutuhan.
         $entry->update([
             'verification_status' => 'verified',
             'verification_note' => null,
+            'verified_by' => $request->user()->id,
+            'verified_at' => now(),
         ]);
 
         return back()->with('success', 'Entry disetujui.');
@@ -57,12 +55,14 @@ class AdminEntryVerificationController extends Controller
     public function reject(Request $request, EventEntry $entry): RedirectResponse
     {
         $data = $request->validate([
-            'note' => ['nullable', 'string', 'max:255'],
+            'note' => ['required', 'string', 'max:255'],
         ]);
 
         $entry->update([
             'verification_status' => 'rejected',
-            'verification_note' => $data['note'] ?? null,
+            'verification_note' => $data['note'],
+            'verified_by' => null,
+            'verified_at' => null,
         ]);
 
         return back()->with('success', 'Entry ditolak.');

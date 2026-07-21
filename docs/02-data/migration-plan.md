@@ -29,6 +29,13 @@ Penghapusan struktur wajib mengikuti [database-lifecycle-standard.md](./database
 7. Hapus ketergantungan `pdam_id`, `province_id`, `regency_id`, `athlete_1`, `athlete_2`, dan `team_name` setelah verifikasi produksi.
 8. Tabel PDAM legacy tidak dihapus pada migration yang sama; arsipkan setelah tidak ada referensi.
 
+## Status Phase 2 — 21 Juli 2026
+
+- Registrasi baru menulis `regional_committee_id`, `registration_key`, dan `entry_members`; `pdam_id` bernilai null.
+- `athlete_1` dan `athlete_2` lama dibackfill ke `entry_members` tanpa menghapus kolom sumber.
+- Seeder demo masih menulis kolom legacy untuk kompatibilitas bracket, lalu membuat roster pada `entry_members`.
+- Penghapusan kolom/tabel legacy ditunda sampai audit referensi, observasi rilis, backup, dan upgrade test lulus.
+
 ## Constraint Wajib
 
 - Unique satu PD PERPAMSI per provinsi.

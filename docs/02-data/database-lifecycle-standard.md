@@ -37,9 +37,9 @@ Jika satu poin gagal, struktur tetap dipertahankan.
 | committee_applications, committee_application_audits | Active | Pengajuan dan audit akun PD |
 | sports, sport_categories, tournament_events | Active | Master dan kompetisi |
 | event_agendas, venues | Active | Agenda publik |
-| event_entries, matches, match_scores, score_audits | Active | Registrasi legacy dan pertandingan |
+| event_entries, entry_members, matches, match_scores, score_audits | Active | Registrasi PD, roster pemain, dan pertandingan |
 | cache, cache_locks, jobs, job_batches, failed_jobs | Active framework | Infrastruktur Laravel; jangan hapus hanya karena belum terlihat di UI |
-| pdams, regencies | Legacy Active | Masih direferensikan registrasi cabor, controller, public service, seeder, dan test |
+| pdams, regencies | Legacy Active | Tidak dipakai registrasi baru, tetapi masih direferensikan data pertandingan legacy, public service, seeder, dan test migrasi |
 
 ## Aturan Seeder
 

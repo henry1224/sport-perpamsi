@@ -13,10 +13,10 @@
 
 - [ ] Nama portal memakai `PD PERPAMSI {provinsi}`.
 - [ ] Pengurus Daerah hanya melihat data PD sendiri.
-- [ ] Pengurus Daerah dapat memilih cabor/kategori yang dibuka.
-- [ ] Pengurus Daerah dapat menambah, mengubah, dan mengajukan daftar pemain sebelum batas waktu.
-- [ ] Jumlah dan duplikasi pemain divalidasi sesuai peraturan.
-- [ ] Status tampil dalam Bahasa Indonesia.
+- [x] Pengurus Daerah dapat memilih cabor/kategori yang dibuka.
+- [-] Pengurus Daerah dapat menambah dan mengajukan daftar pemain; edit draft belum tersedia.
+- [x] Jumlah dan duplikasi pemain divalidasi sesuai master kategori.
+- [x] Status registrasi dan event pada portal PD tampil dalam Bahasa Indonesia.
 
 ## Master Admin
 
@@ -25,7 +25,7 @@
 - [ ] Admin dapat mengelola venue beserta detail dan status aktif.
 - [ ] Admin dapat mengelola agenda tanpa bentrok venue/waktu.
 - [ ] Admin dapat mengelola kompetisi dan status pendaftaran.
-- [ ] Admin dapat melihat registrasi serta pemain per PD PERPAMSI.
+- [x] Admin dapat melihat, menyetujui, atau menolak registrasi serta pemain per PD PERPAMSI.
 
 ## Panitia
 

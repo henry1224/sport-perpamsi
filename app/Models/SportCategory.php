@@ -12,6 +12,8 @@ class SportCategory extends Model
     protected $casts = [
         'bracket_enabled' => 'bool',
         'is_active' => 'bool',
+        'min_members' => 'integer',
+        'max_members' => 'integer',
     ];
 
     public function sport(): BelongsTo

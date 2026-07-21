@@ -12,15 +12,16 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 6. Pengurus Daerah hanya mengelola registrasi milik PD sendiri.
 7. Registrasi ditolak saat pendaftaran ditutup.
 8. Pemain duplikat dan jumlah pemain di luar batas aturan ditolak.
-9. Kategori/peraturan yang sudah dipakai tidak dapat diubah tanpa workflow versi.
-10. Bracket tidak dapat dikunci jika verifikasi belum selesai.
-11. Venue dan waktu agenda yang bertabrakan ditolak.
-12. Panitia tidak dapat mengakses cabor atau match di luar assignment.
-13. Scorekeeper tidak dapat mengubah hasil final langsung.
-14. Revisi final wajib alasan, approval, dan audit.
-15. Klasemen hanya memakai hasil final/terverifikasi.
-16. Public tidak melihat draft, data pribadi, ID internal, atau audit.
-17. Seeder dapat dijalankan ulang tanpa menimpa data operasional.
+9. Registrasi baru menyimpan `pdam_id` null, key PD/event unik, dan roster secara transaksional.
+10. Kategori/peraturan yang sudah dipakai tidak dapat diubah tanpa workflow versi.
+11. Bracket tidak dapat dikunci jika verifikasi belum selesai.
+12. Venue dan waktu agenda yang bertabrakan ditolak.
+13. Panitia tidak dapat mengakses cabor atau match di luar assignment.
+14. Scorekeeper tidak dapat mengubah hasil final langsung.
+15. Revisi final wajib alasan, approval, dan audit.
+16. Klasemen hanya memakai hasil final/terverifikasi.
+17. Public tidak melihat draft, data pribadi, ID internal, atau audit.
+18. Seeder dapat dijalankan ulang tanpa menimpa data operasional.
 
 ## Frontend/E2E
 

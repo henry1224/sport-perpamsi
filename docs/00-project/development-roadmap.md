@@ -22,10 +22,10 @@ Exit: akun belum terverifikasi tidak dapat masuk; race condition provinsi diuji.
 
 ## Phase 2 — Registrasi Cabor dan Pemain
 
-- [ ] Migrasi `event_entries` dari PDAM ke PD PERPAMSI.
-- [ ] Tabel `entry_members`.
-- [ ] Validasi jumlah/duplikasi pemain dari peraturan.
-- [ ] Workflow draft, submit, perbaikan, verifikasi, pembatalan.
+- [x] Registrasi baru `event_entries` memakai PD PERPAMSI tanpa PDAM.
+- [x] Tabel `entry_members` dan backfill pemain legacy.
+- [x] Validasi jumlah/duplikasi pemain dari master kategori.
+- [-] Workflow submit, verifikasi, penolakan, dan pembatalan pending; draft/perbaikan roster belum tersedia.
 
 Exit: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy terverifikasi aman.
 

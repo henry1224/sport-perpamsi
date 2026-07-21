@@ -6,28 +6,22 @@ use App\Actions\Entries\RegisterEventEntry;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Pd\StoreEventEntryRequest;
 use App\Models\EventEntry;
-use App\Models\Pdam;
 use App\Models\TournamentEvent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use InvalidArgumentException;
 use Inertia\Inertia;
 use Inertia\Response;
+use InvalidArgumentException;
 
 class PdEntryController extends Controller
 {
     public function show(Request $request, TournamentEvent $event): Response
     {
         $user = $request->user()->loadMissing('committee');
-        $event->loadMissing(['sport:id,code,name', 'category:id,name,competition_type,scoring_type,bracket_enabled']);
-
-        $pdams = Pdam::query()
-            ->where('province_id', $user->committee->province_id)
-            ->orderBy('name')
-            ->get(['id', 'code', 'name', 'city']);
+        $event->loadMissing(['sport:id,code,name', 'category:id,name,competition_type,scoring_type,bracket_enabled,min_members,max_members']);
 
         $entries = EventEntry::query()
-            ->with('pdam:id,name,city')
+            ->with('members:id,event_entry_id,name')
             ->where('tournament_event_id', $event->id)
             ->where('regional_committee_id', $user->regional_committee_id)
             ->latest('id')
@@ -35,10 +29,7 @@ class PdEntryController extends Controller
             ->map(fn ($entry) => [
                 'id' => $entry->id,
                 'display_name' => $entry->display_name,
-                'pdam' => $entry->pdam?->name,
-                'athlete_1' => $entry->athlete_1,
-                'athlete_2' => $entry->athlete_2,
-                'team_name' => $entry->team_name,
+                'members' => $entry->members->pluck('name'),
                 'verification_status' => $entry->verification_status,
                 'verification_note' => $entry->verification_note,
             ]);
@@ -56,8 +47,9 @@ class PdEntryController extends Controller
                 'competition_type' => $event->category->competition_type,
                 'scoring_type' => $event->category->scoring_type,
                 'bracket_enabled' => (bool) $event->category->bracket_enabled,
+                'min_members' => $event->category->min_members,
+                'max_members' => $event->category->max_members,
             ] : null,
-            'pdams' => $pdams,
             'entries' => $entries,
         ]);
     }

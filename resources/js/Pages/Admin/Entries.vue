@@ -12,14 +12,16 @@ const page = usePage();
 const flash = computed(() => page.props.flash || {});
 const q = ref('');
 const filtered = computed(() => props.entries.filter((e) =>
-  [e.display_name, e.pdam, e.committee, e.event].join(' ').toLowerCase().includes(q.value.toLowerCase())
+  [e.display_name, e.committee, e.event, ...e.members].join(' ').toLowerCase().includes(q.value.toLowerCase())
 ));
 
 const approve = (id) => router.post(`/admin/entries/${id}/verify`, {}, { preserveScroll: true });
 const reject = (id) => {
-  const note = prompt('Alasan penolakan (opsional):') ?? '';
+  const note = prompt('Alasan penolakan:');
+  if (!note?.trim()) return;
   router.post(`/admin/entries/${id}/reject`, { note }, { preserveScroll: true });
 };
+const eventStatus = (status) => ({ registration_open: 'Pendaftaran Dibuka', registration_closed: 'Pendaftaran Ditutup', bracket_locked: 'Bracket Dikunci', ongoing: 'Sedang Berlangsung', completed: 'Selesai' }[status] || status);
 </script>
 
 <template>
@@ -34,7 +36,7 @@ const reject = (id) => {
       <div class="filters">
         <label>
           <span>Cari</span>
-          <input v-model="q" type="search" placeholder="PD, PDAM, event, nama peserta" />
+          <input v-model="q" type="search" placeholder="PD, cabor, atau nama pemain" />
         </label>
       </div>
 
@@ -42,11 +44,8 @@ const reject = (id) => {
         <div v-for="e in filtered" :key="e.id" class="entry-row">
           <div class="entry-main">
             <strong>{{ e.display_name }}</strong>
-            <small><b>{{ e.event }}</b> · {{ e.event_status }}</small>
-            <small>{{ e.committee }}</small>
-            <small>PDAM: {{ e.pdam }}<span v-if="e.city"> · {{ e.city }}</span></small>
-            <small v-if="e.athlete_1">Atlet: {{ e.athlete_1 }}<span v-if="e.athlete_2"> & {{ e.athlete_2 }}</span></small>
-            <small v-if="e.team_name">Tim: {{ e.team_name }}</small>
+            <small><b>{{ e.event }}</b> · {{ eventStatus(e.event_status) }}</small>
+            <ol class="members"><li v-for="member in e.members" :key="member">{{ member }}</li></ol>
           </div>
           <div class="actions">
             <button class="ok" @click="approve(e.id)">Setujui</button>
@@ -69,6 +68,7 @@ input { width: 100%; padding: 12px 14px; color: #fff; background: #08142d; borde
 .entry-row { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center; padding: 14px 16px; background: #08142d; border: 1px solid rgba(255,255,255,.1); border-left: 5px solid #F6C64A; }
 .entry-main { display: grid; gap: 4px; }
 .entry-main small { color: rgba(255,255,255,.6); font-weight: 700; }
+.members { margin: 4px 0 0; padding-left: 20px; color: rgba(255,255,255,.72); font-size: 13px; line-height: 1.6; }
 .actions { display: flex; gap: 8px; }
 .actions button { padding: 10px 14px; border: 0; font-weight: 1000; letter-spacing: .1em; text-transform: uppercase; font-size: 11px; cursor: pointer; }
 .actions .ok { background: #36C2F0; color: #071126; box-shadow: 5px 5px 0 rgba(54,194,240,.35); }

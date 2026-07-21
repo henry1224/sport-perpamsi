@@ -17,7 +17,14 @@ class TournamentDomainSeeder extends Seeder
 
         foreach ($this->csvRows(base_path('data/seed/sport_categories.csv')) as $row) {
             $sport = $sports[$row['sport_code']] ?? null;
-            if (! $sport) continue;
+            if (! $sport) {
+                continue;
+            }
+            [$minMembers, $maxMembers] = match ($row['competition_type']) {
+                'doubles' => [2, 2],
+                'team' => [5, 20],
+                default => [1, 1],
+            };
 
             DB::table('sport_categories')->upsert([[
                 'public_id' => (string) Str::uuid(),
@@ -25,13 +32,15 @@ class TournamentDomainSeeder extends Seeder
                 'code' => $row['code'],
                 'name' => $row['name'],
                 'competition_type' => $row['competition_type'],
+                'min_members' => $minMembers,
+                'max_members' => $maxMembers,
                 'scoring_type' => $row['scoring_type'],
                 'bracket_enabled' => (bool) $row['bracket_enabled'],
                 'sort_order' => (int) $row['sort_order'],
                 'is_active' => true,
                 'created_at' => $now,
                 'updated_at' => $now,
-            ]], ['sport_id', 'code'], ['name', 'competition_type', 'scoring_type', 'bracket_enabled', 'sort_order', 'is_active', 'updated_at']);
+            ]], ['sport_id', 'code'], ['name', 'competition_type', 'min_members', 'max_members', 'scoring_type', 'bracket_enabled', 'sort_order', 'is_active', 'updated_at']);
         }
 
         $categories = DB::table('sport_categories')->get()->keyBy(fn ($row) => $row->sport_id.'-'.$row->code);
@@ -40,6 +49,7 @@ class TournamentDomainSeeder extends Seeder
             $sportCategories = $categories->filter(fn ($category) => $category->sport_id === $sport->id)->values();
             if ($sportCategories->isEmpty()) {
                 $this->seedTournamentEvent($sport, null, $pdams, $regionalCommittees, $now);
+
                 continue;
             }
 
@@ -91,6 +101,30 @@ class TournamentDomainSeeder extends Seeder
         DB::table('event_entries')->where('tournament_event_id', $event->id)->delete();
         foreach (array_chunk($entries, 200) as $chunk) {
             DB::table('event_entries')->insert($chunk);
+        }
+
+        $memberRows = DB::table('event_entries')
+            ->where('tournament_event_id', $event->id)
+            ->get()
+            ->flatMap(function ($entry) use ($category, $now) {
+                $names = array_filter([$entry->athlete_1, $entry->athlete_2]);
+                if ($category?->competition_type === 'team') {
+                    $names = collect(range(1, $category->min_members))->map(fn ($number) => $entry->team_name.' '.$number)->all();
+                }
+
+                return collect($names)->map(fn ($name) => [
+                    'event_entry_id' => $entry->id,
+                    'name' => $name,
+                    'normalized_name' => mb_strtolower($name),
+                    'member_type' => 'player',
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]);
+            })
+            ->all();
+
+        if ($memberRows) {
+            DB::table('entry_members')->insert($memberRows);
         }
 
         if ($bracketSize) {
@@ -152,27 +186,37 @@ class TournamentDomainSeeder extends Seeder
         $matches = DB::table('matches')->where('tournament_event_id', $eventId)->get()->keyBy('code');
 
         foreach ($matchesByNumber as $number => $meta) {
-            if (! $meta['next']) continue;
+            if (! $meta['next']) {
+                continue;
+            }
             DB::table('matches')->where('tournament_event_id', $eventId)->where('code', 'M'.str_pad((string) $number, 4, '0', STR_PAD_LEFT))->update([
                 'next_match_id' => $matches['M'.str_pad((string) $meta['next'], 4, '0', STR_PAD_LEFT)]->id ?? null,
             ]);
         }
 
         foreach ($matches as $match) {
-            if ($match->score_summary === null) continue;
+            if ($match->score_summary === null) {
+                continue;
+            }
             [$a, $b] = array_map('intval', explode('-', $match->score_summary));
             $payload = ['score_a' => $a, 'score_b' => $b, 'winner_entry_id' => $match->winner_entry_id];
             $scoreRows[] = ['match_id' => $match->id, 'score_payload' => json_encode($payload), 'calculated_winner_entry_id' => $match->winner_entry_id, 'verified_at' => $now, 'created_at' => $now, 'updated_at' => $now];
             $auditRows[] = ['match_id' => $match->id, 'before_json' => null, 'after_json' => json_encode($payload), 'reason' => 'demo seed', 'created_at' => $now, 'updated_at' => $now];
         }
 
-        if ($scoreRows) DB::table('match_scores')->insert($scoreRows);
-        if ($auditRows) DB::table('score_audits')->insert($auditRows);
+        if ($scoreRows) {
+            DB::table('match_scores')->insert($scoreRows);
+        }
+        if ($auditRows) {
+            DB::table('score_audits')->insert($auditRows);
+        }
     }
 
     private function roundName(int $matchCount): string
     {
-        return match ($matchCount) { 1 => 'Final', 2 => 'Semi Final', 4 => 'Perempat Final', default => 'Round of '.($matchCount * 2) };
+        return match ($matchCount) {
+            1 => 'Final', 2 => 'Semi Final', 4 => 'Perempat Final', default => 'Round of '.($matchCount * 2)
+        };
     }
 
     private function shortName(string $name): string
@@ -185,8 +229,11 @@ class TournamentDomainSeeder extends Seeder
         $file = fopen($path, 'r');
         $headers = fgetcsv($file, escape: '');
         $rows = [];
-        while (($data = fgetcsv($file, escape: '')) !== false) $rows[] = array_combine($headers, $data);
+        while (($data = fgetcsv($file, escape: '')) !== false) {
+            $rows[] = array_combine($headers, $data);
+        }
         fclose($file);
+
         return $rows;
     }
 }

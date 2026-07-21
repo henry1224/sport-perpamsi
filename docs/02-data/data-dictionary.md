@@ -41,12 +41,15 @@
 
 - `regional_committee_id`: PD peserta.
 - `tournament_event_id`: kompetisi.
+- `registration_key`: key unik `{event_id}:{regional_committee_id}` untuk registrasi baru; null pada data legacy.
 - `display_name`: snapshot nama PD PERPAMSI.
-- `status`, `submitted_at`, `verified_by`, `verified_at`, `verification_note`, `cancelled_at`.
+- `verification_status`, `submitted_at`, `verified_by`, `verified_at`, `verification_note`.
+- `pdam_id`, `province_id`, `regency_id`, `athlete_1`, `athlete_2`, `team_name`: kolom legacy sementara, tidak ditulis flow baru.
 
 ## EntryMember
 
-- `event_entry_id`, `name`, `member_type`, `gender`, `shirt_number`, `position`.
+- `event_entry_id`, `name`, `normalized_name`, `member_type`, `gender`, `shirt_number`, `position`.
+- Unique `event_entry_id + normalized_name` mencegah nama pemain ganda dalam satu roster.
 - `identity_hash`/identitas terkontrol untuk pencegahan duplikasi sesuai kebijakan privasi.
 - `status` dan catatan verifikasi bila verifikasi per pemain dipakai.
 
