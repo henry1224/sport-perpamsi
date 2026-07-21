@@ -15,10 +15,11 @@
 | GET | `/live-score` | Match aktif/hasil terbaru |
 | GET | `/schedule` | Jadwal public dengan filter |
 | GET | `/agenda` | Agenda event per tanggal/venue/cabor |
+| GET | `/seminar` | Informasi Nusantara International Water Conference |
 | GET | `/matches/{public_id}` | Detail match public |
 | GET | `/brackets` | Bracket per cabor/kategori |
 | GET | `/standings` | Klasemen/ranking public |
-| GET | `/rankings/regional-committees` | Klasemen medali Pimpinan Daerah |
+| GET | `/rankings/regional-committees` | Klasemen medali Kontingen Provinsi |
 | GET | `/pdams/{slug}` | Profil PDAM |
 | GET | `/info` | Info event dan pengumuman |
 
@@ -28,7 +29,7 @@
 |---|---|---|
 | POST | `/admin/events` | Buat event |
 | POST | `/admin/pdams` | Buat PDAM |
-| POST | `/admin/event-entries` | Daftarkan PDAM/tim/atlet ke cabor; Pimpinan Daerah ditetapkan otomatis |
+| POST | `/admin/event-entries` | Daftarkan PDAM/tim/atlet ke cabor; Kontingen Provinsi ditetapkan otomatis |
 | POST | `/admin/sports` | Buat cabor |
 | POST | `/admin/teams` | Buat tim |
 | POST | `/admin/athletes` | Buat atlet |

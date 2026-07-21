@@ -15,7 +15,7 @@ const submit = () => form.post('/login');
 <template>
   <PublicLayout>
     <div class="page-head">
-      <SectionTitle eyebrow="Akun Panitia" title="Masuk Admin PD PERPAMSI" meta="Pengelolaan pendaftaran peserta" />
+      <SectionTitle eyebrow="Akun Panitia" title="Masuk" meta="Pengelolaan pendaftaran peserta" />
     </div>
     <section class="login-panel">
       <form @submit.prevent="submit" class="login-form">

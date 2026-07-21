@@ -37,7 +37,7 @@
 2. 1.000 user membuka ranking dengan filter provinsi dan cabor.
 3. 500 user membuka bracket `Round 64` cabor populer.
 4. 200 user membuka `Round Awal` dan mengganti page.
-5. 100 user melakukan search PDAM dengan debounce 400 ms.
+5. 100 user melakukan pencarian provinsi dengan debounce 400 ms.
 6. 50 panitia submit skor dalam 1 menit.
 7. 10 admin koreksi skor dan memicu recalculation bracket/ranking.
 

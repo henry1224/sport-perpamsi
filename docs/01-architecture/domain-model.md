@@ -10,7 +10,7 @@ Entities: Event, Sport, Category, Venue, Schedule, EventSetting.
 
 ### Participant Management
 
-Mengelola Pimpinan Daerah, PDAM, registrasi cabor, tim, atlet, dokumen, dan verifikasi.
+Mengelola Kontingen Provinsi, PDAM, registrasi cabor, tim, atlet, dokumen, dan verifikasi.
 
 Entities: RegionalCommittee, Pdam, EventEntry, Team, Athlete, ParticipantDocument, VerificationRecord.
 
@@ -53,4 +53,4 @@ Entities: AuditLog, ExportJob, ReportSnapshot.
 5. Audit log wajib untuk perubahan skor, jadwal, verifikasi, assignment, dan finalisasi.
 6. Import data tidak langsung commit sebelum preview dan validasi.
 7. Reporting membaca data operasional; reporting tidak mengubah source data.
-8. `EventEntry` menyimpan snapshot PDAM, provinsi, dan Pimpinan Daerah saat registrasi diverifikasi.
+8. `EventEntry` menyimpan snapshot PDAM, provinsi, dan Kontingen Provinsi saat registrasi diverifikasi.

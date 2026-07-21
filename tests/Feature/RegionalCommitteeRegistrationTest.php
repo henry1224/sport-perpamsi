@@ -33,7 +33,10 @@ class RegionalCommitteeRegistrationTest extends TestCase
 
         $this->assertNotNull($provinceId);
         $this->assertCount(1, $committeeIds);
-        $this->assertStringStartsWith('PD PERPAMSI ', DB::table('regional_committees')->where('id', $committeeIds->first())->value('name'));
+        $committee = DB::table('regional_committees')->where('id', $committeeIds->first())->first();
+        $province = DB::table('provinces')->find($committee->province_id);
+
+        $this->assertSame($province->name, $committee->name);
     }
 
     public function test_pd_admin_can_register_only_their_province_and_entry_starts_pending(): void
@@ -66,8 +69,14 @@ class RegionalCommitteeRegistrationTest extends TestCase
             'tournament_event_id' => $event->id,
             'pdam_id' => $pdam->id,
             'regional_committee_id' => $admin->regional_committee_id,
+            'display_name' => $admin->committee->name,
             'verification_status' => 'pending',
         ]);
+
+        $this->assertSame(
+            DB::table('provinces')->find($admin->committee->province_id)->name,
+            $admin->committee->name
+        );
 
         $foreignPdam = DB::table('pdams')->where('province_id', '!=', $admin->committee->province_id)->firstOrFail();
         $this->actingAs($admin)

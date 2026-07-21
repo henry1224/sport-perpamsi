@@ -20,7 +20,7 @@ const totalEntries = computed(() => props.events.reduce((a, e) => a + e.entries.
 <template>
   <PortalLayout portal="pd">
     <div class="page-head">
-      <SectionTitle eyebrow="Panel PD PERPAMSI" :title="committee.name" :meta="`${pdams.length} PDAM · ${totalEntries} entry`" />
+      <SectionTitle eyebrow="Panel Pengurus Daerah" :title="committee.name" :meta="`${pdams.length} data asal · ${totalEntries} entry`" />
     </div>
 
     <section class="dash-panel">
@@ -30,7 +30,7 @@ const totalEntries = computed(() => props.events.reduce((a, e) => a + e.entries.
           <b>{{ committee.province || '—' }}</b>
         </div>
         <div class="pill">
-          <span>PDAM Wilayah</span>
+          <span>Data Asal Wilayah</span>
           <b>{{ pdams.length }}</b>
         </div>
         <div class="pill">
@@ -64,7 +64,7 @@ const totalEntries = computed(() => props.events.reduce((a, e) => a + e.entries.
     </section>
 
     <section class="pdam-panel">
-      <h3>PDAM Wilayah Anda</h3>
+      <h3>Instansi Asal Wilayah Anda</h3>
       <ul>
         <li v-for="p in pdams" :key="p.code"><b>{{ p.name }}</b><small>{{ p.city || '—' }}</small></li>
       </ul>

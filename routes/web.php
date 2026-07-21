@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::controller(PublicPageController::class)->group(function () {
     Route::get('/', 'home')->name('home');
     Route::get('/agenda', 'agenda')->name('agenda');
+    Route::get('/seminar', 'seminar')->name('seminar');
     Route::get('/hasil', 'hasil')->name('hasil');
     Route::get('/cabor', 'cabor')->name('cabor');
     Route::get('/bracket', 'bracket')->name('bracket');

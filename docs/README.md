@@ -34,12 +34,13 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [Sample participant data](./02-data/sample-participant-data.md): contoh data PDAM, tim, atlet untuk development/UAT.
 - [Public identifier standard](./02-data/public-identifier-standard.md): aturan `slug`, `public_id`, dan larangan expose ID internal.
 - [Region standard](./02-data/region-standard.md): master provinsi/kabupaten-kota Indonesia dan relasi PDAM.
-- [Delegation standard](./02-data/delegation-standard.md): relasi provinsi, Pimpinan Daerah, PDAM, registrasi cabor, dan klasemen medali.
+- [Delegation standard](./02-data/delegation-standard.md): relasi provinsi, Kontingen Provinsi, PDAM, registrasi cabor, dan klasemen medali.
 
 ### 03 Product
 
 - [API contract v1](./03-product/api-contract-v1.md): endpoint public dan action admin/panitia baseline.
 - [Agenda standard](./03-product/agenda-standard.md): agenda, venue, cabor, jam dari screenshot awal.
+- [Seminar standard](./03-product/seminar-standard.md): konten NIWC, sesi, peserta, biaya, dan implementasi menu Seminar.
 
 ### 04 Design
 
@@ -62,7 +63,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 
 - [Match dan score rules](./05-business-rules/match-score-rules.md): status match, input skor, finalisasi, ranking.
 - [Competition format standard](./05-business-rules/competition-format-standard.md): format grup, knockout, round robin, ranking per jenis cabor.
-- [Ranking rules](./05-business-rules/ranking-rules.md): rumus klasemen medali Pimpinan Daerah dan klasemen cabor.
+- [Ranking rules](./05-business-rules/ranking-rules.md): rumus klasemen medali Kontingen Provinsi dan klasemen cabor.
 - [Score structure](./05-business-rules/score-structure.md): struktur skor utama dan detail segment per jenis cabor.
 - [Sport catalog v1](./05-business-rules/sport-catalog-v1.md): cabor resmi sementara dan format default.
 - [Regulation reference](./05-business-rules/regulation-reference.md): referensi regulasi resmi per cabor.

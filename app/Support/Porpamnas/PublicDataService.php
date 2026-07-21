@@ -173,12 +173,12 @@ class PublicDataService
             'pdams' => $this->csv('data/seed/pdams.csv')->map(fn ($row) => [
                 ...$row,
                 'province' => $provincesByCode[$row['province_code']]['name'] ?? $row['province_code'],
-                'regional_committee_name' => 'PD PERPAMSI '.mb_strtoupper($provincesByCode[$row['province_code']]['name'] ?? $row['province_code']),
+                'regional_committee_name' => $provincesByCode[$row['province_code']]['name'] ?? $row['province_code'],
             ])->values(),
             'provinces' => $provinces,
             'regionalCommittees' => $provinces->map(fn ($p) => [
                 'id' => null,
-                'name' => 'PD PERPAMSI '.mb_strtoupper($p['name']),
+                'name' => $p['name'],
                 'province_code' => $p['code'],
                 'province' => $p['name'],
             ])->values(),
@@ -211,12 +211,12 @@ class PublicDataService
         }
 
         return [
-            ['sport' => 'Mini Football', 'team_a' => 'PT Manuntung Balikpapan', 'team_b' => 'PTK Samarinda', 'score' => '3–1', 'status' => 'final', 'venue' => 'Borneo Anfield', 'time' => '07 Okt 16:00'],
-            ['sport' => 'Voli Putra', 'team_a' => 'PT Taman Bontang', 'team_b' => 'PT Mahakam Kukar', 'score' => '2–3', 'status' => 'final', 'venue' => 'GOR Balikpapan', 'time' => '07 Okt 19:00'],
-            ['sport' => 'Bulu Tangkis', 'team_a' => 'Batiwakkal Berau', 'team_b' => 'PDAM Makassar', 'score' => '1–2', 'status' => 'final', 'venue' => 'BTS', 'time' => '08 Okt 09:00'],
-            ['sport' => 'Tenis Meja', 'team_a' => 'PDAM Surabaya', 'team_b' => 'PDAM Bandung', 'score' => '3–0', 'status' => 'live', 'venue' => 'BSCC Dome', 'time' => 'Sekarang'],
-            ['sport' => 'Catur', 'team_a' => 'PDAM Jakarta', 'team_b' => 'PDAM Semarang', 'score' => '½–½', 'status' => 'scheduled', 'venue' => 'Hotel Platinum', 'time' => '09 Okt 10:00'],
-            ['sport' => 'Golf', 'team_a' => 'PDAM Denpasar', 'team_b' => 'PDAM Medan', 'score' => '—', 'status' => 'scheduled', 'venue' => 'Balikpapan Golf', 'time' => '10 Okt 06:30'],
+            ['sport' => 'Mini Football', 'team_a' => 'Kalimantan Timur', 'team_b' => 'Jawa Timur', 'score' => '3–1', 'status' => 'final', 'venue' => 'Borneo Anfield', 'time' => '07 Okt 16:00'],
+            ['sport' => 'Voli Putra', 'team_a' => 'Jawa Barat', 'team_b' => 'Sulawesi Selatan', 'score' => '2–3', 'status' => 'final', 'venue' => 'GOR Balikpapan', 'time' => '07 Okt 19:00'],
+            ['sport' => 'Bulu Tangkis', 'team_a' => 'Kalimantan Timur', 'team_b' => 'Sulawesi Selatan', 'score' => '1–2', 'status' => 'final', 'venue' => 'BTS', 'time' => '08 Okt 09:00'],
+            ['sport' => 'Tenis Meja', 'team_a' => 'Jawa Timur', 'team_b' => 'Jawa Barat', 'score' => '3–0', 'status' => 'live', 'venue' => 'BSCC Dome', 'time' => 'Sekarang'],
+            ['sport' => 'Catur', 'team_a' => 'DKI Jakarta', 'team_b' => 'Jawa Tengah', 'score' => '½–½', 'status' => 'scheduled', 'venue' => 'Hotel Platinum', 'time' => '09 Okt 10:00'],
+            ['sport' => 'Golf', 'team_a' => 'Bali', 'team_b' => 'Sumatera Utara', 'score' => '—', 'status' => 'scheduled', 'venue' => 'Balikpapan Golf', 'time' => '10 Okt 06:30'],
         ];
     }
 
@@ -287,12 +287,12 @@ class PublicDataService
         }
 
         return [
-            ['name' => 'PD PERPAMSI KALIMANTAN TIMUR', 'gold' => 8, 'silver' => 5, 'bronze' => 3],
-            ['name' => 'PD PERPAMSI SULAWESI SELATAN', 'gold' => 5, 'silver' => 3, 'bronze' => 4],
-            ['name' => 'PD PERPAMSI JAWA TIMUR', 'gold' => 4, 'silver' => 4, 'bronze' => 2],
-            ['name' => 'PD PERPAMSI JAWA BARAT', 'gold' => 3, 'silver' => 6, 'bronze' => 5],
-            ['name' => 'PD PERPAMSI DKI JAKARTA', 'gold' => 3, 'silver' => 2, 'bronze' => 4],
-            ['name' => 'PD PERPAMSI BALI', 'gold' => 2, 'silver' => 3, 'bronze' => 3],
+            ['name' => 'Kalimantan Timur', 'gold' => 8, 'silver' => 5, 'bronze' => 3],
+            ['name' => 'Sulawesi Selatan', 'gold' => 5, 'silver' => 3, 'bronze' => 4],
+            ['name' => 'Jawa Timur', 'gold' => 4, 'silver' => 4, 'bronze' => 2],
+            ['name' => 'Jawa Barat', 'gold' => 3, 'silver' => 6, 'bronze' => 5],
+            ['name' => 'DKI Jakarta', 'gold' => 3, 'silver' => 2, 'bronze' => 4],
+            ['name' => 'Bali', 'gold' => 2, 'silver' => 3, 'bronze' => 3],
         ];
     }
 
@@ -301,6 +301,9 @@ class PublicDataService
         return [
             'porpamnas' => '/assets/brand/logos/porpamnas/porpamnas-ix.png',
             'ptmb' => '/assets/brand/logos/ptmb/logo-ptmb-landscape.png',
+            'ptmbMark' => '/assets/brand/logos/ptmb/only-logo-ptmb.png',
+            'pemkot' => '/assets/brand/logos/LOGO_PEMKOT.png',
+            'perpamsi' => '/assets/brand/logos/LOGO_PERPAMSI.jpeg',
             'beru' => '/assets/brand/mascots/beru.png',
             'ganga' => '/assets/brand/mascots/ganga.png',
             'mascots' => [

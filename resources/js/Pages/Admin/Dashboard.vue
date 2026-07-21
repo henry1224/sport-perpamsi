@@ -5,7 +5,7 @@ import PortalLayout from '../../Layouts/PortalLayout.vue';
 defineProps({ stats: Object, recentEntries: Array });
 
 const cards = [
-  ['Pimpinan Daerah', 'committees', 'Delegasi provinsi'],
+  ['Kontingen Provinsi', 'committees', 'Peserta daerah'],
   ['PDAM', 'pdams', 'Instansi peserta'],
   ['Data Lomba', 'events', 'Cabor dan kategori'],
   ['Registrasi', 'entries', 'Seluruh entry'],

@@ -34,8 +34,8 @@ erDiagram
 - ERD ini konseptual, bukan migration final.
 - `MatchParticipant` bisa dipakai bila peserta match tidak selalu team, misalnya individu.
 - `Standing` dan `RankingSnapshot` boleh dihitung ulang dari match final.
-- `EventEntry` menghubungkan peserta pertandingan dengan PDAM dan Pimpinan Daerah.
-- Klasemen medali memakai `RegionalCommittee`; nama PDAM tetap tampil pada match dan bracket.
+- `EventEntry` menghubungkan peserta pertandingan dengan PDAM dan Kontingen Provinsi.
+- Klasemen medali memakai provinsi; match dan bracket menampilkan nama provinsi, sedangkan PDAM hanya metadata asal internal.
 - `AuditLog` wajib append-only.
 
 ## Addendum v2: Struktur Cabor, Kategori, Bracket, dan Skor
@@ -121,4 +121,4 @@ provinces
 - `matches (tournament_event_id, status)`.
 - `matches (next_match_id)`.
 - `pdams (province_id, regency_id)`.
-- Full text/trigram index untuk search PDAM bila tersedia.
+- Full text/trigram index untuk pencarian instansi asal pada portal internal bila tersedia.

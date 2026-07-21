@@ -23,6 +23,9 @@ class HandleInertiaRequests extends Middleware
             'assets' => [
                 'porpamnas' => '/assets/brand/logos/porpamnas/porpamnas-ix.png',
                 'ptmb' => '/assets/brand/logos/ptmb/logo-ptmb-landscape.png',
+                'ptmbMark' => '/assets/brand/logos/ptmb/only-logo-ptmb.png',
+                'pemkot' => '/assets/brand/logos/LOGO_PEMKOT.png',
+                'perpamsi' => '/assets/brand/logos/LOGO_PERPAMSI.jpeg',
             ],
             'auth' => [
                 'user' => $user ? [

@@ -11,7 +11,7 @@ Event olahraga PERPAMSI membutuhkan satu sistem resmi untuk menggantikan pencata
 ## Tujuan Utama
 
 1. Menjadi pusat data resmi event olahraga PERPAMSI.
-2. Menyediakan live score, jadwal, bracket, klasemen Pimpinan Daerah, dan profil PDAM untuk publik.
+2. Menyediakan live score, jadwal, bracket, klasemen, dan daftar Kontingen Provinsi untuk publik.
 3. Membantu panitia input skor dan finalisasi hasil secara aman.
 4. Mengurangi input manual berulang dan konflik data.
 5. Menyediakan audit log untuk perubahan skor, jadwal, peserta, assignment, dan finalisasi.
@@ -20,10 +20,10 @@ Event olahraga PERPAMSI membutuhkan satu sistem resmi untuk menggantikan pencata
 ## Ruang Lingkup Masuk v1
 
 1. Aplikasi web responsive untuk public, admin, dan panitia.
-2. Master data event, provinsi, Pimpinan Daerah, PDAM, cabor, kategori, venue, tim, atlet.
+2. Master data event, provinsi, Kontingen Provinsi, PDAM, cabor, kategori, venue, tim, atlet.
 3. Verifikasi peserta dan dokumen dasar.
 4. Jadwal, match, input skor, finalisasi, dan revisi skor.
-5. Live score, bracket knockout dasar, klasemen cabor, dan klasemen medali Pimpinan Daerah.
+5. Live score, bracket knockout dasar, klasemen cabor, dan klasemen medali Kontingen Provinsi.
 6. Import/export CSV atau Excel untuk data operasional utama.
 7. Role dan assignment panitia dasar.
 8. Audit log dan backup production.

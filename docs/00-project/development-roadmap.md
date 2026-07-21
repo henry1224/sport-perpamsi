@@ -67,7 +67,7 @@ Scope:
 Exit criteria:
 
 - Pengurus Daerah tidak dapat membuka route Admin.
-- Admin tidak terikat ke satu Pimpinan Daerah.
+- Admin tidak terikat ke satu Kontingen Provinsi.
 - Public tidak dapat membuka route internal.
 - Redirect login sesuai role teruji.
 
@@ -79,7 +79,7 @@ Tujuan: Admin memiliki sumber data resmi sebelum registrasi dibuka.
 
 Urutan menu:
 
-1. Provinsi dan Pimpinan Daerah.
+1. Provinsi dan Kontingen Provinsi.
 2. PDAM.
 3. Cabang olahraga dan kategori.
 4. Venue.
@@ -109,7 +109,7 @@ Scope:
 
 - [x] Dashboard Pengurus Daerah.
 - [x] Pilih event/cabor dan PDAM wilayah.
-- [x] Delegasi Pimpinan Daerah otomatis.
+- [x] Kontingen Provinsi otomatis.
 - [x] Submit, hapus pending, verifikasi, dan penolakan dasar.
 - [ ] Master atlet terpisah dan penggunaan ulang atlet antar-cabor.
 - [ ] Dokumen peserta.
@@ -189,7 +189,7 @@ Scope:
 - Hapus fallback demo setelah admin data siap.
 - Published schedule dan hasil final saja.
 - Bracket dan klasemen cabor.
-- Klasemen medali Pimpinan Daerah.
+- Klasemen medali Kontingen Provinsi.
 - Penetapan perunggu sesuai regulasi cabor.
 - Cache endpoint ramai.
 
@@ -197,7 +197,7 @@ Exit criteria:
 
 - Public tidak melihat draft, pending, atau data internal.
 - Match tetap menampilkan PDAM/tim/atlet.
-- Medali terakumulasi ke Pimpinan Daerah.
+- Medali terakumulasi ke Kontingen Provinsi.
 - Hasil public sama dengan hasil final admin.
 
 ## Phase 7 — Production Readiness

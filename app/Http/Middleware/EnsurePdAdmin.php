@@ -11,7 +11,7 @@ class EnsurePdAdmin
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-        abort_unless($user && $user->isPdAdmin() && $user->regional_committee_id, 403, 'Bukan admin PD PERPAMSI.');
+        abort_unless($user && $user->isPdAdmin() && $user->regional_committee_id, 403, 'Bukan Pengurus Daerah.');
 
         return $next($request);
     }

@@ -8,9 +8,9 @@ Urutan penyelesaian wajib mengikuti [development-roadmap.md](./development-roadm
 - [x] Stack backend dan frontend final: Laravel + Inertia + Vue.js + SSR public.
 - [x] Pilihan ID database: `bigint` internal + UUID public.
 - [x] Struktur skor per cabor: skor utama + segment per set/babak/quarter/ronde.
-- [x] Rumus ranking resmi: medali untuk Pimpinan Daerah, aturan cabor untuk klasemen grup.
+- [x] Rumus ranking resmi: medali untuk Kontingen Provinsi, aturan cabor untuk klasemen grup.
 - [x] Format kompetisi setiap cabor: knockout, grup, round robin, time/score ranking.
-- [ ] Template import Excel/CSV untuk Pimpinan Daerah, PDAM, registrasi cabor, tim, atlet, jadwal.
+- [ ] Template import Excel/CSV untuk Kontingen Provinsi, PDAM, registrasi cabor, tim, atlet, jadwal.
 - [ ] PIC final sengketa skor.
 - [ ] Domain production dan environment hosting.
 - [ ] Target server sizing awal.

@@ -27,9 +27,12 @@ const topResults = props.results.slice(0, 3);
   <PublicLayout>
     <section class="hero-arena">
       <div class="hero-copy">
-        <p class="eyebrow">PORPAMNAS IX KALTIM · BALIKPAPAN</p>
-        <h1><span>Pekan Olahraga Antar</span><span>Perusahaan Air Minum</span><span>Nasional.</span></h1>
-        <p>Pusat informasi resmi PORPAMNAS IX untuk jadwal pertandingan, hasil skor, venue, bracket, cabor, dan klasemen wilayah. Semua ringkas, akurat, dan mudah dipantau publik.</p>
+        <h1 class="event-lockup">
+          <span class="event-series"><i>POR</i>PAMNAS <b>IX</b></span>
+          <span class="event-location">BALIKPAPAN <i>·</i> KALIMANTAN TIMUR</span>
+        </h1>
+        <p class="hero-full-name">Pekan Olahraga Antar Perusahaan Air Minum Nasional</p>
+        <p class="hero-description">Ikuti perjalanan kontingen dari jadwal pertama hingga podium terakhir. Temukan pertandingan, skor terbaru, venue, bagan kompetisi, dan klasemen resmi PORPAMNAS IX dalam satu arena informasi.</p>
         <div class="hero-actions">
           <Link class="primary-button" href="/hasil">Lihat Hasil</Link>
           <Link class="secondary-button" href="/agenda">Agenda Kegiatan</Link>
@@ -113,10 +116,17 @@ const topResults = props.results.slice(0, 3);
 .hero-arena { position: relative; display: grid; min-height: 900px; padding: 70px 0 270px; }
 .hero-arena::before { content: "PORPAMNAS"; position: absolute; left: -12px; top: 74px; z-index: 0; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.07); font-size: clamp(80px, 15vw, 220px); font-weight: 1000; letter-spacing: -.09em; line-height: .7; pointer-events: none; }
 .hero-copy { position: relative; z-index: 3; align-self: center; max-width: 900px; padding-bottom: 42px; }
-.eyebrow { width: fit-content; margin: 0 0 18px; padding: 8px 12px; color: #071126; background: #F6C64A; font-size: 12px; font-weight: 1000; letter-spacing: .18em; text-transform: uppercase; transform: skew(-10deg); }
-h1 { max-width: 1120px; margin: 0 0 26px; color: #fff; font-size: clamp(46px, 6vw, 94px); line-height: .98; letter-spacing: -.052em; text-transform: uppercase; text-shadow: 9px 9px 0 rgba(240,90,40,.35), -2px -2px 0 rgba(54,194,240,.3), 0 0 28px rgba(5,11,28,.92); }
-h1 span { display: block; white-space: nowrap; }
-.hero-copy p:not(.eyebrow) { max-width: 590px; color: rgba(255,255,255,.72); font-size: 18px; line-height: 1.7; }
+.event-lockup { position: relative; width: fit-content; max-width: 1020px; margin: 0 0 24px; padding: 9px 16px 16px 0; color: #fff; text-transform: uppercase; filter: drop-shadow(12px 16px 0 rgba(5,11,28,.32)); }
+.event-lockup::before { content: ""; position: absolute; inset: 0 28px 35px -28px; z-index: -1; background: linear-gradient(100deg, rgba(25,70,163,.9), rgba(8,20,45,.48)); border: 1px solid rgba(54,194,240,.36); transform: skewX(-7deg); }
+.event-series { display: flex; align-items: flex-start; gap: .12em; padding: 7px 28px 3px; font-size: clamp(58px, 8.4vw, 126px); font-weight: 1000; line-height: .78; letter-spacing: -.085em; white-space: nowrap; text-shadow: 5px 5px 0 rgba(240,90,40,.38); }
+.event-series i { color: #36C2F0; font-style: normal; }
+.event-series b { display: inline-grid; place-items: center; min-width: .78em; margin: -.17em 0 0 .04em; padding: .17em .12em .1em; color: #071126; background: #F6C64A; font-size: .48em; line-height: 1; letter-spacing: -.04em; box-shadow: 5px 5px 0 #F05A28; transform: rotate(3deg); }
+.event-location { display: block; width: fit-content; margin: 12px 0 0 18px; padding: 12px 22px 10px; color: #071126; background: #F6C64A; font-size: clamp(14px, 1.8vw, 26px); font-weight: 1000; letter-spacing: .09em; line-height: 1; white-space: nowrap; box-shadow: 8px 8px 0 #F05A28; clip-path: polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%); }
+.event-location i { color: #F05A28; font-style: normal; }
+.hero-full-name { position: relative; width: fit-content; max-width: 790px; margin: 0 0 20px 18px; padding: 12px 18px; color: #fff; background: rgba(8,20,45,.78); border: 1px solid rgba(54,194,240,.24); box-shadow: 5px 5px 0 rgba(54,194,240,.12); font-size: clamp(11px, 1.12vw, 15px); font-weight: 900; letter-spacing: .105em; line-height: 1.4; text-transform: uppercase; }
+.hero-full-name::after { content: ""; position: absolute; right: -9px; top: -1px; bottom: -1px; width: 9px; background: #36C2F0; clip-path: polygon(0 0,100% 12px,100% calc(100% - 12px),0 100%); }
+.hero-description { position: relative; max-width: 650px; margin: 0 0 0 18px; padding-left: 22px; color: rgba(255,255,255,.76); font-size: clamp(16px, 1.45vw, 20px); line-height: 1.65; text-wrap: balance; }
+.hero-description::before { content: ""; position: absolute; left: 0; top: .35em; width: 5px; height: 3.5em; background: linear-gradient(#F6C64A 0 58%, #F05A28 58%); transform: skewY(-12deg); }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
 .primary-button, .secondary-button { padding: 15px 22px; text-decoration: none; font-size: 12px; font-weight: 1000; letter-spacing: .14em; text-transform: uppercase; clip-path: polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%); }
 .primary-button { color: #071126; background: #F6C64A; box-shadow: 10px 10px 0 rgba(240,90,40,.55); }
@@ -132,6 +142,14 @@ h1 span { display: block; white-space: nowrap; }
 .hero-stats div:last-child { border-right: 0; }
 .hero-stats strong { display: block; color: #36C2F0; font-size: 38px; line-height: 1; }
 .hero-stats span { color: rgba(255,255,255,.62); font-size: 11px; font-weight: 1000; letter-spacing: .15em; text-transform: uppercase; }
+
+@media (max-width: 900px) {
+  .event-lockup { max-width: 100%; padding-right: 0; }
+  .event-series { padding-inline: 18px; white-space: normal; }
+  .event-location { margin-left: 8px; white-space: normal; line-height: 1.25; }
+  .hero-full-name { margin-left: 8px; }
+  .hero-description { margin-left: 8px; }
+}
 
 .match-strip { position: relative; z-index: 5; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 24px 0 72px; }
 .content-grid { display: grid; grid-template-columns: 1.42fr .78fr; gap: 24px; margin-bottom: 190px; }
