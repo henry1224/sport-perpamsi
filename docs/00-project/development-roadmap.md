@@ -6,9 +6,9 @@ Eksekusi harian wajib mengikuti [phase-execution-standard.md](./phase-execution-
 
 ## Kontrol Eksekusi
 
-- **Phase aktif: Phase 2 — Master Cabor, Kategori, dan Regulasi.**
-- Phase berikutnya tidak boleh diperluas sebelum exit criteria Phase 2 selesai.
-- Pekerjaan awal Phase 5 berupa assignment panitia cabor/venue dibekukan dan tidak menjadi alasan melewati Phase 2–4.
+- **Phase aktif: Phase 3 — Kompetisi dan Publikasi Registrasi.**
+- Phase berikutnya tidak boleh diperluas sebelum exit criteria Phase 3 selesai.
+- Pekerjaan awal Phase 5 berupa assignment panitia cabor/venue dibekukan dan tidak menjadi alasan melewati Phase 3–4.
 - Perubahan phase aktif wajib dilakukan setelah seluruh gate pada standar eksekusi phase lulus.
 
 ## Phase 0 — Baseline dan Dokumen
@@ -33,9 +33,9 @@ Exit: akun belum terverifikasi tidak dapat masuk; race condition provinsi diuji.
 
 - [x] Master cabor dan kategori dari baseline seed.
 - [x] Batas jumlah pemain pada kategori.
-- [ ] CRUD Admin cabor dan kategori.
-- [ ] Regulasi berversi dan dokumen technical meeting.
-- [ ] Restrict delete dan audit perubahan master.
+- [x] CRUD Admin cabor dan kategori.
+- [x] Regulasi berversi dan referensi dokumen technical meeting.
+- [x] Master tidak memiliki delete permanen dan setiap perubahan tercatat audit.
 
 Exit: Admin dapat menyiapkan master valid tanpa membuatnya otomatis terlihat PD.
 

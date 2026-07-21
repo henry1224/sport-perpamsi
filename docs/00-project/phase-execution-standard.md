@@ -11,17 +11,17 @@ Dokumen ini mengontrol urutan pengembangan agar pekerjaan tidak melompat ke phas
 
 ## Phase Aktif
 
-**Phase 2 — Master Cabor, Kategori, dan Regulasi.**
+**Phase 3 — Kompetisi dan Publikasi Registrasi.**
 
 Pekerjaan yang boleh dimulai:
 
-- CRUD Admin cabor dan kategori.
-- Regulasi berversi dan dokumen technical meeting.
-- Restrict delete untuk master yang sudah dipakai.
-- Audit perubahan master.
-- Test, UAT, dan dokumentasi yang diperlukan exit criteria Phase 2.
+- Preview paket kompetisi sebelum publikasi.
+- Penetapan versi regulasi ke kompetisi.
+- Tarik publikasi sebelum ada pendaftaran.
+- Audit publikasi, penutupan, dan penarikan kompetisi.
+- Test, UAT, dan dokumentasi yang diperlukan exit criteria Phase 3.
 
-Pekerjaan Phase 3–7 tidak boleh diperluas sebelum Phase 2 selesai. Implementasi assignment cabor/venue yang sudah terlanjur dibuat dicatat sebagai pekerjaan awal Phase 5 dan **dibekukan** sampai Phase 5 aktif.
+Pekerjaan Phase 4–7 tidak boleh diperluas sebelum Phase 3 selesai. Implementasi assignment cabor/venue yang sudah terlanjur dibuat dicatat sebagai pekerjaan awal Phase 5 dan **dibekukan** sampai Phase 5 aktif.
 
 ## Gate Sebelum Mulai Pekerjaan
 
@@ -64,11 +64,11 @@ Pengecualian wajib dicatat pada roadmap dengan alasan, scope minimum, dan phase 
 Gunakan format ini sebelum coding:
 
 ```text
-Phase: 2
-Task: CRUD Admin cabor dan kategori
-Dependency: master cabor baseline tersedia
-Acceptance: Admin dapat tambah, ubah, nonaktifkan; data terpakai tidak dapat dihapus
-Test: validasi input, restrict delete, audit perubahan
+Phase: 3
+Task: Preview dan publikasi kompetisi
+Dependency: master cabor, kategori, dan regulasi tersedia
+Acceptance: Admin memilih versi regulasi, preview snapshot, publish, dan tarik publikasi sebelum ada entry
+Test: snapshot regulasi, audit publikasi, larangan tarik setelah entry
 Dokumen: roadmap, data dictionary, risk register, test strategy, UAT
 ```
 
@@ -76,9 +76,8 @@ Task tanpa nomor phase tidak boleh masuk branch fitur.
 
 ## Urutan Saat Ini
 
-1. Selesaikan Phase 2.
-2. Tutup gap Phase 3.
-3. Tutup gap Phase 4.
-4. Lanjutkan Phase 5.
-5. Kerjakan Phase 6.
-6. Selesaikan Phase 7 dan go-live.
+1. Selesaikan Phase 3.
+2. Tutup gap Phase 4.
+3. Lanjutkan Phase 5.
+4. Kerjakan Phase 6.
+5. Selesaikan Phase 7 dan go-live.

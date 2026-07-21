@@ -55,6 +55,8 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Hari tidak sesuai tanggal | Sedang | Hari diturunkan dari tanggal, bukan input manual | Unit test formatter |
 | Jam selesai sebelum jam mulai | Tinggi | Check/validation `end_time > start_time` | Validation test |
 | Venue nonaktif masih dapat dipilih | Sedang | Query pilihan hanya venue aktif; backend tetap memvalidasi | Feature test |
+| Master cabor/kategori dihapus setelah dipakai | Tinggi | Tidak menyediakan endpoint delete; gunakan status aktif dan foreign key restrict | Feature test master data |
+| Regulasi lama tertimpa revisi | Tinggi | Setiap revisi membuat nomor versi baru dan audit append-only | Feature test versi regulasi |
 | Agenda draft tampil publik | Tinggi | Public hanya membaca status terbit | Feature test publikasi |
 | Perubahan jadwal tidak terlacak | Tinggi | Audit sebelum/sesudah, aktor, alasan | Audit test |
 

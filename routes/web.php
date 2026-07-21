@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminEntryVerificationController;
 use App\Http\Controllers\Admin\CommitteeApplicationController;
+use App\Http\Controllers\Admin\MasterDataController;
 use App\Http\Controllers\Admin\ScoreController;
 use App\Http\Controllers\Admin\SportAssignmentController;
 use App\Http\Controllers\Admin\TournamentEventController;
@@ -60,4 +61,10 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/assignments/users', [SportAssignmentController::class, 'storeUser'])->name('assignments.users.store');
     Route::post('/assignments', [SportAssignmentController::class, 'store'])->name('assignments.store');
     Route::post('/assignments/{assignment}/revoke', [SportAssignmentController::class, 'revoke'])->name('assignments.revoke');
+    Route::get('/master-data', [MasterDataController::class, 'index'])->name('master-data.index');
+    Route::post('/master-data/sports', [MasterDataController::class, 'storeSport'])->name('master-data.sports.store');
+    Route::put('/master-data/sports/{sport}', [MasterDataController::class, 'updateSport'])->name('master-data.sports.update');
+    Route::post('/master-data/categories', [MasterDataController::class, 'storeCategory'])->name('master-data.categories.store');
+    Route::put('/master-data/categories/{category}', [MasterDataController::class, 'updateCategory'])->name('master-data.categories.update');
+    Route::post('/master-data/regulations', [MasterDataController::class, 'storeRegulation'])->name('master-data.regulations.store');
 });
