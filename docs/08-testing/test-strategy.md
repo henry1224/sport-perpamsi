@@ -28,6 +28,7 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 22. Seeder dapat dijalankan ulang tanpa menimpa data operasional.
 23. Hanya Admin terverifikasi dapat membuat akun panitia serta menetapkan atau mencabut assignment cabor dan venue.
 24. Admin dapat mengelola cabor/kategori, regulasi selalu membuat versi baru, dan seluruh perubahan master tercatat audit.
+25. Publish wajib memakai regulasi dari cabor yang sama, snapshot menyimpan versinya, dan unpublish ditolak setelah entry tersedia.
 
 ## Frontend/E2E
 

@@ -36,6 +36,11 @@ class TournamentEvent extends Model
         return $this->belongsTo(SportCategory::class, 'sport_category_id');
     }
 
+    public function regulation(): BelongsTo
+    {
+        return $this->belongsTo(SportRegulation::class, 'sport_regulation_id');
+    }
+
     public function entries(): HasMany
     {
         return $this->hasMany(EventEntry::class);

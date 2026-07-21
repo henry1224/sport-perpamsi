@@ -6,9 +6,9 @@ Eksekusi harian wajib mengikuti [phase-execution-standard.md](./phase-execution-
 
 ## Kontrol Eksekusi
 
-- **Phase aktif: Phase 3 — Kompetisi dan Publikasi Registrasi.**
-- Phase berikutnya tidak boleh diperluas sebelum exit criteria Phase 3 selesai.
-- Pekerjaan awal Phase 5 berupa assignment panitia cabor/venue dibekukan dan tidak menjadi alasan melewati Phase 3–4.
+- **Phase aktif: Phase 4 — Registrasi Cabor dan Pemain.**
+- Phase berikutnya tidak boleh diperluas sebelum exit criteria Phase 4 selesai.
+- Pekerjaan awal Phase 5 berupa assignment panitia cabor/venue tetap dibekukan sampai Phase 5 aktif.
 - Perubahan phase aktif wajib dilakukan setelah seluruh gate pada standar eksekusi phase lulus.
 
 ## Phase 0 — Baseline dan Dokumen
@@ -45,7 +45,7 @@ Exit: Admin dapat menyiapkan master valid tanpa membuatnya otomatis terlihat PD.
 - [x] Snapshot regulasi disimpan saat publish.
 - [x] Portal PD hanya menampilkan kompetisi terpublikasi.
 - [x] Admin dapat publish dan menutup registrasi.
-- [ ] Preview publikasi, tarik publikasi sebelum ada entry, dan audit event.
+- [x] Preview publikasi, penetapan versi regulasi, tarik publikasi sebelum ada entry, dan audit event.
 
 Exit: hanya paket kompetisi yang disahkan Admin dapat dipilih PD.
 

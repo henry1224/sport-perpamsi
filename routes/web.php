@@ -57,6 +57,7 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::get('/events', [TournamentEventController::class, 'index'])->name('events.index');
     Route::post('/events/{event:code}/publish', [TournamentEventController::class, 'publish'])->name('events.publish');
     Route::post('/events/{event:code}/close', [TournamentEventController::class, 'close'])->name('events.close');
+    Route::post('/events/{event:code}/unpublish', [TournamentEventController::class, 'unpublish'])->name('events.unpublish');
     Route::get('/assignments', [SportAssignmentController::class, 'index'])->name('assignments.index');
     Route::post('/assignments/users', [SportAssignmentController::class, 'storeUser'])->name('assignments.users.store');
     Route::post('/assignments', [SportAssignmentController::class, 'store'])->name('assignments.store');
