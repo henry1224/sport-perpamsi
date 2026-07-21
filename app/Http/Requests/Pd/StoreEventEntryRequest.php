@@ -8,6 +8,11 @@ use Illuminate\Validation\Validator;
 
 class StoreEventEntryRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['intent' => $this->input('intent', 'submit')]);
+    }
+
     public function authorize(): bool
     {
         return $this->user()?->isPdAdmin() && (bool) $this->user()->regional_committee_id;
@@ -18,7 +23,8 @@ class StoreEventEntryRequest extends FormRequest
         $rules = $this->rulesSnapshot();
 
         return [
-            'members' => ['required', 'array', 'min:'.($rules['min_members'] ?? 1), 'max:'.($rules['max_members'] ?? 1)],
+            'intent' => ['required', 'in:draft,submit'],
+            'members' => ['required', 'array', 'min:'.($this->input('intent') === 'draft' ? 1 : ($rules['min_members'] ?? 1)), 'max:'.($rules['max_members'] ?? 1)],
             'members.*.name' => ['required', 'string', 'max:120'],
         ];
     }
@@ -37,15 +43,8 @@ class StoreEventEntryRequest extends FormRequest
                 $v->errors()->add('members', 'Nama pemain tidak boleh sama dalam satu pendaftaran.');
             }
 
-            if ($event instanceof TournamentEvent) {
-                $exists = $event->entries()
-                    ->where('regional_committee_id', $user->regional_committee_id)
-                    ->where('verification_status', '!=', 'rejected')
-                    ->exists();
-
-                if ($exists) {
-                    $v->errors()->add('members', 'PD Anda sudah terdaftar pada cabor ini.');
-                }
+            if ($event instanceof TournamentEvent && $event->entries()->where('regional_committee_id', $user->regional_committee_id)->whereIn('verification_status', ['pending', 'verified'])->exists()) {
+                $v->errors()->add('members', 'Pendaftaran sedang diproses atau sudah terverifikasi.');
             }
         });
     }

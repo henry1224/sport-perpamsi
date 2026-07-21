@@ -6,9 +6,9 @@ Eksekusi harian wajib mengikuti [phase-execution-standard.md](./phase-execution-
 
 ## Kontrol Eksekusi
 
-- **Phase aktif: Phase 4 — Registrasi Cabor dan Pemain.**
-- Phase berikutnya tidak boleh diperluas sebelum exit criteria Phase 4 selesai.
-- Pekerjaan awal Phase 5 berupa assignment panitia cabor/venue tetap dibekukan sampai Phase 5 aktif.
+- **Phase aktif: Phase 5 — Venue, Agenda, dan Panitia.**
+- Phase berikutnya tidak boleh diperluas sebelum exit criteria Phase 5 selesai.
+- Assignment panitia cabor/venue yang sudah tersedia boleh dilanjutkan dan dihubungkan ke agenda serta policy akses.
 - Perubahan phase aktif wajib dilakukan setelah seluruh gate pada standar eksekusi phase lulus.
 
 ## Phase 0 — Baseline dan Dokumen
@@ -55,7 +55,7 @@ Exit: hanya paket kompetisi yang disahkan Admin dapat dipilih PD.
 - [x] Tabel `entry_members` dan backfill pemain legacy.
 - [x] Validasi jumlah/duplikasi pemain dari master kategori.
 - [x] Validasi memakai snapshot regulasi kompetisi.
-- [-] Workflow submit, verifikasi, penolakan, dan pembatalan pending; draft/perbaikan roster belum tersedia.
+- [x] Workflow draft, submit, verifikasi, perbaikan, penolakan, kirim ulang, pembatalan, dan audit roster.
 
 Exit: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy terverifikasi aman.
 

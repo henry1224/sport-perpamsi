@@ -15,6 +15,11 @@ const reject = (id) => {
   if (!note?.trim()) return;
   router.post(`/admin/entries/${id}/reject`, { note }, { preserveScroll: true });
 };
+const requestRevision = (id) => {
+  const note = prompt('Catatan perbaikan roster:');
+  if (!note?.trim()) return;
+  router.post(`/admin/entries/${id}/revision`, { note }, { preserveScroll: true });
+};
 const eventStatus = (status) => ({
   registration_draft: 'Draft', registration_open: 'Pendaftaran Dibuka', registration_closed: 'Pendaftaran Ditutup',
   bracket_locked: 'Bracket Dikunci', ongoing: 'Sedang Berlangsung', completed: 'Selesai',
@@ -41,7 +46,7 @@ const eventStatus = (status) => ({
             <td><div class="primary-cell"><strong>{{ entry.event }}</strong><small>{{ entry.event_code }}</small></div></td>
             <td><ol class="members"><li v-for="member in entry.members" :key="member">{{ member }}</li></ol></td>
             <td><span class="status-badge info">{{ eventStatus(entry.event_status) }}</span></td>
-            <td><div class="row-actions"><button class="primary" @click="approve(entry.id)">Setujui</button><button class="danger" @click="reject(entry.id)">Tolak</button></div></td>
+            <td><div class="row-actions"><button class="primary" @click="approve(entry.id)">Setujui</button><button @click="requestRevision(entry.id)">Perbaikan</button><button class="danger" @click="reject(entry.id)">Tolak</button></div></td>
           </tr>
           <tr v-if="!rows.length" class="empty-row"><td colspan="5">Tidak ada pendaftaran sesuai filter.</td></tr>
         </tbody>

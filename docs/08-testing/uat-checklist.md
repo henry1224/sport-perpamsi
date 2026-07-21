@@ -28,6 +28,8 @@
 - [ ] Admin dapat mengelola agenda tanpa bentrok venue/waktu.
 - [ ] Admin dapat mengelola kompetisi dan status pendaftaran.
 - [x] Admin dapat melihat, menyetujui, atau menolak registrasi serta pemain per PD PERPAMSI.
+- [x] PD dapat menyimpan draft, mengirim roster, memperbaiki sesuai catatan, mengirim ulang, dan membatalkan registrasi.
+- [x] Admin dapat meminta perbaikan roster dengan catatan.
 
 ## Panitia
 

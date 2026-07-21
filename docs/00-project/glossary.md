@@ -34,10 +34,12 @@ Kode internal tetap stabil dalam database, tetapi UI dan export wajib memakai la
 
 | Kode | Label |
 |---|---|
+| `draft` | Draft |
 | `pending` | Menunggu Verifikasi |
 | `verified` | Terverifikasi |
 | `rejected` | Ditolak |
 | `revision_required` | Perlu Perbaikan |
+| `cancelled` | Dibatalkan |
 | `registration_open` | Pendaftaran Dibuka |
 | `registration_closed` | Pendaftaran Ditutup |
 | `bracket_locked` | Bracket Dikunci |

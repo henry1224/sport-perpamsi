@@ -50,6 +50,7 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::get('/entries', [AdminEntryVerificationController::class, 'index'])->name('entries.index');
     Route::post('/entries/{entry}/verify', [AdminEntryVerificationController::class, 'verify'])->name('entries.verify');
     Route::post('/entries/{entry}/reject', [AdminEntryVerificationController::class, 'reject'])->name('entries.reject');
+    Route::post('/entries/{entry}/revision', [AdminEntryVerificationController::class, 'revision'])->name('entries.revision');
     Route::get('/committee-applications', [CommitteeApplicationController::class, 'index'])->name('committee-applications.index');
     Route::post('/committee-applications/{application}/verify', [CommitteeApplicationController::class, 'verify'])->name('committee-applications.verify');
     Route::post('/committee-applications/{application}/revision', [CommitteeApplicationController::class, 'revision'])->name('committee-applications.revision');

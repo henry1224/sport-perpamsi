@@ -50,6 +50,8 @@
 - `registration_key`: key unik `{event_id}:{regional_committee_id}` untuk registrasi baru; null pada data legacy.
 - `display_name`: snapshot nama PD PERPAMSI.
 - `verification_status`, `submitted_at`, `verified_by`, `verified_at`, `verification_note`.
+- Status roster: `draft`, `pending`, `revision_required`, `verified`, `rejected`, `cancelled`.
+- `entry_registration_audits`: action, before/after roster, aktor, dan waktu perubahan.
 - `pdam_id`, `province_id`, `regency_id`, `athlete_1`, `athlete_2`, `team_name`: kolom legacy sementara, tidak ditulis flow baru.
 
 ## EntryMember
