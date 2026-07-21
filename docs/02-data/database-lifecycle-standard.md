@@ -47,6 +47,7 @@ Jika satu poin gagal, struktur tetap dipertahankan.
 - Seeder tidak boleh menghapus seluruh tabel atau menimpa data operasional Admin.
 - Seeder production tidak membuat password default atau data pribadi contoh.
 - Seeder demo dipisahkan dari master dan hanya dijalankan pada environment non-production.
+- `TournamentDomainSeeder` tidak membuat roster untuk PD Kalimantan Timur karena akun tersebut disediakan khusus untuk pengujian alur registrasi PD.
 - Urutan seeder mengikuti foreign key: master → relasi → demo.
 - Perubahan kode/status master memakai key stabil, bukan ID hardcoded.
 - Sebelum menghapus seeder, cari pemanggilan pada `DatabaseSeeder`, test, deployment, dan runbook.

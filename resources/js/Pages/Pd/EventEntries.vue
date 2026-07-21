@@ -77,7 +77,7 @@ const statusLabel = (s) => ({ draft: 'Draft', verified: 'Terverifikasi', pending
         <div class="form-actions"><button type="button" class="draft" :disabled="form.processing" @click="submit('draft')">Simpan Draft</button><button type="button" class="submit" :disabled="form.processing" @click="submit('submit')">{{ form.processing ? 'Mengirim…' : editableEntry?.verification_status === 'revision_required' ? 'Kirim Ulang' : 'Ajukan Pendaftaran' }}</button></div>
         <p class="hint">Draft dapat diubah. Setelah diajukan, roster terkunci sampai Admin meminta perbaikan.</p>
       </form>
-      <div v-else class="locked-notice">Pendaftaran ditutup untuk event ini.</div>
+      <div v-else class="locked-notice"><strong>{{ lockedEntry ? statusLabel(lockedEntry.verification_status) : 'Pendaftaran Ditutup' }}</strong><span v-if="lockedEntry">Roster sudah dikirim. Form terbuka kembali bila Admin meminta perbaikan.</span><span v-else>Periode registrasi untuk kompetisi ini sudah berakhir.</span></div>
 
       <div class="entry-list">
         <h3>Pendaftaran PD Anda ({{ entries.length }})</h3>
@@ -97,38 +97,5 @@ const statusLabel = (s) => ({ draft: 'Draft', verified: 'Terverifikasi', pending
 </template>
 
 <style scoped>
-.page-head { padding: 44px 0 12px; }
-.back { display: inline-block; margin-top: 8px; color: #36C2F0; text-decoration: none; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: 12px; }
-.flash { padding: 12px 16px; margin-bottom: 12px; font-weight: 800; }
-.flash.ok { background: rgba(54,194,240,.18); color: #36C2F0; border-left: 4px solid #36C2F0; }
-.flash.err { background: rgba(240,90,40,.18); color: #F05A28; border-left: 4px solid #F05A28; }
-.entry-panel { display: grid; grid-template-columns: 1fr 1.4fr; gap: 20px; padding: 20px; background: #071126; border: 1px solid rgba(255,255,255,.12); box-shadow: 10px 10px 0 rgba(54,194,240,.13); }
-.entry-form, .entry-list { padding: 18px; background: rgba(5,11,28,.56); border: 1px solid rgba(255,255,255,.12); display: grid; gap: 14px; }
-h3 { margin: 0 0 4px; color: #F6C64A; letter-spacing: .1em; text-transform: uppercase; font-size: 12px; }
-label { display: grid; gap: 8px; color: #36C2F0; font-size: 11px; font-weight: 1000; letter-spacing: .16em; text-transform: uppercase; }
-input { width: 100%; padding: 12px 14px; color: #fff; background: #08142d; border: 1px solid rgba(255,255,255,.16); font: inherit; }
-button { padding: 12px 16px; background: #F6C64A; color: #071126; border: 0; font-weight: 1000; letter-spacing: .12em; text-transform: uppercase; box-shadow: 6px 6px 0 rgba(240,90,40,.45); cursor: pointer; }
-button:disabled { opacity: .6; cursor: not-allowed; }
-.member-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
-.member-row .remove, .add { box-shadow: none; background: rgba(54,194,240,.12); color: #36C2F0; border: 1px solid rgba(54,194,240,.35); }
-.form-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.draft { box-shadow:none; color:#36C2F0; background:rgba(54,194,240,.12); border:1px solid rgba(54,194,240,.35); }
-.members { margin: 4px 0 0; padding-left: 20px; color: rgba(255,255,255,.72); font-size: 13px; line-height: 1.65; }
-.hint { color: rgba(255,255,255,.6); font-size: 12px; font-weight: 700; }
-.locked-notice { padding: 18px; background: rgba(240,90,40,.14); color: #F05A28; border-left: 4px solid #F05A28; font-weight: 800; }
-.entry-row { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; padding: 12px; background: #08142d; border: 1px solid rgba(255,255,255,.1); border-left: 4px solid #36C2F0; }
-.entry-row.pending { border-left-color: #F6C64A; }
-.entry-row.rejected { border-left-color: #F05A28; }
-.entry-row.draft,.entry-row.cancelled { border-left-color:#71808a; }.entry-row.revision_required { border-left-color:#F05A28; }
-.entry-main { display: grid; gap: 4px; }
-.entry-main small { color: rgba(255,255,255,.6); font-weight: 700; }
-.entry-main small.note { color: #F05A28; }
-.tag { padding: 5px 10px; font-size: 11px; font-weight: 1000; letter-spacing: .1em; text-transform: uppercase; clip-path: polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%); }
-.tag.verified { background: rgba(54,194,240,.18); color: #36C2F0; }
-.tag.pending { background: rgba(246,198,74,.22); color: #F6C64A; }
-.tag.rejected { background: rgba(240,90,40,.22); color: #F05A28; }
-.tag.draft,.tag.cancelled { background:rgba(113,128,138,.2); color:#aebbc4; }.tag.revision_required { background:rgba(240,90,40,.22); color:#F05A28; }
-.del { padding: 6px 10px; background: rgba(240,90,40,.2); color: #F05A28; box-shadow: none; font-size: 11px; }
-.err { color: #F05A28; text-transform: none; letter-spacing: 0; font-weight: 700; }
-.empty { text-align: center; padding: 20px; color: rgba(255,255,255,.5); }
-@media (max-width: 900px) { .entry-panel { grid-template-columns: 1fr; } .entry-row { grid-template-columns: 1fr; } }
+.page-head { padding:8px 0 18px; }.back { display:inline-flex; margin-top:8px; color:#1946a3; text-decoration:none; font-size:12px; font-weight:800; }.flash { margin-bottom:14px; padding:12px 16px; border:1px solid; border-radius:10px; font-weight:750; }.flash.ok { color:#087365; background:#eefaf6; border-color:#b9e3d6; }.flash.err { color:#a1432e; background:#fff4ef; border-color:#efcfc4; }.entry-panel { display:grid; grid-template-columns:minmax(330px,.8fr) minmax(0,1.2fr); gap:18px; align-items:start; }.entry-form,.entry-list,.locked-notice { overflow:hidden; background:#fff; border:1px solid #d9e3e9; border-radius:14px; box-shadow:0 8px 24px rgba(25,53,76,.07); }.entry-form,.entry-list { display:grid; gap:14px; padding:20px; }.entry-form > div:first-child,.entry-list > h3 { margin:-20px -20px 4px; padding:18px 20px; background:#fbfcfd; border-bottom:1px solid #e2e9ed; }.entry-form h3,.entry-list h3 { margin:0; color:#142536; font-size:17px; }.entry-form > div:first-child .hint { margin-top:6px; }.hint { margin:0; color:#71808b; font-size:12px; line-height:1.5; }.member-row { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:end; }label { display:grid; gap:7px; color:#536571; font-size:11px; font-weight:750; }label span { letter-spacing:.04em; }input { width:100%; min-height:42px; padding:10px 12px; color:#243747; background:#fff; border:1px solid #cbd7de; border-radius:8px; font:inherit; outline:none; transition:border-color .16s,box-shadow .16s; }input:focus { border-color:#2a68b7; box-shadow:0 0 0 3px rgba(42,104,183,.11); }button { min-height:40px; padding:9px 13px; border:1px solid transparent; border-radius:8px; font-weight:800; cursor:pointer; transition:.16s ease; }button:disabled { opacity:.55; cursor:wait; }.member-row .remove,.add,.draft { color:#1946a3; background:#fff; border-color:#bfd0dc; }.member-row .remove:hover,.add:hover,.draft:hover { background:#eff5fb; }.form-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.submit { color:#fff; background:#1946a3; box-shadow:0 5px 14px rgba(25,70,163,.18); }.members { margin:6px 0 0; padding-left:20px; color:#536571; font-size:13px; line-height:1.65; }.locked-notice { display:grid; gap:6px; padding:20px; color:#655000; background:#fff9e8; border-color:#eedb94; }.locked-notice strong { color:#4d3f09; }.locked-notice span { font-size:12px; line-height:1.5; }.entry-row { display:grid; grid-template-columns:1fr auto auto; gap:14px; align-items:center; padding:14px; background:#fbfcfd; border:1px solid #e2e9ed; border-left:4px solid #2a68b7; border-radius:10px; }.entry-row.pending { border-left-color:#d2a91f; }.entry-row.rejected,.entry-row.revision_required { border-left-color:#d65b3e; }.entry-row.draft,.entry-row.cancelled { border-left-color:#8796a0; }.entry-main { display:grid; gap:4px; }.entry-main strong { color:#203444; }.entry-main small { color:#71808b; font-weight:650; }.entry-main small.note { color:#a1432e; }.tag { display:inline-flex; padding:5px 9px; border:1px solid; border-radius:999px; font-size:10px; font-weight:800; text-transform:uppercase; }.tag.verified { color:#087365; background:#eefaf6; border-color:#b9e3d6; }.tag.pending { color:#745b00; background:#fff5cf; border-color:#eedb94; }.tag.rejected,.tag.revision_required { color:#a1432e; background:#fff4ef; border-color:#efcfc4; }.tag.draft,.tag.cancelled { color:#536571; background:#edf2f5; border-color:#d3dde3; }.del { min-height:34px; padding:7px 10px; color:#a1432e; background:#fff; border-color:#efcfc4; font-size:10px; }.err { color:#a1432e; font-size:11px; font-weight:700; }.empty { margin:0; padding:24px; color:#7a8993; text-align:center; }@media(max-width:900px){.entry-panel{grid-template-columns:1fr}.entry-row{grid-template-columns:1fr}.form-actions{grid-template-columns:1fr}}
 </style>
