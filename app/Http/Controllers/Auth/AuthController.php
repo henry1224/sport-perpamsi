@@ -34,6 +34,7 @@ class AuthController extends Controller
 
         return match (true) {
             $user->isSuperAdmin() => redirect()->intended(route('admin.dashboard')),
+            $user->isPdAdmin() && ! $user->isVerified() => redirect()->route('registration.status'),
             $user->isPdAdmin() => redirect()->intended(route('pd.dashboard')),
             default => redirect()->intended('/'),
         };

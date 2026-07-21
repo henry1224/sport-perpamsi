@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'regional_committee_id'])]
+#[Fillable(['name', 'email', 'phone', 'position', 'password', 'role', 'account_status', 'regional_committee_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -39,5 +39,10 @@ class User extends Authenticatable
     public function isSuperAdmin(): bool
     {
         return $this->role === 'super_admin';
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->account_status === 'verified';
     }
 }

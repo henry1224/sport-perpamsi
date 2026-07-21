@@ -42,7 +42,7 @@ Status: `Partial` — tabel dan seeder dasar tersedia; CRUD Admin belum lengkap.
 4. Admin memverifikasi, meminta perbaikan, atau menolak dengan alasan.
 5. Hanya akun terverifikasi yang dapat masuk portal PD.
 
-Status: `Planned`.
+Status: `Done` — daftar, status pengajuan, verifikasi/perbaikan/penolakan Admin, audit, unique pengajuan aktif, dan blokir akun belum terverifikasi tersedia.
 
 ### 3. Registrasi Cabor dan Pemain
 

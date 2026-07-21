@@ -1,5 +1,5 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
 
@@ -38,6 +38,9 @@ const submit = () => form.post('/login');
         </button>
       </form>
       <aside class="login-help">
+        <h3>Belum memiliki akses?</h3>
+        <p>Ajukan akun untuk PD PERPAMSI provinsi Anda.</p>
+        <Link href="/register" class="register-link">Daftar Pengurus Daerah</Link>
         <h3>Akun demo</h3>
         <p><b>Super Admin</b><br /><code>super@perpamsi.local</code></p>
         <p><b>Admin PD (contoh)</b><br /><code>pd-kalimantan-timur@perpamsi.local</code></p>
@@ -59,6 +62,7 @@ const submit = () => form.post('/login');
 .err { color: #F05A28; text-transform: none; letter-spacing: 0; font-weight: 700; }
 .login-help { padding: 24px; background: rgba(5,11,28,.56); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.7); font-size: 13px; }
 .login-help h3 { margin: 0 0 12px; color: #F6C64A; letter-spacing: .1em; text-transform: uppercase; font-size: 12px; }
+.register-link { display: inline-block; margin: 4px 0 24px; padding: 10px 13px; color: #071126; background: #36c2f0; font-weight: 1000; text-decoration: none; text-transform: uppercase; box-shadow: 4px 4px 0 #1946a3; }
 .login-help code { display: inline-block; padding: 2px 6px; background: #08142d; color: #36C2F0; border: 1px solid rgba(255,255,255,.1); font-size: 12px; }
 @media (max-width: 900px) { .login-panel { grid-template-columns: 1fr; } }
 </style>

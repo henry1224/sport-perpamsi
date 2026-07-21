@@ -12,11 +12,11 @@ Exit: dokumen, ERD, migration, RBAC, test, UAT, dan risiko konsisten.
 
 ## Phase 1 — Pengajuan Akun PD
 
-- [ ] `committee_applications` dan status akun.
-- [ ] Form Daftar Pengurus Daerah.
-- [ ] Unique pengajuan aktif per provinsi.
-- [ ] Verifikasi, perbaikan, penolakan, alasan, audit.
-- [ ] Middleware status akun.
+- [x] `committee_applications` dan status akun.
+- [x] Form Daftar Pengurus Daerah.
+- [x] Unique pengajuan aktif per provinsi.
+- [x] Verifikasi, perbaikan, penolakan, alasan, audit.
+- [x] Middleware status akun.
 
 Exit: akun belum terverifikasi tidak dapat masuk; race condition provinsi diuji.
 

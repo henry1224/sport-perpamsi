@@ -33,6 +33,7 @@ class HandleInertiaRequests extends Middleware
                     'name' => $user->name,
                     'email' => $user->email,
                     'role' => $user->role,
+                    'account_status' => $user->account_status,
                     'committee' => $user->committee ? [
                         'id' => $user->committee->id,
                         'name' => $user->committee->name,

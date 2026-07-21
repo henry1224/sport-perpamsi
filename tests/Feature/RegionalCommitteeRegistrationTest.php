@@ -36,7 +36,7 @@ class RegionalCommitteeRegistrationTest extends TestCase
         $committee = DB::table('regional_committees')->where('id', $committeeIds->first())->first();
         $province = DB::table('provinces')->find($committee->province_id);
 
-        $this->assertSame($province->name, $committee->name);
+        $this->assertSame('PD PERPAMSI '.$province->name, $committee->name);
     }
 
     public function test_pd_admin_can_register_only_their_province_and_entry_starts_pending(): void
@@ -74,7 +74,7 @@ class RegionalCommitteeRegistrationTest extends TestCase
         ]);
 
         $this->assertSame(
-            DB::table('provinces')->find($admin->committee->province_id)->name,
+            'PD PERPAMSI '.DB::table('provinces')->find($admin->committee->province_id)->name,
             $admin->committee->name
         );
 
