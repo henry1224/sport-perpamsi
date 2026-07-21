@@ -12,6 +12,14 @@ class EntryRosterWorkflowTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_seeded_pd_account_has_no_precreated_roster(): void
+    {
+        $this->seed();
+        $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
+
+        $this->assertDatabaseMissing('event_entries', ['regional_committee_id' => $pd->regional_committee_id]);
+    }
+
     public function test_pd_can_save_draft_submit_and_resubmit_revision(): void
     {
         $this->seed();
@@ -42,8 +50,8 @@ class EntryRosterWorkflowTest extends TestCase
     {
         $this->seed();
         $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
-        $entry = EventEntry::query()->where('regional_committee_id', $pd->regional_committee_id)->firstOrFail();
-        $entry->update(['verification_status' => 'pending']);
+        $entry = EventEntry::query()->firstOrFail();
+        $entry->update(['regional_committee_id' => $pd->regional_committee_id, 'registration_key' => $entry->tournament_event_id.':'.$pd->regional_committee_id, 'verification_status' => 'pending']);
 
         $this->actingAs($pd)->delete(route('pd.entries.destroy', $entry))->assertRedirect();
 
@@ -55,7 +63,7 @@ class EntryRosterWorkflowTest extends TestCase
     {
         $this->seed();
         $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
-        $entry = EventEntry::query()->where('regional_committee_id', '!=', $pd->regional_committee_id)->firstOrFail();
+        $entry = EventEntry::query()->firstOrFail();
         $entry->update(['verification_status' => 'pending']);
 
         $this->actingAs($pd)->delete(route('pd.entries.destroy', $entry))->assertForbidden();

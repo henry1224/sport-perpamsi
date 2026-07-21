@@ -12,7 +12,12 @@ class TournamentDomainSeeder extends Seeder
     {
         $now = now();
         $sports = DB::table('sports')->get()->keyBy('code');
-        $regionalCommittees = DB::table('regional_committees')->orderBy('name')->get();
+        $regionalCommittees = DB::table('regional_committees')
+            ->join('provinces', 'regional_committees.province_id', '=', 'provinces.id')
+            ->where('provinces.slug', '!=', 'kalimantan-timur')
+            ->orderBy('regional_committees.name')
+            ->select('regional_committees.*')
+            ->get();
 
         foreach ($this->csvRows(base_path('data/seed/sport_categories.csv')) as $row) {
             $sport = $sports[$row['sport_code']] ?? null;
