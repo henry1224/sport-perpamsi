@@ -45,7 +45,7 @@ Exit: Admin dapat menyiapkan master valid tanpa membuatnya otomatis terlihat PD.
 - [x] Snapshot regulasi disimpan saat publish.
 - [x] Portal PD hanya menampilkan kompetisi terpublikasi.
 - [x] Admin dapat publish dan menutup registrasi.
-- [ ] Preview publikasi, tarik publikasi sebelum ada entry, dan audit event.
+- [x] Preview publikasi, penetapan versi regulasi, tarik publikasi sebelum ada entry, dan audit event.
 
 Exit: hanya paket kompetisi yang disahkan Admin dapat dipilih PD.
 

@@ -46,6 +46,9 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Status internal tampil mentah | Sedang | Satu kamus label Indonesia untuk seluruh UI/export | UI test/status audit |
 | Seeder menimpa perubahan admin | Tinggi | Seeder idempotent hanya mengisi baseline; data operasional tidak ditimpa | Rerun seeder test |
 | Publish dilakukan tanpa kategori/regulasi valid | Tinggi | Action Admin memvalidasi kategori aktif, cabor cocok, periode, dan snapshot | Feature test publish |
+| Regulasi cabor lain dipasang ke kompetisi | Kritis | Backend memvalidasi regulasi berasal dari cabor kompetisi | Feature test publish |
+| Publikasi ditarik setelah peserta masuk | Kritis | Backend menolak unpublish jika entry sudah ada | Feature test unpublish |
+| Perubahan status publikasi tanpa jejak | Tinggi | Audit append-only untuk publish, republish, close, dan unpublish | Audit test |
 
 ## Venue, Agenda, dan Jadwal
 

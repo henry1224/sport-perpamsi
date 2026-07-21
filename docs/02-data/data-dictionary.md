@@ -40,6 +40,8 @@
 - `code`, `name`, `format`, `status`, `registration_open_at`, `registration_close_at`, `seed_locked_at`.
 - `registration_published_at`, `registration_published_by`: waktu dan Admin yang menetapkan paket registrasi resmi.
 - `registration_rules`: snapshot kategori, format, tipe skor, serta batas pemain saat publikasi.
+- `sport_regulation_id`: versi regulasi resmi yang dipilih Admin untuk kompetisi.
+- `event_publication_audits`: action, before/after, aktor, dan waktu publish, publish ulang, tutup, atau tarik publikasi.
 
 ## EventEntry
 

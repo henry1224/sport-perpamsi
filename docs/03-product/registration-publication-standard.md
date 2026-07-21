@@ -12,6 +12,9 @@ Dokumen ini menjadi sumber kebenaran hubungan Admin, regulasi kompetisi, kategor
 6. Submit hanya tersedia saat status `registration_open` dan berada dalam periode buka/tutup.
 7. Perubahan master kategori setelah publikasi tidak mengubah snapshot kompetisi.
 8. Setelah entry pertama masuk, snapshot tidak boleh diedit langsung.
+9. Admin wajib memilih versi regulasi dari cabor yang sama dan memeriksa preview paket sebelum publish.
+10. Publikasi hanya dapat ditarik selama belum ada entry.
+11. Publish, publish ulang, tutup, dan tarik publikasi tercatat audit.
 
 ## Status Kompetisi
 
@@ -35,8 +38,9 @@ Dokumen ini menjadi sumber kebenaran hubungan Admin, regulasi kompetisi, kategor
 - Format kompetisi.
 - Minimum pemain.
 - Maksimum pemain.
+- ID, versi, dan judul regulasi.
 
-Jika regulasi berversi dibangun, snapshot ditambah ID versi, nomor versi, dan checksum dokumen.
+Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diterbitkan.
 
 ## Alur Admin
 
@@ -72,3 +76,5 @@ Jika regulasi berversi dibangun, snapshot ditambah ID versi, nomor versi, dan ch
 - Validasi roster memakai `registration_rules`, bukan master kategori aktif.
 - Satu PD tidak dapat mendaftarkan kompetisi sama dua kali.
 - Publish, perubahan regulasi, dan penutupan registrasi wajib diaudit saat audit event tersedia.
+- Regulasi harus aktif dan berasal dari cabor kompetisi yang sama.
+- Tarik publikasi ditolak setelah entry pertama tersedia.
