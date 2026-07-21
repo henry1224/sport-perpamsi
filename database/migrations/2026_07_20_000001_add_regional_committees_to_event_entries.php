@@ -22,7 +22,7 @@ return new class extends Migration
         foreach ($provinces as $province) {
             DB::table('regional_committees')->insert([
                 'province_id' => $province->id,
-                'name' => 'PD PERPAMSI '.mb_strtoupper($province->name),
+                'name' => $province->name,
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

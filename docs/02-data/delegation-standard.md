@@ -1,8 +1,25 @@
-# Standar Delegasi Pimpinan Daerah
+# Standar Kontingen Provinsi
 
 ## Tujuan
 
-Menetapkan satu rantai data untuk master wilayah, pendaftaran peserta, pertandingan, dan klasemen medali.
+Menetapkan identitas peserta publik dan relasi data registrasi agar nama instansi asal tidak disalahgunakan sebagai nama kontingen.
+
+## Istilah Kanonik
+
+- Pengurus Daerah: pengguna yang mengelola registrasi satu provinsi.
+- Kontingen Provinsi: identitas pertandingan dan klasemen yang memakai `provinces.name`.
+- Instansi Asal: PDAM/Perumda Air Minum asal atlet atau tim; hanya metadata internal registrasi.
+
+Contoh benar:
+
+```text
+Pengurus Daerah Aceh
+└── Kontingen: Aceh
+    ├── Atlet A — asal Perumda Air Minum Kabupaten Aceh
+    └── Tim B  — asal PDAM lain dalam Provinsi Aceh
+
+Nama di bracket/klasemen: Aceh
+```
 
 ## Relasi Kanonik
 
@@ -13,37 +30,39 @@ RegionalCommittee 1 ── N EventEntry
 Pdam 1 ── N EventEntry
 TournamentEvent 1 ── N EventEntry
 EventEntry 1 ── N MatchParticipant/Match
-Final Match ── MedalStanding RegionalCommittee
+Final Match ── MedalStanding Province
 ```
+
+`regional_committees` tetap nama teknis tabel saat ini. Nilai `regional_committees.name` wajib sama dengan `provinces.name`.
 
 ## Aturan Data
 
-1. Satu provinsi memiliki tepat satu Pimpinan Daerah (`regional_committees`).
-2. Nama default memakai format `PD PERPAMSI {NAMA PROVINSI}` dan boleh dikoreksi pada master tanpa mengubah relasi.
-3. PDAM tetap menjadi instansi asal peserta dan selalu terhubung ke provinsi.
-4. Saat PDAM mendaftar cabor, `event_entries` menyimpan `pdam_id`, `province_id`, dan `regional_committee_id` sebagai snapshot registrasi.
-5. `regional_committee_id` diturunkan otomatis dari provinsi PDAM; operator tidak boleh memilih PD lain.
-6. Tim, atlet, dokumen, seed, match, dan hasil tetap terhubung ke `event_entries`.
-7. Bracket dan hasil menampilkan nama PDAM/tim/atlet sebagai peserta pertandingan.
-8. Klasemen medali mengakumulasi hasil seluruh `event_entries` ke Pimpinan Daerah.
-9. Emas dan perak berasal dari hasil babak final. Perunggu membutuhkan data penetapan juara ketiga yang eksplisit sesuai regulasi cabor.
-10. Perubahan provinsi PDAM setelah registrasi tidak mengubah delegasi historis; koreksi dilakukan lewat revisi registrasi yang diaudit.
+1. Satu provinsi memiliki satu akun/ruang kerja Pengurus Daerah.
+2. Nama kontingen selalu memakai nama resmi provinsi tanpa awalan `PD`, `PERPAMSI`, `PDAM`, atau `Perumda Air Minum`.
+3. `event_entries.display_name` memakai nama provinsi.
+4. `event_entries.pdam_id` menyimpan instansi asal untuk administrasi dan verifikasi internal.
+5. `regional_committee_id` diturunkan otomatis dari provinsi yang dikelola pengguna.
+6. Operator tidak boleh memilih kontingen provinsi lain.
+7. Atlet, tim, dokumen, seed, match, dan hasil terhubung ke `event_entries`.
+8. Bracket, hasil, peserta public, dan klasemen menampilkan nama provinsi.
+9. Detail instansi asal hanya tampil pada portal internal bila dibutuhkan.
+10. Medali seluruh entry dari provinsi sama diakumulasi ke provinsi tersebut.
 
 ## Alur Registrasi
 
-1. Admin memilih PDAM.
-2. Sistem membaca `province_id` PDAM.
-3. Sistem menetapkan `regional_committee_id` provinsi tersebut.
-4. Admin memilih event, cabor, kategori, tim/atlet, dan dokumen.
-5. Verifikator memeriksa data lalu menetapkan status registrasi.
-6. Registrasi terverifikasi masuk ke seeding, bracket, atau klasemen cabor.
-7. Hasil final masuk ke klasemen medali Pimpinan Daerah.
+1. Pengurus Daerah masuk ke portal provinsinya.
+2. Pengurus Daerah memilih instansi asal atlet/tim.
+3. Sistem menetapkan `province_id`, `regional_committee_id`, dan `display_name` dari provinsi akun.
+4. Pengurus Daerah memilih event, cabor, kategori, tim/atlet, dan dokumen.
+5. Verifikator memeriksa data internal tanpa mengubah nama kontingen.
+6. Entry terverifikasi masuk ke seeding, bracket, atau klasemen cabor.
+7. Hasil final masuk ke klasemen medali provinsi.
 
 ## Sumber Kebenaran
 
-- Master wilayah: `provinces`, `regencies`.
-- Master delegasi: `regional_committees`.
-- Master instansi: `pdams`.
+- Nama kontingen: `provinces.name`.
+- Ruang kerja Pengurus Daerah: `regional_committees`.
+- Instansi asal: `pdams`.
 - Registrasi cabor: `event_entries`.
 - Hasil pertandingan: `matches`, `match_scores`, `score_audits`.
-- Rekap publik: proyeksi klasemen dari hasil final, bukan input ulang nama wilayah.
+- Rekap publik: agregasi hasil final berdasarkan provinsi.

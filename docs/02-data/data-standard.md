@@ -1,6 +1,6 @@
 # Data Standard Sport PERPAMSI
 
-Sumber kebenaran relasi delegasi dan registrasi: [delegation-standard.md](./delegation-standard.md).
+Sumber kebenaran relasi kontingen dan registrasi: [delegation-standard.md](./delegation-standard.md).
 
 ## Single Source of Truth
 
@@ -104,7 +104,7 @@ Sumber kebenaran relasi delegasi dan registrasi: [delegation-standard.md](./dele
 
 ### Naming Public
 
-- Public list tampilkan `display_name` ringkas.
+- Public list tampilkan `display_name` sesuai nama provinsi.
 - Nama lengkap tetap tersedia di detail/tooltip.
 - Prefix legal seperti `PDAM`, `Perumda`, `Perumdam`, `PT` boleh disembunyikan di display publik bila membuat card terlalu panjang.
 

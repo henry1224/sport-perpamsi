@@ -14,7 +14,7 @@ class RegionalCommitteeSeeder extends Seeder
         foreach (DB::table('provinces')->orderBy('id')->get() as $province) {
             DB::table('regional_committees')->upsert([[
                 'province_id' => $province->id,
-                'name' => 'PD PERPAMSI '.mb_strtoupper($province->name),
+                'name' => $province->name,
                 'created_at' => $now,
                 'updated_at' => $now,
             ]], ['province_id'], ['name', 'updated_at']);

@@ -13,7 +13,7 @@ const total = (r) => r.gold + r.silver + r.bronze;
 <template>
   <PublicLayout>
     <div class="page-head">
-      <SectionTitle eyebrow="Medal Table" title="Klasemen Pimpinan Daerah" meta="Perhitungan resmi" />
+      <SectionTitle eyebrow="Medal Table" title="Klasemen Provinsi" meta="Perhitungan resmi" />
     </div>
     <section class="ranking-board">
       <table class="rank-table">
@@ -35,7 +35,7 @@ const total = (r) => r.gold + r.silver + r.bronze;
           </tr>
         </tbody>
       </table>
-      <p class="rule">PDAM bertanding sebagai peserta cabor; medali tercatat untuk Pimpinan Daerah provinsinya. Rumus: emas → perak → perunggu → total.</p>
+      <p class="rule">Nama kontingen menggunakan nama provinsi. Medali seluruh peserta dari daerah yang sama diakumulasi ke provinsi tersebut. Rumus: emas → perak → perunggu → total.</p>
     </section>
   </PublicLayout>
 </template>

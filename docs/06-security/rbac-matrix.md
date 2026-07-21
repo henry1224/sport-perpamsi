@@ -17,7 +17,7 @@
 2. Koordinator Cabor hanya mengelola cabor yang ditugaskan.
 3. Scorekeeper hanya mengubah match yang ditugaskan.
 4. Verifikator hanya mengubah status verifikasi peserta/dokumen.
-5. Pimpinan Daerah registrasi diturunkan dari provinsi PDAM; operator tidak boleh menggantinya bebas.
+5. Nama kontingen diturunkan dari provinsi akun Pengurus Daerah; operator tidak boleh menggantinya bebas.
 6. Content Officer hanya mengelola konten public.
 7. Public tidak boleh melihat data draft, dokumen internal, dan audit internal.
 8. Auditor read-only tidak boleh mengubah data.

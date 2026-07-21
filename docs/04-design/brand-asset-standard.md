@@ -100,9 +100,9 @@ Tema visual: **arena sport nasional tropis-futuristik**.
 
 ### Ranking
 
-- Klasemen Pimpinan Daerah memakai table gelap dengan podium top 3.
+- Klasemen Kontingen Provinsi memakai table gelap dengan podium top 3.
 - Top 1 punya gold glow tipis, bukan warna penuh berlebihan.
-- Tidak memakai toggle scope; klasemen resmi memakai Pimpinan Daerah.
+- Tidak memakai toggle scope; klasemen resmi memakai Kontingen Provinsi.
 
 ## Token Warna
 

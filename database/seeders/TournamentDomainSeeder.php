@@ -79,7 +79,7 @@ class TournamentDomainSeeder extends Seeder
             'province_id' => $pdam->province_id,
             'regency_id' => $pdam->regency_id,
             'seed_no' => $index + 1,
-            'display_name' => $this->shortName($pdam->name),
+            'display_name' => $regionalCommittees[$pdam->province_id]->name,
             'athlete_1' => $category && $category->competition_type !== 'team' ? 'Atlet '.($index + 1).'A' : null,
             'athlete_2' => $category && $category->competition_type === 'doubles' ? 'Atlet '.($index + 1).'B' : null,
             'team_name' => $category && $category->competition_type === 'team' ? $this->shortName($pdam->name).' Team' : null,

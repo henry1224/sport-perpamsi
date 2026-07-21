@@ -16,40 +16,40 @@ const tournaments = [
     code: 'mini-football', name: 'Mini Football', format: 'Grup → Knockout',
     groups: [
       { name: 'Grup A', standings: [
-        { team: 'PT Manuntung Balikpapan', p: 3, w: 3, d: 0, l: 0, gf: 8, ga: 2, pts: 9 },
-        { team: 'PDAM Surabaya', p: 3, w: 2, d: 0, l: 1, gf: 6, ga: 4, pts: 6 },
-        { team: 'PDAM Makassar', p: 3, w: 1, d: 0, l: 2, gf: 4, ga: 5, pts: 3 },
-        { team: 'PDAM Denpasar', p: 3, w: 0, d: 0, l: 3, gf: 1, ga: 8, pts: 0 },
+        { team: 'Kalimantan Timur', p: 3, w: 3, d: 0, l: 0, gf: 8, ga: 2, pts: 9 },
+        { team: 'Jawa Timur', p: 3, w: 2, d: 0, l: 1, gf: 6, ga: 4, pts: 6 },
+        { team: 'Sulawesi Selatan', p: 3, w: 1, d: 0, l: 2, gf: 4, ga: 5, pts: 3 },
+        { team: 'Bali', p: 3, w: 0, d: 0, l: 3, gf: 1, ga: 8, pts: 0 },
       ]},
       { name: 'Grup B', standings: [
-        { team: 'PTK Samarinda', p: 3, w: 2, d: 1, l: 0, gf: 7, ga: 3, pts: 7 },
-        { team: 'PDAM Jakarta', p: 3, w: 2, d: 0, l: 1, gf: 5, ga: 3, pts: 6 },
-        { team: 'PT Mahakam Kukar', p: 3, w: 1, d: 0, l: 2, gf: 3, ga: 5, pts: 3 },
-        { team: 'PDAM Medan', p: 3, w: 0, d: 1, l: 2, gf: 2, ga: 6, pts: 1 },
+        { team: 'Kalimantan Utara', p: 3, w: 2, d: 1, l: 0, gf: 7, ga: 3, pts: 7 },
+        { team: 'DKI Jakarta', p: 3, w: 2, d: 0, l: 1, gf: 5, ga: 3, pts: 6 },
+        { team: 'Kalimantan Selatan', p: 3, w: 1, d: 0, l: 2, gf: 3, ga: 5, pts: 3 },
+        { team: 'Sumatera Utara', p: 3, w: 0, d: 1, l: 2, gf: 2, ga: 6, pts: 1 },
       ]},
       { name: 'Grup C', standings: [
-        { team: 'PT Taman Bontang', p: 3, w: 3, d: 0, l: 0, gf: 9, ga: 3, pts: 9 },
-        { team: 'PDAM Bandung', p: 3, w: 1, d: 1, l: 1, gf: 4, ga: 4, pts: 4 },
-        { team: 'PDAM Semarang', p: 3, w: 1, d: 0, l: 2, gf: 3, ga: 5, pts: 3 },
-        { team: 'PDAM Palembang', p: 3, w: 0, d: 1, l: 2, gf: 2, ga: 6, pts: 1 },
+        { team: 'Banten', p: 3, w: 3, d: 0, l: 0, gf: 9, ga: 3, pts: 9 },
+        { team: 'Jawa Barat', p: 3, w: 1, d: 1, l: 1, gf: 4, ga: 4, pts: 4 },
+        { team: 'Jawa Tengah', p: 3, w: 1, d: 0, l: 2, gf: 3, ga: 5, pts: 3 },
+        { team: 'Sumatera Selatan', p: 3, w: 0, d: 1, l: 2, gf: 2, ga: 6, pts: 1 },
       ]},
       { name: 'Grup D', standings: [
-        { team: 'Batiwakkal Berau', p: 3, w: 2, d: 1, l: 0, gf: 6, ga: 2, pts: 7 },
-        { team: 'PDAM Yogyakarta', p: 3, w: 2, d: 0, l: 1, gf: 5, ga: 3, pts: 6 },
-        { team: 'PDAM Padang', p: 3, w: 1, d: 0, l: 2, gf: 4, ga: 5, pts: 3 },
-        { team: 'PDAM Banjarmasin', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 6, pts: 1 },
+        { team: 'Kalimantan Barat', p: 3, w: 2, d: 1, l: 0, gf: 6, ga: 2, pts: 7 },
+        { team: 'DI Yogyakarta', p: 3, w: 2, d: 0, l: 1, gf: 5, ga: 3, pts: 6 },
+        { team: 'Sumatera Barat', p: 3, w: 1, d: 0, l: 2, gf: 4, ga: 5, pts: 3 },
+        { team: 'Kalimantan Tengah', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 6, pts: 1 },
       ]},
     ],
     knockout: [
       { name: 'Perempat Final', matches: [
-        { id: 'M01', a: 'PT Balikpapan', sa: 3, b: 'PDAM Jakarta', sb: 1, status: 'Full time' },
-        { id: 'M02', a: 'PTK Samarinda', sa: 2, b: 'PDAM Surabaya', sb: 3, status: 'Full time' },
-        { id: 'M03', a: 'PT Bontang', sa: 1, b: 'PDAM Yogya', sb: 0, status: 'Full time' },
-        { id: 'M04', a: 'Batiwakkal', sa: 2, b: 'PDAM Bandung', sb: 1, status: 'Full time' },
+        { id: 'M01', a: 'Kalimantan Timur', sa: 3, b: 'DKI Jakarta', sb: 1, status: 'Full time' },
+        { id: 'M02', a: 'Kalimantan Utara', sa: 2, b: 'Jawa Timur', sb: 3, status: 'Full time' },
+        { id: 'M03', a: 'Banten', sa: 1, b: 'DI Yogyakarta', sb: 0, status: 'Full time' },
+        { id: 'M04', a: 'Kalimantan Barat', sa: 2, b: 'Jawa Barat', sb: 1, status: 'Full time' },
       ]},
       { name: 'Semi Final', matches: [
-        { id: 'M05', a: 'PT Balikpapan', sa: null, b: 'PDAM Surabaya', sb: null, status: 'Jadwal' },
-        { id: 'M06', a: 'PT Bontang', sa: null, b: 'Batiwakkal', sb: null, status: 'Jadwal' },
+        { id: 'M05', a: 'Kalimantan Timur', sa: null, b: 'Jawa Timur', sb: null, status: 'Jadwal' },
+        { id: 'M06', a: 'Banten', sa: null, b: 'Kalimantan Barat', sb: null, status: 'Jadwal' },
       ]},
       { name: 'Final', matches: [
         { id: 'M07', a: 'TBD', sa: null, b: 'TBD', sb: null, status: 'Jadwal' },
@@ -60,23 +60,23 @@ const tournaments = [
     code: 'volleyball', name: 'Voli Putra', format: 'Grup → Knockout',
     groups: [
       { name: 'Grup A', standings: [
-        { team: 'PDAM Surabaya', p: 2, w: 2, d: 0, l: 0, gf: 6, ga: 1, pts: 6 },
-        { team: 'PT Taman Bontang', p: 2, w: 1, d: 0, l: 1, gf: 4, ga: 3, pts: 3 },
-        { team: 'PDAM Bandung', p: 2, w: 0, d: 0, l: 2, gf: 1, ga: 6, pts: 0 },
+        { team: 'Jawa Timur', p: 2, w: 2, d: 0, l: 0, gf: 6, ga: 1, pts: 6 },
+        { team: 'Banten', p: 2, w: 1, d: 0, l: 1, gf: 4, ga: 3, pts: 3 },
+        { team: 'Jawa Barat', p: 2, w: 0, d: 0, l: 2, gf: 1, ga: 6, pts: 0 },
       ]},
       { name: 'Grup B', standings: [
-        { team: 'PT Mahakam Kukar', p: 2, w: 2, d: 0, l: 0, gf: 6, ga: 2, pts: 6 },
-        { team: 'PDAM Jakarta', p: 2, w: 1, d: 0, l: 1, gf: 4, ga: 4, pts: 3 },
-        { team: 'PDAM Makassar', p: 2, w: 0, d: 0, l: 2, gf: 2, ga: 6, pts: 0 },
+        { team: 'Kalimantan Selatan', p: 2, w: 2, d: 0, l: 0, gf: 6, ga: 2, pts: 6 },
+        { team: 'DKI Jakarta', p: 2, w: 1, d: 0, l: 1, gf: 4, ga: 4, pts: 3 },
+        { team: 'Sulawesi Selatan', p: 2, w: 0, d: 0, l: 2, gf: 2, ga: 6, pts: 0 },
       ]},
     ],
     knockout: [
       { name: 'Semi Final', matches: [
-        { id: 'V01', a: 'PDAM Surabaya', sa: 3, b: 'PDAM Jakarta', sb: 1, status: 'Full time' },
-        { id: 'V02', a: 'PT Mahakam', sa: 2, b: 'PT Taman Bontang', sb: 3, status: 'Full time' },
+        { id: 'V01', a: 'Jawa Timur', sa: 3, b: 'DKI Jakarta', sb: 1, status: 'Full time' },
+        { id: 'V02', a: 'Kalimantan Selatan', sa: 2, b: 'Banten', sb: 3, status: 'Full time' },
       ]},
       { name: 'Final', matches: [
-        { id: 'V03', a: 'PDAM Surabaya', sa: null, b: 'PT Taman Bontang', sb: null, status: 'Jadwal' },
+        { id: 'V03', a: 'Jawa Timur', sa: null, b: 'Banten', sb: null, status: 'Jadwal' },
       ]},
     ],
   },
@@ -85,14 +85,14 @@ const tournaments = [
     groups: [],
     knockout: [
       { name: 'Perempat Final', matches: [
-        { id: 'B01', a: 'Batiwakkal', sa: 2, b: 'PDAM Makassar', sb: 0, status: 'Full time' },
-        { id: 'B02', a: 'PDAM Bandung', sa: 2, b: 'PDAM Semarang', sb: 1, status: 'Full time' },
-        { id: 'B03', a: 'PDAM Surabaya', sa: 2, b: 'PT Bontang', sb: 0, status: 'Full time' },
-        { id: 'B04', a: 'PDAM Jakarta', sa: 1, b: 'PT Balikpapan', sb: 2, status: 'Full time' },
+        { id: 'B01', a: 'Kalimantan Barat', sa: 2, b: 'Sulawesi Selatan', sb: 0, status: 'Full time' },
+        { id: 'B02', a: 'Jawa Barat', sa: 2, b: 'Jawa Tengah', sb: 1, status: 'Full time' },
+        { id: 'B03', a: 'Jawa Timur', sa: 2, b: 'Banten', sb: 0, status: 'Full time' },
+        { id: 'B04', a: 'DKI Jakarta', sa: 1, b: 'Kalimantan Timur', sb: 2, status: 'Full time' },
       ]},
       { name: 'Semi Final', matches: [
-        { id: 'B05', a: 'Batiwakkal', sa: null, b: 'PDAM Bandung', sb: null, status: 'Jadwal' },
-        { id: 'B06', a: 'PDAM Surabaya', sa: null, b: 'PT Balikpapan', sb: null, status: 'Jadwal' },
+        { id: 'B05', a: 'Kalimantan Barat', sa: null, b: 'Jawa Barat', sb: null, status: 'Jadwal' },
+        { id: 'B06', a: 'Jawa Timur', sa: null, b: 'Kalimantan Timur', sb: null, status: 'Jadwal' },
       ]},
       { name: 'Final', matches: [
         { id: 'B07', a: 'TBD', sa: null, b: 'TBD', sb: null, status: 'Jadwal' },
@@ -102,11 +102,11 @@ const tournaments = [
   {
     code: 'chess', name: 'Catur', format: 'Swiss System',
     groups: [{ name: 'Klasemen Swiss (7 ronde)', standings: [
-      { team: 'PDAM Jakarta', p: 7, w: 5, d: 2, l: 0, gf: 6, ga: 1, pts: 6.0 },
-      { team: 'PDAM Semarang', p: 7, w: 5, d: 1, l: 1, gf: 5.5, ga: 1.5, pts: 5.5 },
-      { team: 'PDAM Surabaya', p: 7, w: 4, d: 2, l: 1, gf: 5, ga: 2, pts: 5.0 },
-      { team: 'PT Balikpapan', p: 7, w: 4, d: 1, l: 2, gf: 4.5, ga: 2.5, pts: 4.5 },
-      { team: 'PDAM Makassar', p: 7, w: 3, d: 2, l: 2, gf: 4, ga: 3, pts: 4.0 },
+      { team: 'DKI Jakarta', p: 7, w: 5, d: 2, l: 0, gf: 6, ga: 1, pts: 6.0 },
+      { team: 'Jawa Tengah', p: 7, w: 5, d: 1, l: 1, gf: 5.5, ga: 1.5, pts: 5.5 },
+      { team: 'Jawa Timur', p: 7, w: 4, d: 2, l: 1, gf: 5, ga: 2, pts: 5.0 },
+      { team: 'Kalimantan Timur', p: 7, w: 4, d: 1, l: 2, gf: 4.5, ga: 2.5, pts: 4.5 },
+      { team: 'Sulawesi Selatan', p: 7, w: 3, d: 2, l: 2, gf: 4, ga: 3, pts: 4.0 },
     ]}],
     knockout: [],
   },
@@ -134,14 +134,13 @@ const selectSport = (code) => {
   activeCategory.value = props.sportCategories.find((category) => category.sport_code === code)?.code || null;
 };
 const winnerOf = (m) => (m.sa == null || m.sb == null) ? null : (m.sa > m.sb ? 'a' : m.sb > m.sa ? 'b' : null);
-const shortName = (name = '') => name
-  .replace(/^(perumda|perumdam|perusahaan umum daerah|pdam|pt)\s+(air\s+minum\s+)?/i, '')
-  .replace(/\b(kabupaten|kota)\b/gi, '')
-  .replace(/\s+/g, ' ')
-  .trim();
-const participants = computed(() => (props.pdams.length ? props.pdams : [])
-  .filter((p) => `${p.name} ${p.city || ''}`.toLowerCase().includes(search.value.toLowerCase()))
-  .map((p) => ({ code: p.code, short: shortName(p.name), full: p.name })));
+const participants = computed(() => [...new Map(props.pdams
+  .filter((participant) => participant.province?.toLowerCase().includes(search.value.toLowerCase()))
+  .map((participant) => [participant.province_code, {
+    code: participant.province_code,
+    short: participant.province,
+    full: participant.province,
+  }])).values()]);
 const generatedKnockout = computed(() => {
   if (props.pdams.length && !participants.value.length) return [];
   if (!participants.value.length) return current.value.knockout;
@@ -211,7 +210,7 @@ onMounted(() => nextTick(() => {
 
     <nav class="tabs">
       <button v-for="t in allTournaments" :key="t.code" :class="{ active: active === t.code }" @click="selectSport(t.code)">{{ t.name }}</button>
-      <input v-model="search" type="search" placeholder="Cari PDAM" aria-label="Cari PDAM" />
+      <input v-model="search" type="search" placeholder="Cari provinsi" aria-label="Cari provinsi" />
     </nav>
 
     <nav v-if="currentCategories.length" class="category-tabs" aria-label="Kategori cabor">
@@ -238,7 +237,7 @@ onMounted(() => nextTick(() => {
     </section>
 
     <section v-if="bracketRounds.length" class="knockout-wrap">
-      <SectionTitle eyebrow="Knockout Bracket" title="Bracket PDAM" :meta="`${currentEvent?.name || current?.name} · ${participants.length || baseMatches * 2} peserta · main view mulai Round of ${mainLimit * 2}`" />
+      <SectionTitle eyebrow="Knockout Bracket" title="Bracket Provinsi" :meta="`${currentEvent?.name || current?.name} · ${participants.length || baseMatches * 2} peserta · main view mulai Round of ${mainLimit * 2}`" />
       <div class="bracket-tools">
         <button :class="{ active: bracketMode === 'main' }" @click="bracketMode = 'main'">Main Bracket</button>
         <button :class="{ active: bracketMode === 'main' && mainLimit === 8 }" @click="bracketMode = 'main'; mainLimit = 8">Round 16</button>
@@ -256,7 +255,7 @@ onMounted(() => nextTick(() => {
               <span>{{ m.a }}</span><em>{{ m.sa }} - {{ m.sb }}</em><span>{{ m.b }}</span>
             </div>
           </div>
-          <p v-if="round.matches.length > 24">+{{ round.matches.length - 24 }} match lain. Gunakan search PDAM untuk mempersempit.</p>
+          <p v-if="round.matches.length > 24">+{{ round.matches.length - 24 }} match lain. Gunakan pencarian provinsi untuk mempersempit.</p>
         </div>
       </div>
       <div v-else ref="bracketScroll" class="bracket-scroll">

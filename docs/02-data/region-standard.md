@@ -4,7 +4,7 @@
 
 - Sistem menyimpan master provinsi dan kabupaten/kota Indonesia.
 - PDAM terhubung ke provinsi dan kabupaten/kota.
-- Setiap provinsi memiliki satu Pimpinan Daerah PERPAMSI.
+- Setiap provinsi memiliki satu Kontingen Provinsi PERPAMSI.
 - Kode wilayah memakai kode Kemendagri sebagai natural key.
 - Primary key internal tetap `bigint`.
 - URL public wilayah memakai `slug` bila nanti ada halaman wilayah.
@@ -44,22 +44,22 @@
 - `pdams.regency_id` nullable FK ke `regencies.id`.
 - Field lama `region` boleh tetap sebagai fallback display v1, tapi sumber resmi wilayah memakai relasi.
 
-## Relasi ke Pimpinan Daerah
+## Relasi ke Kontingen Provinsi
 
 - `regional_committees.province_id` adalah FK unik ke `provinces.id`.
-- Nama default: `PD PERPAMSI {NAMA PROVINSI}`.
+- Nama default: `{NAMA PROVINSI}`.
 - `event_entries.regional_committee_id` diturunkan otomatis dari `pdams.province_id`.
 - Detail alur: [delegation-standard.md](./delegation-standard.md).
 
 ## Klasemen Medali
 
-- Klasemen resmi dihitung per Pimpinan Daerah dari hasil final seluruh PDAM dalam provinsi tersebut.
+- Klasemen resmi dihitung per Kontingen Provinsi dari hasil final seluruh PDAM dalam provinsi tersebut.
 - PDAM tanpa provinsi tidak boleh lolos verifikasi registrasi cabor.
-- Urutan: emas, perak, perunggu, total medali, lalu nama Pimpinan Daerah.
+- Urutan: emas, perak, perunggu, total medali, lalu nama Kontingen Provinsi.
 
 ## Query View yang Disarankan
 
-- `medal_rankings_by_regional_committee`: agregasi hasil final dari `event_entries` ke Pimpinan Daerah.
+- `medal_rankings_by_regional_committee`: agregasi hasil final dari `event_entries` ke Kontingen Provinsi.
 
 ## Seeder
 

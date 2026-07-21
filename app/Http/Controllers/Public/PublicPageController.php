@@ -21,6 +21,11 @@ class PublicPageController extends Controller
         return $this->render('Agenda');
     }
 
+    public function seminar(): Response
+    {
+        return $this->render('Seminar');
+    }
+
     public function hasil(): Response
     {
         return $this->render('Hasil');

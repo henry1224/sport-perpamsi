@@ -52,9 +52,9 @@ const statusLabel = (s) => ({ verified: 'Terverifikasi', pending: 'Menunggu', re
       <form @submit.prevent="submit" class="entry-form" v-if="canRegister">
         <h3>Daftarkan Peserta Baru</h3>
         <label>
-          <span>PDAM Peserta</span>
+          <span>Instansi Asal</span>
           <select v-model="form.pdam_id" required>
-            <option value="" disabled>— Pilih PDAM —</option>
+            <option value="" disabled>— Pilih instansi asal —</option>
             <option v-for="p in pdams" :key="p.id" :value="p.id">{{ p.name }} · {{ p.city }}</option>
           </select>
           <small v-if="form.errors.pdam_id" class="err">{{ form.errors.pdam_id }}</small>

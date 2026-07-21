@@ -34,12 +34,12 @@ Bame cocok sebagai arah visual karena PORPAMNAS butuh public board yang terasa s
 
 - Bame menampilkan team/player profile.
 - Adaptasi PORPAMNAS: PDAM sebagai kontingen, atlet sebagai peserta, official sebagai pendamping.
-- Public cukup tampilkan nama PDAM, kota/kabupaten, provinsi, cabang, dan raihan medali.
+- Public cukup tampilkan nama provinsi, cabang, hasil pertandingan, dan raihan medali.
 
 ### Ranking / Standing
 
 - Bame kuat di leaderboard visual.
-- Adaptasi PORPAMNAS: klasemen medali per Pimpinan Daerah; PDAM tetap tampil sebagai peserta pertandingan.
+- Adaptasi PORPAMNAS: nama provinsi tampil sebagai kontingen pertandingan dan klasemen; instansi asal tidak menjadi nama peserta public.
 - Urutan resmi: emas, perak, perunggu, total, lalu aturan tie-breaker dokumen regulasi.
 
 ### Streaming / Media
@@ -69,7 +69,7 @@ Bame cocok sebagai arah visual karena PORPAMNAS butuh public board yang terasa s
 - Hasil: daftar hasil selesai, status verifikasi, link detail pertandingan.
 - Cabor: format kompetisi, regulasi ringkas, venue, jadwal.
 - Bracket: knockout, lower bracket jika cabor memakai double elimination.
-- Ranking: medali per Pimpinan Daerah.
+- Ranking: medali per Kontingen Provinsi.
 - Venue: lokasi, alamat, cabor, jadwal kegiatan.
 - Info: pengumuman, kontak, aturan umum.
 

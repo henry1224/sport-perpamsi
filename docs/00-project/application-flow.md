@@ -10,7 +10,7 @@
 
 ```text
 MASTER DATA
-Provinsi ── Pimpinan Daerah ── PDAM
+Provinsi ── Kontingen Provinsi ── PDAM
                        └────── registrasi cabor ── tim/atlet
                                                     │
                                                     ▼
@@ -22,7 +22,7 @@ OPERASIONAL                                  seeding/bracket
                                                     │
                            ┌────────────────────────┴──────────────────────┐
                            ▼                                               ▼
-PUBLIC               hasil/bracket PDAM                       klasemen medali PD
+PUBLIC               hasil/bracket provinsi                  klasemen medali provinsi
                                                                     │
                                       seluruh PDAM satu provinsi dijumlahkan
 ```
@@ -32,7 +32,7 @@ PUBLIC               hasil/bracket PDAM                       klasemen medali PD
 ### 1. Persiapan Master
 
 1. Admin menyiapkan provinsi dan kabupaten/kota.
-2. Sistem menyediakan satu Pimpinan Daerah untuk setiap provinsi.
+2. Sistem menyediakan satu Kontingen Provinsi untuk setiap provinsi.
 3. Admin menyiapkan PDAM dan wilayahnya.
 4. Admin menyiapkan cabor, kategori, venue, agenda, dan kompetisi.
 
@@ -41,12 +41,12 @@ Status: `Partial` — tabel, migration, dan seeder tersedia; halaman admin maste
 ### 2. Registrasi Peserta
 
 1. Admin memilih PDAM dan cabor/kategori.
-2. Sistem menurunkan Pimpinan Daerah dari provinsi PDAM.
+2. Sistem menurunkan Kontingen Provinsi dari provinsi PDAM.
 3. Sistem menyimpan `pdam_id`, `province_id`, dan `regional_committee_id` pada `event_entries`.
 4. Tim/atlet dan dokumen melengkapi registrasi.
 5. Verifikator menerima, menolak, atau meminta revisi.
 
-Status: `Partial` — dashboard PD, form registrasi, delegasi otomatis, hapus entry, serta verifikasi/tolak admin tersedia. Upload dokumen dan riwayat revisi verifikasi belum tersedia.
+Status: `Partial` — dashboard PD, form registrasi, kontingen otomatis, hapus entry, serta verifikasi/tolak admin tersedia. Upload dokumen dan riwayat revisi verifikasi belum tersedia.
 
 ### 3. Penyusunan Kompetisi
 
@@ -70,31 +70,31 @@ Status: `Partial` — login, pembatasan `pd_admin`/`super_admin`, halaman input 
 
 1. Public melihat agenda, hasil, cabor, bracket, venue, dan peserta PDAM.
 2. Match dan bracket menampilkan PDAM/tim/atlet yang bertanding.
-3. Hasil babak final memberi emas dan perak kepada Pimpinan Daerah peserta.
-4. Seluruh hasil PDAM dalam provinsi sama dijumlahkan pada satu klasemen Pimpinan Daerah.
+3. Hasil babak final memberi emas dan perak kepada Kontingen Provinsi peserta.
+4. Seluruh hasil PDAM dalam provinsi sama dijumlahkan pada satu klasemen Kontingen Provinsi.
 
-Status: `Done` untuk halaman public dasar dan klasemen Pimpinan Daerah. Perunggu masih `Planned` sampai aturan penetapan juara ketiga tersedia.
+Status: `Done` untuk halaman public dasar dan klasemen Kontingen Provinsi. Perunggu masih `Planned` sampai aturan penetapan juara ketiga tersedia.
 
 ## Contoh Relasi
 
 ```text
 Kalimantan Timur
-└── PD PERPAMSI KALIMANTAN TIMUR
+└── Kalimantan Timur
     ├── PDAM Balikpapan ── Futsal ── Emas
     └── PDAM Samarinda  ── Badminton ── Emas
 
 Klasemen:
-PD PERPAMSI KALIMANTAN TIMUR = 2 emas
+Kalimantan Timur = 2 emas
 ```
 
 ## Status Modul
 
 | Modul | Status | Sumber Utama |
 |---|---|---|
-| Public home, agenda, hasil, cabor, bracket, venue, peserta | Done | `routes/web.php`, `resources/js/Pages` |
-| Klasemen Pimpinan Daerah | Done | `PublicDataService`, `Ranking.vue` |
+| Public home, agenda, seminar, hasil, cabor, bracket, venue, peserta | Done | `routes/web.php`, `resources/js/Pages` |
+| Klasemen Kontingen Provinsi | Done | `PublicDataService`, `Ranking.vue` |
 | Master wilayah, PDAM, cabor, venue | Partial | migration dan seeder |
-| Registrasi cabor dan delegasi otomatis | Done | dashboard PD, `PdEntryController`, `event_entries` |
+| Registrasi cabor dan kontingen otomatis | Done | dashboard PD, `PdEntryController`, `event_entries` |
 | Verifikasi/tolak registrasi | Done | `AdminEntryVerificationController`, `Admin/Entries.vue` |
 | Input dan audit skor dasar | Done | `ScoreController`, `SubmitMatchScore` |
 | Login dan role dasar | Done | `AuthController`, middleware `pd.admin`/`super.admin` |
@@ -151,7 +151,7 @@ Charter/PRD
 
 ## Gap Prioritas Pengembangan
 
-1. Bangun form master Pimpinan Daerah, PDAM, cabor, kategori, dan venue.
+1. Bangun form master Kontingen Provinsi, PDAM, cabor, kategori, dan venue.
 2. Tambah upload dokumen dan riwayat revisi registrasi.
 3. Bangun assignment scorekeeper dan role granular.
 4. Bangun revisi hasil final beralasan.

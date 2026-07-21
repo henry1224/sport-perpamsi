@@ -7,12 +7,19 @@
 
 ## Public Pages
 
+### Seminar
+
+- Hero tema NIWC, tanggal, waktu, dan lokasi IKN.
+- Detail Indonesia Water Forum dan Global Water Forum.
+- Peserta sasaran, benefit, biaya, dan informasi pembayaran.
+- Highlight navbar ditempatkan di sebelah tombol masuk.
+
 ### Home
 
 - Hero event.
 - Live/Latest score cards.
 - Jadwal hari ini.
-- Klasemen Pimpinan Daerah ringkas.
+- Klasemen Kontingen Provinsi ringkas.
 - Highlight semifinal/final.
 - Link cabor dan venue.
 
@@ -37,7 +44,7 @@
 
 ### Standings / Ranking
 
-- Klasemen medali Pimpinan Daerah.
+- Klasemen medali Kontingen Provinsi.
 - Klasemen grup per cabor.
 - Rumus ranking tampil jelas.
 

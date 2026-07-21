@@ -33,7 +33,7 @@ Saat ini kebutuhan utama adalah satu aplikasi yang rapi, mudah dipakai saat even
 - Mempercepat publikasi hasil, jadwal, bracket, dan klasemen.
 - Mengurangi input manual berulang oleh panitia.
 - Mendukung verifikasi peserta dan dokumen PDAM.
-- Menyediakan insight publik seperti klasemen medali Pimpinan Daerah, performa cabor, dan statistik dasar.
+- Menyediakan insight publik seperti klasemen medali Kontingen Provinsi, performa cabor, dan statistik dasar.
 
 ## 4. Target Pengguna
 
@@ -69,7 +69,7 @@ Kebutuhan utama:
 
 - Melihat live score.
 - Melihat jadwal dan hasil pertandingan.
-- Melihat bracket, klasemen cabor, dan klasemen medali Pimpinan Daerah.
+- Melihat bracket, klasemen cabor, dan klasemen medali Kontingen Provinsi.
 - Membaca profil PDAM dan info event.
 - Mengakses link livestream bila tersedia.
 
@@ -80,7 +80,7 @@ Kebutuhan utama:
 - Menampilkan hasil pertandingan terbaru.
 - Memperbarui hasil setelah panitia menyimpan input.
 - Menampilkan status match: belum mulai, berlangsung, jeda, selesai, final.
-- Menampilkan nama PDAM, tim, cabor, kategori, venue, dan waktu.
+- Menampilkan nama provinsi, cabor, kategori, venue, dan waktu.
 
 ### 5.2 Bracket
 
@@ -96,7 +96,7 @@ Kebutuhan utama:
 
 ### 5.4 Profil PDAM
 
-- Menampilkan nama PDAM, wilayah, logo, daftar cabor, tim, dan atlet.
+- Menampilkan nama provinsi dan daftar cabor yang diikuti.
 - Menampilkan rekap hasil pertandingan PDAM.
 - Menampilkan ranking dan statistik dasar PDAM.
 - Menampilkan asal provinsi dan kabupaten/kota PDAM.
@@ -330,8 +330,8 @@ Insight publik bertujuan membuat event terasa hidup dan mudah diikuti.
 
 Fitur awal:
 
-- Klasemen medali berdasarkan akumulasi hasil seluruh PDAM ke Pimpinan Daerah provinsinya.
-- Nama PDAM tetap dipakai pada peserta match, bracket, dan profil instansi.
+- Klasemen medali berdasarkan akumulasi hasil seluruh PDAM ke Kontingen Provinsi provinsinya.
+- Nama provinsi dipakai pada peserta match, bracket, dan klasemen; PDAM hanya metadata asal internal.
 - Rekap performa PDAM per cabor.
 - Statistik match: total pertandingan, pertandingan selesai, pertandingan berlangsung.
 - Highlight pertandingan final atau semifinal.
@@ -505,7 +505,7 @@ Masuk v1:
 - Bracket knockout dasar.
 - Klasemen sederhana.
 - Halaman public untuk live score, jadwal, bracket, ranking, profil PDAM, dan info event.
-- Klasemen medali per Pimpinan Daerah.
+- Klasemen medali per Kontingen Provinsi.
 - Audit log untuk perubahan skor dan finalisasi.
 - Link livestream eksternal.
 - Role dasar untuk admin, koordinator cabor, verifikator, scorekeeper, content officer.
@@ -536,7 +536,7 @@ Masuk v1:
 - Public bisa melihat agenda event per tanggal, venue, dan cabor tanpa login.
 - Public bisa melihat skor match yang sedang berlangsung.
 - Public bisa melihat bracket dan hasil final match.
-- Public bisa melihat klasemen medali Pimpinan Daerah.
+- Public bisa melihat klasemen medali Kontingen Provinsi.
 - Public bisa melihat ranking medali per kabupaten/kota dan provinsi.
 - Admin bisa membuat event, cabor, venue, PDAM, tim, atlet, dan match.
 - Admin bisa memverifikasi atau menolak peserta dengan catatan.

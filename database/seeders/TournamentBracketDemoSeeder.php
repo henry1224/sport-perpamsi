@@ -3,26 +3,23 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class TournamentBracketDemoSeeder extends Seeder
 {
     public function run(): void
     {
-        $participants = collect($this->csvRows(base_path('data/seed/pdams.csv')))
-            ->map(fn ($row) => [
-                'code' => $row['code'],
-                'name' => $row['name'],
-                'display_name' => $this->shortName($row['name']),
-                'province_code' => $row['province_code'],
-                'regency_code' => $row['regency_code'],
-                'city' => $row['city'],
-            ])
-            ->groupBy('regency_code')
-            ->flatMap(fn ($rows) => $rows->values()->map(fn ($row, $index) => [$index, $row]))
-            ->sortBy(fn ($pair) => $pair[0].$pair[1]['province_code'].$pair[1]['regency_code'])
-            ->pluck(1)
-            ->values();
+        $participants = DB::table('regional_committees')
+            ->join('provinces', 'regional_committees.province_id', '=', 'provinces.id')
+            ->orderBy('provinces.code')
+            ->get(['provinces.code', 'provinces.name'])
+            ->map(fn ($province) => [
+                'code' => $province->code,
+                'name' => $province->name,
+                'display_name' => $province->name,
+                'province_code' => $province->code,
+            ]);
 
         $size = 2 ** (int) ceil(log(max(2, $participants->count()), 2));
         $slots = $participants->pad($size, null)->values();
@@ -66,14 +63,9 @@ class TournamentBracketDemoSeeder extends Seeder
             'sport_code' => 'mini-football',
             'bracket_size' => $size,
             'participant_count' => $participants->count(),
-            'note' => 'Demo bracket otomatis: peserta disebar per regency, kiri-kanan, BYE otomatis.',
+            'note' => 'Demo bracket otomatis per provinsi, kiri-kanan, BYE otomatis.',
             'matches' => $matches,
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    }
-
-    private function shortName(string $name): string
-    {
-        return trim(preg_replace('/\s+/', ' ', preg_replace('/\b(kabupaten|kota)\b/i', '', preg_replace('/^(perumda|perumdam|perusahaan umum daerah|pdam|pt)\s+(air\s+minum\s+)?/i', '', $name))));
     }
 
     private function roundName(int $matchCount): string
@@ -86,18 +78,4 @@ class TournamentBracketDemoSeeder extends Seeder
         };
     }
 
-    private function csvRows(string $path): array
-    {
-        $file = fopen($path, 'r');
-        $headers = fgetcsv($file, escape: '');
-        $rows = [];
-
-        while (($data = fgetcsv($file, escape: '')) !== false) {
-            $rows[] = array_combine($headers, $data);
-        }
-
-        fclose($file);
-
-        return $rows;
-    }
 }

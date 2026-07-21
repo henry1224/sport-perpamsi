@@ -26,16 +26,16 @@
 
 ## RegionalCommittee
 
-- id: ID Pimpinan Daerah.
+- id: ID Kontingen Provinsi.
 - province_id: relasi unik ke provinsi.
-- name: nama resmi, default `PD PERPAMSI {NAMA PROVINSI}`.
+- name: nama resmi, default `{NAMA PROVINSI}`.
 
 ## EventEntry
 
 - id: ID registrasi cabor.
 - tournament_event_id: kompetisi/cabor yang diikuti.
 - pdam_id: instansi asal peserta.
-- regional_committee_id: delegasi Pimpinan Daerah saat registrasi.
+- regional_committee_id: Kontingen Provinsi saat registrasi.
 - province_id: snapshot provinsi PDAM saat registrasi.
 - regency_id: snapshot kabupaten/kota PDAM saat registrasi.
 - display_name: nama peserta yang tampil pada match/bracket.
@@ -100,7 +100,7 @@
 - id: ID snapshot ranking.
 - event_id: event.
 - scope: `regional_committee` untuk klasemen medali; scope cabor mengikuti format kompetisi.
-- scope_id: ID Pimpinan Daerah.
+- scope_id: ID Kontingen Provinsi.
 - gold_count: jumlah emas.
 - silver_count: jumlah perak.
 - bronze_count: jumlah perunggu.

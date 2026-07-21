@@ -1,5 +1,7 @@
 # Agenda Standard PORPAMNAS IX Kaltim v1
 
+Agenda khusus seminar NIWC mengikuti [seminar-standard.md](./seminar-standard.md) dan memiliki halaman public terpisah di `/seminar`.
+
 ## Sumber Awal
 
 - Screenshot agenda: `docs/image/agenda.png`.

@@ -35,7 +35,7 @@ class StoreEventEntryRequest extends FormRequest
             $event = $this->route('event');
 
             if (! $pdam || $pdam->province_id !== $user->committee?->province_id) {
-                $v->errors()->add('pdam_id', 'PDAM harus berasal dari provinsi PD Anda.');
+                $v->errors()->add('pdam_id', 'Instansi asal harus berada dalam provinsi yang Anda kelola.');
 
                 return;
             }
@@ -47,7 +47,7 @@ class StoreEventEntryRequest extends FormRequest
                     ->exists();
 
                 if ($exists) {
-                    $v->errors()->add('pdam_id', 'PDAM ini sudah terdaftar pada event tersebut.');
+                    $v->errors()->add('pdam_id', 'Instansi asal ini sudah terdaftar pada event tersebut.');
                 }
             }
         });
@@ -59,7 +59,7 @@ class StoreEventEntryRequest extends FormRequest
             'athlete_1.required' => 'Nama atlet wajib diisi.',
             'athlete_2.required' => 'Nama atlet kedua wajib diisi untuk kategori ganda.',
             'team_name.required' => 'Nama tim wajib diisi untuk kategori beregu.',
-            'pdam_id.required' => 'Pilih PDAM peserta.',
+            'pdam_id.required' => 'Pilih instansi asal peserta.',
         ];
     }
 

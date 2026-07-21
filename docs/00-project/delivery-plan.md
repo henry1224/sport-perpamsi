@@ -22,7 +22,7 @@ Eksekusi teknis dan status phase mengikuti [development-roadmap.md](./developmen
 ### P0 Wajib Go-Live
 
 - Auth dan role dasar.
-- Master data event, provinsi, Pimpinan Daerah, PDAM, cabor, kategori, venue, tim, atlet.
+- Master data event, provinsi, Kontingen Provinsi, PDAM, cabor, kategori, venue, tim, atlet.
 - Verifikasi peserta dasar.
 - Jadwal dan match.
 - Assignment panitia ke cabor, venue, atau match.
@@ -35,7 +35,7 @@ Eksekusi teknis dan status phase mengikuti [development-roadmap.md](./developmen
 
 - Bracket knockout dasar.
 - Klasemen sederhana.
-- Klasemen medali Pimpinan Daerah.
+- Klasemen medali Kontingen Provinsi.
 - Profil PDAM.
 - Import/export CSV atau Excel.
 - Konten event, pengumuman, banner, livestream URL.
@@ -63,7 +63,7 @@ Eksekusi teknis dan status phase mengikuti [development-roadmap.md](./developmen
 
 - Bangun auth dan role.
 - Bangun master data.
-- Bangun registrasi PDAM ke cabor, delegasi otomatis, dan verifikasi.
+- Bangun registrasi PDAM ke cabor, kontingen otomatis, dan verifikasi.
 - Bangun import data awal.
 - Bangun admin table dengan search, filter, pagination.
 
@@ -81,7 +81,7 @@ Eksekusi teknis dan status phase mengikuti [development-roadmap.md](./developmen
 - Bangun live score.
 - Bangun jadwal public.
 - Bangun bracket.
-- Bangun klasemen cabor dan medali Pimpinan Daerah.
+- Bangun klasemen cabor dan medali Kontingen Provinsi.
 - Bangun profil PDAM dan info event.
 
 ### Fase 5: Stabilization
