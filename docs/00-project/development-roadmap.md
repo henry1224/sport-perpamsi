@@ -6,9 +6,9 @@ Eksekusi harian wajib mengikuti [phase-execution-standard.md](./phase-execution-
 
 ## Kontrol Eksekusi
 
-- **Phase aktif: Phase 2 — Master Cabor, Kategori, dan Regulasi.**
-- Phase berikutnya tidak boleh diperluas sebelum exit criteria Phase 2 selesai.
-- Pekerjaan awal Phase 5 berupa assignment panitia cabor/venue dibekukan dan tidak menjadi alasan melewati Phase 2–4.
+- **Phase aktif: Phase 3 — Kompetisi dan Publikasi Registrasi.**
+- Phase berikutnya tidak boleh diperluas sebelum exit criteria Phase 3 selesai.
+- Pekerjaan awal Phase 5 berupa assignment panitia cabor/venue dibekukan dan tidak menjadi alasan melewati Phase 3–4.
 - Perubahan phase aktif wajib dilakukan setelah seluruh gate pada standar eksekusi phase lulus.
 
 ## Phase 0 — Baseline dan Dokumen
