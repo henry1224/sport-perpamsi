@@ -14,12 +14,13 @@ const identity = computed(() => isAdmin.value
 
 const menus = computed(() => isAdmin.value ? [
   { label: 'Ringkasan', href: '/admin/dashboard', code: '01' },
-  { label: 'Verifikasi Peserta', href: '/admin/entries', code: '02' },
-  { label: 'Pertandingan & Skor', href: '/admin/skor', code: '03' },
-  { label: 'Data Lomba', code: '04', planned: true },
-  { label: 'Master Data', code: '05', planned: true },
-  { label: 'Panitia & Akses', code: '06', planned: true },
-  { label: 'Laporan & Audit', code: '07', planned: true },
+  { label: 'Verifikasi Pengurus Daerah', href: '/admin/committee-applications', code: '02' },
+  { label: 'Verifikasi Peserta', href: '/admin/entries', code: '03' },
+  { label: 'Pertandingan & Skor', href: '/admin/skor', code: '04' },
+  { label: 'Data Lomba', code: '05', planned: true },
+  { label: 'Master Data', code: '06', planned: true },
+  { label: 'Panitia & Akses', code: '07', planned: true },
+  { label: 'Laporan & Audit', code: '08', planned: true },
 ] : [
   { label: 'Ringkasan', href: '/pd/dashboard', code: '01' },
   { label: 'Registrasi Cabor', href: '/pd/dashboard#cabor', code: '02' },
