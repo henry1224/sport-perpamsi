@@ -61,8 +61,8 @@ Exit: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy terverifikas
 
 ## Phase 5 — Venue, Agenda, dan Panitia
 
-- [ ] Venue lengkap.
-- [ ] Agenda/jadwal, publikasi, dan konflik waktu.
+- [-] Venue memiliki detail, kontak, peta, fasilitas, status aktif, dan form tambah; edit/nonaktif UI masih dilanjutkan.
+- [-] Agenda memiliki kompetisi, publikasi, dan validasi konflik waktu; edit jadwal dan audit revisi masih dilanjutkan.
 - [ ] Kamus label status Indonesia.
 - [-] Akun panitia dan assignment per cabor/venue selesai; pembatasan akses per match menunggu jadwal pertandingan terhubung ke venue.
 - [ ] Policy dan menu berbasis scope.

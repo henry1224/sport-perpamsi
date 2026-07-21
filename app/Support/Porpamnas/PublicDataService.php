@@ -117,6 +117,7 @@ class PublicDataService
             'agenda' => DB::table('event_agendas')
                 ->join('venues', 'event_agendas.venue_id', '=', 'venues.id')
                 ->leftJoin('sports', 'event_agendas.sport_id', '=', 'sports.id')
+                ->whereNotNull('event_agendas.published_at')
                 ->orderBy('event_agendas.date')
                 ->orderBy('event_agendas.start_time')
                 ->select('event_agendas.date', 'event_agendas.day', 'event_agendas.title', 'event_agendas.type', 'event_agendas.start_time', 'event_agendas.end_time', 'event_agendas.time_note', 'sports.code as sport_code', 'sports.name as sport', 'venues.name as venue', 'venues.address as venue_address')

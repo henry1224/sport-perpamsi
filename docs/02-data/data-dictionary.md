@@ -1,5 +1,13 @@
 # Data Dictionary Target
 
+## Venue dan Agenda Phase 5
+
+- `venues.is_active`: hanya venue aktif dapat dipilih untuk agenda baru.
+- `venues.facilities`, `map_url`, `contact_name`, `contact_phone`: detail operasional lokasi.
+- `event_agendas.tournament_event_id`: kompetisi terkait, nullable untuk acara umum.
+- `event_agendas.published_at`: agenda hanya tampil publik setelah terisi.
+- Konflik agenda ditolak bila tanggal, venue, dan rentang waktunya beririsan.
+
 ## RegionalCommittee / PD PERPAMSI
 
 - `id`: ID internal.

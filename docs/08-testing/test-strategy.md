@@ -2,6 +2,12 @@
 
 Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-register.md) wajib memiliki test atau bukti UAT.
 
+## Phase 5
+
+- Feature test memastikan hanya Admin mengelola venue/agenda.
+- Feature test memastikan rentang waktu bertabrakan pada venue dan tanggal sama ditolak.
+- Migration PostgreSQL dan build frontend wajib lulus sebelum merge.
+
 ## Backend Feature Tests
 
 1. Satu provinsi hanya memiliki satu PD PERPAMSI.
