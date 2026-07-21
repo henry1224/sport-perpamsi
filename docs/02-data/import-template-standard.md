@@ -16,6 +16,22 @@
 | contact_name | Tidak | PIC |
 | contact_phone | Tidak | Kontak PIC |
 
+`province_code` wajib pada import operasional agar sistem dapat menetapkan Pimpinan Daerah. `regional_committee_id` tidak diisi dari file; sistem menurunkannya dari provinsi PDAM.
+
+## Template Registrasi Cabor
+
+| Kolom | Wajib | Catatan |
+|---|---|---|
+| pdam_name | Ya | Harus cocok dengan master PDAM |
+| sport_code | Ya | Cabor tujuan |
+| category_name | Tidak | Wajib bila cabor punya kategori |
+| display_name | Ya | Nama tim/atlet pada bracket |
+| athlete_1 | Tidak | Peserta pertama |
+| athlete_2 | Tidak | Peserta kedua untuk ganda |
+| team_name | Tidak | Wajib untuk kompetisi beregu |
+
+Preview import wajib menampilkan Pimpinan Daerah hasil resolusi provinsi sebelum commit.
+
 Contoh data: `data/seed/sample_pdams.csv`.
 
 ## Template Tim

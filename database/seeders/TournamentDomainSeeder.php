@@ -13,6 +13,7 @@ class TournamentDomainSeeder extends Seeder
         $now = now();
         $sports = DB::table('sports')->get()->keyBy('code');
         $pdams = DB::table('pdams')->orderBy('code')->get();
+        $regionalCommittees = DB::table('regional_committees')->get()->keyBy('province_id');
 
         foreach ($this->csvRows(base_path('data/seed/sport_categories.csv')) as $row) {
             $sport = $sports[$row['sport_code']] ?? null;
@@ -38,17 +39,17 @@ class TournamentDomainSeeder extends Seeder
         foreach ($sports as $sport) {
             $sportCategories = $categories->filter(fn ($category) => $category->sport_id === $sport->id)->values();
             if ($sportCategories->isEmpty()) {
-                $this->seedTournamentEvent($sport, null, $pdams, $now);
+                $this->seedTournamentEvent($sport, null, $pdams, $regionalCommittees, $now);
                 continue;
             }
 
             foreach ($sportCategories as $category) {
-                $this->seedTournamentEvent($sport, $category, $pdams, $now);
+                $this->seedTournamentEvent($sport, $category, $pdams, $regionalCommittees, $now);
             }
         }
     }
 
-    private function seedTournamentEvent(object $sport, ?object $category, object $pdams, object $now): void
+    private function seedTournamentEvent(object $sport, ?object $category, object $pdams, object $regionalCommittees, object $now): void
     {
         $eventCode = $category ? $sport->code.'-'.$category->code : $sport->code;
         $format = $category && ! $category->bracket_enabled ? 'ranking' : ($sport->default_format ?: 'knockout');
@@ -74,6 +75,7 @@ class TournamentDomainSeeder extends Seeder
             'public_id' => (string) Str::uuid(),
             'tournament_event_id' => $event->id,
             'pdam_id' => $pdam->id,
+            'regional_committee_id' => $regionalCommittees[$pdam->province_id]->id ?? null,
             'province_id' => $pdam->province_id,
             'regency_id' => $pdam->regency_id,
             'seed_no' => $index + 1,

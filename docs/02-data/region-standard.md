@@ -4,6 +4,7 @@
 
 - Sistem menyimpan master provinsi dan kabupaten/kota Indonesia.
 - PDAM terhubung ke provinsi dan kabupaten/kota.
+- Setiap provinsi memiliki satu Pimpinan Daerah PERPAMSI.
 - Kode wilayah memakai kode Kemendagri sebagai natural key.
 - Primary key internal tetap `bigint`.
 - URL public wilayah memakai `slug` bila nanti ada halaman wilayah.
@@ -43,19 +44,22 @@
 - `pdams.regency_id` nullable FK ke `regencies.id`.
 - Field lama `region` boleh tetap sebagai fallback display v1, tapi sumber resmi wilayah memakai relasi.
 
-## Ranking Wilayah
+## Relasi ke Pimpinan Daerah
 
-- Ranking provinsi dihitung dari akumulasi medali/hasil seluruh PDAM dalam provinsi tersebut.
-- Ranking kabupaten/kota dihitung dari akumulasi medali/hasil seluruh PDAM dalam kabupaten/kota tersebut.
-- Ranking wilayah hanya memakai hasil final.
-- Jika PDAM belum punya wilayah, hasilnya tetap masuk ranking PDAM, tapi tidak masuk ranking wilayah sampai wilayah dilengkapi.
-- Rumus ranking wilayah mengikuti ranking PDAM: emas, perak, perunggu, total medali, lalu nama wilayah.
+- `regional_committees.province_id` adalah FK unik ke `provinces.id`.
+- Nama default: `PD PERPAMSI {NAMA PROVINSI}`.
+- `event_entries.regional_committee_id` diturunkan otomatis dari `pdams.province_id`.
+- Detail alur: [delegation-standard.md](./delegation-standard.md).
+
+## Klasemen Medali
+
+- Klasemen resmi dihitung per Pimpinan Daerah dari hasil final seluruh PDAM dalam provinsi tersebut.
+- PDAM tanpa provinsi tidak boleh lolos verifikasi registrasi cabor.
+- Urutan: emas, perak, perunggu, total medali, lalu nama Pimpinan Daerah.
 
 ## Query View yang Disarankan
 
-- `medal_rankings_by_pdam`: agregasi medali per PDAM.
-- `medal_rankings_by_regency`: agregasi dari PDAM ke kabupaten/kota.
-- `medal_rankings_by_province`: agregasi dari PDAM ke provinsi.
+- `medal_rankings_by_regional_committee`: agregasi hasil final dari `event_entries` ke Pimpinan Daerah.
 
 ## Seeder
 
@@ -63,7 +67,7 @@
 - Migration stub:
   - `database/migrations/2026_01_01_000001_create_provinces_table.php`
   - `database/migrations/2026_01_01_000002_create_regencies_table.php`
-  - `database/migrations/2026_01_01_000003_add_region_columns_to_pdams_table.php`
+  - `database/migrations/2026_07_20_000001_add_regional_committees_to_event_entries.php`
 - Seeder membaca CSV agar data tidak membengkakkan file PHP.
 - Seeder memakai `updateOrInsert` agar bisa dijalankan ulang.
 

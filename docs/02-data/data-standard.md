@@ -1,5 +1,7 @@
 # Data Standard Sport PERPAMSI
 
+Sumber kebenaran relasi delegasi dan registrasi: [delegation-standard.md](./delegation-standard.md).
+
 ## Single Source of Truth
 
 - Aplikasi menjadi sumber resmi untuk jadwal, peserta, skor, hasil final, bracket, klasemen, dan ranking.

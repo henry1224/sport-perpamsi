@@ -1,5 +1,7 @@
 # Delivery Plan Sport PERPAMSI
 
+Eksekusi teknis dan status phase mengikuti [development-roadmap.md](./development-roadmap.md). Dokumen ini hanya menyimpan target delivery tingkat tinggi.
+
 ## Target
 
 - Go-live awal September.
@@ -20,7 +22,7 @@
 ### P0 Wajib Go-Live
 
 - Auth dan role dasar.
-- Master data event, PDAM, cabor, kategori, venue, tim, atlet.
+- Master data event, provinsi, Pimpinan Daerah, PDAM, cabor, kategori, venue, tim, atlet.
 - Verifikasi peserta dasar.
 - Jadwal dan match.
 - Assignment panitia ke cabor, venue, atau match.
@@ -33,7 +35,7 @@
 
 - Bracket knockout dasar.
 - Klasemen sederhana.
-- Ranking PDAM.
+- Klasemen medali Pimpinan Daerah.
 - Profil PDAM.
 - Import/export CSV atau Excel.
 - Konten event, pengumuman, banner, livestream URL.
@@ -61,7 +63,7 @@
 
 - Bangun auth dan role.
 - Bangun master data.
-- Bangun peserta dan verifikasi.
+- Bangun registrasi PDAM ke cabor, delegasi otomatis, dan verifikasi.
 - Bangun import data awal.
 - Bangun admin table dengan search, filter, pagination.
 
@@ -79,7 +81,7 @@
 - Bangun live score.
 - Bangun jadwal public.
 - Bangun bracket.
-- Bangun klasemen dan ranking.
+- Bangun klasemen cabor dan medali Pimpinan Daerah.
 - Bangun profil PDAM dan info event.
 
 ### Fase 5: Stabilization

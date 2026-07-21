@@ -1,5 +1,7 @@
 # Migration Plan Laravel/PostgreSQL v1
 
+Relasi delegasi wajib mengikuti [delegation-standard.md](./delegation-standard.md): `provinces` → `regional_committees` → `event_entries`, dengan `pdams` sebagai instansi asal peserta.
+
 ## Urutan Migration
 
 1. users, roles, permissions, role_user.

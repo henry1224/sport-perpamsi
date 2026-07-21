@@ -25,7 +25,7 @@ Dokumen detail pendamping: `docs/04-design/public-admin-ui-standard.md`.
 - Match detail menampilkan skor, status, venue, waktu, peserta, dan update terakhir.
 - Bracket memakai horizontal scroll di mobile.
 - Ranking menampilkan rumus perhitungan.
-- Ranking dapat diganti tampilan: PDAM, kabupaten/kota, provinsi.
+- Klasemen medali menampilkan Pimpinan Daerah; match dan bracket tetap menampilkan PDAM/tim/atlet.
 
 ## Admin Page
 
@@ -90,7 +90,7 @@ Dokumen detail pendamping: `docs/04-design/public-admin-ui-standard.md`.
 
 ### Ranking Public
 
-- Ranking wajib punya filter: event, cabor, kategori, provinsi, kabupaten/kota, PDAM.
+- Klasemen medali wajib punya filter: event, cabor, kategori, provinsi, dan pencarian Pimpinan Daerah.
 - Tampilkan medal table ringkas dengan jarak teks cukup.
 - Jangan rapatkan jumlah medali dengan nama wilayah.
 - Empty state harus informatif, bukan blank.

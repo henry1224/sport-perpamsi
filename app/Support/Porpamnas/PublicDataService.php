@@ -126,10 +126,18 @@ class PublicDataService
             'pdams' => DB::table('pdams')
                 ->leftJoin('provinces', 'pdams.province_id', '=', 'provinces.id')
                 ->leftJoin('regencies', 'pdams.regency_id', '=', 'regencies.id')
+                ->leftJoin('regional_committees', 'regional_committees.province_id', '=', 'pdams.province_id')
                 ->orderBy('pdams.name')
-                ->select('pdams.code', 'pdams.name', 'pdams.slug', 'pdams.city', 'pdams.logo_path', 'provinces.code as province_code', 'provinces.name as province', 'regencies.code as regency_code', 'regencies.name as regency')
+                ->select('pdams.code', 'pdams.name', 'pdams.slug', 'pdams.city', 'pdams.logo_path', 'provinces.code as province_code', 'provinces.name as province', 'regencies.code as regency_code', 'regencies.name as regency', 'regional_committees.name as regional_committee_name')
                 ->get(),
             'provinces' => DB::table('provinces')->orderBy('name')->get(),
+            'regionalCommittees' => Schema::hasTable('regional_committees')
+                ? DB::table('regional_committees')
+                    ->leftJoin('provinces', 'regional_committees.province_id', '=', 'provinces.id')
+                    ->orderBy('regional_committees.name')
+                    ->select('regional_committees.id', 'regional_committees.name', 'provinces.code as province_code', 'provinces.name as province')
+                    ->get()
+                : collect(),
             'sportCategories' => DB::table('sport_categories')
                 ->join('sports', 'sport_categories.sport_id', '=', 'sports.id')
                 ->where('sport_categories.is_active', true)
@@ -165,8 +173,15 @@ class PublicDataService
             'pdams' => $this->csv('data/seed/pdams.csv')->map(fn ($row) => [
                 ...$row,
                 'province' => $provincesByCode[$row['province_code']]['name'] ?? $row['province_code'],
+                'regional_committee_name' => 'PD PERPAMSI '.mb_strtoupper($provincesByCode[$row['province_code']]['name'] ?? $row['province_code']),
             ])->values(),
             'provinces' => $provinces,
+            'regionalCommittees' => $provinces->map(fn ($p) => [
+                'id' => null,
+                'name' => 'PD PERPAMSI '.mb_strtoupper($p['name']),
+                'province_code' => $p['code'],
+                'province' => $p['name'],
+            ])->values(),
             'sportCategories' => $this->csv('data/seed/sport_categories.csv'),
             'tournamentEvents' => collect(),
         ];
@@ -207,13 +222,77 @@ class PublicDataService
 
     private function provinceRankings(): array
     {
+        if (Schema::hasTable('regional_committees') && Schema::hasTable('matches')) {
+            $rankings = DB::table('regional_committees')
+                ->select('regional_committees.id', 'regional_committees.name')
+                ->orderBy('regional_committees.name')
+                ->get()
+                ->mapWithKeys(fn ($committee) => [$committee->id => [
+                    'name' => $committee->name,
+                    'gold' => 0,
+                    'silver' => 0,
+                    'bronze' => 0,
+                ]]);
+
+            DB::table('matches')
+                ->join('event_entries as a', 'matches.entry_a_id', '=', 'a.id')
+                ->join('event_entries as b', 'matches.entry_b_id', '=', 'b.id')
+                ->where('matches.status', 'final')
+                ->where('matches.round_name', 'Final')
+                ->whereNotNull('matches.winner_entry_id')
+                ->whereNotNull('a.regional_committee_id')
+                ->whereNotNull('b.regional_committee_id')
+                ->select('matches.winner_entry_id', 'a.id as entry_a_id', 'a.regional_committee_id as committee_a_id', 'b.id as entry_b_id', 'b.regional_committee_id as committee_b_id')
+                ->get()
+                ->each(function ($match) use ($rankings): void {
+                    $winnerId = $match->winner_entry_id === $match->entry_a_id ? $match->committee_a_id : $match->committee_b_id;
+                    $runnerUpId = $match->winner_entry_id === $match->entry_a_id ? $match->committee_b_id : $match->committee_a_id;
+
+                    if ($winner = $rankings->get($winnerId)) {
+                        $winner['gold']++;
+                        $rankings->put($winnerId, $winner);
+                    }
+                    if ($runnerUp = $rankings->get($runnerUpId)) {
+                        $runnerUp['silver']++;
+                        $rankings->put($runnerUpId, $runnerUp);
+                    }
+                });
+
+            // Bronze = kedua kalah semifinal (aturan PORPAMNAS, tanpa 3rd-place playoff).
+            // ponytail: kalau nanti ada round_name='3rd Place', ganti ke query winner-based match tersebut.
+            DB::table('matches')
+                ->join('event_entries as a', 'matches.entry_a_id', '=', 'a.id')
+                ->join('event_entries as b', 'matches.entry_b_id', '=', 'b.id')
+                ->where('matches.status', 'final')
+                ->where('matches.round_name', 'Semi Final')
+                ->whereNotNull('matches.winner_entry_id')
+                ->whereNotNull('a.regional_committee_id')
+                ->whereNotNull('b.regional_committee_id')
+                ->select('matches.winner_entry_id', 'a.id as entry_a_id', 'a.regional_committee_id as committee_a_id', 'b.regional_committee_id as committee_b_id')
+                ->get()
+                ->each(function ($match) use ($rankings): void {
+                    $loserCommittee = $match->winner_entry_id === $match->entry_a_id ? $match->committee_b_id : $match->committee_a_id;
+                    if ($loser = $rankings->get($loserCommittee)) {
+                        $loser['bronze']++;
+                        $rankings->put($loserCommittee, $loser);
+                    }
+                });
+
+            return $rankings->sortBy([
+                ['gold', 'desc'],
+                ['silver', 'desc'],
+                ['bronze', 'desc'],
+                ['name', 'asc'],
+            ])->values()->all();
+        }
+
         return [
-            ['name' => 'Kalimantan Timur', 'gold' => 8, 'silver' => 5, 'bronze' => 3],
-            ['name' => 'Sulawesi Selatan', 'gold' => 5, 'silver' => 3, 'bronze' => 4],
-            ['name' => 'Jawa Timur', 'gold' => 4, 'silver' => 4, 'bronze' => 2],
-            ['name' => 'Jawa Barat', 'gold' => 3, 'silver' => 6, 'bronze' => 5],
-            ['name' => 'DKI Jakarta', 'gold' => 3, 'silver' => 2, 'bronze' => 4],
-            ['name' => 'Bali', 'gold' => 2, 'silver' => 3, 'bronze' => 3],
+            ['name' => 'PD PERPAMSI KALIMANTAN TIMUR', 'gold' => 8, 'silver' => 5, 'bronze' => 3],
+            ['name' => 'PD PERPAMSI SULAWESI SELATAN', 'gold' => 5, 'silver' => 3, 'bronze' => 4],
+            ['name' => 'PD PERPAMSI JAWA TIMUR', 'gold' => 4, 'silver' => 4, 'bronze' => 2],
+            ['name' => 'PD PERPAMSI JAWA BARAT', 'gold' => 3, 'silver' => 6, 'bronze' => 5],
+            ['name' => 'PD PERPAMSI DKI JAKARTA', 'gold' => 3, 'silver' => 2, 'bronze' => 4],
+            ['name' => 'PD PERPAMSI BALI', 'gold' => 2, 'silver' => 3, 'bronze' => 3],
         ];
     }
 

@@ -1,5 +1,7 @@
 # ERD v1 Baseline
 
+Addendum wajib: satu `province` memiliki satu `regional_committee`; setiap `event_entry` menyimpan `pdam_id`, `province_id`, dan `regional_committee_id`. Lihat [delegation-standard.md](./delegation-standard.md).
+
 ## Core Tables
 
 ```mermaid

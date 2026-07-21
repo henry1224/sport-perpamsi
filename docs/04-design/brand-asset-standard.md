@@ -100,9 +100,9 @@ Tema visual: **arena sport nasional tropis-futuristik**.
 
 ### Ranking
 
-- Ranking PDAM/wilayah memakai table gelap dengan podium top 3.
+- Klasemen Pimpinan Daerah memakai table gelap dengan podium top 3.
 - Top 1 punya gold glow tipis, bukan warna penuh berlebihan.
-- Toggle ranking: PDAM, Kabupaten/Kota, Provinsi.
+- Tidak memakai toggle scope; klasemen resmi memakai Pimpinan Daerah.
 
 ## Token Warna
 

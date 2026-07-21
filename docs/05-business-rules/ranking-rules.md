@@ -2,13 +2,13 @@
 
 ## Ranking Dipakai Untuk Apa
 
-- Menentukan peringkat PDAM di public page.
+- Menentukan peringkat medali Pimpinan Daerah di public page.
 - Menentukan klasemen grup cabor.
 - Menentukan peserta yang lolos ke knockout.
 - Menentukan juara umum event bila panitia memakai sistem medali.
 - Mengurangi sengketa karena rumus tampil jelas di public.
 
-## Ranking PDAM / Juara Umum
+## Klasemen Pimpinan Daerah / Juara Umum
 
 Rekomendasi v1 memakai metode nasional/olahraga multi-event:
 
@@ -16,33 +16,23 @@ Rekomendasi v1 memakai metode nasional/olahraga multi-event:
 2. Jika sama, medali perak terbanyak.
 3. Jika sama, medali perunggu terbanyak.
 4. Jika masih sama, total medali.
-5. Jika masih sama, urutan nama PDAM atau keputusan panitia.
+5. Jika masih sama, urutan nama Pimpinan Daerah atau keputusan panitia.
 
 Catatan: metode ini adalah lexicographic medal ranking, umum terlihat pada Olimpiade, SEA Games, PON, dan laporan klasemen kontingen.
 
-## Ranking Kabupaten/Kota
+## Klasemen Medali Pimpinan Daerah
 
-Ranking kabupaten/kota memakai akumulasi medali seluruh PDAM yang berada di kabupaten/kota tersebut.
+PDAM tetap mendaftar sebagai peserta cabor, tetapi seluruh hasilnya mewakili satu Pimpinan Daerah (PD PERPAMSI) sesuai provinsi PDAM. Contoh: kemenangan PDAM Balikpapan di futsal dan PDAM Samarinda di bulu tangkis sama-sama tercatat untuk `PD PERPAMSI KALIMANTAN TIMUR`.
 
-Urutan:
-
-1. Total emas seluruh PDAM dalam kabupaten/kota.
-2. Jika sama, total perak.
-3. Jika sama, total perunggu.
-4. Jika sama, total medali.
-5. Jika masih sama, nama kabupaten/kota.
-
-## Ranking Provinsi
-
-Ranking provinsi memakai akumulasi medali seluruh PDAM yang berada di provinsi tersebut.
+Pendaftaran menyimpan `regional_committee_id` pada setiap `event_entries`. Nilainya diturunkan dari provinsi PDAM saat pendaftaran diverifikasi; panitia tidak memilih Pimpinan Daerah lain secara manual.
 
 Urutan:
 
-1. Total emas seluruh PDAM dalam provinsi.
+1. Total emas seluruh peserta dalam Pimpinan Daerah.
 2. Jika sama, total perak.
 3. Jika sama, total perunggu.
 4. Jika sama, total medali.
-5. Jika masih sama, nama provinsi.
+5. Jika masih sama, nama Pimpinan Daerah.
 
 ## Ranking Grup Sepak Bola/Futsal
 

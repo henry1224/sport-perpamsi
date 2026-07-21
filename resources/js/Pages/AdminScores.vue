@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { router } from '@inertiajs/vue3';
-import PublicLayout from '../Layouts/PublicLayout.vue';
+import PortalLayout from '../Layouts/PortalLayout.vue';
 import SectionTitle from '../Components/SectionTitle.vue';
 
 const props = defineProps({ matches: Array, audit: Array });
@@ -20,7 +20,7 @@ const save = (row) => {
 </script>
 
 <template>
-  <PublicLayout>
+  <PortalLayout portal="admin">
     <div class="page-head">
       <SectionTitle eyebrow="Admin Score Desk" title="Input Hasil Pertandingan" :meta="`${complete} selesai`" />
     </div>
@@ -58,7 +58,7 @@ const save = (row) => {
         </div>
       </div>
     </section>
-  </PublicLayout>
+  </PortalLayout>
 </template>
 
 <style scoped>

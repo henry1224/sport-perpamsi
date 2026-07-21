@@ -3,7 +3,8 @@
 ## Istilah Utama
 
 - Event: satu penyelenggaraan olahraga PERPAMSI.
-- PDAM: peserta/instansi yang mengikuti event.
+- Pimpinan Daerah (PD PERPAMSI): delegasi resmi satu provinsi dan pemilik agregasi medali.
+- PDAM: instansi asal tim/atlet yang mendaftar cabor di bawah Pimpinan Daerah provinsinya.
 - Cabor: cabang olahraga.
 - Kategori: pembagian pertandingan dalam cabor, misalnya putra, putri, beregu.
 - Venue: lokasi pertandingan.
@@ -16,6 +17,6 @@
 - Revisi Skor: perubahan skor setelah selesai/final dengan alasan dan audit.
 - Bracket: bagan pertandingan knockout.
 - Klasemen: peringkat berdasarkan hasil grup/liga sederhana.
-- Ranking PDAM: peringkat PDAM berdasarkan rumus event.
+- Klasemen Pimpinan Daerah: peringkat medali hasil akumulasi seluruh PDAM dalam satu provinsi.
 - Audit Log: catatan perubahan data penting.
 - Public Page: halaman tanpa login untuk penonton, peserta, media, stakeholder.

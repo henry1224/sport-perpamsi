@@ -12,7 +12,7 @@
 - Hero event.
 - Live/Latest score cards.
 - Jadwal hari ini.
-- Ranking PDAM ringkas.
+- Klasemen Pimpinan Daerah ringkas.
 - Highlight semifinal/final.
 - Link cabor dan venue.
 
@@ -37,9 +37,7 @@
 
 ### Standings / Ranking
 
-- Ranking PDAM medali.
-- Ranking kabupaten/kota medali.
-- Ranking provinsi medali.
+- Klasemen medali Pimpinan Daerah.
 - Klasemen grup per cabor.
 - Rumus ranking tampil jelas.
 

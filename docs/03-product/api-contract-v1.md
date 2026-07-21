@@ -18,9 +18,7 @@
 | GET | `/matches/{public_id}` | Detail match public |
 | GET | `/brackets` | Bracket per cabor/kategori |
 | GET | `/standings` | Klasemen/ranking public |
-| GET | `/rankings/pdams` | Ranking medali per PDAM |
-| GET | `/rankings/regencies` | Ranking medali per kabupaten/kota |
-| GET | `/rankings/provinces` | Ranking medali per provinsi |
+| GET | `/rankings/regional-committees` | Klasemen medali Pimpinan Daerah |
 | GET | `/pdams/{slug}` | Profil PDAM |
 | GET | `/info` | Info event dan pengumuman |
 
@@ -30,6 +28,7 @@
 |---|---|---|
 | POST | `/admin/events` | Buat event |
 | POST | `/admin/pdams` | Buat PDAM |
+| POST | `/admin/event-entries` | Daftarkan PDAM/tim/atlet ke cabor; Pimpinan Daerah ditetapkan otomatis |
 | POST | `/admin/sports` | Buat cabor |
 | POST | `/admin/teams` | Buat tim |
 | POST | `/admin/athletes` | Buat atlet |
@@ -94,7 +93,7 @@ Contoh:
 | Endpoint | Query |
 |---|---|
 | `GET /pdams` | `page`, `per_page`, `search`, `province`, `regency` |
-| `GET /rankings/pdams` | `page`, `per_page`, `event`, `sport`, `category`, `province`, `regency`, `search` |
+| `GET /rankings/regional-committees` | `page`, `per_page`, `event`, `sport`, `category`, `province`, `search` |
 | `GET /brackets` | `event`, `sport`, `category`, `round`, `mode` |
 | `GET /matches` | `page`, `per_page`, `event`, `sport`, `category`, `venue`, `status`, `date`, `search` |
 

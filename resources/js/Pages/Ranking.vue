@@ -1,17 +1,9 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import PublicLayout from '../Layouts/PublicLayout.vue';
 import SectionTitle from '../Components/SectionTitle.vue';
 
 const props = defineProps({ provinceRankings: Array });
-const scope = ref('provinsi');
-const scopes = [
-  { key: 'provinsi', label: 'Provinsi' },
-  { key: 'kabkota', label: 'Kabupaten / Kota' },
-  { key: 'pdam', label: 'PDAM' },
-];
-
-// ponytail: only province data seeded; others share same list until real data lands.
 const rows = computed(() => [...props.provinceRankings].sort((a, b) =>
   b.gold - a.gold || b.silver - a.silver || b.bronze - a.bronze
 ));
@@ -21,10 +13,7 @@ const total = (r) => r.gold + r.silver + r.bronze;
 <template>
   <PublicLayout>
     <div class="page-head">
-      <SectionTitle eyebrow="Medal Table" title="Ranking Wilayah" meta="Perhitungan resmi" />
-    </div>
-    <div class="scope-row">
-      <button v-for="s in scopes" :key="s.key" :class="{active: scope===s.key}" @click="scope=s.key">{{ s.label }}</button>
+      <SectionTitle eyebrow="Medal Table" title="Klasemen Pimpinan Daerah" meta="Perhitungan resmi" />
     </div>
     <section class="ranking-board">
       <table class="rank-table">
@@ -46,16 +35,13 @@ const total = (r) => r.gold + r.silver + r.bronze;
           </tr>
         </tbody>
       </table>
-      <p class="rule">Rumus: emas → perak → perunggu → total. Tie-breaker mengikuti regulasi cabor.</p>
+      <p class="rule">PDAM bertanding sebagai peserta cabor; medali tercatat untuk Pimpinan Daerah provinsinya. Rumus: emas → perak → perunggu → total.</p>
     </section>
   </PublicLayout>
 </template>
 
 <style scoped>
 .page-head { padding: 44px 0 24px; }
-.scope-row { display: flex; gap: 8px; margin-bottom: 28px; padding: 16px; flex-wrap: wrap; background: rgba(5,11,28,.56); border: 1px solid rgba(255,255,255,.12); }
-.scope-row button { padding: 10px 16px; border: 1px solid rgba(255,255,255,.16); background: #08142d; color: white; font-weight: 900; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; clip-path: polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%); }
-.scope-row button.active { background: #F6C64A; color: #071126; border-color: #F6C64A; box-shadow: 6px 6px 0 rgba(240,90,40,.35); }
 .ranking-board { position: relative; overflow: hidden; padding: 20px; background: #071126; border: 1px solid rgba(255,255,255,.12); box-shadow: 10px 10px 0 rgba(54,194,240,.13); }
 .ranking-board::before { content: "MEDAL"; position: absolute; right: 20px; top: -16px; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.055); font-size: clamp(80px, 13vw, 170px); font-weight: 1000; letter-spacing: -.08em; pointer-events: none; }
 .rank-table { width: 100%; border-collapse: collapse; }

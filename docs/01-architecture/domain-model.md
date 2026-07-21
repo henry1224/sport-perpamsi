@@ -10,9 +10,9 @@ Entities: Event, Sport, Category, Venue, Schedule, EventSetting.
 
 ### Participant Management
 
-Mengelola PDAM, tim, atlet, dokumen, dan verifikasi.
+Mengelola Pimpinan Daerah, PDAM, registrasi cabor, tim, atlet, dokumen, dan verifikasi.
 
-Entities: Pdam, Team, Athlete, ParticipantDocument, VerificationRecord.
+Entities: RegionalCommittee, Pdam, EventEntry, Team, Athlete, ParticipantDocument, VerificationRecord.
 
 ### Match Operation
 
@@ -48,8 +48,9 @@ Entities: AuditLog, ExportJob, ReportSnapshot.
 
 1. Public hanya membaca data published atau final.
 2. Match final hanya bisa berubah lewat score revision.
-3. Klasemen dan ranking hanya dihitung dari match final.
+3. Klasemen cabor dihitung dari match final; klasemen medali diagregasi ke `RegionalCommittee` melalui `EventEntry`.
 4. Assignment panitia membatasi akses scorekeeper ke match tertentu.
 5. Audit log wajib untuk perubahan skor, jadwal, verifikasi, assignment, dan finalisasi.
 6. Import data tidak langsung commit sebelum preview dan validasi.
 7. Reporting membaca data operasional; reporting tidak mengubah source data.
+8. `EventEntry` menyimpan snapshot PDAM, provinsi, dan Pimpinan Daerah saat registrasi diverifikasi.

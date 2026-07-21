@@ -8,6 +8,11 @@ erDiagram
     EVENT ||--o{ VENUE : has
     EVENT ||--o{ TEAM : registers
     EVENT ||--o{ MATCH : schedules
+    PROVINCE ||--|| REGIONAL_COMMITTEE : represented_by
+    PROVINCE ||--o{ PDAM : contains
+    REGIONAL_COMMITTEE ||--o{ EVENT_ENTRY : represents
+    PDAM ||--o{ EVENT_ENTRY : registers
+    TOURNAMENT_EVENT ||--o{ EVENT_ENTRY : accepts
     PDAM ||--o{ TEAM : owns
     PDAM ||--o{ ATHLETE : owns
     TEAM ||--o{ ATHLETE : includes
@@ -29,6 +34,8 @@ erDiagram
 - ERD ini konseptual, bukan migration final.
 - `MatchParticipant` bisa dipakai bila peserta match tidak selalu team, misalnya individu.
 - `Standing` dan `RankingSnapshot` boleh dihitung ulang dari match final.
+- `EventEntry` menghubungkan peserta pertandingan dengan PDAM dan Pimpinan Daerah.
+- Klasemen medali memakai `RegionalCommittee`; nama PDAM tetap tampil pada match dan bracket.
 - `AuditLog` wajib append-only.
 
 ## Addendum v2: Struktur Cabor, Kategori, Bracket, dan Skor
@@ -45,6 +52,11 @@ sports
           │   └─ score_audits
           ├─ bracket_nodes
           └─ standings / ranking_snapshots
+
+provinces
+  ├─ regional_committees
+  └─ pdams
+       └─ event_entries ── regional_committees
 ```
 
 ### Entity Tambahan

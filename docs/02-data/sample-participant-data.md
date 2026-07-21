@@ -7,6 +7,7 @@ Data ini hanya contoh untuk development, demo UI, dan UAT awal. Bukan data peser
 ## File
 
 - `data/seed/sample_pdams.csv`: contoh PDAM beserta provinsi/kabupaten-kota.
+- `regional_committees`: dibuat otomatis satu per provinsi oleh seeder.
 - `data/seed/sample_teams.csv`: contoh tim per cabor.
 - `data/seed/sample_athletes.csv`: contoh atlet.
 
@@ -22,4 +23,5 @@ Data ini hanya contoh untuk development, demo UI, dan UAT awal. Bukan data peser
 - Nama atlet dummy.
 - Nomor identitas dummy.
 - Data wilayah memakai kode seed provinsi/kabupaten-kota.
+- Seluruh registrasi PDAM dari provinsi sama memakai `regional_committee_id` yang sama.
 - Ganti dengan data resmi saat panitia menyerahkan peserta final.

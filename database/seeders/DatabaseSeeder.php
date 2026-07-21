@@ -10,12 +10,17 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             IndonesiaRegionSeeder::class,
+            RegionalCommitteeSeeder::class,
             SportMasterSeeder::class,
             VenueSeeder::class,
             EventAgendaSeeder::class,
             PdamSeeder::class,
             TournamentDomainSeeder::class,
             TournamentBracketDemoSeeder::class,
+            MedalDemoSeeder::class,
+            RegistrationDemoSeeder::class,
+            UserSeeder::class,
+            PendingEntriesSeeder::class,
         ]);
     }
 }

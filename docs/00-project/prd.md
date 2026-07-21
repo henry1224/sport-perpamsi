@@ -1,5 +1,7 @@
 # PRD Aplikasi Sport PERPAMSI
 
+Gambaran status aplikasi dan hubungan seluruh alur tersedia di [application-flow.md](./application-flow.md).
+
 ## 1. Ringkasan
 
 Aplikasi Sport PERPAMSI adalah platform manajemen event olahraga PERPAMSI untuk panitia, peserta PDAM, dan publik. Fokus v1 adalah mengelola event, peserta, pertandingan, input hasil setelah pertandingan selesai, bracket, jadwal, dan publikasi informasi event dalam satu tempat.
@@ -31,7 +33,7 @@ Saat ini kebutuhan utama adalah satu aplikasi yang rapi, mudah dipakai saat even
 - Mempercepat publikasi hasil, jadwal, bracket, dan klasemen.
 - Mengurangi input manual berulang oleh panitia.
 - Mendukung verifikasi peserta dan dokumen PDAM.
-- Menyediakan insight publik seperti ranking PDAM, ranking wilayah, performa cabor, dan statistik dasar.
+- Menyediakan insight publik seperti klasemen medali Pimpinan Daerah, performa cabor, dan statistik dasar.
 
 ## 4. Target Pengguna
 
@@ -67,7 +69,7 @@ Kebutuhan utama:
 
 - Melihat live score.
 - Melihat jadwal dan hasil pertandingan.
-- Melihat bracket, klasemen, ranking PDAM, ranking kabupaten/kota, dan ranking provinsi.
+- Melihat bracket, klasemen cabor, dan klasemen medali Pimpinan Daerah.
 - Membaca profil PDAM dan info event.
 - Mengakses link livestream bila tersedia.
 
@@ -328,9 +330,8 @@ Insight publik bertujuan membuat event terasa hidup dan mudah diikuti.
 
 Fitur awal:
 
-- Ranking PDAM berdasarkan medali, poin, atau jumlah kemenangan.
-- Ranking kabupaten/kota berdasarkan akumulasi medali PDAM dari wilayah tersebut.
-- Ranking provinsi berdasarkan akumulasi medali PDAM dari wilayah tersebut.
+- Klasemen medali berdasarkan akumulasi hasil seluruh PDAM ke Pimpinan Daerah provinsinya.
+- Nama PDAM tetap dipakai pada peserta match, bracket, dan profil instansi.
 - Rekap performa PDAM per cabor.
 - Statistik match: total pertandingan, pertandingan selesai, pertandingan berlangsung.
 - Highlight pertandingan final atau semifinal.
@@ -504,7 +505,7 @@ Masuk v1:
 - Bracket knockout dasar.
 - Klasemen sederhana.
 - Halaman public untuk live score, jadwal, bracket, ranking, profil PDAM, dan info event.
-- Ranking medali per PDAM, kabupaten/kota, dan provinsi.
+- Klasemen medali per Pimpinan Daerah.
 - Audit log untuk perubahan skor dan finalisasi.
 - Link livestream eksternal.
 - Role dasar untuk admin, koordinator cabor, verifikator, scorekeeper, content officer.
@@ -535,7 +536,7 @@ Masuk v1:
 - Public bisa melihat agenda event per tanggal, venue, dan cabor tanpa login.
 - Public bisa melihat skor match yang sedang berlangsung.
 - Public bisa melihat bracket dan hasil final match.
-- Public bisa melihat ranking PDAM.
+- Public bisa melihat klasemen medali Pimpinan Daerah.
 - Public bisa melihat ranking medali per kabupaten/kota dan provinsi.
 - Admin bisa membuat event, cabor, venue, PDAM, tim, atlet, dan match.
 - Admin bisa memverifikasi atau menolak peserta dengan catatan.

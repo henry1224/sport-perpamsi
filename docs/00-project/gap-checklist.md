@@ -1,13 +1,16 @@
 # Gap Checklist Menuju Development
 
+Status implementasi lintas modul dirangkum di [application-flow.md](./application-flow.md).
+Urutan penyelesaian wajib mengikuti [development-roadmap.md](./development-roadmap.md).
+
 ## Keputusan yang Masih Kurang
 
 - [x] Stack backend dan frontend final: Laravel + Inertia + Vue.js + SSR public.
 - [x] Pilihan ID database: `bigint` internal + UUID public.
 - [x] Struktur skor per cabor: skor utama + segment per set/babak/quarter/ronde.
-- [x] Rumus ranking resmi: medali untuk PDAM, aturan cabor untuk klasemen grup.
+- [x] Rumus ranking resmi: medali untuk Pimpinan Daerah, aturan cabor untuk klasemen grup.
 - [x] Format kompetisi setiap cabor: knockout, grup, round robin, time/score ranking.
-- [ ] Template import Excel/CSV untuk PDAM, tim, atlet, jadwal.
+- [ ] Template import Excel/CSV untuk Pimpinan Daerah, PDAM, registrasi cabor, tim, atlet, jadwal.
 - [ ] PIC final sengketa skor.
 - [ ] Domain production dan environment hosting.
 - [ ] Target server sizing awal.
