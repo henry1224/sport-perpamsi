@@ -17,6 +17,8 @@ class PdEntryController extends Controller
 {
     public function show(Request $request, TournamentEvent $event): Response
     {
+        abort_unless($event->registration_published_at, 404);
+
         $user = $request->user()->loadMissing('committee');
         $event->loadMissing(['sport:id,code,name', 'category:id,name,competition_type,scoring_type,bracket_enabled,min_members,max_members']);
 
@@ -34,21 +36,24 @@ class PdEntryController extends Controller
                 'verification_note' => $entry->verification_note,
             ]);
 
+        $rules = $event->registration_rules ?? [];
+
         return Inertia::render('Pd/EventEntries', [
             'event' => [
                 'code' => $event->code,
                 'name' => $event->name,
                 'status' => $event->status,
-                'format' => $event->format,
+                'registration_open' => $event->registrationIsOpen(),
+                'format' => $rules['format'] ?? $event->format,
                 'sport' => $event->sport?->name,
             ],
             'category' => $event->category ? [
-                'name' => $event->category->name,
-                'competition_type' => $event->category->competition_type,
-                'scoring_type' => $event->category->scoring_type,
+                'name' => $rules['category_name'] ?? $event->category->name,
+                'competition_type' => $rules['competition_type'] ?? $event->category->competition_type,
+                'scoring_type' => $rules['scoring_type'] ?? $event->category->scoring_type,
                 'bracket_enabled' => (bool) $event->category->bracket_enabled,
-                'min_members' => $event->category->min_members,
-                'max_members' => $event->category->max_members,
+                'min_members' => $rules['min_members'] ?? $event->category->min_members,
+                'max_members' => $rules['max_members'] ?? $event->category->max_members,
             ] : null,
             'entries' => $entries,
         ]);

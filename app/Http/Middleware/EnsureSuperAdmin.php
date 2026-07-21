@@ -11,7 +11,7 @@ class EnsureSuperAdmin
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-        abort_unless($user && $user->isSuperAdmin(), 403, 'Bukan super admin.');
+        abort_unless($user && $user->isSuperAdmin() && $user->isVerified(), 403, 'Akun admin tidak aktif.');
 
         return $next($request);
     }

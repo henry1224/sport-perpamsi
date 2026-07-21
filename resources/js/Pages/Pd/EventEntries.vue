@@ -12,7 +12,7 @@ const props = defineProps({
 
 const page = usePage();
 const flash = computed(() => page.props.flash || {});
-const canRegister = computed(() => props.event.status === 'registration_open');
+const canRegister = computed(() => props.event.registration_open);
 const minMembers = computed(() => props.category?.min_members || 1);
 const maxMembers = computed(() => props.category?.max_members || 1);
 

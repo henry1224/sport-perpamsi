@@ -12,8 +12,7 @@ class TournamentDomainSeeder extends Seeder
     {
         $now = now();
         $sports = DB::table('sports')->get()->keyBy('code');
-        $pdams = DB::table('pdams')->orderBy('code')->get();
-        $regionalCommittees = DB::table('regional_committees')->get()->keyBy('province_id');
+        $regionalCommittees = DB::table('regional_committees')->orderBy('name')->get();
 
         foreach ($this->csvRows(base_path('data/seed/sport_categories.csv')) as $row) {
             $sport = $sports[$row['sport_code']] ?? null;
@@ -48,25 +47,25 @@ class TournamentDomainSeeder extends Seeder
         foreach ($sports as $sport) {
             $sportCategories = $categories->filter(fn ($category) => $category->sport_id === $sport->id)->values();
             if ($sportCategories->isEmpty()) {
-                $this->seedTournamentEvent($sport, null, $pdams, $regionalCommittees, $now);
+                $this->seedTournamentEvent($sport, null, $regionalCommittees, $now);
 
                 continue;
             }
 
             foreach ($sportCategories as $category) {
-                $this->seedTournamentEvent($sport, $category, $pdams, $regionalCommittees, $now);
+                $this->seedTournamentEvent($sport, $category, $regionalCommittees, $now);
             }
         }
     }
 
-    private function seedTournamentEvent(object $sport, ?object $category, object $pdams, object $regionalCommittees, object $now): void
+    private function seedTournamentEvent(object $sport, ?object $category, object $regionalCommittees, object $now): void
     {
         $eventCode = $category ? $sport->code.'-'.$category->code : $sport->code;
         $format = $category && ! $category->bracket_enabled ? 'ranking' : ($sport->default_format ?: 'knockout');
-        $entriesCount = $category && $category->bracket_enabled ? min(64, $pdams->count()) : min(16, $pdams->count());
+        $entriesCount = $category && $category->bracket_enabled ? min(64, $regionalCommittees->count()) : min(16, $regionalCommittees->count());
         $bracketSize = $category && $category->bracket_enabled ? 2 ** (int) ceil(log(max(2, $entriesCount), 2)) : null;
 
-        DB::table('tournament_events')->upsert([[
+        DB::table('tournament_events')->insertOrIgnore([[
             'public_id' => (string) Str::uuid(),
             'sport_id' => $sport->id,
             'sport_category_id' => $category?->id,
@@ -74,26 +73,40 @@ class TournamentDomainSeeder extends Seeder
             'name' => trim($sport->name.($category ? ' - '.$category->name : '')),
             'format' => $format,
             'status' => 'bracket_locked',
+            'registration_rules' => json_encode([
+                'category_name' => $category?->name,
+                'competition_type' => $category?->competition_type,
+                'scoring_type' => $category?->scoring_type,
+                'format' => $format,
+                'min_members' => $category?->min_members ?? 1,
+                'max_members' => $category?->max_members ?? 1,
+            ]),
+            'registration_published_at' => null,
+            'registration_open_at' => null,
+            'registration_close_at' => null,
             'bracket_size' => $bracketSize,
             'seed_locked_at' => $now,
             'created_at' => $now,
             'updated_at' => $now,
-        ]], ['code'], ['name', 'format', 'status', 'bracket_size', 'seed_locked_at', 'updated_at']);
+        ]]);
 
         $event = DB::table('tournament_events')->where('code', $eventCode)->first();
-        $entries = $pdams->take($entriesCount)->values()->map(fn ($pdam, $index) => [
+        $entries = $regionalCommittees->take($entriesCount)->values()->map(fn ($committee, $index) => [
             'public_id' => (string) Str::uuid(),
             'tournament_event_id' => $event->id,
-            'pdam_id' => $pdam->id,
-            'regional_committee_id' => $regionalCommittees[$pdam->province_id]->id ?? null,
-            'province_id' => $pdam->province_id,
-            'regency_id' => $pdam->regency_id,
+            'pdam_id' => null,
+            'regional_committee_id' => $committee->id,
+            'registration_key' => $event->id.':'.$committee->id,
+            'province_id' => $committee->province_id,
+            'regency_id' => null,
             'seed_no' => $index + 1,
-            'display_name' => $regionalCommittees[$pdam->province_id]->name,
-            'athlete_1' => $category && $category->competition_type !== 'team' ? 'Atlet '.($index + 1).'A' : null,
-            'athlete_2' => $category && $category->competition_type === 'doubles' ? 'Atlet '.($index + 1).'B' : null,
-            'team_name' => $category && $category->competition_type === 'team' ? $this->shortName($pdam->name).' Team' : null,
+            'display_name' => $committee->name,
+            'athlete_1' => null,
+            'athlete_2' => null,
+            'team_name' => null,
             'verification_status' => 'verified',
+            'submitted_at' => $now,
+            'verified_at' => $now,
             'created_at' => $now,
             'updated_at' => $now,
         ])->all();
@@ -107,10 +120,8 @@ class TournamentDomainSeeder extends Seeder
             ->where('tournament_event_id', $event->id)
             ->get()
             ->flatMap(function ($entry) use ($category, $now) {
-                $names = array_filter([$entry->athlete_1, $entry->athlete_2]);
-                if ($category?->competition_type === 'team') {
-                    $names = collect(range(1, $category->min_members))->map(fn ($number) => $entry->team_name.' '.$number)->all();
-                }
+                $count = $category?->min_members ?? 1;
+                $names = collect(range(1, $count))->map(fn ($number) => 'Pemain '.$number.' - '.$entry->display_name);
 
                 return collect($names)->map(fn ($name) => [
                     'event_entry_id' => $entry->id,
@@ -217,11 +228,6 @@ class TournamentDomainSeeder extends Seeder
         return match ($matchCount) {
             1 => 'Final', 2 => 'Semi Final', 4 => 'Perempat Final', default => 'Round of '.($matchCount * 2)
         };
-    }
-
-    private function shortName(string $name): string
-    {
-        return trim(preg_replace('/\s+/', ' ', preg_replace('/\b(kabupaten|kota)\b/i', '', preg_replace('/^(perumda|perumdam|perusahaan umum daerah|pdam|pt)\s+(air\s+minum\s+)?/i', '', $name))));
     }
 
     private function csvRows(string $path): array

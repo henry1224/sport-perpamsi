@@ -38,7 +38,7 @@ Platform resmi PORPAMNAS untuk pendaftaran PD PERPAMSI, pemain, master lomba, pa
 ### Portal Pengurus Daerah
 
 - Dashboard PD.
-- Pilih cabor/kategori yang dibuka.
+- Pilih paket kompetisi/cabor/kategori yang sudah ditetapkan dan dipublikasikan Admin.
 - Buat registrasi dan daftar pemain dinamis.
 - Lihat status dan catatan verifikasi.
 - Kelola pengguna tambahan melalui persetujuan/undangan.
@@ -62,13 +62,15 @@ Platform resmi PORPAMNAS untuk pendaftaran PD PERPAMSI, pemain, master lomba, pa
 1. Satu pengajuan aktif per provinsi.
 2. Scope PD/panitia ditentukan server.
 3. Jumlah pemain mengikuti versi peraturan kompetisi.
-4. Master yang sudah dipakai tidak boleh dihapus.
-5. Venue tidak boleh bentrok waktu.
-6. Bracket tidak dapat dikunci sebelum verifikasi selesai.
-7. Revisi hasil final wajib alasan, approval, dan audit.
-8. Klasemen hanya memakai hasil final/terverifikasi.
-9. UI/export memakai label Indonesia; kode database tetap stabil.
-10. Seeder tidak menimpa data operasional.
+4. Master kategori tidak tampil langsung di portal PD; hanya kompetisi terpublikasi yang tampil.
+5. Publikasi mengunci snapshot format, kategori, tipe skor, dan batas pemain.
+6. Master yang sudah dipakai tidak boleh dihapus.
+7. Venue tidak boleh bentrok waktu.
+8. Bracket tidak dapat dikunci sebelum verifikasi selesai.
+9. Revisi hasil final wajib alasan, approval, dan audit.
+10. Klasemen hanya memakai hasil final/terverifikasi.
+11. UI/export memakai label Indonesia; kode database tetap stabil.
+12. Seeder tidak menimpa data operasional.
 
 ## Non-Functional
 
@@ -83,6 +85,8 @@ Platform resmi PORPAMNAS untuk pendaftaran PD PERPAMSI, pemain, master lomba, pa
 
 - Alur daftar PD sampai verifikasi berjalan end-to-end.
 - PD dapat mendaftarkan cabor dan pemain tanpa memilih instansi asal.
+- PD hanya melihat dan memakai kompetisi yang telah dipublikasikan Admin.
+- Perubahan master kategori tidak mengubah regulasi kompetisi terpublikasi.
 - Admin dapat mengelola seluruh master dan assignment.
 - Panitia tidak dapat keluar dari scope tugas.
 - Agenda menolak bentrok venue.
@@ -93,5 +97,6 @@ Platform resmi PORPAMNAS untuk pendaftaran PD PERPAMSI, pemain, master lomba, pa
 
 - Data: `docs/02-data/delegation-standard.md`.
 - Alur: `docs/00-project/application-flow.md`.
+- Publikasi registrasi: `docs/03-product/registration-publication-standard.md`.
 - Security: `docs/06-security/rbac-matrix.md` dan `risk-register.md`.
 - Test: `docs/08-testing/test-strategy.md` dan `uat-checklist.md`.

@@ -25,22 +25,25 @@ class PdDashboardController extends Controller
 
         $events = TournamentEvent::query()
             ->with(['sport:id,code,name', 'category:id,name,competition_type,min_members,max_members'])
+            ->whereNotNull('registration_published_at')
             ->orderBy('name')
-            ->get(['id', 'code', 'name', 'sport_id', 'sport_category_id', 'status', 'format'])
+            ->get(['id', 'code', 'name', 'sport_id', 'sport_category_id', 'status', 'format', 'registration_rules', 'registration_published_at', 'registration_open_at', 'registration_close_at'])
             ->map(function ($event) use ($counts) {
                 $eventCounts = collect($counts->get($event->id, []))->pluck('total', 'verification_status');
+                $rules = $event->registration_rules ?? [];
 
                 return [
                     'code' => $event->code,
                     'name' => $event->name,
                     'sport' => $event->sport?->name,
-                    'category' => $event->category?->name,
-                    'competition_type' => $event->category?->competition_type,
-                    'member_limit' => $event->category
-                        ? $event->category->min_members.'–'.$event->category->max_members.' pemain'
+                    'category' => $rules['category_name'] ?? $event->category?->name,
+                    'competition_type' => $rules['competition_type'] ?? $event->category?->competition_type,
+                    'member_limit' => ($rules['min_members'] ?? null) !== null
+                        ? $rules['min_members'].'–'.$rules['max_members'].' pemain'
                         : null,
-                    'format' => $event->format,
+                    'format' => $rules['format'] ?? $event->format,
                     'status' => $event->status,
+                    'registration_open' => $event->registrationIsOpen(),
                     'entries' => [
                         'verified' => (int) $eventCounts->get('verified', 0),
                         'pending' => (int) $eventCounts->get('pending', 0),

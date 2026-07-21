@@ -13,15 +13,17 @@
 
 - [ ] Nama portal memakai `PD PERPAMSI {provinsi}`.
 - [ ] Pengurus Daerah hanya melihat data PD sendiri.
-- [x] Pengurus Daerah dapat memilih cabor/kategori yang dibuka.
+- [x] Pengurus Daerah hanya melihat kompetisi yang dipublikasikan Admin.
 - [-] Pengurus Daerah dapat menambah dan mengajukan daftar pemain; edit draft belum tersedia.
-- [x] Jumlah dan duplikasi pemain divalidasi sesuai master kategori.
+- [x] Jumlah dan duplikasi pemain divalidasi sesuai snapshot regulasi kompetisi.
 - [x] Status registrasi dan event pada portal PD tampil dalam Bahasa Indonesia.
 
 ## Master Admin
 
 - [ ] Admin dapat mengelola cabor dan kategori tanpa menghapus histori.
 - [ ] Admin dapat membuat versi peraturan dan menetapkannya ke kompetisi.
+- [x] Admin dapat mempublikasikan dan menutup registrasi kompetisi.
+- [ ] Admin dapat preview, menarik publikasi sebelum ada entry, dan melihat audit publikasi.
 - [ ] Admin dapat mengelola venue beserta detail dan status aktif.
 - [ ] Admin dapat mengelola agenda tanpa bentrok venue/waktu.
 - [ ] Admin dapat mengelola kompetisi dan status pendaftaran.
@@ -49,4 +51,5 @@
 - [ ] Import memiliki preview dan rollback saat invalid.
 - [ ] Backup dan restore sudah diuji.
 - [ ] Tidak ada status kode mentah pada UI/export.
+- [x] Perubahan master kategori tidak mengubah snapshot kompetisi terpublikasi.
 - [ ] `git diff`, test, build, migration upgrade, dan security review lulus sebelum merge.

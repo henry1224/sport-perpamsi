@@ -15,10 +15,10 @@ class StoreEventEntryRequest extends FormRequest
 
     public function rules(): array
     {
-        $category = $this->category();
+        $rules = $this->rulesSnapshot();
 
         return [
-            'members' => ['required', 'array', 'min:'.($category?->min_members ?? 1), 'max:'.($category?->max_members ?? 1)],
+            'members' => ['required', 'array', 'min:'.($rules['min_members'] ?? 1), 'max:'.($rules['max_members'] ?? 1)],
             'members.*.name' => ['required', 'string', 'max:120'],
         ];
     }
@@ -60,12 +60,10 @@ class StoreEventEntryRequest extends FormRequest
         ];
     }
 
-    private function category(): mixed
+    private function rulesSnapshot(): array
     {
         $event = $this->route('event');
 
-        return $event instanceof TournamentEvent
-            ? $event->loadMissing('category')->category
-            : null;
+        return $event instanceof TournamentEvent ? ($event->registration_rules ?? []) : [];
     }
 }

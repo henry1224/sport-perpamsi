@@ -5,6 +5,9 @@
 - Regulasi final tetap diputuskan melalui technical meeting panitia.
 - Dokumen ini memberi referensi resmi/otoritatif untuk baseline sistem.
 - Sistem menyimpan hasil dan bracket sesuai regulasi yang dipilih, bukan menghitung semua detail aturan federasi secara otomatis.
+- Admin menetapkan regulasi final pada paket kompetisi sebelum publikasi registrasi.
+- Portal PD tidak memilih regulasi; PD hanya memilih kompetisi terpublikasi dan mengikuti snapshot regulasinya.
+- Perubahan master regulasi setelah publikasi tidak mengubah kompetisi berjalan.
 
 ## Referensi per Cabor
 

@@ -36,6 +36,8 @@
 
 - `sport_id`, `sport_category_id`, `sport_rule_id`.
 - `code`, `name`, `format`, `status`, `registration_open_at`, `registration_close_at`, `seed_locked_at`.
+- `registration_published_at`, `registration_published_by`: waktu dan Admin yang menetapkan paket registrasi resmi.
+- `registration_rules`: snapshot kategori, format, tipe skor, serta batas pemain saat publikasi.
 
 ## EventEntry
 

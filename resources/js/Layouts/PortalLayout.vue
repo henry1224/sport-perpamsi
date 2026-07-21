@@ -17,14 +17,13 @@ const menus = computed(() => isAdmin.value ? [
   { label: 'Verifikasi Pengurus Daerah', href: '/admin/committee-applications', code: '02' },
   { label: 'Verifikasi Peserta', href: '/admin/entries', code: '03' },
   { label: 'Pertandingan & Skor', href: '/admin/skor', code: '04' },
-  { label: 'Data Lomba', code: '05', planned: true },
+  { label: 'Data Lomba', href: '/admin/events', code: '05' },
   { label: 'Master Data', code: '06', planned: true },
   { label: 'Panitia & Akses', code: '07', planned: true },
   { label: 'Laporan & Audit', code: '08', planned: true },
 ] : [
   { label: 'Ringkasan', href: '/pd/dashboard', code: '01' },
   { label: 'Registrasi Cabor', href: '/pd/dashboard#cabor', code: '02' },
-  { label: 'PDAM Wilayah', href: '/pd/dashboard#pdam', code: '03' },
 ]);
 
 const active = (href) => href && page.url.split('#')[0] === href.split('#')[0];

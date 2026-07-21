@@ -13,8 +13,12 @@ class RegistrationDemoSeeder extends Seeder
 
         DB::table('tournament_events')
             ->whereIn('id', $eventIds)
+            ->whereNull('registration_published_at')
             ->update([
                 'status' => 'registration_open',
+                'registration_published_at' => now(),
+                'registration_open_at' => now(),
+                'registration_close_at' => now()->addMonth(),
                 'seed_locked_at' => null,
                 'updated_at' => now(),
             ]);

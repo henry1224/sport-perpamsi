@@ -28,9 +28,10 @@ PUBLIC: agenda, peserta PD PERPAMSI, bracket, hasil, klasemen
 ### 1. Master Admin
 
 1. Sistem menyediakan master provinsi dan satu PD PERPAMSI per provinsi.
-2. Admin mengelola cabor, kategori, versi peraturan, venue, agenda, dan kompetisi.
-3. Master yang sudah dipakai hanya dapat dinonaktifkan/diarsipkan.
-4. Seeder mengisi baseline dan tidak menimpa data operasional.
+2. Admin mengelola cabor, kategori, versi peraturan, venue, agenda, dan kompetisi berstatus draft.
+3. Admin mempublikasikan hanya paket kompetisi yang sudah fix; publikasi menyimpan snapshot regulasi.
+4. Master yang sudah dipakai hanya dapat dinonaktifkan/diarsipkan.
+5. Seeder baseline tidak menimpa data operasional; seeder demo hanya berjalan pada local/testing.
 
 Status: `Partial` — tabel dan seeder dasar tersedia; CRUD Admin belum lengkap.
 
@@ -46,13 +47,13 @@ Status: `Done` — daftar, status pengajuan, verifikasi/perbaikan/penolakan Admi
 
 ### 3. Registrasi Cabor dan Pemain
 
-1. Pengurus Daerah memilih kompetisi/cabor/kategori yang dibuka.
+1. Pengurus Daerah hanya melihat kompetisi/cabor/kategori yang dipublikasikan Admin.
 2. Sistem membuat registrasi atas nama PD PERPAMSI.
-3. Pengurus Daerah memasukkan daftar pemain sesuai batas versi peraturan.
+3. Pengurus Daerah memasukkan pemain sesuai snapshot regulasi yang sudah fix saat publikasi.
 4. Admin/verifikator memeriksa dan memberi status Indonesia.
 5. Hanya registrasi terverifikasi masuk kompetisi.
 
-Status: `Partial` — form lama tersedia, tetapi masih perlu migrasi dari kolom/relasi PDAM ke entry dan anggota pemain.
+Status: `Partial` — filter publikasi, snapshot regulasi, periode, dan kontrol publish/tutup Admin tersedia; preview, audit event, serta revisi roster belum lengkap.
 
 ### 4. Penugasan Panitia
 
@@ -80,7 +81,7 @@ Status: `Partial` — input skor dasar tersedia; CRUD agenda, assignment, lock, 
 3. Draft, data pribadi, ID internal, dan audit tidak tampil publik.
 4. Cache diinvalidasi saat publikasi/finalisasi/revisi.
 
-Status: `Partial` — halaman publik tersedia, tetapi identitas lama masih perlu migrasi implementasi.
+Status: `Partial` — halaman publik tersedia dan identitas kompetisi memakai PD PERPAMSI; publikasi operasional masih perlu menghapus fallback data legacy.
 
 ## Menu Target
 
@@ -118,8 +119,7 @@ Status: `Partial` — halaman publik tersedia, tetapi identitas lama masih perlu
 
 1. Dokumen dan constraint.
 2. Pengajuan/verifikasi akun PD.
-3. Migrasi entry tanpa PDAM dan tabel pemain.
-4. Master Admin dan label status Indonesia.
-5. Assignment panitia dan policy.
-6. Agenda, bracket lock, skor, audit, laporan.
-7. UAT, load test, backup/restore, go-live.
+3. Lengkapi CRUD Admin, preview, audit publish, dan label status Indonesia.
+4. Assignment panitia dan policy.
+5. Agenda, bracket lock, skor, audit, laporan.
+6. UAT, load test, backup/restore, go-live.

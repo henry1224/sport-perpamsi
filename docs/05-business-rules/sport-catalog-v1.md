@@ -17,6 +17,7 @@
 ## Prinsip Penambahan Cabor
 
 - Cabor baru ditambah lewat master data admin.
+- Master cabor/kategori tidak otomatis menjadi pilihan registrasi; Admin harus membuat dan mempublikasikan kompetisi registrasi.
 - Tipe aktivitas bisa `sport`, `exhibition`, atau `official` untuk agenda non-pertandingan.
 - Setiap cabor wajib punya format kompetisi default.
 - Setiap cabor wajib punya struktur skor default.

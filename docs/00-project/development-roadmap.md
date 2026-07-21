@@ -6,7 +6,7 @@ Setiap phase memakai branch terpisah dan mengikuti `AGENTS.md` serta Git workflo
 
 - [x] Portal publik, seminar, login, dashboard dasar, registrasi legacy, verifikasi dasar, skor dasar.
 - [x] Dokumen target PD PERPAMSI dan risk register.
-- [ ] Tandai implementasi PDAM saat ini sebagai legacy sampai migration selesai.
+- [x] Tandai PDAM sebagai legacy; registrasi baru tidak menerima atau menulis instansi asal.
 
 Exit: dokumen, ERD, migration, RBAC, test, UAT, dan risiko konsisten.
 
@@ -20,36 +20,47 @@ Exit: dokumen, ERD, migration, RBAC, test, UAT, dan risiko konsisten.
 
 Exit: akun belum terverifikasi tidak dapat masuk; race condition provinsi diuji.
 
-## Phase 2 — Registrasi Cabor dan Pemain
+## Phase 2 — Master Cabor, Kategori, dan Regulasi
+
+- [x] Master cabor dan kategori dari baseline seed.
+- [x] Batas jumlah pemain pada kategori.
+- [ ] CRUD Admin cabor dan kategori.
+- [ ] Regulasi berversi dan dokumen technical meeting.
+- [ ] Restrict delete dan audit perubahan master.
+
+Exit: Admin dapat menyiapkan master valid tanpa membuatnya otomatis terlihat PD.
+
+## Phase 3 — Kompetisi dan Publikasi Registrasi
+
+- [x] Kompetisi memiliki status draft/open/closed dan periode registrasi.
+- [x] Snapshot regulasi disimpan saat publish.
+- [x] Portal PD hanya menampilkan kompetisi terpublikasi.
+- [x] Admin dapat publish dan menutup registrasi.
+- [ ] Preview publikasi, tarik publikasi sebelum ada entry, dan audit event.
+
+Exit: hanya paket kompetisi yang disahkan Admin dapat dipilih PD.
+
+## Phase 4 — Registrasi Cabor dan Pemain
 
 - [x] Registrasi baru `event_entries` memakai PD PERPAMSI tanpa PDAM.
 - [x] Tabel `entry_members` dan backfill pemain legacy.
 - [x] Validasi jumlah/duplikasi pemain dari master kategori.
+- [x] Validasi memakai snapshot regulasi kompetisi.
 - [-] Workflow submit, verifikasi, penolakan, dan pembatalan pending; draft/perbaikan roster belum tersedia.
 
 Exit: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy terverifikasi aman.
 
-## Phase 3 — Master Admin
+## Phase 5 — Venue, Agenda, dan Panitia
 
-- [ ] Master cabor dan kategori.
-- [ ] Peraturan berversi.
-- [ ] Kompetisi dan status pendaftaran.
 - [ ] Venue lengkap.
 - [ ] Agenda/jadwal, publikasi, dan konflik waktu.
 - [ ] Kamus label status Indonesia.
+- [ ] Akun panitia dan assignment per cabor/match.
+- [ ] Policy dan menu berbasis scope.
 
 Exit: CRUD, seed ulang, audit, dan restrict delete lulus.
 
-## Phase 4 — Panitia dan Assignment
-
-- [ ] Akun panitia.
-- [ ] Assignment per cabor/match.
-- [ ] Policy dan menu berbasis scope.
-- [ ] Penonaktifan akses dan audit role.
-
-Exit: horizontal access test lulus.
-
-## Phase 5 — Kompetisi dan Skor
+## Phase 6 — Kompetisi dan Skor
 
 - [ ] Seeding/grup/bracket manager.
 - [ ] Precondition bracket lock.
@@ -59,7 +70,7 @@ Exit: horizontal access test lulus.
 
 Exit: seluruh hasil dapat ditelusuri ke entry, aturan, aktor, dan audit.
 
-## Phase 6 — Operasional
+## Phase 7 — Operasional
 
 - [ ] Import/export aman.
 - [ ] Laporan dan audit.

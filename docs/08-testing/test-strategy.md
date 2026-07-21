@@ -13,26 +13,31 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 7. Registrasi ditolak saat pendaftaran ditutup.
 8. Pemain duplikat dan jumlah pemain di luar batas aturan ditolak.
 9. Registrasi baru menyimpan `pdam_id` null, key PD/event unik, dan roster secara transaksional.
-10. Kategori/peraturan yang sudah dipakai tidak dapat diubah tanpa workflow versi.
-11. Bracket tidak dapat dikunci jika verifikasi belum selesai.
-12. Venue dan waktu agenda yang bertabrakan ditolak.
-13. Panitia tidak dapat mengakses cabor atau match di luar assignment.
-14. Scorekeeper tidak dapat mengubah hasil final langsung.
-15. Revisi final wajib alasan, approval, dan audit.
-16. Klasemen hanya memakai hasil final/terverifikasi.
-17. Public tidak melihat draft, data pribadi, ID internal, atau audit.
-18. Seeder dapat dijalankan ulang tanpa menimpa data operasional.
+10. Portal PD hanya memuat kompetisi yang dipublikasikan Admin.
+11. Route dan submit kompetisi unpublished ditolak.
+12. Validasi roster memakai snapshot walau master kategori berubah.
+13. Publish ditolak untuk kategori tidak aktif/tidak cocok dan periode invalid.
+14. Kategori/peraturan yang sudah dipakai tidak dapat diubah tanpa workflow versi.
+15. Bracket tidak dapat dikunci jika verifikasi belum selesai.
+16. Venue dan waktu agenda yang bertabrakan ditolak.
+17. Panitia tidak dapat mengakses cabor atau match di luar assignment.
+18. Scorekeeper tidak dapat mengubah hasil final langsung.
+19. Revisi final wajib alasan, approval, dan audit.
+20. Klasemen hanya memakai hasil final/terverifikasi.
+21. Public tidak melihat draft, data pribadi, ID internal, atau audit.
+22. Seeder dapat dijalankan ulang tanpa menimpa data operasional.
 
 ## Frontend/E2E
 
 1. Pengguna memilih Masuk atau Daftar Pengurus Daerah.
 2. Pengajuan baru menampilkan status Indonesia dan tidak langsung membuka portal.
 3. Admin memverifikasi, meminta perbaikan, atau menolak pengajuan.
-4. Pengurus Daerah memilih cabor dan memasukkan pemain sesuai kategori.
-5. Admin mengelola cabor, kategori, peraturan, venue, agenda, dan assignment panitia.
-6. Panitia hanya melihat cabor dan pertandingan tugasnya.
-7. Public melihat nama `PD PERPAMSI {provinsi}` pada peserta, bracket, hasil, dan klasemen.
-8. Tidak ada kode mentah seperti `registration_open` atau `bracket_locked` pada UI/export.
+4. Admin preview dan mempublikasikan paket kompetisi yang sudah fix.
+5. Pengurus Daerah hanya memilih kompetisi terpublikasi dan memasukkan pemain sesuai snapshot.
+6. Admin mengelola cabor, kategori, peraturan, venue, agenda, dan assignment panitia.
+7. Panitia hanya melihat cabor dan pertandingan tugasnya.
+8. Public melihat nama `PD PERPAMSI {provinsi}` pada peserta, bracket, hasil, dan klasemen.
+9. Tidak ada kode mentah seperti `registration_open` atau `bracket_locked` pada UI/export.
 
 ## Load dan Concurrency
 

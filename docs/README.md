@@ -96,6 +96,8 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 
 ## Aturan Pakai
 
+- Sumber kebenaran publikasi cabor untuk portal PD: `03-product/registration-publication-standard.md`.
+
 - Perubahan scope masuk ke PRD dan delivery plan.
 - Perubahan data masuk ke data standard, ERD, atau data dictionary.
 - Perubahan arsitektur masuk ke architecture standard atau ADR.

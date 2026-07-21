@@ -13,7 +13,7 @@ class RegisterEventEntry
 {
     public function handle(User $user, TournamentEvent $event, array $data): EventEntry
     {
-        if ($event->status !== 'registration_open') {
+        if (! $event->registrationIsOpen()) {
             // ponytail: buka kembali event atau tambah alur late-registration + rebuild bracket jika dibutuhkan.
             throw new InvalidArgumentException('Pendaftaran event ini sudah ditutup.');
         }

@@ -7,6 +7,9 @@
 - Pengurus Daerah: pengguna terverifikasi yang mengelola satu PD PERPAMSI.
 - Pengajuan Pengurus Daerah: permintaan akses baru untuk mengelola PD PERPAMSI suatu provinsi.
 - Registrasi Cabor: pendaftaran PD PERPAMSI pada satu cabor/kategori.
+- Kompetisi Registrasi: paket cabor, kategori, format, regulasi, dan periode yang ditetapkan Admin sebagai satu `tournament_event`.
+- Registrasi Dipublikasikan: kompetisi sudah disahkan Admin dan dapat terlihat pada portal PD.
+- Snapshot Regulasi: salinan aturan registrasi yang dikunci saat publish dan tidak mengikuti perubahan master kategori.
 - Pemain: atlet individu atau anggota tim yang terhubung ke registrasi cabor.
 - Cabor: cabang olahraga.
 - Kategori: pembagian pertandingan dalam cabor, misalnya putra, putri, tunggal, ganda, atau beregu.

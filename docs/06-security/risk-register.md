@@ -30,6 +30,9 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Jumlah pemain melebihi aturan cabor | Tinggi | Batas min/max berasal dari master kategori/peraturan | Boundary test |
 | Registrasi dilakukan setelah penutupan | Tinggi | Status event dicek backend, bukan hanya tombol UI | Feature test status |
 | Kategori berubah setelah peserta terdaftar | Tinggi | Kategori terkunci setelah registrasi pertama atau memakai workflow migrasi | Test lock kategori |
+| Seluruh master kategori tampil sebagai pilihan PD | Tinggi | Dashboard hanya membaca kompetisi dengan `registration_published_at`; detail unpublished 404 | Feature test publikasi |
+| Master kategori berubah setelah publish | Tinggi | Snapshot `registration_rules` pada kompetisi | Feature test snapshot |
+| Kompetisi baru otomatis terbuka | Tinggi | Default status `registration_draft`; publish action eksplisit | Migration dan feature test |
 | Bracket dikunci sebelum verifikasi selesai | Kritis | Precondition: tidak ada pengajuan menunggu/perbaikan | Feature test bracket lock |
 | Penghapusan peserta merusak histori match | Kritis | Restrict delete; gunakan pembatalan/status dan audit | FK test dan UAT |
 
@@ -42,6 +45,7 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Cabor dihapus saat dipakai | Kritis | `restrictOnDelete` dan arsip/nonaktif | Migration test |
 | Status internal tampil mentah | Sedang | Satu kamus label Indonesia untuk seluruh UI/export | UI test/status audit |
 | Seeder menimpa perubahan admin | Tinggi | Seeder idempotent hanya mengisi baseline; data operasional tidak ditimpa | Rerun seeder test |
+| Publish dilakukan tanpa kategori/regulasi valid | Tinggi | Action Admin memvalidasi kategori aktif, cabor cocok, periode, dan snapshot | Feature test publish |
 
 ## Venue, Agenda, dan Jadwal
 

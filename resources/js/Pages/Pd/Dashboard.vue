@@ -63,7 +63,7 @@ const statusLabel = (status) => ({
             <span class="tag pending">Menunggu: {{ ev.entries.pending }}</span>
             <span v-if="ev.entries.rejected" class="tag rejected">Ditolak: {{ ev.entries.rejected }}</span>
           </div>
-          <Link :href="`/pd/events/${ev.code}`" class="event-cta">Kelola</Link>
+          <Link :href="`/pd/events/${ev.code}`" class="event-cta">{{ ev.registration_open ? 'Daftar' : 'Lihat' }}</Link>
         </div>
         <p v-if="!filtered.length" class="empty">Tidak ada event sesuai filter.</p>
       </div>

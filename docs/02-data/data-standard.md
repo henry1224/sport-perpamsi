@@ -24,6 +24,7 @@ Sumber kebenaran identitas dan registrasi: [delegation-standard.md](./delegation
 - Satu provinsi memiliki satu PD PERPAMSI.
 - Satu PD PERPAMSI memiliki banyak pengguna, pengajuan, registrasi cabor, dan pemain melalui entry.
 - Satu cabor memiliki banyak kategori, versi peraturan, kompetisi, agenda, pertandingan, dan assignment panitia.
+- Master kategori tidak langsung tampil ke PD; pilihan registrasi berasal dari kompetisi yang dipublikasikan Admin.
 - Satu registrasi menghubungkan PD PERPAMSI dengan satu kompetisi dan memiliki banyak pemain.
 - Satu agenda dapat terkait cabor, kompetisi, dan satu venue.
 - Satu match terkait kompetisi, venue, dua entry, skor, status, dan pemenang.
@@ -33,7 +34,7 @@ Sumber kebenaran identitas dan registrasi: [delegation-standard.md](./delegation
 
 - Akun/pengajuan: `pending`, `revision_required`, `verified`, `rejected`, `suspended`, `inactive`.
 - Registrasi: `draft`, `pending`, `revision_required`, `verified`, `rejected`, `cancelled`.
-- Kompetisi: `draft`, `registration_open`, `registration_closed`, `bracket_locked`, `running`, `completed`.
+- Kompetisi: `registration_draft`, `registration_open`, `registration_closed`, `bracket_locked`, `ongoing`, `completed`, `archived`.
 - Agenda: `draft`, `published`, `cancelled`.
 - Match: `scheduled`, `live`, `final`, `verified`, `disputed`, `postponed`, `walkover`.
 
@@ -42,6 +43,7 @@ Sumber kebenaran identitas dan registrasi: [delegation-standard.md](./delegation
 - Cabor, kategori, peraturan, venue, dan agenda dikelola Admin melalui CRUD dengan status aktif/arsip.
 - Master yang sudah dipakai tidak dihapus; gunakan nonaktif/arsip.
 - Peraturan memakai versi dan tanggal berlaku. Kompetisi menyimpan versi yang digunakan.
+- Publikasi registrasi menyimpan snapshot aturan sehingga perubahan master tidak mengubah kompetisi berjalan.
 - Hari agenda diturunkan dari tanggal.
 - Jadwal wajib menolak bentrok waktu pada venue sama.
 
