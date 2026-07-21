@@ -2,6 +2,15 @@
 
 Setiap phase memakai branch terpisah dan mengikuti `AGENTS.md` serta Git workflow.
 
+Eksekusi harian wajib mengikuti [phase-execution-standard.md](./phase-execution-standard.md).
+
+## Kontrol Eksekusi
+
+- **Phase aktif: Phase 2 — Master Cabor, Kategori, dan Regulasi.**
+- Phase berikutnya tidak boleh diperluas sebelum exit criteria Phase 2 selesai.
+- Pekerjaan awal Phase 5 berupa assignment panitia cabor/venue dibekukan dan tidak menjadi alasan melewati Phase 2–4.
+- Perubahan phase aktif wajib dilakukan setelah seluruh gate pada standar eksekusi phase lulus.
+
 ## Phase 0 — Baseline dan Dokumen
 
 - [x] Portal publik, seminar, login, dashboard dasar, registrasi legacy, verifikasi dasar, skor dasar.
@@ -55,7 +64,7 @@ Exit: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy terverifikas
 - [ ] Venue lengkap.
 - [ ] Agenda/jadwal, publikasi, dan konflik waktu.
 - [ ] Kamus label status Indonesia.
-- [ ] Akun panitia dan assignment per cabor/match.
+- [-] Akun panitia dan assignment per cabor/venue selesai; pembatasan akses per match menunggu jadwal pertandingan terhubung ke venue.
 - [ ] Policy dan menu berbasis scope.
 
 Exit: CRUD, seed ulang, audit, dan restrict delete lulus.

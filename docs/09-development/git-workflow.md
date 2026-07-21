@@ -39,17 +39,18 @@ Perubahan database atau seeder juga wajib membaca `docs/02-data/database-lifecyc
 ## Workflow Harian
 
 1. Baca `AGENTS.md` dan dokumen ini.
-2. Pastikan working tree bersih dan sync `main`.
-3. Buat branch sesuai kategori; jangan mengubah `main` langsung.
-4. Baca dokumen relevan dari `docs/README.md`.
-5. Kerjakan perubahan kecil dan terarah.
-6. Perbarui dokumen dan risk register bila data/alur berubah.
-7. Jalankan test/check relevan.
-8. Review diff sendiri.
-9. Commit dengan pesan jelas.
-10. Push branch.
-11. Buat PR bila memakai review flow.
-12. Merge setelah review/check selesai.
+2. Baca `docs/00-project/phase-execution-standard.md` dan pastikan task berada pada phase aktif.
+3. Pastikan working tree bersih dan sync `main`.
+4. Buat branch dengan nomor phase yang benar; jangan mengubah `main` langsung.
+5. Baca dokumen relevan dari `docs/README.md`.
+6. Kerjakan perubahan kecil dan terarah.
+7. Perbarui roadmap, dokumen, dan risk register bila data/alur berubah.
+8. Jalankan test/check relevan.
+9. Review diff sendiri.
+10. Commit dengan pesan jelas.
+11. Push branch.
+12. Buat PR bila memakai review flow.
+13. Merge setelah review/check selesai.
 
 ## Commit Message
 
@@ -84,6 +85,8 @@ chore: setup deployment config
 ## Sebelum Commit
 
 - [ ] Branch sesuai konteks pekerjaan.
+- [ ] Task berada pada phase aktif atau memiliki pengecualian tertulis.
+- [ ] Exit criteria phase sebelumnya sudah terpenuhi.
 - [ ] Diff hanya berisi perubahan yang relevan.
 - [ ] Tidak ada credential atau data sensitif.
 - [ ] Test/check relevan sudah dijalankan.
