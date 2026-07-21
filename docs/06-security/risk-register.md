@@ -2,6 +2,9 @@
 
 Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadwal, pertandingan, atau publikasi wajib meninjau tabel ini.
 
+- Agenda ganda pada venue sama dikendalikan dengan validasi irisan waktu pada create/update; concurrency database diuji sebelum go-live.
+- Venue nonaktif tidak dapat dipilih untuk agenda baru; agenda lama tetap dipertahankan untuk histori.
+
 ## Skala
 
 - Dampak: rendah, sedang, tinggi, kritis.

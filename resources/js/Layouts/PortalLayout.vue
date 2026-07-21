@@ -14,38 +14,50 @@ const identity = computed(() => isAdmin.value
 
 const menuGroups = computed(() => isAdmin.value ? [
   { label: 'Umum', items: [
-    { label: 'Ringkasan', href: '/admin/dashboard', code: '01' },
+    { label: 'Dashboard', href: '/admin/dashboard', icon: 'dashboard' },
   ] },
   { label: 'Persiapan Lomba', items: [
-    { label: 'Master Data', href: '/admin/master-data', code: '02' },
-    { label: 'Data Lomba', href: '/admin/events', code: '03' },
+    { label: 'Master Data', href: '/admin/master-data', icon: 'database' },
+    { label: 'Data Lomba', href: '/admin/events', icon: 'trophy' },
   ] },
   { label: 'Registrasi', items: [
-    { label: 'Verifikasi Pengurus Daerah', href: '/admin/committee-applications', code: '04' },
-    { label: 'Verifikasi Peserta', href: '/admin/entries', code: '05' },
+    { label: 'Verifikasi Pengurus Daerah', href: '/admin/committee-applications', icon: 'building' },
+    { label: 'Verifikasi Peserta', href: '/admin/entries', icon: 'users' },
   ] },
   { label: 'Operasional', items: [
-    { label: 'Panitia & Akses', href: '/admin/assignments', code: '06' },
-    { label: 'Pertandingan & Skor', href: '/admin/skor', code: '07' },
+    { label: 'Venue & Agenda', href: '/admin/venue-agenda', icon: 'calendar' },
+    { label: 'Panitia & Akses', href: '/admin/assignments', icon: 'shield' },
+    { label: 'Pertandingan & Skor', href: '/admin/skor', icon: 'scoreboard' },
   ] },
   { label: 'Pelaporan', items: [
-    { label: 'Laporan & Audit', code: '08', planned: true },
+    { label: 'Laporan & Audit', icon: 'report', planned: true },
   ] },
 ] : [
   { label: 'Umum', items: [
-    { label: 'Ringkasan', href: '/pd/dashboard', code: '01' },
+    { label: 'Dashboard', href: '/pd/dashboard', icon: 'dashboard' },
   ] },
   { label: 'Pendaftaran', items: [
-    { label: 'Registrasi Cabor', href: '/pd/dashboard#cabor', code: '02' },
+    { label: 'Registrasi Cabor', href: '/pd/dashboard#cabor', icon: 'clipboard' },
   ] },
 ]);
 
-const active = (href) => href && page.url.split('#')[0] === href.split('#')[0];
+const active = (href) => href && page.url === href;
 const logout = () => router.post('/logout');
 </script>
 
 <template>
   <div class="portal-shell">
+    <svg class="portal-icon-sprite" aria-hidden="true">
+      <symbol id="portal-icon-dashboard" viewBox="0 0 24 24"><path d="M4 13h6V4H4v9Zm0 7h6v-5H4v5Zm10 0h6v-9h-6v9Zm0-16v5h6V4h-6Z" /></symbol>
+      <symbol id="portal-icon-database" viewBox="0 0 24 24"><path d="M12 3c-4.4 0-8 1.3-8 3s3.6 3 8 3 8-1.3 8-3-3.6-3-8-3Zm-8 7v4c0 1.7 3.6 3 8 3s8-1.3 8-3v-4c-1.8 1.2-4.8 1.8-8 1.8S5.8 11.2 4 10Zm0 8v1c0 1.7 3.6 3 8 3s8-1.3 8-3v-1c-1.8 1.2-4.8 1.8-8 1.8S5.8 19.2 4 18Z" /></symbol>
+      <symbol id="portal-icon-trophy" viewBox="0 0 24 24"><path d="M18 4V2H6v2H3v4c0 2.2 1.8 4 4 4h.2A5 5 0 0 0 11 15.9V19H7v3h10v-3h-4v-3.1a5 5 0 0 0 3.8-3.9h.2c2.2 0 4-1.8 4-4V4h-3ZM7 10a2 2 0 0 1-2-2V6h1v2c0 .7.1 1.4.4 2H7Zm12-2a2 2 0 0 1-2 2h-.4c.3-.6.4-1.3.4-2V6h2v2Z" /></symbol>
+      <symbol id="portal-icon-building" viewBox="0 0 24 24"><path d="M4 21V3h11v5h5v13h-7v-4h-2v4H4Zm3-14h2V5H7v2Zm4 0h2V5h-2v2ZM7 11h2V9H7v2Zm4 0h2V9h-2v2Zm5 1h2v-2h-2v2Zm0 4h2v-2h-2v2Z" /></symbol>
+      <symbol id="portal-icon-users" viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm6-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-3c0-3 3.1-5 7-5s7 2 7 5v3H2Zm15.5 0v-3c0-1.4-.5-2.7-1.5-3.7 3.3.2 6 1.9 6 4.7v2h-4.5Z" /></symbol>
+      <symbol id="portal-icon-shield" viewBox="0 0 24 24"><path d="m12 2 8 3v6c0 5.1-3.4 9.8-8 11-4.6-1.2-8-5.9-8-11V5l8-3Zm0 4.2L8 7.7V11c0 3.2 1.9 6.3 4 7.4 2.1-1.1 4-4.2 4-7.4V7.7l-4-1.5Z" /></symbol>
+      <symbol id="portal-icon-scoreboard" viewBox="0 0 24 24"><path d="M3 4h18v16H3V4Zm3 3v3h4V7H6Zm8 0v3h4V7h-4ZM6 14v3h4v-3H6Zm8 0v3h4v-3h-4Zm-2-7h1v10h-1V7Z" /></symbol>
+      <symbol id="portal-icon-report" viewBox="0 0 24 24"><path d="M5 2h10l4 4v16H5V2Zm9 2v4h4l-4-4ZM8 12h8v-2H8v2Zm0 4h8v-2H8v2Zm0 4h6v-2H8v2Z" /></symbol>
+      <symbol id="portal-icon-clipboard" viewBox="0 0 24 24"><path d="M9 3h6l1 2h3v17H5V5h3l1-2Zm1.2 2-.5 1h4.6l-.5-1h-3.6ZM8 10v2h8v-2H8Zm0 4v2h8v-2H8Zm0 4v2h5v-2H8Z" /></symbol>
+    </svg>
     <div v-if="open" class="portal-overlay" @click="open = false" />
     <aside :class="['portal-sidebar', { open }]">
       <Link href="/" class="portal-brand">
@@ -69,7 +81,7 @@ const logout = () => router.post('/logout');
             :class="['portal-link', { active: active(item.href), planned: item.planned }]"
             @click="open = false"
           >
-            <span>{{ item.code }}</span>
+            <span><svg aria-hidden="true"><use :href="`#portal-icon-${item.icon}`" /></svg></span>
             <b>{{ item.label }}</b>
             <small v-if="item.planned">Segera</small>
           </component>
@@ -100,6 +112,7 @@ const logout = () => router.post('/logout');
 
 <style>
 .portal-shell { min-height: 100vh; background: #eef3f6; color: #152331; }
+.portal-icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 .portal-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 50; display: flex; width: 286px; flex-direction: column; overflow: hidden; color: #fff; background: #071126; border-right: 1px solid rgba(54,194,240,.22); }
 .portal-sidebar::after { content: ""; position: absolute; right: -90px; bottom: 80px; width: 220px; height: 220px; border: 34px solid rgba(54,194,240,.06); transform: rotate(18deg); pointer-events: none; }
 .portal-brand { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; min-height: 82px; padding: 10px 22px; color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.1); }
@@ -116,6 +129,7 @@ const logout = () => router.post('/logout');
 .portal-group > p { margin: 0 0 3px; padding: 0 10px; }
 .portal-link { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; min-height: 48px; padding: 8px 10px; color: rgba(255,255,255,.68); text-decoration: none; border: 1px solid transparent; transition: .18s ease; }
 .portal-link > span { display: grid; place-items: center; width: 30px; height: 30px; color: #36c2f0; font-size: 10px; font-weight: 1000; background: rgba(54,194,240,.08); border: 1px solid rgba(54,194,240,.18); }
+.portal-link svg { width: 16px; height: 16px; fill: currentColor; }
 .portal-link b { font-size: 13px; }
 .portal-link small { padding: 3px 6px; color: rgba(255,255,255,.38); font-size: 9px; text-transform: uppercase; border: 1px solid rgba(255,255,255,.1); }
 .portal-link:hover:not(.planned), .portal-link.active { color: #071126; background: #f6c64a; border-color: #f6c64a; transform: translateX(3px); }

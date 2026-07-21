@@ -24,8 +24,8 @@
 - [x] Admin dapat membuat versi peraturan dan menetapkannya ke kompetisi melalui preview publikasi.
 - [x] Admin dapat mempublikasikan dan menutup registrasi kompetisi.
 - [x] Admin dapat preview, menarik publikasi sebelum ada entry, dan melihat audit publikasi.
-- [ ] Admin dapat mengelola venue beserta detail dan status aktif.
-- [ ] Admin dapat mengelola agenda tanpa bentrok venue/waktu.
+- [-] Admin dapat menambah venue beserta detail dan status aktif; edit/nonaktif UI masih dilanjutkan.
+- [-] Admin dapat menambah dan mempublikasikan agenda tanpa bentrok venue/waktu; edit dan audit revisi masih dilanjutkan.
 - [ ] Admin dapat mengelola kompetisi dan status pendaftaran.
 - [x] Admin dapat melihat, menyetujui, atau menolak registrasi serta pemain per PD PERPAMSI.
 - [x] PD dapat menyimpan draft, mengirim roster, memperbaiki sesuai catatan, mengirim ulang, dan membatalkan registrasi.
