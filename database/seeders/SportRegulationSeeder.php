@@ -22,6 +22,7 @@ class SportRegulationSeeder extends Seeder
                 'version' => 1,
                 'title' => 'Panduan Teknis PORPAMNAS IX',
                 'content' => $this->content($guide),
+                'technical_guide' => json_encode($guide),
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),

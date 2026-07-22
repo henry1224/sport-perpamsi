@@ -18,12 +18,33 @@ use Inertia\Response;
 
 class VenueAgendaController extends Controller
 {
-    public function index(Request $request): Response
+    public function venues(Request $request): Response
     {
         $search = trim((string) $request->query('search'));
         $perPage = min(max($request->integer('per_page', 10), 10), 100);
 
         return Inertia::render('Admin/VenueAgendas', [
+            'mode' => 'venues',
+            'venues' => Venue::query()
+                ->withCount('agendas')
+                ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
+                    $query->whereLike('name', "%{$search}%", caseSensitive: false)
+                        ->orWhereLike('code', "%{$search}%", caseSensitive: false)
+                        ->orWhereLike('city', "%{$search}%", caseSensitive: false)
+                        ->orWhereLike('address', "%{$search}%", caseSensitive: false);
+                }))
+                ->orderBy('name')->paginate($perPage)->withQueryString(),
+            'filters' => ['search' => $search, 'per_page' => $perPage],
+        ]);
+    }
+
+    public function agendas(Request $request): Response
+    {
+        $search = trim((string) $request->query('search'));
+        $perPage = min(max($request->integer('per_page', 10), 10), 100);
+
+        return Inertia::render('Admin/VenueAgendas', [
+            'mode' => 'agendas',
             'venues' => Venue::query()->orderBy('name')->get(),
             'sports' => Sport::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'events' => TournamentEvent::query()->orderBy('name')->get(['id', 'name', 'sport_id']),
@@ -53,6 +74,20 @@ class VenueAgendaController extends Controller
         $venue->update($this->venueData($request, $venue));
 
         return back()->with('success', 'Venue berhasil diperbarui.');
+    }
+
+    public function destroyVenue(Venue $venue): RedirectResponse
+    {
+        if ($venue->is_active) {
+            return back()->with('error', 'Venue aktif tidak dapat dihapus. Nonaktifkan terlebih dahulu.');
+        }
+        if ($venue->agendas()->exists() || DB::table('matches')->where('venue_id', $venue->id)->exists()) {
+            return back()->with('error', 'Venue tidak dapat dihapus karena sudah dipakai agenda atau pertandingan. Nonaktifkan venue sebagai gantinya.');
+        }
+
+        $venue->delete();
+
+        return back()->with('success', 'Venue berhasil dihapus.');
     }
 
     public function storeAgenda(Request $request): RedirectResponse
@@ -101,7 +136,8 @@ class VenueAgendaController extends Controller
             'code' => ['required', 'string', 'max:50', Rule::unique('venues')->ignore($venue)], 'name' => ['required', 'string', 'max:255'],
             'address' => ['nullable', 'string'], 'city' => ['nullable', 'string', 'max:100'], 'facilities' => ['nullable', 'string'],
             'map_url' => ['nullable', 'url', 'max:255'], 'contact_name' => ['nullable', 'string', 'max:100'],
-            'contact_phone' => ['nullable', 'string', 'max:30'], 'is_active' => ['required', 'boolean'],
+            'contact_phone' => ['nullable', 'string', 'max:30'], 'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'], 'is_active' => ['required', 'boolean'],
         ]);
     }
 

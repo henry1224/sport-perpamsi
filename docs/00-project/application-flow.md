@@ -99,9 +99,10 @@ Status: `Partial` — halaman publik tersedia dan identitas kompetisi memakai PD
 - Verifikasi Pengurus Daerah.
 - Verifikasi Peserta.
 - Master Cabor.
-- Kategori dan Peraturan.
-- Kompetisi.
-- Venue.
+- Kategori.
+- Regulasi.
+- Master Venue.
+- Data Lomba.
 - Agenda dan Jadwal.
 - Panitia dan Penugasan.
 - Pertandingan dan Skor.

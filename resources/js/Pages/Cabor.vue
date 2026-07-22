@@ -2,12 +2,13 @@
 import PublicLayout from '../Layouts/PublicLayout.vue';
 import SectionTitle from '../Components/SectionTitle.vue';
 
-const props = defineProps({ sports: Array, sportCategories: Array, sportTechnicalGuides: Array, sportRegulations: Array, assets: Object });
+const props = defineProps({ sports: Array, sportCategories: Array, sportTechnicalGuides: Array, sportRegulations: Array, agenda: Array, assets: Object });
 const cards = props.sports.filter((s) => s.type !== 'official');
 const sportIcon = (code) => props.assets?.mascots?.[code?.toLowerCase()] || null;
 const categories = (code) => props.sportCategories.filter((category) => category.sport_code === code);
 const guide = (code) => props.sportTechnicalGuides.find((item) => item.sport_code === code);
 const regulation = (code) => props.sportRegulations.find((item) => item.sport_code === code);
+const venues = (code) => [...new Map(props.agenda.filter((item) => item.sport_code === code).map((item) => [item.venue, item])).values()];
 const memberLimit = (category) => category.max_members === null || category.max_members === ''
   ? `Minimal ${category.min_members} pemain`
   : Number(category.min_members) === Number(category.max_members)
@@ -25,7 +26,7 @@ const memberLimit = (category) => category.max_members === null || category.max_
         <header><div><span>{{ sport.type }}</span><h3>{{ sport.name }}</h3></div><img v-if="sportIcon(sport.code)" :src="sportIcon(sport.code)" alt="" /></header>
         <div v-if="guide(sport.code)" class="technical-grid">
           <div><strong>Jadwal</strong><p>{{ guide(sport.code).schedule }}</p></div>
-          <div><strong>Lokasi</strong><p>{{ guide(sport.code).venue }}</p><small>{{ guide(sport.code).address }}</small></div>
+          <div><strong>Lokasi</strong><template v-if="venues(sport.code).length"><p v-for="venue in venues(sport.code)" :key="venue.venue">{{ venue.venue }}<small>{{ venue.venue_address }}</small></p></template><p v-else>Belum ditetapkan</p></div>
         </div>
         <section class="category-list"><strong>Kategori</strong><div><article v-for="category in categories(sport.code)" :key="category.code"><b>{{ category.name }}</b><small>{{ memberLimit(category) }}</small></article></div></section>
         <section v-if="regulation(sport.code)" class="technical-list"><strong>{{ regulation(sport.code).title }} · Versi {{ regulation(sport.code).version }}</strong><p class="regulation-content">{{ regulation(sport.code).content }}</p></section>

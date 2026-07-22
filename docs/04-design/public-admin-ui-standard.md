@@ -1,8 +1,9 @@
-# Public & Admin UI Standard
+# Public, Admin, dan PD UI Standard
 
 ## Design Direction
 
-Tema utama: dark navy tournament portal, resmi, energetic, readable.
+- Public: dark navy tournament, resmi, energetic, readable.
+- Admin dan PD: portal terang bersama, utilitarian, rapi, dan padat.
 
 Dilarang:
 
@@ -32,6 +33,13 @@ Dilarang:
 - Filter block gap: 8-12px.
 - Table row height minimal: 44px.
 - Match row height minimal: 43px.
+
+## Scrollbar
+
+- Public memakai track navy dengan thumb cyan dan hover kuning.
+- Admin dan PD memakai track abu terang dengan thumb biru portal.
+- Modal mengikuti tema pemanggil: dark untuk public, light untuk Admin dan PD.
+- Semua area scroll vertikal dan horizontal memakai pola yang sama.
 
 ## Typography
 
@@ -72,7 +80,7 @@ Dilarang:
 ### Peserta PD PERPAMSI
 
 - Server-side pagination.
-- Search debounce minimal 400 ms.
+- Search debounce 300 ms.
 - Pagination atas dan bawah jika data panjang.
 - Card/list memakai nama display ringkas, nama lengkap di detail/tooltip.
 
@@ -82,12 +90,15 @@ Dilarang:
 - Medal count tidak boleh terlalu dekat dengan nama wilayah.
 - Sorting harus jelas.
 
-## Admin UI Standard
+## Admin dan PD UI Standard
 
 ### Layout
 
-- Admin lebih utilitarian, bukan dekoratif.
+- Admin dan PD memakai token, card, tabel, form, modal, badge, pagination, dan focus state yang sama.
+- Portal lebih utilitarian, bukan dekoratif.
 - Sidebar/topbar konsisten.
+- Background portal `#eef3f6`, surface putih, header card `#f7f9fa`.
+- Radius card `14px`; radius control `8px`.
 - Form area jelas: label, input, help text, error.
 - Table admin lebih padat dari public, tapi tetap readable.
 
@@ -104,6 +115,28 @@ Dilarang:
 - Filter sticky di atas table.
 - Bulk action tidak muncul jika belum ada selection.
 - Status memakai badge konsisten.
+- Semua daftar data utama memakai pola visual `AdminDataTable`.
+- Daftar utama PD memakai `AdminDataTable`; tabel detail roster mengikuti token tabel yang sama.
+- Search memakai debounce 300 ms untuk request server.
+- Pilihan per halaman konsisten: `10`, `25`, `50`, `100`.
+- Footer menampilkan rentang data, total data, halaman aktif, dan total halaman.
+- Navigasi pagination memakai tombol `Sebelumnya` dan `Berikutnya`.
+
+### Filter dan Modal
+
+- Toolbar filter memakai dasar putih atau abu muda `#f8fafb` dengan border `#d9e3e9`.
+- Urutan kontrol: `Pencarian`, `Filter`, lalu `Per Halaman`.
+- Semua modal memakai komponen `Modal.vue`; modal custom per halaman dilarang.
+- Modal Public memakai tema dark navy yang senada dengan portal publik.
+- Modal Admin dan PD memakai `theme="light"` dengan dasar putih, header `#f7f9fb`, dan backdrop navy transparan.
+- Tombol primary memakai biru, secondary putih outline, dan danger merah lembut.
+
+### Aksi Data
+
+- Aksi `Lihat`, `Edit`, `Aktifkan/Nonaktifkan`, dan `Hapus` memakai tombol ikon konsisten dengan tooltip serta `aria-label`.
+- Tombol status berada pada kolom aksi: data aktif menampilkan aksi `Nonaktifkan`, data nonaktif menampilkan aksi `Aktifkan`.
+- Data aktif tidak dapat dihapus.
+- Data nonaktif hanya dapat dihapus bila tidak memiliki relasi; UI menonaktifkan tombol dan server tetap wajib menolak request ilegal.
 
 ### Score Input
 
@@ -131,3 +164,5 @@ Dilarang:
 - [ ] Tidak ada warna/shape baru tanpa alasan.
 - [ ] Kuota null tampil sebagai `Tidak dibatasi` di Admin dan `Minimal {n} pemain` di publik/PD.
 - [ ] Informasi teknis cabor mudah dipindai dan ikon hanya tampil bila aset tersedia.
+- [ ] Master Venue memakai tabel, pencarian, per-page, pagination, dan modal CRUD.
+- [ ] Detail venue publik menyediakan tautan Google Maps yang dapat dibuka pada perangkat peserta.

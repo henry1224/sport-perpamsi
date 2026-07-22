@@ -67,15 +67,15 @@ watch([status, perPage], () => load());
 </template>
 
 <style scoped>
-.admin-table-card { overflow: hidden; color: #172535; background: #fff; border: 1px solid #d9e3e9; border-radius: 14px; box-shadow: 0 8px 24px rgba(25,53,76,.07); }
-.table-toolbar { display: grid; grid-template-columns: minmax(260px, 1fr) 220px 150px; gap: 14px; padding: 18px 20px; background: #fbfcfd; border-bottom: 1px solid #e2e9ed; }
+.admin-table-card { overflow: hidden; color: var(--portal-text, #172535); background: var(--portal-surface, #fff); border: 1px solid var(--portal-border, #d9e3e9); border-radius: var(--portal-radius, 14px); box-shadow: var(--portal-shadow, 0 8px 24px rgba(25,53,76,.07)); }
+.table-toolbar { display: grid; grid-template-columns: minmax(260px, 1fr) 220px 150px; gap: 14px; padding: 18px 20px; background: var(--portal-surface-soft, #f7f9fa); border-bottom: 1px solid var(--portal-border, #d9e3e9); }
 label { display: grid; gap: 7px; }
 label span { color: #60717f; font-size: 10px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
-input, select { width: 100%; min-height: 42px; padding: 10px 12px; color: #172535; background: #fff; border: 1px solid #cbd8df; border-radius: 8px; outline: none; transition: border-color .16s, box-shadow .16s; }
-input:focus, select:focus { border-color: #1946a3; box-shadow: 0 0 0 3px rgba(25,70,163,.1); }
+input, select { width: 100%; min-height: 42px; padding: 10px 12px; color: var(--portal-text, #172535); background: var(--portal-surface, #fff); border: 1px solid var(--portal-border-strong, #cbd8df); border-radius: var(--portal-control-radius, 8px); outline: none; transition: border-color .16s, box-shadow .16s; }
+input:focus, select:focus { border-color: var(--portal-primary, #1946a3); box-shadow: 0 0 0 3px rgba(25,70,163,.1); }
 .table-scroll { overflow-x: auto; }
 :deep(table) { width: 100%; min-width: 880px; border-collapse: collapse; }
-:deep(th) { padding: 13px 16px; color: #60717f; background: #f7f9fa; border-bottom: 1px solid #dbe5ea; font-size: 10px; font-weight: 850; letter-spacing: .1em; text-align: left; text-transform: uppercase; white-space: nowrap; }
+:deep(th) { padding: 13px 16px; color: #60717f; background: var(--portal-surface-soft, #f7f9fa); border-bottom: 1px solid var(--portal-border, #dbe5ea); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-align: left; text-transform: uppercase; white-space: nowrap; }
 :deep(td) { padding: 15px 16px; color: #334553; border-bottom: 1px solid #e5ecef; font-size: 13px; line-height: 1.45; vertical-align: middle; }
 :deep(tbody tr) { transition: background .15s ease; }
 :deep(tbody tr:hover) { background: #f8fbfd; }
@@ -93,10 +93,10 @@ input:focus, select:focus { border-color: #1946a3; box-shadow: 0 0 0 3px rgba(25
 :deep(.row-actions button.danger) { color: #a13d24; background: #fff4f0; border-color: #ffd0c1; }
 :deep(.row-actions button:disabled) { opacity: .5; cursor: not-allowed; }
 :deep(.empty-row td) { padding: 48px 20px; color: #7a8994; text-align: center; }
-.table-footer { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 64px; padding: 12px 20px; color: #60717f; background: #f8fafb; border-top: 1px solid #dbe5ea; font-size: 12px; }
+.table-footer { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 64px; padding: 12px 20px; color: #60717f; background: var(--portal-surface-soft, #f8fafb); border-top: 1px solid var(--portal-border, #dbe5ea); font-size: 12px; }
 .table-footer p { margin: 0; }
 nav { display: flex; align-items: center; gap: 12px; }
-nav button { min-height: 36px; padding: 8px 12px; color: #1946a3; background: #fff; border: 1px solid #cbd8df; border-radius: 7px; font-weight: 800; cursor: pointer; }
+nav button { min-height: 36px; padding: 8px 12px; color: var(--portal-primary, #1946a3); background: var(--portal-surface, #fff); border: 1px solid var(--portal-border-strong, #cbd8df); border-radius: var(--portal-control-radius, 8px); font-weight: 800; cursor: pointer; }
 nav button:disabled { color: #9caab4; background: #edf2f4; cursor: not-allowed; }
 @media (max-width: 800px) { .table-toolbar { grid-template-columns: 1fr; } .table-footer { align-items: stretch; flex-direction: column; } nav { justify-content: space-between; } }
 </style>
