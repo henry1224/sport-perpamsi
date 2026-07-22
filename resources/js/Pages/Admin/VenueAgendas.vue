@@ -3,13 +3,16 @@ import { router, useForm } from '@inertiajs/vue3';
 import AdminDataTable from '../../Components/AdminDataTable.vue';
 import PortalLayout from '../../Layouts/PortalLayout.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
+import { formatDate } from '../../lib/date';
 
-defineProps({ venues: Array, sports: Array, events: Array, agendas: Object, filters: Object });
+defineProps({ venues: Array, sports: Array, events: Array, matches: Array, agendas: Object, filters: Object });
 const venue = useForm({ code: '', name: '', address: '', city: '', facilities: '', map_url: '', contact_name: '', contact_phone: '', is_active: true });
 const agenda = useForm({ date: '', title: '', type: 'sport', sport_id: '', tournament_event_id: '', venue_id: '', start_time: '', end_time: '', time_note: '', description: '' });
 const saveVenue = () => venue.post('/admin/venues', { preserveScroll: true, onSuccess: () => venue.reset() });
 const saveAgenda = () => agenda.post('/admin/agendas', { preserveScroll: true, onSuccess: () => agenda.reset() });
 const publish = (id) => router.post(`/admin/agendas/${id}/publish`, {}, { preserveScroll: true });
+const schedule = useForm({ match_id: '', event_agenda_id: '' });
+const saveSchedule = () => schedule.post(`/admin/matches/${schedule.match_id}/schedule`, { preserveScroll: true, onSuccess: () => schedule.reset() });
 const typeLabel = { sport: 'Pertandingan', exhibition: 'Eksibisi', official: 'Acara Resmi' };
 </script>
 
@@ -33,10 +36,14 @@ const typeLabel = { sport: 'Pertandingan', exhibition: 'Eksibisi', official: 'Ac
         <p v-if="agenda.errors.start_time" class="error wide">{{ agenda.errors.start_time }}</p>
       </div><footer><button :disabled="agenda.processing">Simpan Agenda</button></footer></form>
     </div>
+    <form class="card schedule" @submit.prevent="saveSchedule"><header><b>Jadwalkan Pertandingan</b><span>Venue dan waktu mengikuti agenda terpilih.</span></header><div class="fields">
+      <label>Pertandingan<select v-model="schedule.match_id" required><option value="">Pilih pertandingan</option><option v-for="item in matches" :key="item.id" :value="item.id">{{ item.code }} — {{ item.tournament_event.name }}</option></select></label>
+      <label>Agenda<select v-model="schedule.event_agenda_id" required><option value="">Pilih agenda</option><option v-for="item in agendas.data" :key="item.id" :value="item.id">{{ formatDate(item.date) }} · {{ item.title }} · {{ item.venue_name }}</option></select></label>
+    </div><footer><button :disabled="schedule.processing">Tetapkan Jadwal</button></footer></form>
     <AdminDataTable :paginator="agendas" :filters="filters" item-label="agenda" search-placeholder="Cari agenda, cabor, atau venue…">
       <template #default="{ rows }"><table><thead><tr><th>Agenda</th><th>Waktu</th><th>Venue</th><th>Tipe</th><th>Status</th><th></th></tr></thead><tbody>
         <tr v-for="row in rows" :key="row.id"><td><div class="primary"><strong>{{ row.title }}</strong><small>{{ row.sport_name || 'Umum' }}</small></div></td>
-          <td>{{ row.date }}<br><small>{{ row.start_time.slice(0,5) }}–{{ row.end_time.slice(0,5) }}</small></td><td>{{ row.venue_name }}</td><td>{{ typeLabel[row.type] }}</td>
+          <td>{{ formatDate(row.date) }}<br><small>{{ row.start_time.slice(0,5) }}–{{ row.end_time.slice(0,5) }}</small></td><td>{{ row.venue_name }}</td><td>{{ typeLabel[row.type] }}</td>
           <td><span :class="['badge', row.published_at ? 'published' : 'draft']">{{ row.published_at ? 'Terpublikasi' : 'Draft' }}</span></td>
           <td><button v-if="!row.published_at" class="outline" @click="publish(row.id)">Publikasikan</button></td></tr>
       </tbody></table></template>
@@ -45,5 +52,5 @@ const typeLabel = { sport: 'Pertandingan', exhibition: 'Eksibisi', official: 'Ac
 </template>
 
 <style scoped>
-.page-head{padding:8px 0 24px}.forms{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}.card{overflow:hidden;background:#fff;border:1px solid #d9e3e9;border-radius:14px;box-shadow:0 8px 24px rgba(25,53,76,.06)}header{display:grid;gap:5px;padding:18px 20px;background:#fbfcfd;border-bottom:1px solid #e2e9ed}header b{font-size:18px}header span,small{color:#71808b;font-size:12px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:13px;padding:20px}.wide{grid-column:1/-1}label{display:grid;gap:6px;color:#60717f;font-size:11px;font-weight:750}input,select,textarea{min-height:42px;padding:10px 12px;border:1px solid #cbd8df;border-radius:8px;font:inherit}textarea{min-height:64px;resize:vertical}footer{padding:0 20px 20px}button{min-height:40px;padding:9px 14px;color:#fff;background:#1946a3;border:0;border-radius:8px;font-weight:800;cursor:pointer}.outline{color:#1946a3;background:#fff;border:1px solid #bfd0dc}.primary{display:grid;gap:4px}.badge{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:800}.published{color:#087365;background:#eefaf6}.draft{color:#536571;background:#edf2f5}.error{margin:0;color:#a1432e;font-size:11px;font-weight:700}@media(max-width:900px){.forms{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.wide{grid-column:auto}}
+.page-head{padding:8px 0 24px}.forms{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}.card{overflow:hidden;background:#fff;border:1px solid #d9e3e9;border-radius:14px;box-shadow:0 8px 24px rgba(25,53,76,.06)}.schedule{margin-bottom:24px}header{display:grid;gap:5px;padding:18px 20px;background:#fbfcfd;border-bottom:1px solid #e2e9ed}header b{font-size:18px}header span,small{color:#71808b;font-size:12px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:13px;padding:20px}.wide{grid-column:1/-1}label{display:grid;gap:6px;color:#60717f;font-size:11px;font-weight:750}input,select,textarea{min-height:42px;padding:10px 12px;border:1px solid #cbd8df;border-radius:8px;font:inherit}textarea{min-height:64px;resize:vertical}footer{padding:0 20px 20px}button{min-height:40px;padding:9px 14px;color:#fff;background:#1946a3;border:0;border-radius:8px;font-weight:800;cursor:pointer}.outline{color:#1946a3;background:#fff;border:1px solid #bfd0dc}.primary{display:grid;gap:4px}.badge{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:800}.published{color:#087365;background:#eefaf6}.draft{color:#536571;background:#edf2f5}.error{margin:0;color:#a1432e;font-size:11px;font-weight:700}@media(max-width:900px){.forms{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.wide{grid-column:auto}}
 </style>

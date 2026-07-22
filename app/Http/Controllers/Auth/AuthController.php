@@ -36,6 +36,7 @@ class AuthController extends Controller
             $user->isSuperAdmin() => redirect()->intended(route('admin.dashboard')),
             $user->isPdAdmin() && ! $user->isVerified() => redirect()->route('registration.status'),
             $user->isPdAdmin() => redirect()->intended(route('pd.dashboard')),
+            in_array($user->role, ['scorekeeper', 'sport_coordinator'], true) => redirect()->intended(route('staff.matches.index')),
             default => redirect()->intended('/'),
         };
     }

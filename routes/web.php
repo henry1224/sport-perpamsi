@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\CommitteeRegistrationController;
 use App\Http\Controllers\Pd\PdDashboardController;
 use App\Http\Controllers\Pd\PdEntryController;
 use App\Http\Controllers\Public\PublicPageController;
+use App\Http\Controllers\Staff\AssignedMatchController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(PublicPageController::class)->group(function () {
@@ -44,6 +45,11 @@ Route::middleware(['auth', 'pd.admin'])->prefix('pd')->name('pd.')->group(functi
     Route::delete('/entries/{entry}', [PdEntryController::class, 'destroy'])->name('entries.destroy');
 });
 
+Route::middleware(['auth', 'committee.staff'])->prefix('panitia')->name('staff.')->group(function () {
+    Route::get('/pertandingan', [AssignedMatchController::class, 'index'])->name('matches.index');
+    Route::get('/pertandingan/{match}', [AssignedMatchController::class, 'show'])->name('matches.show');
+});
+
 Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
     Route::get('/skor', [ScoreController::class, 'index'])->name('scores.index');
@@ -70,6 +76,7 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/agendas', [VenueAgendaController::class, 'storeAgenda'])->name('agendas.store');
     Route::put('/agendas/{agenda}', [VenueAgendaController::class, 'updateAgenda'])->name('agendas.update');
     Route::post('/agendas/{agenda}/publish', [VenueAgendaController::class, 'publish'])->name('agendas.publish');
+    Route::post('/matches/{match}/schedule', [VenueAgendaController::class, 'scheduleMatch'])->name('matches.schedule');
     Route::get('/master-data', [MasterDataController::class, 'index'])->name('master-data.index');
     Route::post('/master-data/sports', [MasterDataController::class, 'storeSport'])->name('master-data.sports.store');
     Route::put('/master-data/sports/{sport}', [MasterDataController::class, 'updateSport'])->name('master-data.sports.update');

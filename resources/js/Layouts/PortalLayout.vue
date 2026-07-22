@@ -8,9 +8,12 @@ const open = ref(false);
 const user = computed(() => page.props.auth?.user);
 const flash = computed(() => page.props.flash || {});
 const isAdmin = computed(() => props.portal === 'admin');
+const isStaff = computed(() => props.portal === 'staff');
 const identity = computed(() => isAdmin.value
   ? { eyebrow: 'Pusat Kendali', title: 'Admin PORPAMNAS', subtitle: 'Seluruh data event dan operasional' }
-  : { eyebrow: 'Portal Delegasi', title: user.value?.committee?.name || 'Pengurus Daerah', subtitle: 'Registrasi atlet dan cabang olahraga' });
+  : isStaff.value
+    ? { eyebrow: 'Portal Panitia', title: 'Operasional Pertandingan', subtitle: 'Tugas sesuai cabor dan venue' }
+    : { eyebrow: 'Portal Delegasi', title: user.value?.committee?.name || 'Pengurus Daerah', subtitle: 'Registrasi atlet dan cabang olahraga' });
 
 const menuGroups = computed(() => isAdmin.value ? [
   { label: 'Umum', items: [
@@ -32,6 +35,8 @@ const menuGroups = computed(() => isAdmin.value ? [
   { label: 'Pelaporan', items: [
     { label: 'Laporan & Audit', icon: 'report', planned: true },
   ] },
+] : isStaff.value ? [
+  { label: 'Operasional', items: [{ label: 'Pertandingan Tugas', href: '/panitia/pertandingan', icon: 'scoreboard' }] },
 ] : [
   { label: 'Umum', items: [
     { label: 'Dashboard', href: '/pd/dashboard', icon: 'dashboard' },
@@ -54,6 +59,7 @@ const logout = () => router.post('/logout');
       <symbol id="portal-icon-building" viewBox="0 0 24 24"><path d="M4 21V3h11v5h5v13h-7v-4h-2v4H4Zm3-14h2V5H7v2Zm4 0h2V5h-2v2ZM7 11h2V9H7v2Zm4 0h2V9h-2v2Zm5 1h2v-2h-2v2Zm0 4h2v-2h-2v2Z" /></symbol>
       <symbol id="portal-icon-users" viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm6-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-3c0-3 3.1-5 7-5s7 2 7 5v3H2Zm15.5 0v-3c0-1.4-.5-2.7-1.5-3.7 3.3.2 6 1.9 6 4.7v2h-4.5Z" /></symbol>
       <symbol id="portal-icon-shield" viewBox="0 0 24 24"><path d="m12 2 8 3v6c0 5.1-3.4 9.8-8 11-4.6-1.2-8-5.9-8-11V5l8-3Zm0 4.2L8 7.7V11c0 3.2 1.9 6.3 4 7.4 2.1-1.1 4-4.2 4-7.4V7.7l-4-1.5Z" /></symbol>
+      <symbol id="portal-icon-calendar" viewBox="0 0 24 24"><path d="M7 2h2v3h6V2h2v3h3v17H4V5h3V2Zm11 9H6v9h12v-9ZM6 7v2h12V7H6Zm2 6h3v3H8v-3Zm5 0h3v3h-3v-3Z" /></symbol>
       <symbol id="portal-icon-scoreboard" viewBox="0 0 24 24"><path d="M3 4h18v16H3V4Zm3 3v3h4V7H6Zm8 0v3h4V7h-4ZM6 14v3h4v-3H6Zm8 0v3h4v-3h-4Zm-2-7h1v10h-1V7Z" /></symbol>
       <symbol id="portal-icon-report" viewBox="0 0 24 24"><path d="M5 2h10l4 4v16H5V2Zm9 2v4h4l-4-4ZM8 12h8v-2H8v2Zm0 4h8v-2H8v2Zm0 4h6v-2H8v2Z" /></symbol>
       <symbol id="portal-icon-clipboard" viewBox="0 0 24 24"><path d="M9 3h6l1 2h3v17H5V5h3l1-2Zm1.2 2-.5 1h4.6l-.5-1h-3.6ZM8 10v2h8v-2H8Zm0 4v2h8v-2H8Zm0 4v2h5v-2H8Z" /></symbol>
@@ -98,7 +104,7 @@ const logout = () => router.post('/logout');
       <header class="portal-topbar">
         <button type="button" class="menu-button" aria-label="Buka menu" @click="open = true">Menu</button>
         <div>
-          <span>{{ isAdmin ? 'Administrator' : 'Pengurus Daerah' }}</span>
+          <span>{{ isAdmin ? 'Administrator' : isStaff ? 'Panitia' : 'Pengurus Daerah' }}</span>
           <strong>{{ user?.name }}</strong>
         </div>
       </header>

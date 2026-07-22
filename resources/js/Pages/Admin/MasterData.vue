@@ -3,6 +3,7 @@ import { router, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import PortalLayout from '../../Layouts/PortalLayout.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
+import { formatDateTime } from '../../lib/date';
 
 const props = defineProps({ sports: Array, categories: Array, regulations: Array, audits: Array });
 const tab = ref('sports');
@@ -51,7 +52,7 @@ const updateCategory = (category) => router.put(`/admin/master-data/categories/$
       <div class="table-card"><header><div><span>Riwayat Versi</span><h2>Regulasi Terbit</h2></div><b>{{ regulations.length }} versi</b></header><div class="table-scroll"><table><thead><tr><th>Regulasi</th><th>Versi</th><th>Status Dokumen</th></tr></thead><tbody><tr v-for="item in regulations" :key="item.id"><td><div class="regulation-title"><strong>{{ item.title }}</strong><small>{{ item.sport.name }}</small></div></td><td><span class="version-badge">v{{ item.version }}</span></td><td><a v-if="item.document_url" class="document-link" :href="item.document_url" target="_blank" rel="noopener">Buka dokumen <span>↗</span></a><span v-else class="muted">Belum tersedia</span></td></tr></tbody></table></div></div>
     </section>
 
-    <section v-else class="table-card audit-card"><header><div><span>Jejak Perubahan</span><h2>Audit Master Data</h2></div><b>{{ audits.length }} aktivitas terbaru</b></header><div class="table-scroll"><table><thead><tr><th>Entitas</th><th>Aksi</th><th>Waktu</th></tr></thead><tbody><tr v-for="item in audits" :key="item.id"><td><strong>{{ item.entity_type.replaceAll('_', ' ') }}</strong><small>ID #{{ item.entity_id }}</small></td><td><span class="audit-badge">{{ item.action }}</span></td><td class="muted">{{ item.created_at }}</td></tr></tbody></table></div></section>
+    <section v-else class="table-card audit-card"><header><div><span>Jejak Perubahan</span><h2>Audit Master Data</h2></div><b>{{ audits.length }} aktivitas terbaru</b></header><div class="table-scroll"><table><thead><tr><th>Entitas</th><th>Aksi</th><th>Waktu</th></tr></thead><tbody><tr v-for="item in audits" :key="item.id"><td><strong>{{ item.entity_type.replaceAll('_', ' ') }}</strong><small>ID #{{ item.entity_id }}</small></td><td><span class="audit-badge">{{ item.action }}</span></td><td class="muted">{{ formatDateTime(item.created_at) }}</td></tr></tbody></table></div></section>
   </PortalLayout>
 </template>
 

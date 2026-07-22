@@ -64,8 +64,8 @@ Exit: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy terverifikas
 - [-] Venue memiliki detail, kontak, peta, fasilitas, status aktif, dan form tambah; edit/nonaktif UI masih dilanjutkan.
 - [-] Agenda memiliki kompetisi, publikasi, dan validasi konflik waktu; edit jadwal dan audit revisi masih dilanjutkan.
 - [ ] Kamus label status Indonesia.
-- [-] Akun panitia dan assignment per cabor/venue selesai; pembatasan akses per match menunggu jadwal pertandingan terhubung ke venue.
-- [ ] Policy dan menu berbasis scope.
+- [x] Akun panitia dan assignment per cabor/venue terhubung ke jadwal pertandingan.
+- [x] Policy dan menu panitia berbasis scope cabor/venue dengan deny-default.
 
 Exit: CRUD, seed ulang, audit, dan restrict delete lulus.
 

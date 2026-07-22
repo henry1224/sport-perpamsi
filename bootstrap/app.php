@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsurePdAdmin;
+use App\Http\Middleware\EnsureCommitteeStaff;
 use App\Http\Middleware\EnsureSuperAdmin;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'pd.admin' => EnsurePdAdmin::class,
             'super.admin' => EnsureSuperAdmin::class,
+            'committee.staff' => EnsureCommitteeStaff::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

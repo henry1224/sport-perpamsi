@@ -7,6 +7,7 @@
 - `event_agendas.tournament_event_id`: kompetisi terkait, nullable untuk acara umum.
 - `event_agendas.published_at`: agenda hanya tampil publik setelah terisi.
 - Konflik agenda ditolak bila tanggal, venue, dan rentang waktunya beririsan.
+- `matches.event_agenda_id`, `venue_id`, `scheduled_at`: sumber jadwal dan scope akses panitia.
 
 ## RegionalCommittee / PD PERPAMSI
 
