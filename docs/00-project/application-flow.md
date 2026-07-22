@@ -123,3 +123,7 @@ Status: `Partial` — halaman publik tersedia dan identitas kompetisi memakai PD
 4. Assignment panitia dan policy.
 5. Agenda, bracket lock, skor, audit, laporan.
 6. UAT, load test, backup/restore, go-live.
+
+## Alur Teknis Cabor Terpadu
+
+Admin menetapkan master cabor, kategori, kuota, dan peraturan. Publikasi kompetisi membuat snapshot aturan; PD hanya mengirim pemain ke kompetisi terpublikasi; Admin memverifikasi; panitia bekerja sesuai assignment cabor/venue; hasil final mengalir ke publik. Informasi teknis publik mengikuti `docs/03-product/sport-technical-guide-standard.md`.

@@ -7,14 +7,16 @@ Dokumen ini menjadi sumber kebenaran hubungan Admin, regulasi kompetisi, kategor
 1. Master cabor dan kategori tidak otomatis menjadi pilihan Pengurus Daerah.
 2. Admin membuat satu `tournament_event` sebagai paket registrasi resmi untuk satu cabor dan kategori.
 3. Admin menetapkan format, regulasi, jumlah pemain, dan periode registrasi sebelum publikasi.
-4. Publikasi menyimpan snapshot regulasi pada kompetisi.
-5. Portal PD hanya menampilkan kompetisi dengan `registration_published_at` terisi.
-6. Submit hanya tersedia saat status `registration_open` dan berada dalam periode buka/tutup.
-7. Perubahan master kategori setelah publikasi tidak mengubah snapshot kompetisi.
-8. Setelah entry pertama masuk, snapshot tidak boleh diedit langsung.
-9. Admin wajib memilih versi regulasi dari cabor yang sama dan memeriksa preview paket sebelum publish.
-10. Publikasi hanya dapat ditarik selama belum ada entry.
-11. Publish, publish ulang, tutup, dan tarik publikasi tercatat audit.
+4. `sports.default_format` hanya menjadi Format Bawaan saat kompetisi dibuat; `tournament_events.format` menjadi Format Kompetisi aktual.
+5. Format Kompetisi dapat diubah selama draft dan dikunci setelah publikasi.
+6. Publikasi menyimpan snapshot regulasi pada kompetisi.
+7. Portal PD hanya menampilkan kompetisi dengan `registration_published_at` terisi.
+8. Submit hanya tersedia saat status `registration_open` dan berada dalam periode buka/tutup.
+9. Perubahan master kategori atau Format Bawaan setelah publikasi tidak mengubah snapshot kompetisi.
+10. Setelah entry pertama masuk, snapshot tidak boleh diedit langsung.
+11. Admin wajib memilih versi regulasi dari cabor yang sama dan memeriksa preview paket sebelum publish.
+12. Publikasi hanya dapat ditarik selama belum ada entry.
+13. Publish, publish ulang, tutup, dan tarik publikasi tercatat audit.
 
 ## Status Kompetisi
 

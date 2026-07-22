@@ -23,6 +23,8 @@
 - [x] Admin dapat mengelola cabor dan kategori tanpa menghapus histori.
 - [x] Admin dapat membuat versi peraturan dan menetapkannya ke kompetisi melalui preview publikasi.
 - [x] Admin dapat mempublikasikan dan menutup registrasi kompetisi.
+- [x] Admin dapat mengubah Format Kompetisi saat draft dan tidak dapat mengubahnya setelah publikasi.
+- [ ] Admin memverifikasi kategori, jumlah pemain, dan sistem pertandingan terhadap panduan teknis slide 5-23.
 - [x] Admin dapat preview, menarik publikasi sebelum ada entry, dan melihat audit publikasi.
 - [-] Admin dapat menambah venue beserta detail dan status aktif; edit/nonaktif UI masih dilanjutkan.
 - [-] Admin dapat menambah dan mempublikasikan agenda tanpa bentrok venue/waktu; edit dan audit revisi masih dilanjutkan.

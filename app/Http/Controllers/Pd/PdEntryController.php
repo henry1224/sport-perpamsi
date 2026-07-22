@@ -54,7 +54,7 @@ class PdEntryController extends Controller
                 'scoring_type' => $rules['scoring_type'] ?? $event->category->scoring_type,
                 'bracket_enabled' => (bool) $event->category->bracket_enabled,
                 'min_members' => $rules['min_members'] ?? $event->category->min_members,
-                'max_members' => $rules['max_members'] ?? $event->category->max_members,
+                'max_members' => array_key_exists('max_members', $rules) ? $rules['max_members'] : $event->category->max_members,
             ] : null,
             'entries' => $entries,
         ]);

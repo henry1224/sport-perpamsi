@@ -27,6 +27,9 @@
 - Klasemen Medali: peringkat medali berdasarkan PD PERPAMSI.
 - Audit Log: catatan append-only atas perubahan data penting.
 - Public Page: halaman tanpa login untuk penonton, peserta, media, dan stakeholder.
+- Kuota Pemain: batas jumlah `entry_members`; maksimum boleh kosong jika panduan tidak membatasi.
+- Official: manajer, pelatih, atau pendamping kontingen; bukan pemain dan tidak masuk `entry_members`.
+- Snapshot Registrasi: salinan kategori, kuota, format, dan versi peraturan saat kompetisi dipublikasikan.
 
 ## Status Tampilan Indonesia
 

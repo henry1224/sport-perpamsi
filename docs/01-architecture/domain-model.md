@@ -16,7 +16,7 @@ Aturan: satu provinsi satu PD PERPAMSI; entry dan pemain tidak bergantung pada P
 
 Entities: Sport, SportCategory, SportRule, TournamentEvent, Venue, EventAgenda.
 
-Aturan: peraturan berversi, venue tidak bentrok, master terpakai tidak dihapus.
+Aturan: peraturan berversi, `max_members` dapat null, publikasi membuat snapshot aturan, venue tidak bentrok, master terpakai tidak dihapus.
 
 ## Tournament Operations
 
@@ -37,3 +37,4 @@ Aturan: public hanya membaca data terbit/final dan memakai identitas PD PERPAMSI
 3. Import memakai preview, validasi, transaksi, dan rollback.
 4. Reporting tidak mengubah source data.
 5. Risiko kritis/tinggi harus memiliki kontrol dan test sebelum phase selesai.
+6. Informasi teknis publik menggabungkan master aktif dan baseline panduan; transaksi registrasi tetap membaca snapshot kompetisi.

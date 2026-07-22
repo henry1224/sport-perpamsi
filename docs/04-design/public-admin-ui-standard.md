@@ -129,3 +129,5 @@ Dilarang:
 - [ ] Data panjang pakai ellipsis + title/detail.
 - [ ] Mobile tidak rusak total.
 - [ ] Tidak ada warna/shape baru tanpa alasan.
+- [ ] Kuota null tampil sebagai `Tidak dibatasi` di Admin dan `Minimal {n} pemain` di publik/PD.
+- [ ] Informasi teknis cabor mudah dipindai dan ikon hanya tampil bila aset tersedia.

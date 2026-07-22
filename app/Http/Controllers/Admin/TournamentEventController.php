@@ -23,7 +23,7 @@ class TournamentEventController extends Controller
 
         return Inertia::render('Admin/Events', [
             'events' => TournamentEvent::query()
-                ->with(['sport:id,name', 'sport.regulations' => fn ($query) => $query->where('is_active', true)->latest('version'), 'category:id,sport_id,name,competition_type,scoring_type,min_members,max_members,is_active', 'regulation:id,sport_id,version,title'])
+                ->with(['sport:id,name,default_format', 'sport.regulations' => fn ($query) => $query->where('is_active', true)->latest('version'), 'category:id,sport_id,name,competition_type,scoring_type,min_members,max_members,is_active', 'regulation:id,sport_id,version,title'])
                 ->withCount('entries')
                 ->when($status, fn ($query) => $query->where('status', $status))
                 ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
@@ -39,6 +39,7 @@ class TournamentEventController extends Controller
                     'code' => $event->code,
                     'name' => $event->name,
                     'sport' => $event->sport?->name,
+                    'default_format' => $event->sport?->default_format,
                     'category' => $event->category?->name,
                     'format' => $event->format,
                     'status' => $event->status,
@@ -106,6 +107,18 @@ class TournamentEventController extends Controller
         });
 
         return back()->with('success', 'Registrasi kompetisi dipublikasikan.');
+    }
+
+    public function updateFormat(Request $request, TournamentEvent $event): RedirectResponse
+    {
+        if ($event->registration_published_at || $event->entries()->exists()) {
+            throw ValidationException::withMessages(['format' => 'Format kompetisi terkunci setelah dipublikasikan atau memiliki peserta.']);
+        }
+
+        $data = $request->validate(['format' => ['required', 'string', 'max:60']]);
+        $event->update($data);
+
+        return back()->with('success', 'Format kompetisi diperbarui.');
     }
 
     public function close(Request $request, TournamentEvent $event): RedirectResponse

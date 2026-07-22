@@ -51,3 +51,9 @@
 - Confirmation dialog untuk tindakan berisiko.
 - Audit/reason field untuk penolakan, revisi, dan finalisasi.
 - Empty, loading, disabled, dan permission-denied state.
+## Detail Cabor Publik
+
+- Header cabor dan ikon jika aset tersedia.
+- Jadwal serta venue.
+- Kategori dan label kuota: angka pasti, rentang, atau `Minimal {n} pemain`.
+- Sistem pertandingan, syarat peserta, official, biaya, format, dan slide sumber.

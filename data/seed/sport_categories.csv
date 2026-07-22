@@ -1,30 +1,23 @@
-sport_code,code,name,competition_type,scoring_type,bracket_enabled,sort_order
-badminton,mens-single,Tunggal Putra,individual,games_points,1,10
-badminton,womens-single,Tunggal Putri,individual,games_points,1,20
-badminton,mens-double,Ganda Putra,doubles,games_points,1,30
-badminton,womens-double,Ganda Putri,doubles,games_points,1,40
-badminton,mixed-double,Ganda Campuran,doubles,games_points,1,50
-badminton,mens-team,Beregu Putra,team,games_points,1,60
-badminton,womens-team,Beregu Putri,team,games_points,1,70
-table-tennis,mens-single,Tunggal Putra,individual,games_points,1,10
-table-tennis,womens-single,Tunggal Putri,individual,games_points,1,20
-table-tennis,mens-double,Ganda Putra,doubles,games_points,1,30
-table-tennis,womens-double,Ganda Putri,doubles,games_points,1,40
-table-tennis,mixed-double,Ganda Campuran,doubles,games_points,1,50
-table-tennis,team,Beregu,team,games_points,1,60
-tennis,mens-single,Tunggal Putra,individual,sets_games,1,10
-tennis,womens-single,Tunggal Putri,individual,sets_games,1,20
-tennis,mens-double,Ganda Putra,doubles,sets_games,1,30
-tennis,womens-double,Ganda Putri,doubles,sets_games,1,40
-tennis,mixed-double,Ganda Campuran,doubles,sets_games,1,50
-padel,mens-double,Ganda Putra,doubles,sets_games,1,10
-padel,womens-double,Ganda Putri,doubles,sets_games,1,20
-padel,mixed-double,Ganda Campuran,doubles,sets_games,1,30
-volleyball,mens-team,Putra,team,set_points,1,10
-volleyball,womens-team,Putri,team,set_points,1,20
-mini-football,open,Umum,team,goals,1,10
-golf,individual,Individual,individual,strokes,0,10
-golf,team,Team,team,strokes,0,20
-vocal,solo,Solo,individual,judge_score,0,10
-vocal,duet,Duet,doubles,judge_score,0,20
-vocal,group,Grup,team,judge_score,0,30
+sport_code,code,name,competition_type,scoring_type,min_members,max_members,bracket_enabled,sort_order
+badminton,mens-single,Tunggal Putra,individual,rally_point_21_best_of_3,1,1,1,10
+badminton,womens-single,Tunggal Putri,individual,rally_point_21_best_of_3,1,1,1,20
+badminton,mens-double,Ganda Putra,doubles,rally_point_21_best_of_3,2,2,1,30
+badminton,womens-double,Ganda Putri,doubles,rally_point_21_best_of_3,2,2,1,40
+badminton,mixed-double,Ganda Campuran,doubles,rally_point_21_best_of_3,2,2,1,50
+badminton,veteran-u45,Ganda Veteran U45,doubles,rally_point_21_best_of_3,2,2,1,60
+chess,individual-fast,Perorangan Cepat,individual,swiss_rapid_10_minutes,2,2,0,10
+chess,team-fast,Beregu Cepat,team,swiss_rapid_15_minutes,3,3,0,20
+tennis,mens-team-open,Beregu Putra Bebas Usia,team,sets_games,6,6,1,10
+tennis,mens-team-veteran-40,Beregu Putra Veteran KU 40 Tahun,team,sets_games,6,6,1,20
+table-tennis,mens-single,Tunggal Putra,individual,games_points,1,1,1,10
+table-tennis,womens-single,Tunggal Putri,individual,games_points,1,1,1,20
+table-tennis,mens-double,Ganda Putra,doubles,games_points,2,2,1,30
+table-tennis,womens-double,Ganda Putri,doubles,games_points,2,2,1,40
+table-tennis,mixed-double,Ganda Campuran,doubles,games_points,2,2,1,50
+mini-football,open,Putra,team,goals_2x25_minutes,15,15,1,10
+volleyball,mens-team,Putra,team,set_points,12,12,1,10
+vocal,mens-solo,Solo Putra,individual,judge_score,1,1,0,10
+vocal,womens-solo,Solo Putri,individual,judge_score,1,1,0,20
+golf,individual,Individual,individual,strokes,1,,0,10
+padel,executive,Eksibisi Eksekutif,team,fun_games,4,4,0,10
+padel,achievement,Eksibisi Prestasi,team,fun_games,4,4,0,20

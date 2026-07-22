@@ -74,3 +74,4 @@ Agenda khusus seminar NIWC mengikuti [seminar-standard.md](./seminar-standard.md
 - Mini Football memakai dua sesi per hari.
 - Ladies Program memakai dua venue pada jam sama.
 - Jika venue/jam berubah, agenda disimpan sebagai revisi dan public menampilkan data terbaru.
+- Detail teknis cabor berasal dari `sport-technical-guide-standard.md`; agenda hanya menjadi sumber waktu dan lokasi operasional terbaru.

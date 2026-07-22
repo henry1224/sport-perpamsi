@@ -63,6 +63,7 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/committee-applications/{application}/revision', [CommitteeApplicationController::class, 'revision'])->name('committee-applications.revision');
     Route::post('/committee-applications/{application}/reject', [CommitteeApplicationController::class, 'reject'])->name('committee-applications.reject');
     Route::get('/events', [TournamentEventController::class, 'index'])->name('events.index');
+    Route::put('/events/{event:code}/format', [TournamentEventController::class, 'updateFormat'])->name('events.format.update');
     Route::post('/events/{event:code}/publish', [TournamentEventController::class, 'publish'])->name('events.publish');
     Route::post('/events/{event:code}/close', [TournamentEventController::class, 'close'])->name('events.close');
     Route::post('/events/{event:code}/unpublish', [TournamentEventController::class, 'unpublish'])->name('events.unpublish');
@@ -80,6 +81,7 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::get('/master-data', [MasterDataController::class, 'index'])->name('master-data.index');
     Route::post('/master-data/sports', [MasterDataController::class, 'storeSport'])->name('master-data.sports.store');
     Route::put('/master-data/sports/{sport}', [MasterDataController::class, 'updateSport'])->name('master-data.sports.update');
+    Route::delete('/master-data/sports/{sport}', [MasterDataController::class, 'destroySport'])->name('master-data.sports.destroy');
     Route::post('/master-data/categories', [MasterDataController::class, 'storeCategory'])->name('master-data.categories.store');
     Route::put('/master-data/categories/{category}', [MasterDataController::class, 'updateCategory'])->name('master-data.categories.update');
     Route::post('/master-data/regulations', [MasterDataController::class, 'storeRegulation'])->name('master-data.regulations.store');

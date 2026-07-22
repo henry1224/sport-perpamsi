@@ -49,9 +49,13 @@ class PdDashboardController extends Controller
                     'sport' => $event->sport?->name,
                     'category' => $rules['category_name'] ?? $event->category?->name,
                     'competition_type' => $rules['competition_type'] ?? $event->category?->competition_type,
-                    'member_limit' => ($rules['min_members'] ?? null) !== null
-                        ? $rules['min_members'].'–'.$rules['max_members'].' pemain'
-                        : null,
+                    'member_limit' => ($rules['min_members'] ?? null) === null
+                        ? null
+                        : (($rules['max_members'] ?? null) === null
+                            ? 'Minimal '.$rules['min_members'].' pemain'
+                            : ($rules['min_members'] === $rules['max_members']
+                                ? $rules['min_members'].' pemain'
+                                : $rules['min_members'].'–'.$rules['max_members'].' pemain')),
                     'format' => $rules['format'] ?? $event->format,
                     'status' => $event->status,
                     'registration_open' => $event->registrationIsOpen(),

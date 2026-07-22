@@ -19,7 +19,7 @@ class MasterDataController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/MasterData', [
-            'sports' => Sport::query()->withCount(['categories', 'events'])->orderBy('name')->get(),
+            'sports' => Sport::query()->withCount(['categories', 'events', 'regulations'])->orderBy('name')->get(),
             'categories' => SportCategory::query()->with('sport:id,name')->orderBy('sport_id')->orderBy('sort_order')->get(),
             'regulations' => SportRegulation::query()->with('sport:id,name')->latest('id')->get(),
             'audits' => DB::table('master_data_audits')->latest()->limit(20)->get(),
@@ -32,7 +32,7 @@ class MasterDataController extends Controller
             'code' => ['required', 'string', 'max:30', 'alpha_dash:ascii', 'unique:sports,code'],
             'name' => ['required', 'string', 'max:100'],
             'type' => ['required', Rule::in(['sport', 'seminar'])],
-            'default_format' => ['nullable', Rule::in(['knockout', 'group', 'round_robin', 'ranking'])],
+            'default_format' => ['nullable', 'string', 'max:60'],
             'score_template' => ['nullable', 'string', 'max:100'],
         ]);
 
@@ -48,7 +48,7 @@ class MasterDataController extends Controller
             'code' => ['required', 'string', 'max:30', 'alpha_dash:ascii', Rule::unique('sports', 'code')->ignore($sport)],
             'name' => ['required', 'string', 'max:100'],
             'type' => ['required', Rule::in(['sport', 'seminar'])],
-            'default_format' => ['nullable', Rule::in(['knockout', 'group', 'round_robin', 'ranking'])],
+            'default_format' => ['nullable', 'string', 'max:60'],
             'score_template' => ['nullable', 'string', 'max:100'],
             'is_active' => ['required', 'boolean'],
         ]);
@@ -57,6 +57,21 @@ class MasterDataController extends Controller
         $this->audit($request, 'sport', $sport->id, 'updated', $before, $sport->fresh()->toArray());
 
         return back()->with('success', 'Cabor berhasil diperbarui.');
+    }
+
+    public function destroySport(Request $request, Sport $sport): RedirectResponse
+    {
+        if ($sport->categories()->exists() || $sport->regulations()->exists() || $sport->events()->exists()) {
+            return back()->with('error', 'Cabor tidak dapat dihapus karena sudah memiliki kategori, regulasi, atau kompetisi.');
+        }
+
+        DB::transaction(function () use ($request, $sport) {
+            $before = $sport->toArray();
+            $this->audit($request, 'sport', $sport->id, 'deleted', $before, []);
+            $sport->delete();
+        });
+
+        return back()->with('success', 'Cabor berhasil dihapus.');
     }
 
     public function storeCategory(Request $request): RedirectResponse
@@ -100,7 +115,7 @@ class MasterDataController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'competition_type' => ['required', Rule::in(['single', 'doubles', 'team'])],
             'min_members' => ['required', 'integer', 'min:1'],
-            'max_members' => ['required', 'integer', 'gte:min_members', 'max:100'],
+            'max_members' => ['nullable', 'integer', 'gte:min_members', 'max:100'],
             'scoring_type' => ['required', 'string', 'max:50'],
             'bracket_enabled' => ['required', 'boolean'],
             'sort_order' => ['required', 'integer', 'min:0'],

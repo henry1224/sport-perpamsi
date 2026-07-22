@@ -24,20 +24,14 @@ class TournamentDomainSeeder extends Seeder
             if (! $sport) {
                 continue;
             }
-            [$minMembers, $maxMembers] = match ($row['competition_type']) {
-                'doubles' => [2, 2],
-                'team' => [5, 20],
-                default => [1, 1],
-            };
-
             DB::table('sport_categories')->upsert([[
                 'public_id' => (string) Str::uuid(),
                 'sport_id' => $sport->id,
                 'code' => $row['code'],
                 'name' => $row['name'],
                 'competition_type' => $row['competition_type'],
-                'min_members' => $minMembers,
-                'max_members' => $maxMembers,
+                'min_members' => (int) $row['min_members'],
+                'max_members' => $row['max_members'] === '' ? null : (int) $row['max_members'],
                 'scoring_type' => $row['scoring_type'],
                 'bracket_enabled' => (bool) $row['bracket_enabled'],
                 'sort_order' => (int) $row['sort_order'],
@@ -66,7 +60,7 @@ class TournamentDomainSeeder extends Seeder
     private function seedTournamentEvent(object $sport, ?object $category, object $regionalCommittees, object $now): void
     {
         $eventCode = $category ? $sport->code.'-'.$category->code : $sport->code;
-        $format = $category && ! $category->bracket_enabled ? 'ranking' : ($sport->default_format ?: 'knockout');
+        $format = $sport->default_format ?: 'knockout';
         $entriesCount = $category && $category->bracket_enabled ? min(64, $regionalCommittees->count()) : min(16, $regionalCommittees->count());
         $bracketSize = $category && $category->bracket_enabled ? 2 ** (int) ceil(log(max(2, $entriesCount), 2)) : null;
 

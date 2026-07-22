@@ -5,14 +5,33 @@
 | Kode | Nama | Tipe | Format Default | Struktur Skor Default |
 |---|---|---|---|
 | volleyball | Voli | Sport | Grup lalu knockout | Set menang, poin per set |
-| chess | Catur | Sport | Round robin atau Swiss | Match point/game point, tie-break |
-| badminton | Bulu tangkis | Sport | Grup lalu knockout | Game/set, poin per game |
+| chess | Catur | Sport | Swiss | Match point dan tie-break Swiss |
+| badminton | Bulu tangkis | Sport | Grup atau sistem gugur, mengikuti jumlah peserta | Rally point 21, best of 3 |
 | table-tennis | Tenis meja | Sport | Grup lalu knockout | Game/set, poin per game |
-| tennis | Tenis lapangan | Sport | Knockout atau grup lalu knockout | Set, game, tie-break opsional |
+| tennis | Tenis lapangan | Sport | Grup lalu knockout | Set, game, tie-break opsional |
 | golf | Golf | Eksibisi | Score ranking | Stroke/score |
-| padel | Padel | Eksibisi | Knockout atau eksibisi | Set, game, tie-break opsional |
-| vocal | Vokal | Eksibisi | Score ranking | Nilai juri |
-| mini-football | Mini Football | Sport | Grup lalu knockout | Gol, babak 1-2, penalti opsional |
+| padel | Padel | Eksibisi | Fun Games | Fun Games |
+| vocal | Vokal | Eksibisi | Sekali tampil lalu ranking | Nilai juri |
+| mini-football | Mini Football | Sport | Grup lalu knockout | Gol, durasi 2 x 25 menit |
+
+## Kategori Resmi Panduan Teknis
+
+| Cabor | Kategori | Roster PD | Sistem pertandingan |
+|---|---|---:|---|
+| Bulu Tangkis | Tunggal Putra, Tunggal Putri | 1 per kategori | Rally point; grup atau gugur; 21 poin best of 3 |
+| Bulu Tangkis | Ganda Putra, Ganda Putri, Ganda Campuran, Ganda Veteran U45 | 2 per kategori | Rally point; grup atau gugur; 21 poin best of 3 |
+| Catur | Perorangan Cepat | 2 | Swiss, 10 menit tanpa increment, 5-7 babak |
+| Catur | Beregu Cepat | 3 | Swiss, 15 menit tanpa increment, 5 babak |
+| Tenis Lapangan | Beregu Putra Bebas Usia, Beregu Putra Veteran KU 40 | 6 per kategori | Setengah kompetisi lalu sistem gugur |
+| Tenis Meja | Tunggal Putra/Putri | 1 per kategori | Setengah kompetisi lalu sistem gugur |
+| Tenis Meja | Ganda Putra/Putri dan Ganda Campuran | 2 per kategori | Setengah kompetisi lalu sistem gugur |
+| Mini Football | Putra | 15 | Setengah kompetisi lalu sistem gugur; 2 x 25 menit |
+| Voli | Putra | 12 | Setengah kompetisi lalu sistem gugur |
+| Vokal | Solo Putra, Solo Putri | 1 per kategori | Sekali tampil; tiga pemenang per kategori |
+| Golf | Individual | 1 per entry | Score ranking; batas peserta PD belum dinyatakan pada slide 21 |
+| Padel | Eksibisi Eksekutif, Eksibisi Prestasi | 4 per kategori | Fun Games; dua pasangan per kategori |
+
+Sumber baseline: Panduan PORPAMNAS IX slide 5-23, diakses 22 Juli 2026. Official tidak dihitung sebagai `entry_members`.
 
 ## Prinsip Penambahan Cabor
 

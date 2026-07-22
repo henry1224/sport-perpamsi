@@ -92,11 +92,14 @@ Platform resmi PORPAMNAS untuk pendaftaran PD PERPAMSI, pemain, master lomba, pa
 - Agenda menolak bentrok venue.
 - Tidak ada kode status mentah pada UI.
 - Semua risiko kritis/tinggi memiliki kontrol dan bukti test/UAT.
+- Kategori tanpa batas maksimum menerima roster di atas minimum, sedangkan kategori berbatas tetap menolak kelebihan pemain.
+- Halaman Cabor publik menampilkan informasi teknis panduan slide 5–23 dan tidak menghitung official sebagai pemain.
 
 ## Dependency Dokumen
 
 - Data: `docs/02-data/delegation-standard.md`.
 - Alur: `docs/00-project/application-flow.md`.
 - Publikasi registrasi: `docs/03-product/registration-publication-standard.md`.
+- Informasi teknis cabor: `docs/03-product/sport-technical-guide-standard.md`.
 - Security: `docs/06-security/rbac-matrix.md` dan `risk-register.md`.
 - Test: `docs/08-testing/test-strategy.md` dan `uat-checklist.md`.
