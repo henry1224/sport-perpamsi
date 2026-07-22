@@ -63,19 +63,20 @@ Exit baseline: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy ter
 
 ## Phase 4B — Multi-Team Registration (Dependency Wajib)
 
-- [ ] `EventEntry` menjadi satu parent registrasi PD/kompetisi.
-- [ ] `EntryTeam` menjadi unit peserta seed, match, hasil, standing, dan medali.
-- [ ] Technical meeting menetapkan unit, `max_teams_per_pd`, dan batas anggota per team pada setiap kompetisi.
-- [ ] Snapshot publikasi menyimpan kuota team/member serta `avoid_same_pd_in_round=true`.
-- [ ] Label team dibentuk server dan nomor team immutable.
-- [ ] Verifikasi hybrid parent default + override team tersedia dan diaudit.
-- [ ] Perpindahan/substitusi pemain antar-team setelah verified dilarang total.
-- [ ] Entry/member/match legacy dibackfill ke team `#1` tanpa rebuild hasil lama.
-- [ ] Feature test, concurrency test, migration upgrade, risk control, dan UAT multi-team lulus.
+- [x] `EventEntry` menjadi satu parent registrasi PD/kompetisi.
+- [x] `EntryTeam` menjadi unit peserta pada registrasi, match, skor, dan eligibility bracket dengan fallback legacy.
+- [x] Technical meeting menetapkan `max_teams_per_pd` dan batas anggota per team saat publikasi.
+- [x] Snapshot publikasi menyimpan kuota team/member serta `avoid_same_pd_in_round=true`.
+- [x] Label team dibentuk server dan identitas/nomor team dipertahankan saat revisi.
+- [x] Verifikasi hybrid parent default + override team tersedia dan diaudit.
+- [x] Perpindahan/substitusi pemain antar-team setelah verified atau masuk match dilarang.
+- [x] Entry/member/match legacy dan hasil seed ulang dibackfill ke team `#1` tanpa rebuild hasil lama.
+- [x] Feature test, migration fresh/upgrade, boundary kuota, effective status, dan risk control otomatis lulus.
+- [ ] UAT manual multi-team dan review commit lulus.
 
 Exit: model participant konsisten dari registrasi sampai medali; seluruh team aktif efektif verified sebelum seed; tidak ada risiko kritis multi-team terbuka.
 
-Phase 4B adalah dependency minimum Phase 6. Phase 5 boleh menyelesaikan UAT venue/agenda, tetapi tidak boleh ditutup dan phase aktif tidak boleh maju sampai Phase 4B selesai atau pengecualian formal disetujui.
+Phase 4B selesai secara kode dan automated test. Phase 5 boleh ditutup setelah UAT manual multi-team, UAT venue/agenda, dan review commit lulus.
 
 ## Phase 5 — Venue, Agenda, dan Panitia
 

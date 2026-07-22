@@ -9,7 +9,7 @@ Tanggal audit: 22 Juli 2026. Scope hanya Phase 1–5; Phase 6–7 tetap ditunda 
 | 1 | Daftar PD → status pending → revisi/verifikasi/penolakan → aktivasi akun | `committee_applications`, audit, middleware, `CommitteeApplicationTest` | Lengkap |
 | 2 | Master cabor → kategori/kuota → regulasi berversi → audit | Master Admin, constraint, seeder, `MasterDataTest` | Lengkap |
 | 3 | Kompetisi draft → preview → snapshot → publish/close/unpublish | `registration_rules`, audit publikasi, `TournamentEventPublicationTest` | Lengkap |
-| 4 | Portal PD → draft roster → submit → verifikasi/revisi/tolak/batal | Baseline single-roster valid, tetapi belum mendukung parent `EventEntry` + multi `EntryTeam`, verifikasi hybrid, kuota team, dan roster immutable | Perlu rework Phase 4B |
+| 4/4B | Portal PD → parent entry → multi-team → submit → verifikasi parent/override → roster lock | `EntryTeam`, snapshot kuota, audit override, backfill/seed tim `#1`, `MultiTeamRegistrationTest` | Lengkap secara kode; UAT manual terbuka |
 | 5 | Venue → agenda → konflik → publish → jadwal match → scope panitia | assignment, policy deny-default, audit agenda, `VenueAgendaManagementTest`, `StaffMatchScopeTest` | Lengkap secara kode |
 
 ## Perbaikan Audit
@@ -18,6 +18,9 @@ Tanggal audit: 22 Juli 2026. Scope hanya Phase 1–5; Phase 6–7 tetap ditunda 
 - Update dan publikasi agenda mencatat before/after, aktor, alasan perubahan, dan waktu pada `event_agenda_audits`.
 - Label status Indonesia dipusatkan pada `resources/js/lib/status.js`.
 - Validasi agenda tetap menolak venue nonaktif, jam selesai sebelum mulai, dan irisan waktu.
+- Registrasi multi-team memakai satu parent per PD/kompetisi, label server, nomor stabil, dan identity hash pemain.
+- Match, skor, panitia, dan data publik membaca `EntryTeam` dengan fallback foreign key legacy selama masa transisi.
+- Query `eligibleTeams()` menjadi sumber tunggal precondition participant verified untuk bracket/seed Phase 6.
 
 ## Alur End-to-End
 
@@ -40,7 +43,7 @@ Daftar Pengurus Daerah
 ## Batas Audit
 
 - UAT manual belum dianggap selesai hanya karena automated test lulus.
-- Phase 4 single-roster tetap menjadi bukti baseline, tetapi tidak memenuhi kebutuhan multi-team yang disahkan 22 Juli 2026.
-- Phase 5 tidak boleh ditutup dan Phase 6 tetap beku sampai Phase 4B lulus migration, test, UAT, dan risk gate.
+- Phase 4B lulus migration dan automated test; UAT manual tetap wajib sebelum Phase 5 ditutup.
+- Phase 6 tetap beku sampai UAT Phase 4B dan Phase 5 serta review commit selesai.
 - Input skor panitia, finalisasi, revisi hasil, bracket manager, dan klasemen adalah Phase 6.
 - Import/export, load test, backup/restore, dan operasional produksi adalah Phase 7.

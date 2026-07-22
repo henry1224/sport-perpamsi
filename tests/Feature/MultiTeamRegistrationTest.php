@@ -67,4 +67,35 @@ class MultiTeamRegistrationTest extends TestCase
 
         $this->actingAs($user)->post(route('pd.events.entries.store', $event), ['members' => [['name' => 'Pengganti']], 'intent' => 'submit'])->assertStatus(422);
     }
+
+    public function test_bracket_eligibility_uses_effective_team_status(): void
+    {
+        $this->seed();
+        $event = TournamentEvent::query()->whereHas('entries.teams')->firstOrFail();
+        $entry = $event->entries()->with('teams')->firstOrFail();
+        $team = $entry->teams->first();
+        $entry->update(['verification_status' => 'pending']);
+        $team->update(['verification_status_override' => null, 'cancelled_at' => null]);
+        $this->assertSame(0, $event->eligibleTeams()->whereKey($team->id)->count());
+        $this->assertGreaterThan(0, $event->bracketBlockers());
+
+        $team->update(['verification_status_override' => 'verified']);
+        $this->assertSame(1, $event->eligibleTeams()->whereKey($team->id)->count());
+    }
+
+    public function test_revision_preserves_team_identity_and_number(): void
+    {
+        $this->seed();
+        $user = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
+        $event->update(['status' => 'registration_open', 'registration_open_at' => now()->subMinute(), 'registration_close_at' => now()->addDay()]);
+        EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $user->regional_committee_id)->delete();
+        $members = collect(range(1, $event->registration_rules['min_members'] ?? 1))->map(fn ($number) => ['name' => 'Awal '.$number])->all();
+        $this->actingAs($user)->post(route('pd.events.entries.store', $event), ['members' => $members, 'intent' => 'draft'])->assertSessionHasNoErrors();
+        $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $user->regional_committee_id)->firstOrFail();
+        $team = $entry->teams()->firstOrFail();
+        $replacement = collect($members)->map(fn ($member, $index) => ['name' => 'Revisi '.($index + 1)])->all();
+        $this->actingAs($user)->post(route('pd.events.entries.store', $event), ['members' => $replacement, 'intent' => 'draft'])->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('entry_teams', ['id' => $team->id, 'event_entry_id' => $entry->id, 'team_no' => 1]);
+    }
 }

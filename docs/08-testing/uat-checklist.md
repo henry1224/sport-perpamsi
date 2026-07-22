@@ -1,5 +1,7 @@
 # UAT Checklist
 
+Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-execution-2026-07-22.md). Checklist manual tetap harus dijalankan sebelum phase ditutup.
+
 ## Registrasi Pengurus Daerah
 
 - [ ] Pengguna dapat memilih Masuk atau Daftar.

@@ -36,14 +36,18 @@ class RegisterEventEntry
                 'verification_note' => null, 'submitted_at' => $data['intent'] === 'submit' ? now() : null, 'verified_by' => null, 'verified_at' => null,
             ])->save();
 
-            $entry->teams()->each(fn ($team) => $team->delete());
+            $existingTeams = $entry->teams()->with('members')->get()->keyBy('team_no');
             foreach ($data['teams'] as $index => $teamData) {
-                $team = $entry->teams()->create(['public_id' => (string) Str::uuid(), 'team_no' => $index + 1, 'label' => $entry->display_name.' #'.($index + 1)]);
+                $teamNo = $index + 1;
+                $team = $existingTeams->get($teamNo) ?? $entry->teams()->create(['public_id' => (string) Str::uuid(), 'team_no' => $teamNo, 'label' => $entry->display_name.' #'.$teamNo]);
+                $team->update(['label' => $entry->display_name.' #'.$teamNo, 'cancelled_at' => null]);
+                $team->members()->delete();
                 $team->members()->createMany(collect($teamData['members'])->map(function ($member) use ($entry) {
                     $name = trim($member['name']);
                     return ['event_entry_id' => $entry->id, 'name' => $name, 'normalized_name' => mb_strtolower($name), 'identity_hash' => hash('sha256', mb_strtolower($name))];
                 })->all());
             }
+            $entry->teams()->where('team_no', '>', count($data['teams']))->whereNull('cancelled_at')->update(['cancelled_at' => now()]);
 
             $action = $data['intent'] === 'draft' ? 'draft_saved' : (in_array($before['status'] ?? null, ['revision_required', 'rejected', 'cancelled'], true) ? 'resubmitted' : 'submitted');
             DB::table('entry_registration_audits')->insert(['event_entry_id' => $entry->id, 'action' => $action, 'before_json' => $before ? json_encode($before) : null, 'after_json' => json_encode($this->state($entry->load('teams.members'))), 'user_id' => $user->id, 'created_at' => now(), 'updated_at' => now()]);

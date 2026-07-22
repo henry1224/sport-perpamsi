@@ -37,6 +37,7 @@ class SportRegulationSeeder extends Seeder
             ...array_map(fn ($item) => 'Syarat: '.$item, $guide['eligibility'] ?? []),
             isset($guide['official_note']) ? 'Kontingen: '.$guide['official_note'] : null,
             isset($guide['fee_note']) ? 'Biaya: '.$guide['fee_note'] : null,
+            isset($guide['source_note']) ? 'Catatan: '.$guide['source_note'] : null,
             'Sumber: slide '.$guide['source_slides'],
         ])->filter()->implode("\n");
     }

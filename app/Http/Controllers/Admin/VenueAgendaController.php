@@ -21,6 +21,7 @@ class VenueAgendaController extends Controller
     public function venues(Request $request): Response
     {
         $search = trim((string) $request->query('search'));
+        $status = $request->query('status');
         $perPage = min(max($request->integer('per_page', 10), 10), 100);
 
         return Inertia::render('Admin/VenueAgendas', [
@@ -33,8 +34,9 @@ class VenueAgendaController extends Controller
                         ->orWhereLike('city', "%{$search}%", caseSensitive: false)
                         ->orWhereLike('address', "%{$search}%", caseSensitive: false);
                 }))
+                ->when($status !== null && $status !== '', fn ($query) => $query->where('is_active', $status === 'active'))
                 ->orderBy('name')->paginate($perPage)->withQueryString(),
-            'filters' => ['search' => $search, 'per_page' => $perPage],
+            'filters' => ['search' => $search, 'status' => $status, 'per_page' => $perPage],
         ]);
     }
 

@@ -75,6 +75,8 @@ class VenueAgendaManagementTest extends TestCase
         $venue = Venue::query()->where('code', 'venue-uji')->firstOrFail();
         $this->actingAs($admin)->get(route('admin.venues.index', ['search' => 'Koordinat', 'per_page' => 10]))
             ->assertInertia(fn ($page) => $page->where('venues.total', 1)->where('venues.data.0.id', $venue->id));
+        $this->actingAs($admin)->get(route('admin.venues.index', ['search' => 'Koordinat', 'status' => 'inactive']))
+            ->assertInertia(fn ($page) => $page->where('venues.total', 0)->where('filters.status', 'inactive'));
         $this->get(route('venue'))->assertInertia(fn ($page) => $page->where('venues', fn ($venues) => collect($venues)->contains(fn ($item) => $item['code'] === 'venue-uji' && (float) $item['latitude'] === -1.237927)));
 
         $this->actingAs($admin)->delete(route('admin.venues.destroy', $venue))->assertSessionHas('error');

@@ -177,7 +177,7 @@ class MasterDataController extends Controller
             'sport_id' => ['required', 'exists:sports,id'],
             'code' => ['required', 'string', 'max:30', 'alpha_dash:ascii', Rule::unique('sport_categories')->where('sport_id', $request->input('sport_id'))->ignore($category)],
             'name' => ['required', 'string', 'max:100'],
-            'competition_type' => ['required', Rule::in(['single', 'doubles', 'team'])],
+            'competition_type' => ['required', Rule::in(['individual', 'doubles', 'team'])],
             'min_members' => ['required', 'integer', 'min:1'],
             'max_members' => ['nullable', 'integer', 'gte:min_members', 'max:100'],
             'bracket_enabled' => ['required', 'boolean'],
