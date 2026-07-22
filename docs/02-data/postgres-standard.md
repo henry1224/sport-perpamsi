@@ -1,5 +1,7 @@
 # Postgres Standard v1
 
+> Drift dengan implementasi saat ini dicatat pada `docs/00-project/audit-2026-07-22.md` (D1–D4). Standar ini tetap menjadi target.
+
 ## Keputusan
 
 Sport PERPAMSI memakai PostgreSQL sebagai database utama v1.

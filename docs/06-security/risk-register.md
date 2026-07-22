@@ -44,6 +44,17 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Kompetisi baru otomatis terbuka | Tinggi | Default status `registration_draft`; publish action eksplisit | Migration dan feature test |
 | Bracket dikunci sebelum verifikasi selesai | Kritis | Precondition: tidak ada pengajuan menunggu/perbaikan | Feature test bracket lock |
 | Penghapusan peserta merusak histori match | Kritis | Restrict delete; gunakan pembatalan/status dan audit | FK test dan UAT |
+| Unique lama menolak multi-team sah atau membuat parent ganda | Kritis | Satu parent unik `(event, PD)` dan child team unik `(entry, team_no)` | Migration dan feature test |
+| PD membuat team melebihi kuota technical meeting | Tinggi | `max_teams_per_pd` wajib pada snapshot; hitung team aktif secara transaksional | Boundary/concurrency test |
+| Client memalsukan nomor atau label team | Tinggi | Nomor dan `PD PERPAMSI {provinsi} #{team_no}` dibentuk server | Payload tampering test |
+| Pemain dipindah/substitusi antar-team setelah verified | Kritis | `entry_team_id` immutable setelah verified; koreksi bukan substitusi dan wajib audit | Feature test transfer/swap/delete-create |
+| Override verifikasi satu team memengaruhi team lain | Kritis | Effective-status resolver tunggal; override nullable terisolasi dan reset eksplisit | Feature test isolasi/reset override |
+| Team belum efektif verified masuk seed/bracket | Kritis | Lock memeriksa setiap effective status team aktif | Feature test bracket lock |
+| Team satu PD bertemu di ronde awal walau alternatif tersedia | Tinggi | Snapshot `avoid_same_pd_in_round=true`; generator affiliation-aware | Pairing test |
+| Constraint seeding mustahil dipenuhi | Tinggi | Relaksasi deterministik minimum dan audit konflik | Determinism/audit test |
+| Nomor team berubah atau dipakai ulang setelah submit | Kritis | `team_no` immutable; cancellation mempertahankan nomor | Lifecycle test |
+| Roster historis berubah setelah match | Kritis | Participant dan roster snapshot pada bracket lock/match | History regression test |
+| Satu PD mendapat banyak medali tetapi ranking mendeduplikasi kategori | Tinggi | Medal participant per `EntryTeam`; agregasi tanpa deduplikasi per PD/kategori | Ranking multi-medal test |
 
 ## Master Cabor dan Peraturan
 

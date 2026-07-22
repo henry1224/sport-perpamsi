@@ -52,14 +52,33 @@ Phase 2 memakai `sport_regulations` untuk versi regulasi dan `master_data_audits
 - Kompetisi yang sudah dipublikasikan tetap memakai snapshot dan tidak ikut berubah.
 - Rollback data memakai forward-fix agar histori dan relasi lama tidak dihapus.
 
+## Target Migration Phase 4B — Parent Entry dan Multi-Team
+
+Migration Phase 4B wajib dibuat sebagai migration baru; migration lama tidak diedit.
+
+1. Buat `entry_teams` tanpa menghapus relasi lama.
+2. Jadikan `event_entries` parent unik untuk setiap `(tournament_event_id, regional_committee_id)`.
+3. Backfill satu `EntryTeam` bernomor `1` untuk setiap entry lama yang valid.
+4. Backfill label `PD PERPAMSI {province.name} #1` dari master provinsi, bukan input bebas.
+5. Tambah `entry_team_id` nullable pada `entry_members`, lalu backfill seluruh member lama ke team `#1`.
+6. Tambah FK team nullable pada match/result/seed target; backfill match lama ke team `#1` tanpa rebuild bracket atau mengubah hasil.
+7. Tambah snapshot `participant_unit`, batas team/member, dan `avoid_same_pd_in_round` pada kompetisi; event lama ditandai `snapshot_version=legacy` sampai diverifikasi Admin.
+8. Audit sebelum constraint: parent tanpa PD, committee tanpa province, duplikasi parent/team, orphan member, match lintas event, dan duplicate seed.
+9. Setelah backfill valid, aktifkan unique parent `(event, PD)`, unique team `(event_entry_id, team_no)`, check nomor positif, FK, dan constraint participant satu event.
+10. Ubah aplikasi membaca/menulis model baru pada branch implementasi terpisah.
+11. Kolom/FK lama hanya dihapus setelah migration upgrade test, UAT, observasi rilis, backup/restore, dan seluruh deletion gate lulus.
+
+Phase 6 tidak boleh membuat seed/bracket baru sebelum match participant memakai `EntryTeam`. Detail domain: [standar multi-team](./team-entry-standard.md).
+
 ## Constraint Wajib
 
 - Unique satu PD PERPAMSI per provinsi.
 - Unique satu pengajuan aktif per provinsi.
 - Unique email pengguna.
 - Unique assignment per pengguna, role tugas, dan scope.
-- Unique registrasi per PD/kompetisi sesuai aturan kategori.
-- Check waktu agenda dan batas jumlah pemain pada layer aplikasi/database yang memungkinkan.
+- Unique parent registrasi per PD/kompetisi.
+- Unique `team_no` per parent dan jumlah team tidak melebihi snapshot `max_teams_per_pd`.
+- Check waktu agenda serta batas jumlah team dan anggota per team pada layer aplikasi/database yang memungkinkan.
 - Restrict delete untuk master yang sudah dipakai.
 
 ## Seed Awal

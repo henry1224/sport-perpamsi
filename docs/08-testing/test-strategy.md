@@ -41,6 +41,27 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 28. PD dapat menyimpan draft, submit, memperbaiki, mengirim ulang, dan membatalkan roster sendiri tanpa menghapus histori.
 29. PD tidak dapat mengubah atau membatalkan roster milik PD lain maupun roster pending/verified.
 
+## Phase 4B — Multi-Team Registration
+
+30. Satu PD hanya memiliki satu parent entry per kompetisi dan dapat membuat banyak team sampai batas snapshot.
+31. `team_no` unik, positif, stabil, dialokasikan server, tahan concurrent insert, dan tidak dipakai ulang setelah cancellation.
+32. Label team persis `PD PERPAMSI {provinsi} #{team_no}` dan payload client tidak dapat memalsukan label/PD/nomor.
+33. Publish ditolak bila `max_teams_per_pd` atau batas anggota per team belum ditetapkan technical meeting.
+34. Catur individual menghasilkan team beranggota satu; bulu tangkis ganda menghasilkan team beranggota dua; golf individual menghasilkan beberapa team beranggota satu.
+35. Jumlah team aktif dan anggota tiap team divalidasi dari snapshot, bukan master terbaru.
+36. Verifikasi parent berlaku kepada team tanpa override.
+37. Override satu team tidak mengubah team lain; reset override mengembalikan effective status ke parent.
+38. API/UI menghasilkan parent status, override nullable, dan effective status yang sama.
+39. Team belum efektif verified tidak masuk seed/bracket; bracket lock menolak pending/revision_required.
+40. Pemain tidak dapat dipindah, ditukar, delete-create, atau disubstitusi antar-team setelah verified.
+41. Koreksi identitas dalam team sama wajib kewenangan, alasan, bukti, dan audit.
+42. `avoid_same_pd_in_round=true` memisahkan team satu PD pada ronde awal bila alternatif valid tersedia.
+43. Relaksasi pairing hanya terjadi saat mustahil, deterministik, dan tercatat audit/snapshot.
+44. Snapshot tetap tidak berubah setelah master atau hasil technical meeting berikutnya berubah.
+45. Match/result tetap menunjuk participant dan roster snapshot historis.
+46. Setiap team dapat meraih medali; satu PD dapat memperoleh beberapa medali kategori sama dan seluruhnya masuk klasemen.
+47. Migration backfill membuat team `#1` tanpa mengubah match/hasil lama dan tanpa orphan/cross-event participant.
+
 ## Frontend/E2E
 
 1. Pengguna memilih Masuk atau Daftar Pengurus Daerah.
@@ -50,7 +71,7 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 5. Pengurus Daerah hanya memilih kompetisi terpublikasi dan memasukkan pemain sesuai snapshot.
 6. Admin mengelola cabor, kategori, peraturan, venue, agenda, dan assignment panitia.
 7. Panitia hanya melihat cabor dan pertandingan tugasnya.
-8. Public melihat nama `PD PERPAMSI {provinsi}` pada peserta, bracket, hasil, dan klasemen.
+8. Public melihat label `PD PERPAMSI {provinsi} #{team_no}` pada peserta/bracket/hasil dan nama PD tanpa nomor pada klasemen agregat.
 9. Tidak ada kode mentah seperti `registration_open` atau `bracket_locked` pada UI/export.
 
 ## Load dan Concurrency

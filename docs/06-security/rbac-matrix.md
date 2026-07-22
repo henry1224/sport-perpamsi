@@ -1,5 +1,7 @@
 # RBAC Matrix Sport PERPAMSI
 
+> Kode saat ini hanya mengeksekusi 4 dari 9 role di matrix ini dan belum memakai Laravel Policy. Drift dan aksi lihat `docs/00-project/audit-2026-07-22.md` (D12, D13).
+
 - Scorekeeper dan Koordinator Cabor hanya dapat melihat match dengan kombinasi cabor dan venue pada assignment aktif.
 - Akses tanpa assignment atau melalui URL match di luar scope menghasilkan `403`.
 

@@ -1,5 +1,7 @@
 # Standar PD PERPAMSI dan Registrasi Peserta
 
+> User kedua PD via undangan (butir 8) dan identitas kanonik pemain lintas event (constraint terakhir) belum diimplementasikan. Drift dan aksi lihat `docs/00-project/audit-2026-07-22.md` (D21, D22).
+
 ## Tujuan
 
 Menetapkan identitas, registrasi akun, registrasi cabor, pemain, verifikasi, dan nama publik tanpa ketergantungan pada PDAM atau instansi asal.
@@ -20,9 +22,10 @@ RegionalCommittee 1 ── N User
 RegionalCommittee 1 ── N CommitteeApplication
 RegionalCommittee 1 ── N EventEntry
 TournamentEvent 1 ── N EventEntry
-EventEntry 1 ── N EntryMember
-EventEntry 1 ── N MatchParticipant/Match
-Final Match ── MedalStanding RegionalCommittee
+EventEntry 1 ── N EntryTeam
+EntryTeam 1 ── N EntryMember
+EntryTeam 1 ── N MatchParticipant/Match
+Final Result ── MedalStanding EntryTeam ── RegionalCommittee
 ```
 
 ## Pengajuan Akun Pengurus Daerah
@@ -40,22 +43,26 @@ Final Match ── MedalStanding RegionalCommittee
 
 1. Pengurus Daerah masuk ke portal PD PERPAMSI.
 2. Pengurus Daerah memilih paket kompetisi/cabor/kategori yang telah dipublikasikan Admin.
-3. Sistem membuat satu `event_entry` untuk PD PERPAMSI pada kompetisi tersebut.
-4. Nama tampil diturunkan dari PD PERPAMSI; client tidak boleh mengirim nama bebas.
-5. Pemain disimpan sebagai banyak `entry_members`, bukan kolom pemain tetap.
-6. Jumlah dan atribut pemain divalidasi dari snapshot regulasi kompetisi, bukan membaca ulang master kategori.
-7. Registrasi diajukan, diperbaiki bila perlu, lalu diverifikasi.
-8. Hanya registrasi terverifikasi yang dapat masuk seed, grup, bracket, match, dan klasemen.
-9. Registrasi tidak dihapus setelah dipakai pertandingan; gunakan status pembatalan dan audit.
+3. Sistem membuat satu parent `event_entry` untuk PD PERPAMSI pada kompetisi tersebut.
+4. PD membuat satu atau lebih `entry_teams` sampai batas dinamis hasil technical meeting pada snapshot.
+5. Nama team dibentuk server sebagai `PD PERPAMSI {provinsi} #{team_no}`; client tidak boleh mengirim nama atau nomor bebas.
+6. Pemain disimpan sebagai banyak `entry_members` pada team, bukan langsung sebagai participant parent atau kolom pemain tetap.
+7. Jumlah team serta jumlah/atribut pemain per team divalidasi dari snapshot regulasi kompetisi.
+8. Registrasi diajukan pada parent; Admin memverifikasi default parent dan dapat memberi override eksplisit per team.
+9. Hanya team dengan effective status `verified` yang dapat masuk seed, grup, bracket, match, dan klasemen.
+10. Perpindahan pemain antar-team setelah verified dilarang total.
+11. Parent/team tidak dihapus setelah dipakai pertandingan; gunakan status pembatalan dan audit.
+12. Semantik lengkap mengikuti [standar multi-team](./team-entry-standard.md).
 
 ## Constraint Wajib
 
 - Unique `regional_committees.province_id`.
 - Unique pengajuan aktif per provinsi.
 - Unique email pengguna.
-- Unique registrasi PD PERPAMSI per kompetisi, kecuali aturan kategori mengizinkan lebih dari satu entry.
+- Unique parent registrasi PD PERPAMSI per kompetisi.
+- Unique `team_no` per parent; jumlah team aktif tidak melebihi snapshot `max_teams_per_pd`.
 - Kompetisi tanpa waktu publikasi tidak boleh tampil atau menerima registrasi.
-- Unique pemain pada scope event/cabor/kategori sesuai identitas yang disepakati.
+- Unique pemain pada scope event/cabor/kategori sesuai identitas yang disepakati; pemain verified tidak dapat dipindahkan antar-team.
 - Foreign key memakai restrict untuk master yang sudah dipakai.
 - Perubahan status, verifikasi, role, pemain, dan pembatalan tercatat pada audit log.
 
@@ -65,7 +72,8 @@ Final Match ── MedalStanding RegionalCommittee
 - Ruang kerja: `regional_committees`.
 - Pengajuan akses: `committee_applications`.
 - Pengguna: `users`.
-- Registrasi cabor: `event_entries`.
-- Pemain: `entry_members`.
-- Hasil: `matches`, `match_scores`, `score_audits`.
+- Registrasi cabor: parent `event_entries`.
+- Unit peserta: target `entry_teams`.
+- Pemain: `entry_members` milik team.
+- Hasil: `matches`, `match_scores`, `score_audits` dengan participant `entry_team_id`.
 - Risiko dan kontrol: `docs/06-security/risk-register.md`.

@@ -16,6 +16,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [Gap checklist](./00-project/gap-checklist.md): keputusan dan dokumen yang masih kurang sebelum development.
 - [Review gap](./00-project/review-gap.md): review lead architect dan keputusan baru.
 - [Audit alur Phase 1–5](./00-project/phase-1-5-flow-audit.md): bukti implementasi, gap yang ditutup, dan batas phase berikutnya.
+- [Audit dokumen vs kode 2026-07-22](./00-project/audit-2026-07-22.md): drift terkonfirmasi antara standar dan implementasi, ranking prioritas P0–P3, dan aturan eksekusi lanjutannya.
 
 ### 01 Architecture
 
@@ -38,6 +39,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [Public identifier standard](./02-data/public-identifier-standard.md): aturan `slug`, `public_id`, dan larangan expose ID internal.
 - [Region standard](./02-data/region-standard.md): master provinsi dan identitas PD PERPAMSI.
 - [Delegation standard](./02-data/delegation-standard.md): pengajuan akun, registrasi cabor, pemain, dan identitas PD PERPAMSI.
+- [Standar entry dan multi-team](./02-data/team-entry-standard.md): satu parent registrasi per PD/kompetisi, unit team peserta, verifikasi hybrid, kuota dinamis, seeding, dan medali.
 
 ### 03 Product
 

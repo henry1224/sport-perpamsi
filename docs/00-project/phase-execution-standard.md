@@ -11,7 +11,9 @@ Dokumen ini mengontrol urutan pengembangan agar pekerjaan tidak melompat ke phas
 
 ## Phase Aktif
 
-**Phase 5 — Venue, Agenda, dan Panitia.**
+**Phase 5 — Venue, Agenda, dan Panitia**, dengan dependency terbuka **Phase 4B — Multi-Team Registration**.
+
+Phase 5 boleh menyelesaikan UAT dan review venue/agenda. Phase 5 tidak boleh ditutup dan Phase 6 tidak boleh dimulai sampai Phase 4B selesai, karena seed, bracket, match, skor, dan medali harus menunjuk `EntryTeam`, bukan parent `EventEntry`.
 
 Pekerjaan yang boleh dimulai:
 
@@ -21,6 +23,8 @@ Pekerjaan yang boleh dimulai:
 - Aktivasi assignment panitia yang sudah tersedia.
 - Policy dan menu panitia berdasarkan scope cabor dan venue.
 - Test, UAT, dan dokumentasi yang diperlukan exit criteria Phase 5.
+- Dokumentasi target Phase 4B: parent entry, multi-team, kuota hasil technical meeting, verifikasi hybrid, roster immutable, dan migration/backfill plan.
+- Implementasi Phase 4B hanya pada branch `features/phase-4b/multi-team-registration` setelah standar disahkan.
 
 Pekerjaan Phase 6–7 tidak boleh diperluas sebelum Phase 5 selesai. Assignment cabor/venue yang sudah tersedia sekarang boleh dilanjutkan dan wajib dihubungkan ke agenda serta policy akses.
 
@@ -77,6 +81,7 @@ Task tanpa nomor phase tidak boleh masuk branch fitur.
 
 ## Urutan Saat Ini
 
-1. Selesaikan Phase 5.
-2. Kerjakan Phase 6.
-3. Selesaikan Phase 7 dan go-live.
+1. Selesaikan dokumentasi dan implementasi Phase 4B.
+2. Selesaikan UAT/review Phase 5 dan tutup hanya setelah dependency 4B lulus.
+3. Kerjakan Phase 6 dengan participant `EntryTeam`.
+4. Selesaikan Phase 7 dan go-live.

@@ -8,7 +8,6 @@ return new class extends Migration
     public function up(): void
     {
         DB::table('sports')->whereIn('code', ['padel', 'golf', 'vocal'])->update(['type' => 'exhibition']);
-        DB::table('sports')->whereNotIn('code', ['padel', 'golf', 'vocal'])->update(['type' => 'sport']);
     }
 
     public function down(): void

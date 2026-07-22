@@ -1,5 +1,7 @@
 # Data Standard Sport PERPAMSI
 
+> Beberapa entitas utama (`Bracket`, `Standing`, `MedalRanking`, `AuditLog`) belum memiliki tabel; status agenda `draft/published/cancelled` juga belum di-migrate. Drift dan aksi lihat `docs/00-project/audit-2026-07-22.md` (D4, D7).
+
 Sumber kebenaran identitas dan registrasi: [delegation-standard.md](./delegation-standard.md). Kontrol risiko wajib: [risk-register.md](../06-security/risk-register.md).
 
 ## Single Source of Truth
@@ -14,7 +16,7 @@ Sumber kebenaran identitas dan registrasi: [delegation-standard.md](./delegation
 - Province dan RegionalCommittee/PD PERPAMSI.
 - CommitteeApplication dan User.
 - Sport, SportCategory, SportRule, TournamentEvent.
-- EventEntry dan EntryMember.
+- EventEntry, EntryTeam, dan EntryMember; target relasinya mengikuti [standar multi-team](./team-entry-standard.md).
 - Venue dan EventAgenda.
 - Match, MatchScore, Bracket, Standing, MedalRanking.
 - SportAssignment dan AuditLog.
@@ -27,9 +29,10 @@ Sumber kebenaran identitas dan registrasi: [delegation-standard.md](./delegation
 - Master kategori tidak langsung tampil ke PD; pilihan registrasi berasal dari kompetisi yang dipublikasikan Admin.
 - Batas maksimum kategori boleh null; snapshot publikasi menjaga arti tanpa batas meski master berubah.
 - Official disimpan terpisah bila modul official dibuat dan tidak dihitung sebagai pemain.
-- Satu registrasi menghubungkan PD PERPAMSI dengan satu kompetisi dan memiliki banyak pemain.
+- Satu `EventEntry` menghubungkan PD PERPAMSI dengan satu kompetisi sebagai parent registrasi.
+- Satu parent memiliki satu atau lebih `EntryTeam`; setiap team memiliki pemain sesuai snapshot.
 - Satu agenda dapat terkait cabor, kompetisi, dan satu venue.
-- Satu match terkait kompetisi, venue, dua entry, skor, status, dan pemenang.
+- Satu match terkait kompetisi, venue, dua `EntryTeam`, skor, status, dan pemenang.
 - Panitia hanya mengelola cabor atau match yang ditugaskan.
 
 ## Status Data
@@ -73,6 +76,6 @@ Sumber kebenaran identitas dan registrasi: [delegation-standard.md](./delegation
 
 - `Pendaftaran Dibuka`: registrasi boleh berubah.
 - `Pendaftaran Ditutup`: registrasi baru ditolak; verifikasi dapat diselesaikan.
-- `Bracket Dikunci`: tidak boleh ada registrasi belum selesai dan seed tidak berubah tanpa kewenangan.
+- `Bracket Dikunci`: seluruh team aktif harus efektif verified; participant/roster/seeding snapshot tidak berubah tanpa workflow unlock/reseed berwenang.
 - `Sedang Berlangsung`: hanya operasi pertandingan yang diizinkan.
 - `Selesai`: perubahan wajib melalui koreksi beralasan dan audit.

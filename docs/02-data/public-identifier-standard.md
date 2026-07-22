@@ -1,5 +1,7 @@
 # Public Identifier Standard
 
+> Slug dan `public_id` belum diterapkan pada seluruh entitas publik. Drift dan aksi implementasi lihat `docs/00-project/audit-2026-07-22.md` (D8).
+
 - ID internal `bigint` tidak boleh tampil publik.
 - `public_id` UUID untuk resource sensitif atau detail transaksi.
 - `slug` untuk event, PD PERPAMSI, cabor, kategori, venue, dan konten.

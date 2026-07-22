@@ -14,13 +14,14 @@ erDiagram
     USER ||--o{ SPORT_ASSIGNMENT : receives
     TOURNAMENT_EVENT ||--o{ EVENT_ENTRY : accepts
     REGIONAL_COMMITTEE ||--o{ EVENT_ENTRY : registers
-    EVENT_ENTRY ||--o{ ENTRY_MEMBER : contains
+    EVENT_ENTRY ||--|{ ENTRY_TEAM : contains
+    ENTRY_TEAM ||--|{ ENTRY_MEMBER : contains
     TOURNAMENT_EVENT ||--o{ EVENT_AGENDA : scheduled_as
     VENUE ||--o{ EVENT_AGENDA : hosts
     TOURNAMENT_EVENT ||--o{ MATCH : contains
 VENUE ||--o{ MATCH : hosts
 EVENT_AGENDA ||--o{ MATCH : schedules
-    EVENT_ENTRY ||--o{ MATCH : participates
+    ENTRY_TEAM ||--o{ MATCH : participates
     MATCH ||--|| MATCH_SCORE : records
     MATCH ||--o{ SCORE_AUDIT : audited_by
     USER ||--o{ AUDIT_LOG : performs
@@ -30,7 +31,8 @@ EVENT_AGENDA ||--o{ MATCH : schedules
 
 - Registrasi publik membuat `committee_applications`, bukan PD PERPAMSI baru.
 - `event_entries` tidak bergantung pada PDAM, kabupaten/kota, atau kolom pemain tetap.
-- Pemain disimpan pada `entry_members`.
+- `EventEntry` adalah parent registrasi; `EntryTeam` adalah unit peserta kompetisi; pemain disimpan pada `entry_members` milik team.
+- Nama team dibentuk server sebagai `PD PERPAMSI {provinsi} #{team_no}` sesuai [standar multi-team](./team-entry-standard.md).
 - Peraturan cabor berversi; kompetisi menyimpan versi yang berlaku.
 - Portal PD membaca `TournamentEvent` terpublikasi, bukan seluruh `SportCategory`.
 - `TournamentEvent.registration_rules` menjadi snapshot regulasi setelah publish.
@@ -47,10 +49,12 @@ EVENT_AGENDA ||--o{ MATCH : schedules
 
 - Satu PD PERPAMSI per provinsi.
 - Satu pengajuan aktif per provinsi.
-- Satu registrasi PD per kompetisi kecuali kategori mengizinkan multi-entry.
+- Satu parent registrasi aktif per PD/kompetisi; jumlah `EntryTeam` mengikuti snapshot `max_teams_per_pd`.
+- Unique `(event_entry_id, team_no)`; nomor team positif dan immutable setelah submit.
+- Setiap anggota dimiliki tepat satu team dan tidak dapat dipindahkan antar-team setelah verified.
 - Kompetisi default draft dan tidak menerima registrasi sebelum dipublikasikan Admin.
 - Tidak ada bentrok venue/waktu.
-- Tidak ada bracket lock dengan verifikasi belum selesai.
+- Tidak ada bracket lock bila team aktif belum efektif verified.
 - Tidak ada write panitia di luar assignment.
 
 Struktur migration dan urutan transisi mengikuti [migration-plan.md](./migration-plan.md).
