@@ -3,6 +3,7 @@ import { Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import PortalLayout from '../../Layouts/PortalLayout.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
+import { statusLabel } from '../../lib/status';
 
 const props = defineProps({
   event: Object,
@@ -44,7 +45,6 @@ const cancel = (id) => {
   router.delete(`/pd/entries/${id}`, { preserveScroll: true });
 };
 
-const statusLabel = (s) => ({ draft: 'Draft', verified: 'Terverifikasi', pending: 'Menunggu', revision_required: 'Perlu Perbaikan', rejected: 'Ditolak', cancelled: 'Dibatalkan' }[s] || s);
 </script>
 
 <template>

@@ -70,7 +70,7 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Master cabor/kategori dihapus setelah dipakai | Tinggi | Tidak menyediakan endpoint delete; gunakan status aktif dan foreign key restrict | Feature test master data |
 | Regulasi lama tertimpa revisi | Tinggi | Setiap revisi membuat nomor versi baru dan audit append-only | Feature test versi regulasi |
 | Agenda draft tampil publik | Tinggi | Public hanya membaca status terbit | Feature test publikasi |
-| Perubahan jadwal tidak terlacak | Tinggi | Audit sebelum/sesudah, aktor, alasan | Audit test |
+| Perubahan jadwal tidak terlacak | Tinggi | `event_agenda_audits` menyimpan before/after, aktor, alasan, action, dan waktu | `VenueAgendaManagementTest` |
 
 ## Panitia dan Hak Akses
 

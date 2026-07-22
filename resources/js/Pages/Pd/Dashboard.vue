@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/vue3';
 import AdminDataTable from '../../Components/AdminDataTable.vue';
 import PortalLayout from '../../Layouts/PortalLayout.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
+import { statusLabel } from '../../lib/status';
 
 const props = defineProps({
   committee: Object,
@@ -10,13 +11,6 @@ const props = defineProps({
   filters: Object,
   summary: Object,
 });
-const statusLabel = (status) => ({
-  registration_open: 'Pendaftaran Dibuka',
-  registration_closed: 'Pendaftaran Ditutup',
-  bracket_locked: 'Bracket Dikunci',
-  ongoing: 'Sedang Berlangsung',
-  completed: 'Selesai',
-}[status] || status);
 </script>
 
 <template>

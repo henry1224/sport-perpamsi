@@ -63,6 +63,12 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 
 ## Exit Criteria
 
+### Bukti Phase 5
+
+- Venue dapat dinonaktifkan dan tidak tersedia untuk agenda baru.
+- Update agenda terpublikasi membutuhkan alasan dan menghasilkan audit before/after dengan aktor.
+- Publikasi agenda menghasilkan audit append-only.
+
 - Semua test P0/P1 lulus.
 - Tidak ada risiko kritis terbuka.
 - Risiko tinggi memiliki kontrol dan bukti test/UAT.

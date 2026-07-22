@@ -63,13 +63,15 @@ Exit: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy terverifikas
 
 ## Phase 5 — Venue, Agenda, dan Panitia
 
-- [-] Venue memiliki detail, kontak, peta, fasilitas, status aktif, dan form tambah; edit/nonaktif UI masih dilanjutkan.
-- [-] Agenda memiliki kompetisi, publikasi, dan validasi konflik waktu; edit jadwal dan audit revisi masih dilanjutkan.
-- [ ] Kamus label status Indonesia.
+- [x] Venue memiliki detail, kontak, peta, fasilitas, status aktif, serta form tambah/edit/nonaktif.
+- [x] Agenda memiliki kompetisi, publikasi, validasi konflik waktu, edit, dan audit revisi.
+- [x] Kamus label status Indonesia terpusat untuk portal utama.
 - [x] Akun panitia dan assignment per cabor/venue terhubung ke jadwal pertandingan.
 - [x] Policy dan menu panitia berbasis scope cabor/venue dengan deny-default.
 
 Exit: CRUD, seed ulang, audit, dan restrict delete lulus.
+
+Audit implementasi: [phase-1-5-flow-audit.md](./phase-1-5-flow-audit.md). Phase 5 belum ditutup sampai UAT manual dan review commit selesai.
 
 ## Phase 6 — Kompetisi dan Skor
 

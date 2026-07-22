@@ -10,6 +10,7 @@ use App\Models\TournamentMatch;
 use App\Models\Venue;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -65,16 +66,21 @@ class VenueAgendaController extends Controller
 
     public function updateAgenda(Request $request, EventAgenda $agenda): RedirectResponse
     {
+        $reason = $request->validate(['change_note' => [$agenda->published_at ? 'required' : 'nullable', 'string', 'max:255']])['change_note'] ?? null;
         $data = $this->agendaData($request);
         $this->ensureNoConflict($data, $agenda);
+        $before = $agenda->toArray();
         $agenda->update($data + ['day' => now()->parse($data['date'])->locale('id')->isoFormat('dddd')]);
+        $this->audit($agenda, 'updated', $before, $request, $reason);
 
         return back()->with('success', 'Agenda berhasil diperbarui.');
     }
 
-    public function publish(EventAgenda $agenda): RedirectResponse
+    public function publish(Request $request, EventAgenda $agenda): RedirectResponse
     {
+        $before = $agenda->toArray();
         $agenda->update(['published_at' => now()]);
+        $this->audit($agenda, 'published', $before, $request);
 
         return back()->with('success', 'Agenda berhasil dipublikasikan.');
     }
@@ -119,5 +125,10 @@ class VenueAgendaController extends Controller
         if ($conflict) {
             throw ValidationException::withMessages(['start_time' => 'Venue sudah dipakai pada rentang waktu tersebut.']);
         }
+    }
+
+    private function audit(EventAgenda $agenda, string $action, array $before, Request $request, ?string $reason = null): void
+    {
+        DB::table('event_agenda_audits')->insert(['event_agenda_id' => $agenda->id, 'action' => $action, 'reason' => $reason, 'before_json' => json_encode($before), 'after_json' => json_encode($agenda->fresh()->toArray()), 'user_id' => $request->user()->id, 'created_at' => now(), 'updated_at' => now()]);
     }
 }

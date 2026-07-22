@@ -40,6 +40,7 @@ EVENT_AGENDA ||--o{ MATCH : schedules
 - Assignment cabor dan venue menjadi sumber scope panitia; scope match mengikuti jadwal venue pada fase operasional pertandingan.
 - Master yang sudah direferensikan memakai restrict delete.
 - Audit append-only.
+- `EventAgenda 1—N EventAgendaAudit N—1 User` melacak revisi dan publikasi jadwal.
 
 ## Constraint Kritis
 
