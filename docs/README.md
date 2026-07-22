@@ -15,6 +15,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [Glossary](./00-project/glossary.md): istilah resmi produk dan event.
 - [Gap checklist](./00-project/gap-checklist.md): keputusan dan dokumen yang masih kurang sebelum development.
 - [Review gap](./00-project/review-gap.md): review lead architect dan keputusan baru.
+- [Audit alur Phase 1–5](./00-project/phase-1-5-flow-audit.md): bukti implementasi, gap yang ditutup, dan batas phase berikutnya.
 
 ### 01 Architecture
 

@@ -1,4 +1,5 @@
 <script setup>
+import { statusLabel } from '../lib/status';
 defineProps({ status: { type: String, required: true } });
 const map = {
   live: { label: 'LIVE', variant: 'live' },
@@ -15,7 +16,7 @@ const map = {
 
 <template>
   <span :class="['status-badge', (map[status.toLowerCase()] || {}).variant || 'info']">
-    {{ (map[status.toLowerCase()] || {}).label || status }}
+    {{ (map[status.toLowerCase()] || {}).label || statusLabel(status.toLowerCase()) }}
   </span>
 </template>
 

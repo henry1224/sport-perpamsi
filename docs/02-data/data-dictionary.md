@@ -95,3 +95,4 @@
 - Audit menyimpan before/after, alasan, aktor, dan waktu secara append-only.
 
 Label Indonesia untuk seluruh status mengikuti `docs/00-project/glossary.md`.
+- `event_agenda_audits`: agenda, action, alasan perubahan, before/after JSON, user, dan waktu untuk update/publish.

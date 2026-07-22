@@ -5,16 +5,13 @@ import AdminDataTable from '../../Components/AdminDataTable.vue';
 import PortalLayout from '../../Layouts/PortalLayout.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
 import { formatDateTime } from '../../lib/date';
+import { statusLabel } from '../../lib/status';
 
 const props = defineProps({ events: Object, filters: Object, audits: Array });
 const rows = ref(props.events.data.map((event) => ({ ...event })));
 const busy = ref(null);
 const previewing = ref(null);
 watch(() => props.events.data, (events) => { rows.value = events.map((event) => ({ ...event })); });
-const statusLabel = (status) => ({
-  registration_draft: 'Draft', registration_open: 'Pendaftaran Dibuka', registration_closed: 'Pendaftaran Ditutup',
-  bracket_locked: 'Bracket Dikunci', ongoing: 'Sedang Berlangsung', completed: 'Selesai', archived: 'Diarsipkan',
-}[status] || status);
 const statusTone = (status) => ({ registration_open: 'success', registration_closed: 'danger', registration_draft: '', bracket_locked: 'info' }[status] || 'info');
 const formatOptions = (event) => [...new Set([event.default_format, event.format, 'knockout', 'group', 'group_then_knockout', 'round_robin', 'ranking'].filter(Boolean))];
 const formatLabel = (format) => format?.replaceAll('_', ' ') || 'Belum ditetapkan';

@@ -1,15 +1,20 @@
 <script setup>
 import { router, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import AdminDataTable from '../../Components/AdminDataTable.vue';
 import PortalLayout from '../../Layouts/PortalLayout.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
 import { formatDate } from '../../lib/date';
 
 defineProps({ venues: Array, sports: Array, events: Array, matches: Array, agendas: Object, filters: Object });
+const venueId = ref(null);
+const agendaId = ref(null);
 const venue = useForm({ code: '', name: '', address: '', city: '', facilities: '', map_url: '', contact_name: '', contact_phone: '', is_active: true });
-const agenda = useForm({ date: '', title: '', type: 'sport', sport_id: '', tournament_event_id: '', venue_id: '', start_time: '', end_time: '', time_note: '', description: '' });
-const saveVenue = () => venue.post('/admin/venues', { preserveScroll: true, onSuccess: () => venue.reset() });
-const saveAgenda = () => agenda.post('/admin/agendas', { preserveScroll: true, onSuccess: () => agenda.reset() });
+const agenda = useForm({ date: '', title: '', type: 'sport', sport_id: '', tournament_event_id: '', venue_id: '', start_time: '', end_time: '', time_note: '', description: '', change_note: '' });
+const saveVenue = () => venue.submit(venueId.value ? 'put' : 'post', venueId.value ? `/admin/venues/${venueId.value}` : '/admin/venues', { preserveScroll: true, onSuccess: () => { venue.reset(); venueId.value = null; } });
+const saveAgenda = () => agenda.submit(agendaId.value ? 'put' : 'post', agendaId.value ? `/admin/agendas/${agendaId.value}` : '/admin/agendas', { preserveScroll: true, onSuccess: () => { agenda.reset(); agendaId.value = null; } });
+const editVenue = (item) => { venueId.value = item.id; Object.keys(venue.data()).forEach((key) => { venue[key] = item[key] ?? (key === 'is_active' ? false : ''); }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+const editAgenda = (item) => { agendaId.value = item.id; Object.keys(agenda.data()).forEach((key) => { agenda[key] = item[key] ?? ''; }); agenda.date = item.date.slice(0, 10); agenda.start_time = item.start_time.slice(0, 5); agenda.end_time = item.end_time.slice(0, 5); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 const publish = (id) => router.post(`/admin/agendas/${id}/publish`, {}, { preserveScroll: true });
 const schedule = useForm({ match_id: '', event_agenda_id: '' });
 const saveSchedule = () => schedule.post(`/admin/matches/${schedule.match_id}/schedule`, { preserveScroll: true, onSuccess: () => schedule.reset() });
@@ -20,22 +25,24 @@ const typeLabel = { sport: 'Pertandingan', exhibition: 'Eksibisi', official: 'Ac
   <PortalLayout portal="admin">
     <div class="page-head"><SectionTitle eyebrow="Operasional" title="Venue & Agenda" meta="Lokasi, jadwal, publikasi, dan konflik waktu" /></div>
     <div class="forms">
-      <form class="card" @submit.prevent="saveVenue"><header><b>Venue Baru</b><span>Venue aktif dapat dipakai agenda.</span></header><div class="fields">
+      <form class="card" @submit.prevent="saveVenue"><header><b>{{ venueId ? 'Edit Venue' : 'Venue Baru' }}</b><span>Venue aktif dapat dipakai agenda.</span></header><div class="fields">
         <label>Kode<input v-model="venue.code" required /></label><label>Nama<input v-model="venue.name" required /></label>
         <label>Kota<input v-model="venue.city" /></label><label>Kontak<input v-model="venue.contact_name" /></label>
         <label>Telepon<input v-model="venue.contact_phone" /></label><label>URL Peta<input v-model="venue.map_url" type="url" /></label>
-        <label class="wide">Alamat<textarea v-model="venue.address" /></label><label class="wide">Fasilitas<textarea v-model="venue.facilities" /></label>
+        <label class="wide">Alamat<textarea v-model="venue.address" /></label><label class="wide">Fasilitas<textarea v-model="venue.facilities" /></label><label class="wide check"><input v-model="venue.is_active" type="checkbox" /> Venue aktif</label>
       </div><footer><button :disabled="venue.processing">Simpan Venue</button></footer></form>
-      <form class="card" @submit.prevent="saveAgenda"><header><b>Agenda Baru</b><span>Venue sama tidak boleh memiliki jadwal bertabrakan.</span></header><div class="fields">
+      <form class="card" @submit.prevent="saveAgenda"><header><b>{{ agendaId ? 'Edit Agenda' : 'Agenda Baru' }}</b><span>Venue sama tidak boleh memiliki jadwal bertabrakan.</span></header><div class="fields">
         <label class="wide">Judul<input v-model="agenda.title" required /></label><label>Tanggal<input v-model="agenda.date" type="date" required /></label>
         <label>Tipe<select v-model="agenda.type"><option value="sport">Pertandingan</option><option value="exhibition">Eksibisi</option><option value="official">Acara Resmi</option></select></label>
         <label>Venue<select v-model="agenda.venue_id" required><option value="">Pilih venue</option><option v-for="item in venues.filter(v => v.is_active)" :key="item.id" :value="item.id">{{ item.name }}</option></select></label>
         <label>Cabor<select v-model="agenda.sport_id"><option value="">Tanpa cabor</option><option v-for="item in sports" :key="item.id" :value="item.id">{{ item.name }}</option></select></label>
         <label>Mulai<input v-model="agenda.start_time" type="time" required /></label><label>Selesai<input v-model="agenda.end_time" type="time" required /></label>
         <label class="wide">Kompetisi<select v-model="agenda.tournament_event_id"><option value="">Tanpa kompetisi</option><option v-for="item in events" :key="item.id" :value="item.id">{{ item.name }}</option></select></label>
+        <label v-if="agendaId" class="wide">Alasan Perubahan<input v-model="agenda.change_note" placeholder="Wajib untuk agenda terpublikasi" /></label>
         <p v-if="agenda.errors.start_time" class="error wide">{{ agenda.errors.start_time }}</p>
       </div><footer><button :disabled="agenda.processing">Simpan Agenda</button></footer></form>
     </div>
+    <section class="card venue-list"><header><b>Daftar Venue</b><span>Edit detail atau nonaktifkan venue.</span></header><div class="venue-actions"><button v-for="item in venues" :key="item.id" class="outline" @click="editVenue(item)">{{ item.name }} · {{ item.is_active ? 'Aktif' : 'Nonaktif' }}</button></div></section>
     <form class="card schedule" @submit.prevent="saveSchedule"><header><b>Jadwalkan Pertandingan</b><span>Venue dan waktu mengikuti agenda terpilih.</span></header><div class="fields">
       <label>Pertandingan<select v-model="schedule.match_id" required><option value="">Pilih pertandingan</option><option v-for="item in matches" :key="item.id" :value="item.id">{{ item.code }} — {{ item.tournament_event.name }}</option></select></label>
       <label>Agenda<select v-model="schedule.event_agenda_id" required><option value="">Pilih agenda</option><option v-for="item in agendas.data" :key="item.id" :value="item.id">{{ formatDate(item.date) }} · {{ item.title }} · {{ item.venue_name }}</option></select></label>
@@ -45,12 +52,12 @@ const typeLabel = { sport: 'Pertandingan', exhibition: 'Eksibisi', official: 'Ac
         <tr v-for="row in rows" :key="row.id"><td><div class="primary"><strong>{{ row.title }}</strong><small>{{ row.sport_name || 'Umum' }}</small></div></td>
           <td>{{ formatDate(row.date) }}<br><small>{{ row.start_time.slice(0,5) }}–{{ row.end_time.slice(0,5) }}</small></td><td>{{ row.venue_name }}</td><td>{{ typeLabel[row.type] }}</td>
           <td><span :class="['badge', row.published_at ? 'published' : 'draft']">{{ row.published_at ? 'Terpublikasi' : 'Draft' }}</span></td>
-          <td><button v-if="!row.published_at" class="outline" @click="publish(row.id)">Publikasikan</button></td></tr>
+          <td><button class="outline" @click="editAgenda(row)">Edit</button> <button v-if="!row.published_at" class="outline" @click="publish(row.id)">Publikasikan</button></td></tr>
       </tbody></table></template>
     </AdminDataTable>
   </PortalLayout>
 </template>
 
 <style scoped>
-.page-head{padding:8px 0 24px}.forms{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}.card{overflow:hidden;background:#fff;border:1px solid #d9e3e9;border-radius:14px;box-shadow:0 8px 24px rgba(25,53,76,.06)}.schedule{margin-bottom:24px}header{display:grid;gap:5px;padding:18px 20px;background:#fbfcfd;border-bottom:1px solid #e2e9ed}header b{font-size:18px}header span,small{color:#71808b;font-size:12px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:13px;padding:20px}.wide{grid-column:1/-1}label{display:grid;gap:6px;color:#60717f;font-size:11px;font-weight:750}input,select,textarea{min-height:42px;padding:10px 12px;border:1px solid #cbd8df;border-radius:8px;font:inherit}textarea{min-height:64px;resize:vertical}footer{padding:0 20px 20px}button{min-height:40px;padding:9px 14px;color:#fff;background:#1946a3;border:0;border-radius:8px;font-weight:800;cursor:pointer}.outline{color:#1946a3;background:#fff;border:1px solid #bfd0dc}.primary{display:grid;gap:4px}.badge{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:800}.published{color:#087365;background:#eefaf6}.draft{color:#536571;background:#edf2f5}.error{margin:0;color:#a1432e;font-size:11px;font-weight:700}@media(max-width:900px){.forms{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.wide{grid-column:auto}}
+.page-head{padding:8px 0 24px}.forms{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}.card{overflow:hidden;background:#fff;border:1px solid #d9e3e9;border-radius:14px;box-shadow:0 8px 24px rgba(25,53,76,.06)}.schedule,.venue-list{margin-bottom:24px}header{display:grid;gap:5px;padding:18px 20px;background:#fbfcfd;border-bottom:1px solid #e2e9ed}header b{font-size:18px}header span,small{color:#71808b;font-size:12px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:13px;padding:20px}.wide{grid-column:1/-1}.check{display:flex;align-items:center}.check input{min-height:auto}label{display:grid;gap:6px;color:#60717f;font-size:11px;font-weight:750}input,select,textarea{min-height:42px;padding:10px 12px;border:1px solid #cbd8df;border-radius:8px;font:inherit}textarea{min-height:64px;resize:vertical}footer{padding:0 20px 20px}button{min-height:40px;padding:9px 14px;color:#fff;background:#1946a3;border:0;border-radius:8px;font-weight:800;cursor:pointer}.outline{color:#1946a3;background:#fff;border:1px solid #bfd0dc}.venue-actions{display:flex;flex-wrap:wrap;gap:8px;padding:16px 20px}.primary{display:grid;gap:4px}.badge{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:800}.published{color:#087365;background:#eefaf6}.draft{color:#536571;background:#edf2f5}.error{margin:0;color:#a1432e;font-size:11px;font-weight:700}@media(max-width:900px){.forms{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.wide{grid-column:auto}}
 </style>
