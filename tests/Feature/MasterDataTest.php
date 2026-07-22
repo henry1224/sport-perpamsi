@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Sport;
 use App\Models\User;
+use Database\Seeders\SportRegulationSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -55,6 +56,7 @@ class MasterDataTest extends TestCase
         $this->assertDatabaseHas('sport_categories', ['code' => 'executive', 'name' => 'Eksibisi Eksekutif', 'min_members' => 4, 'max_members' => 4]);
         $this->assertDatabaseHas('sport_categories', ['code' => 'individual', 'name' => 'Individual', 'min_members' => 1, 'max_members' => null]);
         $this->assertSame(0, DB::table('sport_categories')->where('is_active', false)->count());
+        $this->assertDatabaseHas('sport_regulations', ['version' => 1, 'title' => 'Panduan Teknis PORPAMNAS IX']);
     }
 
     public function test_public_sport_page_receives_categories_and_technical_guides(): void
@@ -67,7 +69,20 @@ class MasterDataTest extends TestCase
                 ->component('Cabor')
                 ->has('sportCategories')
                 ->has('sportTechnicalGuides')
+                ->has('sportRegulations')
                 ->where('sportTechnicalGuides', fn ($guides) => collect($guides)->contains(fn ($guide) => $guide['sport_code'] === 'golf' && $guide['source_slides'] === '21–22')));
+    }
+
+    public function test_technical_guide_seed_does_not_overwrite_existing_regulation(): void
+    {
+        $this->seed();
+        $regulation = DB::table('sport_regulations')->first();
+        DB::table('sport_regulations')->where('id', $regulation->id)->update(['content' => 'Revisi Admin']);
+
+        $this->seed(SportRegulationSeeder::class);
+
+        $this->assertSame('Revisi Admin', DB::table('sport_regulations')->where('id', $regulation->id)->value('content'));
+        $this->assertSame(9, DB::table('sport_regulations')->count());
     }
 
     public function test_admin_can_delete_only_unused_sport(): void

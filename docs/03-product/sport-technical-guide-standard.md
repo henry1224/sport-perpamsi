@@ -8,9 +8,9 @@ Menyatukan panduan teknis, master kategori, publikasi kompetisi, registrasi PD, 
 
 1. `sports`: identitas cabor dan format bawaan.
 2. `sport_categories`: kategori aktif serta minimum/maksimum pemain.
-3. `sport_regulations`: peraturan berversi yang dipilih saat publikasi kompetisi.
+3. `sport_regulations`: salinan aturan berversi yang diturunkan dari baseline panduan dan dapat direvisi Admin.
 4. `tournament_events.registration_rules`: snapshot kategori, kuota, format, dan versi peraturan saat dipublikasikan.
-5. `data/seed/sport_technical_guides.json`: baseline informasi teknis publik dari panduan PORPAMNAS IX slide 5–23.
+5. `data/seed/sport_technical_guides.json`: satu sumber awal panduan slide 5–23. Seeder membentuk regulasi v1; runtime publik membaca aturan terbaru dari `sport_regulations` dan hanya memakai JSON untuk jadwal/venue.
 
 Baseline JSON bukan tempat transaksi dan belum memiliki CRUD. Tambah tabel/CRUD hanya jika Admin harus mengubah informasi teknis tanpa deployment.
 
@@ -50,4 +50,3 @@ Panduan Teknis
 - Golf tidak memiliki maksimum peserta pada panduan; sistem memakai minimum satu tanpa maksimum.
 - Tenis Meja Ganda Campuran dibaca sebagai satu pasangan sampai klarifikasi resmi.
 - Kuota lintas kategori Tenis Lapangan perlu konfirmasi; validasi saat ini berlaku per kategori.
-

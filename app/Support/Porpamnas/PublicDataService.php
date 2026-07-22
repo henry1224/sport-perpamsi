@@ -147,6 +147,12 @@ class PublicDataService
                 ->orderBy('sport_categories.sort_order')
                 ->select('sports.code as sport_code', 'sport_categories.code', 'sport_categories.name', 'sport_categories.competition_type', 'sport_categories.scoring_type', 'sport_categories.min_members', 'sport_categories.max_members', 'sport_categories.bracket_enabled')
                 ->get(),
+            'sportRegulations' => DB::table('sport_regulations')
+                ->join('sports', 'sport_regulations.sport_id', '=', 'sports.id')
+                ->where('sport_regulations.is_active', true)
+                ->orderByDesc('sport_regulations.version')
+                ->get(['sports.code as sport_code', 'sport_regulations.version', 'sport_regulations.title', 'sport_regulations.content', 'sport_regulations.document_url'])
+                ->unique('sport_code')->values(),
             'tournamentEvents' => DB::table('tournament_events')
                 ->join('sports', 'tournament_events.sport_id', '=', 'sports.id')
                 ->leftJoin('sport_categories', 'tournament_events.sport_category_id', '=', 'sport_categories.id')
@@ -186,6 +192,7 @@ class PublicDataService
                 'province' => $p['name'],
             ])->values(),
             'sportCategories' => $this->csv('data/seed/sport_categories.csv'),
+            'sportRegulations' => collect(),
             'tournamentEvents' => collect(),
         ];
     }

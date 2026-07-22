@@ -15,8 +15,8 @@ const activeCategories = computed(() => props.categories.filter((item) => item.i
 const tabs = computed(() => [
   { id: 'sports', label: 'Cabor', count: props.sports.length },
   { id: 'categories', label: 'Kategori', count: props.categories.length },
-  { id: 'regulations', label: 'Regulasi', count: props.regulations.length },
-  { id: 'audit', label: 'Audit', count: props.audits.length },
+  { id: 'regulations', label: 'Versi Aturan', count: props.regulations.length },
+  { id: 'audit', label: 'Riwayat Perubahan', count: props.audits.length },
 ]);
 
 const addSport = () => sportForm.post('/admin/master-data/sports', { onSuccess: () => sportForm.reset() });
@@ -35,7 +35,7 @@ const updateCategory = (category) => router.put(`/admin/master-data/categories/$
 
     <section class="overview-card">
       <div><span>Master Data</span><h2>Kelola fondasi lomba dari satu tempat.</h2><p>Cabor, kategori, dan regulasi tersimpan terstruktur. Perubahan penting masuk audit secara otomatis.</p></div>
-      <dl><div><dt>Cabor Aktif</dt><dd>{{ activeSports }}</dd></div><div><dt>Kategori Aktif</dt><dd>{{ activeCategories }}</dd></div><div><dt>Versi Regulasi</dt><dd>{{ regulations.length }}</dd></div></dl>
+      <dl><div><dt>Cabor Aktif</dt><dd>{{ activeSports }}</dd></div><div><dt>Kategori Aktif</dt><dd>{{ activeCategories }}</dd></div><div><dt>Versi Aturan</dt><dd>{{ regulations.length }}</dd></div></dl>
     </section>
 
     <nav class="tabs" aria-label="Master data"><button v-for="item in tabs" :key="item.id" type="button" :class="{ active: tab === item.id }" @click="tab = item.id"><span>{{ item.label }}</span><b>{{ item.count }}</b></button></nav>
@@ -51,11 +51,11 @@ const updateCategory = (category) => router.put(`/admin/master-data/categories/$
     </section>
 
     <section v-else-if="tab === 'regulations'" class="master-grid">
-      <form class="form-card" @submit.prevent="addRegulation"><header><span>Versi Baru</span><h2>Terbitkan Regulasi</h2><p>Versi lama tetap tersimpan dan tidak ditimpa.</p></header><div class="form-body"><label>Cabor<select v-model="regulationForm.sport_id" required><option value="">Pilih cabor</option><option v-for="sport in sports" :key="sport.id" :value="sport.id">{{ sport.name }}</option></select></label><label>Judul<input v-model="regulationForm.title" placeholder="Regulasi Futsal 2026" required /></label><label>Isi Regulasi<textarea v-model="regulationForm.content" rows="8" placeholder="Ringkasan regulasi yang berlaku…" required /></label><label>URL Dokumen Technical Meeting<input v-model="regulationForm.document_url" type="url" placeholder="https://…" /></label></div><footer><button class="primary-button" :disabled="regulationForm.processing">{{ regulationForm.processing ? 'Menerbitkan…' : 'Terbitkan Versi Baru' }}</button></footer></form>
-      <div class="table-card"><header><div><span>Riwayat Versi</span><h2>Regulasi Terbit</h2></div><b>{{ regulations.length }} versi</b></header><div class="table-scroll"><table><thead><tr><th>Regulasi</th><th>Versi</th><th>Status Dokumen</th></tr></thead><tbody><tr v-for="item in regulations" :key="item.id"><td><div class="regulation-title"><strong>{{ item.title }}</strong><small>{{ item.sport.name }}</small></div></td><td><span class="version-badge">v{{ item.version }}</span></td><td><a v-if="item.document_url" class="document-link" :href="item.document_url" target="_blank" rel="noopener">Buka dokumen <span>↗</span></a><span v-else class="muted">Belum tersedia</span></td></tr></tbody></table></div></div>
+      <form class="form-card" @submit.prevent="addRegulation"><header><span>Versi Baru</span><h2>Terbitkan Aturan Cabor</h2><p>Versi awal berasal dari panduan teknis. Versi lama tetap tersimpan dan tidak ditimpa.</p></header><div class="form-body"><label>Cabor<select v-model="regulationForm.sport_id" required><option value="">Pilih cabor</option><option v-for="sport in sports" :key="sport.id" :value="sport.id">{{ sport.name }}</option></select></label><label>Judul<input v-model="regulationForm.title" placeholder="Aturan Futsal 2026" required /></label><label>Isi Aturan<textarea v-model="regulationForm.content" rows="8" placeholder="Sistem pertandingan, syarat peserta, kontingen, dan biaya…" required /></label><label>URL Dokumen Technical Meeting<input v-model="regulationForm.document_url" type="url" placeholder="https://…" /></label></div><footer><button class="primary-button" :disabled="regulationForm.processing">{{ regulationForm.processing ? 'Menerbitkan…' : 'Terbitkan Versi Baru' }}</button></footer></form>
+      <div class="table-card"><header><div><span>Riwayat Versi</span><h2>Aturan Cabor Terbit</h2></div><b>{{ regulations.length }} versi</b></header><div class="table-scroll"><table><thead><tr><th>Aturan Cabor</th><th>Versi</th><th>Status Dokumen</th></tr></thead><tbody><tr v-for="item in regulations" :key="item.id"><td><div class="regulation-title"><strong>{{ item.title }}</strong><small>{{ item.sport.name }}</small></div></td><td><span class="version-badge">v{{ item.version }}</span></td><td><a v-if="item.document_url" class="document-link" :href="item.document_url" target="_blank" rel="noopener">Buka dokumen <span>↗</span></a><span v-else class="muted">Belum tersedia</span></td></tr></tbody></table></div></div>
     </section>
 
-    <section v-else class="table-card audit-card"><header><div><span>Jejak Perubahan</span><h2>Audit Master Data</h2></div><b>{{ audits.length }} aktivitas terbaru</b></header><div class="table-scroll"><table><thead><tr><th>Entitas</th><th>Aksi</th><th>Waktu</th></tr></thead><tbody><tr v-for="item in audits" :key="item.id"><td><strong>{{ item.entity_type.replaceAll('_', ' ') }}</strong><small>ID #{{ item.entity_id }}</small></td><td><span class="audit-badge">{{ item.action }}</span></td><td class="muted">{{ formatDateTime(item.created_at) }}</td></tr></tbody></table></div></section>
+    <section v-else class="table-card audit-card"><header><div><span>Read-only</span><h2>Riwayat Perubahan Master</h2></div><b>{{ audits.length }} aktivitas terbaru</b></header><div class="table-scroll"><table><thead><tr><th>Data</th><th>Perubahan</th><th>Waktu</th></tr></thead><tbody><tr v-for="item in audits" :key="item.id"><td><strong>{{ item.entity_type.replaceAll('_', ' ') }}</strong><small>ID #{{ item.entity_id }}</small></td><td><span class="audit-badge">{{ item.action }}</span></td><td class="muted">{{ formatDateTime(item.created_at) }}</td></tr></tbody></table></div></section>
   </PortalLayout>
 </template>
 

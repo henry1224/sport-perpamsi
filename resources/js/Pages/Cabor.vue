@@ -2,11 +2,12 @@
 import PublicLayout from '../Layouts/PublicLayout.vue';
 import SectionTitle from '../Components/SectionTitle.vue';
 
-const props = defineProps({ sports: Array, sportCategories: Array, sportTechnicalGuides: Array, assets: Object });
+const props = defineProps({ sports: Array, sportCategories: Array, sportTechnicalGuides: Array, sportRegulations: Array, assets: Object });
 const cards = props.sports.filter((s) => s.type !== 'official');
 const sportIcon = (code) => props.assets?.mascots?.[code?.toLowerCase()] || null;
 const categories = (code) => props.sportCategories.filter((category) => category.sport_code === code);
 const guide = (code) => props.sportTechnicalGuides.find((item) => item.sport_code === code);
+const regulation = (code) => props.sportRegulations.find((item) => item.sport_code === code);
 const memberLimit = (category) => category.max_members === null || category.max_members === ''
   ? `Minimal ${category.min_members} pemain`
   : Number(category.min_members) === Number(category.max_members)
@@ -27,10 +28,7 @@ const memberLimit = (category) => category.max_members === null || category.max_
           <div><strong>Lokasi</strong><p>{{ guide(sport.code).venue }}</p><small>{{ guide(sport.code).address }}</small></div>
         </div>
         <section class="category-list"><strong>Kategori</strong><div><article v-for="category in categories(sport.code)" :key="category.code"><b>{{ category.name }}</b><small>{{ memberLimit(category) }}</small></article></div></section>
-        <section v-if="guide(sport.code)?.system?.length" class="technical-list"><strong>Sistem Pertandingan</strong><ol><li v-for="item in guide(sport.code).system" :key="item">{{ item }}</li></ol></section>
-        <section v-if="guide(sport.code)?.eligibility?.length" class="technical-list"><strong>Syarat Peserta</strong><ul><li v-for="item in guide(sport.code).eligibility" :key="item">{{ item }}</li></ul></section>
-        <p v-if="guide(sport.code)?.official_note" class="note"><strong>Kontingen</strong>{{ guide(sport.code).official_note }}</p>
-        <p v-if="guide(sport.code)?.fee_note" class="note"><strong>Biaya</strong>{{ guide(sport.code).fee_note }}</p>
+        <section v-if="regulation(sport.code)" class="technical-list"><strong>{{ regulation(sport.code).title }} · Versi {{ regulation(sport.code).version }}</strong><p class="regulation-content">{{ regulation(sport.code).content }}</p></section>
         <footer><span>Format bawaan: {{ sport.default_format.replaceAll('_', ' ') }}</span><small>Sumber slide {{ guide(sport.code)?.source_slides || '—' }}</small></footer>
       </div>
     </div>
@@ -46,4 +44,5 @@ const memberLimit = (category) => category.max_members === null || category.max_
 .game-card:hover::before { opacity: 1; }
 .game-card > header { position:relative; z-index:2; display:flex; min-height:90px; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid rgba(255,255,255,.12); }.game-card header img { width:120px; height:100px; object-fit:contain; filter:drop-shadow(0 12px 22px rgba(0,0,0,.35)); }.game-card header span { color:#F6C64A; font-size:11px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }.game-card h3 { margin:7px 0 0; font-size:32px; line-height:1; }.technical-grid { position:relative; z-index:2; display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:18px; }.technical-grid div,.category-list article { padding:13px 15px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); }.technical-grid strong,.category-list > strong,.technical-list > strong,.note strong { display:block; margin-bottom:6px; color:#36C2F0; font-size:10px; letter-spacing:.12em; text-transform:uppercase; }.technical-grid p,.technical-grid small { margin:0; color:rgba(255,255,255,.74); font-size:13px; line-height:1.45; }.technical-grid small { color:rgba(255,255,255,.5); }.category-list,.technical-list { position:relative; z-index:2; margin-top:18px; }.category-list > div { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:8px; }.category-list article { display:grid; gap:4px; }.category-list article b { font-size:13px; }.category-list article small { color:rgba(255,255,255,.55); }.technical-list ol,.technical-list ul { margin:0; padding-left:20px; color:rgba(255,255,255,.7); font-size:13px; line-height:1.65; }.note { position:relative; z-index:2; margin:14px 0 0; padding:12px 14px; color:rgba(255,255,255,.72); background:rgba(246,198,74,.08); border-left:3px solid #F6C64A; font-size:13px; }.game-card footer { position:relative; z-index:2; display:flex; justify-content:space-between; gap:12px; margin-top:20px; padding-top:14px; color:rgba(255,255,255,.45); border-top:1px solid rgba(255,255,255,.1); font-size:10px; text-transform:capitalize; }
 @media (max-width: 640px) { .technical-grid { grid-template-columns:1fr; }.game-card > header { align-items:flex-start; }.game-card header img { width:88px; height:78px; }.game-card footer { flex-direction:column; } }
+.regulation-content { margin:0; color:rgba(255,255,255,.72); font-size:13px; line-height:1.7; white-space:pre-line; }
 </style>
