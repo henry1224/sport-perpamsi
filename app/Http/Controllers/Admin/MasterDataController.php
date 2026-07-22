@@ -25,6 +25,7 @@ class MasterDataController extends Controller
             'regulations' => SportRegulation::query()->with('sport:id,name')->withCount('events')->latest('id')->get(),
             'venues' => Venue::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'address', 'city']),
             'audits' => DB::table('master_data_audits')->latest()->limit(20)->get(),
+            'sportFormats' => Sport::FORMAT_LABELS,
             'initialTab' => in_array($request->query('tab'), ['sports', 'categories', 'regulations', 'audit'], true) ? $request->query('tab') : 'sports',
         ]);
     }
@@ -34,8 +35,8 @@ class MasterDataController extends Controller
         $data = $request->validate([
             'code' => ['required', 'string', 'max:30', 'alpha_dash:ascii', 'unique:sports,code'],
             'name' => ['required', 'string', 'max:100'],
-            'type' => ['required', Rule::in(['sport', 'seminar'])],
-            'default_format' => ['nullable', 'string', 'max:60'],
+            'type' => ['required', Rule::in(['sport', 'exhibition'])],
+            'default_format' => ['required', Rule::in(array_keys(Sport::FORMAT_LABELS))],
             'score_template' => ['nullable', 'string', 'max:100'],
         ]);
 
@@ -50,8 +51,8 @@ class MasterDataController extends Controller
         $data = $request->validate([
             'code' => ['required', 'string', 'max:30', 'alpha_dash:ascii', Rule::unique('sports', 'code')->ignore($sport)],
             'name' => ['required', 'string', 'max:100'],
-            'type' => ['required', Rule::in(['sport', 'seminar'])],
-            'default_format' => ['nullable', 'string', 'max:60'],
+            'type' => ['required', Rule::in(['sport', 'exhibition'])],
+            'default_format' => ['required', Rule::in(array_keys(Sport::FORMAT_LABELS))],
             'score_template' => ['nullable', 'string', 'max:100'],
             'is_active' => ['required', 'boolean'],
         ]);

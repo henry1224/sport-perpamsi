@@ -7,14 +7,14 @@ import SectionTitle from '../../Components/SectionTitle.vue';
 import { formatDateTime } from '../../lib/date';
 import { statusLabel } from '../../lib/status';
 
-const props = defineProps({ events: Object, filters: Object, audits: Array });
+const props = defineProps({ events: Object, filters: Object, audits: Array, sportFormats: Object });
 const rows = ref(props.events.data.map((event) => ({ ...event })));
 const busy = ref(null);
 const previewing = ref(null);
 watch(() => props.events.data, (events) => { rows.value = events.map((event) => ({ ...event })); });
 const statusTone = (status) => ({ registration_open: 'success', registration_closed: 'danger', registration_draft: '', bracket_locked: 'info' }[status] || 'info');
-const formatOptions = (event) => [...new Set([event.default_format, event.format, 'knockout', 'group', 'group_then_knockout', 'round_robin', 'ranking'].filter(Boolean))];
-const formatLabel = (format) => format?.replaceAll('_', ' ') || 'Belum ditetapkan';
+const formatOptions = (event) => [...new Set([event.default_format, event.format, ...Object.keys(props.sportFormats || {})].filter(Boolean))];
+const formatLabel = (format) => props.sportFormats?.[format] || format?.replaceAll('_', ' ') || 'Belum ditetapkan';
 
 const updateFormat = (event) => {
   busy.value = event.code;

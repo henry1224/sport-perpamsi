@@ -74,3 +74,7 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 - Tidak ada risiko kritis terbuka.
 - Risiko tinggi memiliki kontrol dan bukti test/UAT.
 - Migration fresh, migration upgrade, seed ulang, dan restore test lulus.
+## Koreksi Tipe Master Cabor
+
+- Feature test memastikan Padel, Golf, dan Vokal hasil seed bertipe `exhibition`.
+- Feature test membandingkan format bawaan seluruh cabor dengan katalog resmi.

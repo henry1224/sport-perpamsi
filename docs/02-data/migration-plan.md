@@ -75,3 +75,8 @@ Phase 2 memakai `sport_regulations` untuk versi regulasi dan `master_data_audits
 - Migration perubahan relasi wajib punya backup dan prosedur forward-fix.
 - Rollback tidak boleh menghidupkan kembali identitas lama yang sudah dinyatakan tidak berlaku.
 - Perubahan destructive dilakukan terpisah setelah verifikasi data dan persetujuan.
+## Koreksi Tipe Master Cabor — 22 Juli 2026
+
+- Nilai `sports.type` dibatasi menjadi `sport` atau `exhibition` pada alur Admin.
+- `padel`, `golf`, dan `vocal` dibackfill sebagai `exhibition`; cabor lain sebagai `sport`.
+- `sports.default_format` dibackfill dari katalog resmi agar master dan kompetisi draft memakai kode format yang sama.
