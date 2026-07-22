@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class TournamentEvent extends Model
 {
@@ -49,5 +50,18 @@ class TournamentEvent extends Model
     public function matches(): HasMany
     {
         return $this->hasMany(TournamentMatch::class);
+    }
+
+    public function eligibleTeams(): Builder
+    {
+        return EntryTeam::query()->whereHas('eventEntry', fn (Builder $query) => $query->where('tournament_event_id', $this->id))
+            ->whereNull('cancelled_at')
+            ->where(fn (Builder $query) => $query->where('verification_status_override', 'verified')->orWhere(fn (Builder $query) => $query->whereNull('verification_status_override')->whereHas('eventEntry', fn (Builder $entry) => $entry->where('verification_status', 'verified'))));
+    }
+
+    public function bracketBlockers(): int
+    {
+        return EntryTeam::query()->whereHas('eventEntry', fn (Builder $query) => $query->where('tournament_event_id', $this->id))
+            ->whereNull('cancelled_at')->whereNotIn('id', $this->eligibleTeams()->select('id'))->count();
     }
 }

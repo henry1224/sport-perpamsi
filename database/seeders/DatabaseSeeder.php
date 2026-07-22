@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
                 RegistrationDemoSeeder::class,
                 UserSeeder::class,
                 PendingEntriesSeeder::class,
+                EntryTeamBackfillSeeder::class,
             ]);
         }
     }

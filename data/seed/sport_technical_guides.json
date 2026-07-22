@@ -5,7 +5,8 @@
     "venue": "Balikpapan Tennis Stadium",
     "address": "Jl. MT Haryono Dalam, Gunung Bahagia",
     "system": ["Rally point", "Babak grup atau sistem gugur menyesuaikan jumlah peserta", "21 poin, best of 3"],
-    "eligibility": ["Tidak mengikuti PON terakhir"],
+    "eligibility": ["Karyawan tetap BUMD Air Minum anggota PERPAMSI dengan masa kerja minimal 1 tahun", "Mengisi formulir pendaftaran atlet", "Melampirkan kartu Dapenma/DPLK, SK karyawan tetap, KTP, dan pas foto", "Menunjukkan dokumen asli saat verifikasi akhir", "Tidak mengikuti PON terakhir"],
+    "source_note": "Persyaratan umum dirangkum dari portal PORPAMNAS VIII dan wajib dikonfirmasi kembali oleh panitia PORPAMNAS IX.",
     "official_note": "Maksimal 6 kategori dan 2 official",
     "source_slides": "5–6"
   },
@@ -15,7 +16,8 @@
     "venue": "Gedung Kesenian Balikpapan",
     "address": "Jl. Syarifudin Yoes, Gunung Bahagia",
     "system": ["Perorangan: Swiss, catur cepat 10 menit tanpa increment, 5–7 babak", "Beregu: Swiss, catur cepat 15 menit tanpa increment, 5 babak"],
-    "eligibility": ["Tidak mengikuti kejuaraan nasional dalam 2 tahun", "Tidak memiliki gelar Master"],
+    "eligibility": ["Karyawan tetap BUMD Air Minum anggota PERPAMSI dengan masa kerja minimal 1 tahun", "Mengisi formulir pendaftaran atlet", "Melampirkan kartu Dapenma/DPLK, SK karyawan tetap, KTP, dan pas foto", "Menunjukkan dokumen asli saat verifikasi akhir", "Tidak mengikuti kejuaraan nasional dalam 2 tahun", "Tidak memiliki gelar Master"],
+    "source_note": "Persyaratan umum dirangkum dari portal PORPAMNAS VIII dan wajib dikonfirmasi kembali oleh panitia PORPAMNAS IX.",
     "official_note": "Maksimal 5 atlet dan 1 official",
     "source_slides": "7–8"
   },
@@ -25,7 +27,8 @@
     "venue": "Balikpapan Tennis Stadium",
     "address": "Jl. MT Haryono Dalam, Gunung Bahagia",
     "system": ["Putaran pertama setengah kompetisi", "Putaran kedua sistem gugur"],
-    "eligibility": ["Tidak mengikuti PON terakhir"],
+    "eligibility": ["Karyawan tetap BUMD Air Minum anggota PERPAMSI dengan masa kerja minimal 1 tahun", "Mengisi formulir pendaftaran atlet", "Melampirkan kartu Dapenma/DPLK, SK karyawan tetap, KTP, dan pas foto", "Menunjukkan dokumen asli saat verifikasi akhir", "Tidak mengikuti PON terakhir"],
+    "source_note": "Persyaratan umum dirangkum dari portal PORPAMNAS VIII dan wajib dikonfirmasi kembali oleh panitia PORPAMNAS IX.",
     "official_note": "Ringkasan panduan menyebut maksimal 3 pasangan dan 2 official; kuota lintas kategori menunggu konfirmasi panitia",
     "source_slides": "9–10"
   },
@@ -35,7 +38,8 @@
     "venue": "Gedung KNPI Balikpapan",
     "address": "Jl. Manuntung No. 1, Sepinggan Baru",
     "system": ["Putaran pertama setengah kompetisi", "Putaran kedua sistem gugur"],
-    "eligibility": ["Tidak mengikuti PON terakhir"],
+    "eligibility": ["Karyawan tetap BUMD Air Minum anggota PERPAMSI dengan masa kerja minimal 1 tahun", "Mengisi formulir pendaftaran atlet", "Melampirkan kartu Dapenma/DPLK, SK karyawan tetap, KTP, dan pas foto", "Menunjukkan dokumen asli saat verifikasi akhir", "Tidak mengikuti PON terakhir"],
+    "source_note": "Persyaratan umum dirangkum dari portal PORPAMNAS VIII dan wajib dikonfirmasi kembali oleh panitia PORPAMNAS IX.",
     "official_note": "Maksimal 5 kategori dan 1 official",
     "source_slides": "11–12"
   },
@@ -45,7 +49,8 @@
     "venue": "Borneo Anfield Stadium",
     "address": "Jl. AMD L III Gg. Dahlia RT. 35, Damai Bahagia",
     "system": ["Putaran pertama setengah kompetisi", "Putaran kedua sistem gugur", "Durasi 2 x 25 menit"],
-    "eligibility": ["Tidak mengikuti PON terakhir"],
+    "eligibility": ["Karyawan tetap BUMD Air Minum anggota PERPAMSI dengan masa kerja minimal 1 tahun", "Mengisi formulir pendaftaran atlet", "Melampirkan kartu Dapenma/DPLK, SK karyawan tetap, KTP, dan pas foto", "Menunjukkan dokumen asli saat verifikasi akhir", "Tidak mengikuti PON terakhir"],
+    "source_note": "Persyaratan umum dirangkum dari portal PORPAMNAS VIII dan wajib dikonfirmasi kembali oleh panitia PORPAMNAS IX.",
     "official_note": "15 pemain dan 4 official",
     "source_slides": "13–14"
   },
@@ -55,7 +60,8 @@
     "venue": "GOR Banua Patra",
     "address": "Prapatan, Balikpapan Kota",
     "system": ["Putaran pertama setengah kompetisi", "Putaran kedua sistem gugur"],
-    "eligibility": ["Tidak pernah mengikuti kejuaraan nasional dan Proliga dalam 2 tahun terakhir"],
+    "eligibility": ["Karyawan tetap BUMD Air Minum anggota PERPAMSI dengan masa kerja minimal 1 tahun", "Mengisi formulir pendaftaran atlet", "Melampirkan kartu Dapenma/DPLK, SK karyawan tetap, KTP, dan pas foto", "Menunjukkan dokumen asli saat verifikasi akhir", "Tidak pernah mengikuti kejuaraan nasional dan Proliga dalam 2 tahun terakhir"],
+    "source_note": "Persyaratan umum dirangkum dari portal PORPAMNAS VIII dan wajib dikonfirmasi kembali oleh panitia PORPAMNAS IX.",
     "official_note": "Maksimal 1 tim: 12 pemain dan 2 official",
     "source_slides": "15–16"
   },
@@ -65,7 +71,8 @@
     "venue": "Gedung Kesenian Balikpapan",
     "address": "Jl. Syarifudin Yoes, Gunung Bahagia",
     "system": ["Setiap peserta tampil satu kali", "Tiga pemenang ditentukan pada setiap kategori", "Membawakan satu lagu Indonesia dan satu lagu mancanegara era 2000-an", "Durasi setiap lagu termasuk intro dan outro 3–5 menit"],
-    "eligibility": [],
+    "eligibility": ["Karyawan tetap BUMD Air Minum anggota PERPAMSI dengan masa kerja minimal 1 tahun", "Mengisi formulir pendaftaran atlet", "Melampirkan kartu Dapenma/DPLK, SK karyawan tetap, KTP, dan pas foto", "Menunjukkan dokumen asli saat verifikasi akhir"],
+    "source_note": "Persyaratan umum dirangkum dari portal PORPAMNAS VIII dan wajib dikonfirmasi kembali oleh panitia PORPAMNAS IX.",
     "official_note": null,
     "source_slides": "17–20"
   },
@@ -75,7 +82,7 @@
     "venue": "Royal Mahligai Golf and Country Club",
     "address": "Km. 13",
     "system": ["Peserta anggota PERPAMSI dan rekanan/mitra", "Batas maksimum peserta per PD tidak dinyatakan dalam panduan"],
-    "eligibility": [],
+    "eligibility": ["Peserta merupakan anggota PERPAMSI atau rekanan/mitra"],
     "official_note": null,
     "fee_note": "Anggota PERPAMSI Rp2.000.000/orang; rekanan atau mitra Rp3.000.000/orang",
     "source_slides": "21–22"
@@ -86,7 +93,7 @@
     "venue": "Hola! Padel & Tennis Club",
     "address": "Jl. MT Haryono No. 17, Gunung Bahagia",
     "system": ["Fun Games"],
-    "eligibility": [],
+    "eligibility": ["Kategori Eksekutif diperuntukkan bagi Direksi atau pejabat setingkat kepala bagian", "Kategori Prestasi mengikuti ketentuan panitia"],
     "official_note": "Eksibisi Eksekutif dan Eksibisi Prestasi, masing-masing 2 pasangan",
     "fee_note": "Rp500.000/orang",
     "source_slides": "23"

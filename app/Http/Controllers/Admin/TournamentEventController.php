@@ -65,6 +65,7 @@ class TournamentEventController extends Controller
             'registration_open_at' => ['required', 'date'],
             'registration_close_at' => ['required', 'date', 'after:registration_open_at'],
             'sport_regulation_id' => ['required', Rule::exists('sport_regulations', 'id')->where('is_active', true)],
+            'max_teams_per_pd' => ['required', 'integer', 'min:1', 'max:16'],
         ]);
 
         $event->loadMissing('category');
@@ -95,7 +96,7 @@ class TournamentEventController extends Controller
                     'format' => $event->format,
                     'min_members' => $category->min_members,
                     'max_members' => $category->max_members,
-                    'max_teams_per_pd' => max(1, $request->integer('max_teams_per_pd', 1)),
+                    'max_teams_per_pd' => $data['max_teams_per_pd'],
                     'min_members_per_team' => $category->min_members,
                     'max_members_per_team' => $category->max_members,
                     'avoid_same_pd_in_round' => true,

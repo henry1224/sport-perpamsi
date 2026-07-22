@@ -25,6 +25,7 @@ class TournamentEventPublicationTest extends TestCase
             'registration_open_at' => now()->subMinute()->toDateTimeString(),
             'registration_close_at' => now()->addWeek()->toDateTimeString(),
             'sport_regulation_id' => $regulation->id,
+            'max_teams_per_pd' => 3,
         ])->assertRedirect()->assertSessionHasNoErrors();
 
         $event->refresh();
@@ -32,6 +33,7 @@ class TournamentEventPublicationTest extends TestCase
         $this->assertSame($admin->id, $event->registration_published_by);
         $this->assertSame($event->category->min_members, $event->registration_rules['min_members']);
         $this->assertSame(2, $event->registration_rules['regulation_version']);
+        $this->assertSame(3, $event->registration_rules['max_teams_per_pd']);
         $this->assertTrue($event->registrationIsOpen());
         $this->assertDatabaseHas('event_publication_audits', ['tournament_event_id' => $event->id, 'action' => 'published']);
 

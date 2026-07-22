@@ -36,7 +36,7 @@
 ## Sport dan Category
 
 - `sports`: code, name, type, description, active.
-- Kondisi kode saat ini: `sport_categories` menyimpan sport_id, code, name, competition_type, scoring_type, min_members, max_members nullable, active. Target Phase 4B memisahkan unit peserta, kuota team per PD, dan anggota per team pada snapshot kompetisi; publish tidak menerima batas null.
+- Kondisi kode saat ini: `sport_categories` menyimpan sport_id, code, name, competition_type (`individual`, `doubles`, atau `team`), scoring_type, min_members, max_members nullable, active. Target Phase 4B memisahkan unit peserta, kuota team per PD, dan anggota per team pada snapshot kompetisi; publish tidak menerima batas null.
 - `sport_regulations`: sport_id, version, title, content, document_url, is_active, created_by.
 - `master_data_audits`: entity_type, entity_id, action, before_json, after_json, user_id.
 

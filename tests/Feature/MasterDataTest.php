@@ -45,6 +45,33 @@ class MasterDataTest extends TestCase
         $this->actingAs($pdAdmin)->get(route('admin.master-data.index'))->assertForbidden();
     }
 
+    public function test_category_menu_receives_sports_and_category_relations_from_database(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $sport = Sport::query()->whereHas('categories')->firstOrFail();
+
+        $this->actingAs($admin)->get(route('admin.master-data.index', ['tab' => 'categories']))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Admin/MasterData')
+                ->where('initialTab', 'categories')
+                ->where('sports', fn ($sports) => collect($sports)->contains('id', $sport->id))
+                ->where('categories', fn ($categories) => collect($categories)->contains(fn ($category) => $category['sport_id'] === $sport->id && $category['sport']['id'] === $sport->id)));
+    }
+
+    public function test_category_type_uses_individual_database_value(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $sport = $this->sport('INDIVIDUAL-TYPE');
+        $category = ['sport_id' => $sport->id, 'code' => 'INDIVIDUAL', 'name' => 'Individual', 'competition_type' => 'individual', 'min_members' => 1, 'max_members' => 1, 'bracket_enabled' => true, 'sort_order' => 0, 'is_active' => true];
+
+        $this->actingAs($admin)->post(route('admin.master-data.categories.store'), $category)->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('sport_categories', ['sport_id' => $sport->id, 'code' => 'INDIVIDUAL', 'competition_type' => 'individual']);
+        $this->actingAs($admin)->post(route('admin.master-data.categories.store'), array_merge($category, ['code' => 'LEGACY', 'competition_type' => 'single']))->assertSessionHasErrors('competition_type');
+    }
+
     public function test_seed_matches_technical_guide_categories_and_formats(): void
     {
         $this->seed();
@@ -81,7 +108,10 @@ class MasterDataTest extends TestCase
                 ->has('sportCategories')
                 ->has('sportTechnicalGuides')
                 ->has('sportRegulations')
-                ->where('sportTechnicalGuides', fn ($guides) => collect($guides)->contains(fn ($guide) => $guide['sport_code'] === 'golf' && $guide['source_slides'] === '21–22')));
+                ->where('sportTechnicalGuides', fn ($guides) => collect($guides)->contains(fn ($guide) => $guide['sport_code'] === 'golf' && $guide['source_slides'] === '21–22')
+                    && collect($guides)->contains(fn ($guide) => $guide['sport_code'] === 'badminton'
+                        && in_array('Karyawan tetap BUMD Air Minum anggota PERPAMSI dengan masa kerja minimal 1 tahun', $guide['eligibility'], true)
+                        && isset($guide['source_note']))));
     }
 
     public function test_technical_guide_seed_does_not_overwrite_existing_regulation(): void
@@ -123,7 +153,7 @@ class MasterDataTest extends TestCase
         $this->seed();
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
         $sport = $this->sport('CATEGORY-DELETE');
-        $categoryId = DB::table('sport_categories')->insertGetId(['public_id' => (string) Str::uuid(), 'sport_id' => $sport->id, 'code' => 'DELETE', 'name' => 'Delete', 'competition_type' => 'single', 'min_members' => 1, 'max_members' => 1, 'scoring_type' => 'points', 'bracket_enabled' => true, 'sort_order' => 0, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()]);
+        $categoryId = DB::table('sport_categories')->insertGetId(['public_id' => (string) Str::uuid(), 'sport_id' => $sport->id, 'code' => 'DELETE', 'name' => 'Delete', 'competition_type' => 'individual', 'min_members' => 1, 'max_members' => 1, 'scoring_type' => 'points', 'bracket_enabled' => true, 'sort_order' => 0, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()]);
 
         $this->actingAs($admin)->delete(route('admin.master-data.categories.destroy', $categoryId))->assertSessionHas('error');
         DB::table('sport_categories')->where('id', $categoryId)->update(['is_active' => false]);
@@ -146,7 +176,7 @@ class MasterDataTest extends TestCase
     {
         $now = now();
         if ($relation === 'category') {
-            DB::table('sport_categories')->insert(['public_id' => (string) Str::uuid(), 'sport_id' => $sport->id, 'code' => 'TEST', 'name' => 'Test', 'competition_type' => 'single', 'min_members' => 1, 'max_members' => 1, 'scoring_type' => 'points', 'bracket_enabled' => true, 'sort_order' => 0, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now]);
+            DB::table('sport_categories')->insert(['public_id' => (string) Str::uuid(), 'sport_id' => $sport->id, 'code' => 'TEST', 'name' => 'Test', 'competition_type' => 'individual', 'min_members' => 1, 'max_members' => 1, 'scoring_type' => 'points', 'bracket_enabled' => true, 'sort_order' => 0, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now]);
         } elseif ($relation === 'regulation') {
             DB::table('sport_regulations')->insert(['sport_id' => $sport->id, 'version' => 1, 'title' => 'Test', 'content' => 'Test', 'is_active' => true, 'created_by' => $admin->id, 'created_at' => $now, 'updated_at' => $now]);
         } else {

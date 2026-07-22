@@ -43,6 +43,8 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 
 ## Phase 4B — Multi-Team Registration
 
+Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublicationTest`, `RegionalCommitteeRegistrationTest`, dan `EntryRosterWorkflowTest`. Migration fresh dijalankan oleh `RefreshDatabase`; upgrade PostgreSQL diverifikasi melalui migration `000019`–`000020` dan pemeriksaan nol orphan.
+
 30. Satu PD hanya memiliki satu parent entry per kompetisi dan dapat membuat banyak team sampai batas snapshot.
 31. `team_no` unik, positif, stabil, dialokasikan server, tahan concurrent insert, dan tidak dipakai ulang setelah cancellation.
 32. Label team persis `PD PERPAMSI {provinsi} #{team_no}` dan payload client tidak dapat memalsukan label/PD/nomor.
