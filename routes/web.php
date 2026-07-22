@@ -71,9 +71,12 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/assignments/users', [SportAssignmentController::class, 'storeUser'])->name('assignments.users.store');
     Route::post('/assignments', [SportAssignmentController::class, 'store'])->name('assignments.store');
     Route::post('/assignments/{assignment}/revoke', [SportAssignmentController::class, 'revoke'])->name('assignments.revoke');
-    Route::get('/venue-agenda', [VenueAgendaController::class, 'index'])->name('venue-agenda.index');
+    Route::redirect('/venue-agenda', '/admin/venues');
+    Route::get('/venues', [VenueAgendaController::class, 'venues'])->name('venues.index');
+    Route::get('/agenda', [VenueAgendaController::class, 'agendas'])->name('agendas.index');
     Route::post('/venues', [VenueAgendaController::class, 'storeVenue'])->name('venues.store');
     Route::put('/venues/{venue}', [VenueAgendaController::class, 'updateVenue'])->name('venues.update');
+    Route::delete('/venues/{venue}', [VenueAgendaController::class, 'destroyVenue'])->name('venues.destroy');
     Route::post('/agendas', [VenueAgendaController::class, 'storeAgenda'])->name('agendas.store');
     Route::put('/agendas/{agenda}', [VenueAgendaController::class, 'updateAgenda'])->name('agendas.update');
     Route::post('/agendas/{agenda}/publish', [VenueAgendaController::class, 'publish'])->name('agendas.publish');
@@ -84,5 +87,8 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::delete('/master-data/sports/{sport}', [MasterDataController::class, 'destroySport'])->name('master-data.sports.destroy');
     Route::post('/master-data/categories', [MasterDataController::class, 'storeCategory'])->name('master-data.categories.store');
     Route::put('/master-data/categories/{category}', [MasterDataController::class, 'updateCategory'])->name('master-data.categories.update');
+    Route::delete('/master-data/categories/{category}', [MasterDataController::class, 'destroyCategory'])->name('master-data.categories.destroy');
     Route::post('/master-data/regulations', [MasterDataController::class, 'storeRegulation'])->name('master-data.regulations.store');
+    Route::put('/master-data/regulations/{regulation}', [MasterDataController::class, 'updateRegulation'])->name('master-data.regulations.update');
+    Route::delete('/master-data/regulations/{regulation}', [MasterDataController::class, 'destroyRegulation'])->name('master-data.regulations.destroy');
 });

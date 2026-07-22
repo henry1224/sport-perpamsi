@@ -3,7 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Sport;
+use App\Models\SportRegulation;
 use App\Models\User;
+use App\Models\Venue;
+use Database\Seeders\SportRegulationSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -23,13 +26,15 @@ class MasterDataTest extends TestCase
         ])->assertRedirect()->assertSessionHasNoErrors();
 
         $sport = Sport::query()->where('code', 'TEST')->firstOrFail();
+        $venue = Venue::query()->where('is_active', true)->firstOrFail();
         $category = ['sport_id' => $sport->id, 'code' => 'PUTRA', 'name' => 'Putra', 'competition_type' => 'team', 'min_members' => 5, 'max_members' => 12, 'scoring_type' => 'goals', 'bracket_enabled' => true, 'sort_order' => 1, 'is_active' => true];
         $this->actingAs($admin)->post(route('admin.master-data.categories.store'), $category)->assertSessionHasNoErrors();
-        $this->actingAs($admin)->post(route('admin.master-data.regulations.store'), ['sport_id' => $sport->id, 'title' => 'Regulasi Test', 'content' => 'Aturan versi pertama.'])->assertSessionHasNoErrors();
+        $this->actingAs($admin)->post(route('admin.master-data.regulations.store'), ['sport_id' => $sport->id, 'title' => 'Regulasi Test', 'content' => 'Aturan versi pertama.', 'venue_id' => $venue->id])->assertSessionHasNoErrors();
         $this->actingAs($admin)->post(route('admin.master-data.regulations.store'), ['sport_id' => $sport->id, 'title' => 'Regulasi Test Revisi', 'content' => 'Aturan versi kedua.'])->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('sport_categories', ['sport_id' => $sport->id, 'code' => 'PUTRA']);
         $this->assertDatabaseHas('sport_regulations', ['sport_id' => $sport->id, 'version' => 2]);
+        $this->assertSame($venue->id, SportRegulation::query()->where('sport_id', $sport->id)->where('version', 1)->firstOrFail()->technical_guide['venue_id']);
         $this->assertDatabaseCount('master_data_audits', 4);
     }
 
@@ -55,6 +60,7 @@ class MasterDataTest extends TestCase
         $this->assertDatabaseHas('sport_categories', ['code' => 'executive', 'name' => 'Eksibisi Eksekutif', 'min_members' => 4, 'max_members' => 4]);
         $this->assertDatabaseHas('sport_categories', ['code' => 'individual', 'name' => 'Individual', 'min_members' => 1, 'max_members' => null]);
         $this->assertSame(0, DB::table('sport_categories')->where('is_active', false)->count());
+        $this->assertDatabaseHas('sport_regulations', ['version' => 1, 'title' => 'Panduan Teknis PORPAMNAS IX']);
     }
 
     public function test_public_sport_page_receives_categories_and_technical_guides(): void
@@ -67,7 +73,20 @@ class MasterDataTest extends TestCase
                 ->component('Cabor')
                 ->has('sportCategories')
                 ->has('sportTechnicalGuides')
+                ->has('sportRegulations')
                 ->where('sportTechnicalGuides', fn ($guides) => collect($guides)->contains(fn ($guide) => $guide['sport_code'] === 'golf' && $guide['source_slides'] === '21–22')));
+    }
+
+    public function test_technical_guide_seed_does_not_overwrite_existing_regulation(): void
+    {
+        $this->seed();
+        $regulation = DB::table('sport_regulations')->first();
+        DB::table('sport_regulations')->where('id', $regulation->id)->update(['content' => 'Revisi Admin']);
+
+        $this->seed(SportRegulationSeeder::class);
+
+        $this->assertSame('Revisi Admin', DB::table('sport_regulations')->where('id', $regulation->id)->value('content'));
+        $this->assertSame(9, DB::table('sport_regulations')->count());
     }
 
     public function test_admin_can_delete_only_unused_sport(): void
@@ -76,7 +95,10 @@ class MasterDataTest extends TestCase
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
         $unused = $this->sport('DELETE-ME');
 
-        $this->actingAs($admin)->delete(route('admin.master-data.sports.destroy', $unused))->assertRedirect();
+        $this->actingAs($admin)->delete(route('admin.master-data.sports.destroy', $unused))->assertSessionHas('error');
+        $this->assertDatabaseHas('sports', ['id' => $unused->id]);
+        $unused->update(['is_active' => false]);
+        $this->actingAs($admin)->delete(route('admin.master-data.sports.destroy', $unused))->assertSessionHasNoErrors();
         $this->assertDatabaseMissing('sports', ['id' => $unused->id]);
         $this->assertDatabaseHas('master_data_audits', ['entity_type' => 'sport', 'entity_id' => $unused->id, 'action' => 'deleted']);
 
@@ -87,6 +109,19 @@ class MasterDataTest extends TestCase
             $this->actingAs($admin)->delete(route('admin.master-data.sports.destroy', $sport))->assertSessionHas('error');
             $this->assertDatabaseHas('sports', ['id' => $sport->id]);
         }
+    }
+
+    public function test_admin_can_delete_only_inactive_unused_category(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $sport = $this->sport('CATEGORY-DELETE');
+        $categoryId = DB::table('sport_categories')->insertGetId(['public_id' => (string) Str::uuid(), 'sport_id' => $sport->id, 'code' => 'DELETE', 'name' => 'Delete', 'competition_type' => 'single', 'min_members' => 1, 'max_members' => 1, 'scoring_type' => 'points', 'bracket_enabled' => true, 'sort_order' => 0, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()]);
+
+        $this->actingAs($admin)->delete(route('admin.master-data.categories.destroy', $categoryId))->assertSessionHas('error');
+        DB::table('sport_categories')->where('id', $categoryId)->update(['is_active' => false]);
+        $this->actingAs($admin)->delete(route('admin.master-data.categories.destroy', $categoryId))->assertSessionHasNoErrors();
+        $this->assertDatabaseMissing('sport_categories', ['id' => $categoryId]);
     }
 
     private function sport(string $code): Sport

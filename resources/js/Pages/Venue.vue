@@ -23,6 +23,9 @@ const withCount = props.venues.map((v) => ({
 
 const active = ref(null);
 const activeItems = computed(() => active.value?.items || []);
+const mapsUrl = computed(() => active.value?.map_url || (active.value?.latitude && active.value?.longitude
+  ? `https://www.google.com/maps/search/?api=1&query=${active.value.latitude},${active.value.longitude}`
+  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([active.value?.name, active.value?.address, active.value?.city].filter(Boolean).join(', '))}`));
 
 const formatDate = (d, day) => {
   const [, m, dd] = d.split('-');
@@ -53,6 +56,7 @@ const formatTime = (i) => `${i.start_time} – ${i.end_time || i.time_note || 'S
 
     <Modal :open="!!active" :title="active?.name || ''" @close="active = null">
       <p class="modal-addr">📍 {{ active?.address }}<br /><small>{{ active?.city }}</small></p>
+      <a class="maps-button" :href="mapsUrl" target="_blank" rel="noopener">Buka panduan lokasi di Google Maps ↗</a>
       <div v-if="activeItems.length" class="items">
         <div v-for="(item, i) in activeItems" :key="i" :class="['item', toneOf(item)]">
           <div class="when">
@@ -90,6 +94,8 @@ const formatTime = (i) => `${i.start_time} – ${i.end_time || i.time_note || 'S
 
 .modal-addr { margin: 0 0 18px; padding: 14px 16px; background: rgba(5,11,28,.6); border-left: 5px solid #36C2F0; color: rgba(255,255,255,.78); font-size: 13px; line-height: 1.55; }
 .modal-addr small { color: rgba(255,255,255,.55); font-weight: 800; letter-spacing: .1em; text-transform: uppercase; font-size: 11px; }
+.maps-button { display:flex; align-items:center; justify-content:center; min-height:44px; margin:-6px 0 18px; padding:10px 14px; color:#071126; background:#36C2F0; border:1px solid rgba(255,255,255,.18); font-size:12px; font-weight:900; text-decoration:none; }
+.maps-button:hover { background:#F6C64A; }
 
 .items { display: grid; gap: 0; border-top: 1px solid rgba(255,255,255,.12); }
 .item { --tone: #36C2F0; display: grid; grid-template-columns: 160px 1fr; gap: 16px; padding: 16px; background: linear-gradient(90deg, rgba(255,255,255,.045), rgba(255,255,255,.02)); border-bottom: 1px solid rgba(255,255,255,.1); border-left: 5px solid var(--tone); }

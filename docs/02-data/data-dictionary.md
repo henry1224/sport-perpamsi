@@ -74,7 +74,9 @@
 ## Venue
 
 - `code`, `name`, `address`, `city`, `capacity`, `contact_name`, `contact_phone`.
-- `latitude`, `longitude`, `map_url`, `facilities`, `access_notes`, `photo_path`, `is_active`.
+- `latitude`, `longitude`: koordinat opsional dengan rentang valid bumi.
+- `map_url`: URL Google Maps opsional; public memakai koordinat atau alamat sebagai fallback.
+- `facilities`, `access_notes`, `photo_path`, `is_active`.
 
 ## EventAgenda
 

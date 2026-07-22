@@ -4,8 +4,8 @@ Dokumen detail pendamping: `docs/04-design/public-admin-ui-standard.md`.
 
 ## Arah Visual
 
-- Gaya esport modern, gelap, energik, tetap formal untuk stakeholder resmi.
-- Dark theme menjadi identitas utama.
+- Public memakai gaya esport modern, gelap, energik, tetap formal.
+- Admin dan PD memakai portal terang bersama agar pekerjaan data mudah dibaca.
 - Aksen warna kuat untuk live, menang, kalah, final, revisi.
 - Informasi pertandingan harus cepat dibaca di mobile dan layar venue.
 
@@ -33,6 +33,13 @@ Dokumen detail pendamping: `docs/04-design/public-admin-ui-standard.md`.
 - Semua data besar memakai table dengan search, filter, pagination, export.
 - Form penting menampilkan status simpan dan waktu update terakhir.
 - Aksi delete/archive/finalisasi/revisi memakai konfirmasi.
+
+## Pengurus Daerah Page
+
+- Memakai layout, typography, card, tabel, form, badge, dan pagination yang sama dengan Admin.
+- Daftar kompetisi memakai `AdminDataTable` dengan search, filter status, per-page, dan pagination.
+- Form roster memakai surface putih, header abu muda, radius `14px`, dan control radius `8px`.
+- Perbedaan Admin dan PD hanya isi menu, izin, dan tindakan; bukan bahasa visual.
 
 ## Panitia / Scorekeeper Page
 

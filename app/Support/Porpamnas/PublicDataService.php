@@ -17,9 +17,25 @@ class PublicDataService
             ...$data,
             'results' => $this->results(),
             'provinceRankings' => $this->provinceRankings(),
-            'sportTechnicalGuides' => collect(json_decode(file_get_contents(base_path('data/seed/sport_technical_guides.json')), true)),
+            'sportTechnicalGuides' => $this->technicalGuides(),
             'assets' => $this->assets(),
         ];
+    }
+
+    private function technicalGuides()
+    {
+        if (Schema::hasColumn('sport_regulations', 'technical_guide')) {
+            return DB::table('sport_regulations')->join('sports', 'sport_regulations.sport_id', '=', 'sports.id')
+                ->where('sports.is_active', true)->where('sport_regulations.is_active', true)->whereNotNull('sport_regulations.technical_guide')
+                ->orderByDesc('sport_regulations.version')->get(['sports.code as sport_code', 'sport_regulations.technical_guide'])
+                ->unique('sport_code')->map(function ($row) {
+                    $guide = json_decode($row->technical_guide, true) ?: [];
+
+                    return ['sport_code' => $row->sport_code, ...$guide];
+                })->values();
+        }
+
+        return collect(json_decode(file_get_contents(base_path('data/seed/sport_technical_guides.json')), true));
     }
 
     public function adminScoreRows(): array
@@ -119,13 +135,15 @@ class PublicDataService
             'agenda' => DB::table('event_agendas')
                 ->join('venues', 'event_agendas.venue_id', '=', 'venues.id')
                 ->leftJoin('sports', 'event_agendas.sport_id', '=', 'sports.id')
+                ->where('venues.is_active', true)
+                ->where(fn ($query) => $query->whereNull('event_agendas.sport_id')->orWhere('sports.is_active', true))
                 ->whereNotNull('event_agendas.published_at')
                 ->orderBy('event_agendas.date')
                 ->orderBy('event_agendas.start_time')
                 ->select('event_agendas.date', 'event_agendas.day', 'event_agendas.title', 'event_agendas.type', 'event_agendas.start_time', 'event_agendas.end_time', 'event_agendas.time_note', 'sports.code as sport_code', 'sports.name as sport', 'venues.name as venue', 'venues.address as venue_address')
                 ->get(),
-            'sports' => DB::table('sports')->orderBy('name')->get(),
-            'venues' => DB::table('venues')->orderBy('name')->get(),
+            'sports' => DB::table('sports')->where('is_active', true)->orderBy('name')->get(),
+            'venues' => DB::table('venues')->where('is_active', true)->orderBy('name')->get(),
             'pdams' => DB::table('pdams')
                 ->leftJoin('provinces', 'pdams.province_id', '=', 'provinces.id')
                 ->leftJoin('regencies', 'pdams.regency_id', '=', 'regencies.id')
@@ -143,13 +161,23 @@ class PublicDataService
                 : collect(),
             'sportCategories' => DB::table('sport_categories')
                 ->join('sports', 'sport_categories.sport_id', '=', 'sports.id')
+                ->where('sports.is_active', true)
                 ->where('sport_categories.is_active', true)
                 ->orderBy('sport_categories.sort_order')
                 ->select('sports.code as sport_code', 'sport_categories.code', 'sport_categories.name', 'sport_categories.competition_type', 'sport_categories.scoring_type', 'sport_categories.min_members', 'sport_categories.max_members', 'sport_categories.bracket_enabled')
                 ->get(),
+            'sportRegulations' => DB::table('sport_regulations')
+                ->join('sports', 'sport_regulations.sport_id', '=', 'sports.id')
+                ->where('sports.is_active', true)
+                ->where('sport_regulations.is_active', true)
+                ->orderByDesc('sport_regulations.version')
+                ->get(['sports.code as sport_code', 'sport_regulations.version', 'sport_regulations.title', 'sport_regulations.content', 'sport_regulations.document_url'])
+                ->unique('sport_code')->values(),
             'tournamentEvents' => DB::table('tournament_events')
                 ->join('sports', 'tournament_events.sport_id', '=', 'sports.id')
                 ->leftJoin('sport_categories', 'tournament_events.sport_category_id', '=', 'sport_categories.id')
+                ->where('sports.is_active', true)
+                ->where(fn ($query) => $query->whereNull('tournament_events.sport_category_id')->orWhere('sport_categories.is_active', true))
                 ->orderBy('tournament_events.name')
                 ->select('tournament_events.code', 'tournament_events.name', 'tournament_events.format', 'tournament_events.status', 'tournament_events.bracket_size', 'sports.code as sport_code', 'sport_categories.code as category_code')
                 ->get(),
@@ -186,6 +214,7 @@ class PublicDataService
                 'province' => $p['name'],
             ])->values(),
             'sportCategories' => $this->csv('data/seed/sport_categories.csv'),
+            'sportRegulations' => collect(),
             'tournamentEvents' => collect(),
         ];
     }

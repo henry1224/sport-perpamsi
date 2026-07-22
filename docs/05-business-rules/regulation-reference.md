@@ -1,5 +1,15 @@
 # Regulation Reference v1
 
+## Pengelolaan Admin
+
+1. Regulasi dibuat per cabor sebagai versi baru; perubahan substansi tidak menimpa versi yang sudah dipakai.
+2. Admin dapat mengubah metadata dan status aktif tanpa menghilangkan histori versi.
+3. Hanya regulasi aktif yang boleh dipilih untuk publikasi kompetisi.
+4. Regulasi yang sudah dipakai kompetisi tidak boleh dihapus; nonaktifkan agar histori tetap utuh.
+5. Tambah, ubah, nonaktifkan, dan hapus tercatat pada audit master data.
+
+Urutan persiapan: `Master Cabor → Kategori → Regulasi → Master Venue → Data Lomba`.
+
 ## Prinsip
 
 - Regulasi final tetap diputuskan melalui technical meeting panitia.

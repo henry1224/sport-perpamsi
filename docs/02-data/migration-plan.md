@@ -18,6 +18,7 @@ Penghapusan struktur wajib mengikuti [database-lifecycle-standard.md](./database
 11. `sport_assignments`: panitia per cabor dan venue, dilengkapi audit assignment; scope match mengikuti jadwal venue.
 12. `event_agenda_audits`: audit before/after untuk update dan publikasi agenda.
 13. Hapus kategori nonaktif dan seluruh data kompetisi turunannya setelah backup database; migration bersifat forward-only.
+14. Tambah `venues.latitude` dan `venues.longitude` nullable untuk panduan Google Maps.
 12. `audit_logs`, import, dan export jobs.
 
 Status Phase 5: venue memiliki fasilitas, peta, kontak, dan status aktif; agenda memiliki relasi kompetisi, deskripsi, serta waktu publikasi. Agenda seed lama dibackfill sebagai terpublikasi.

@@ -27,6 +27,8 @@
 - [ ] Admin memverifikasi kategori, jumlah pemain, dan sistem pertandingan terhadap panduan teknis slide 5-23.
 - [x] Admin dapat preview, menarik publikasi sebelum ada entry, dan melihat audit publikasi.
 - [ ] Admin dapat menambah, mengedit, dan menonaktifkan venue beserta detailnya.
+- [ ] Admin dapat mencari, mengatur jumlah data per halaman, mengisi koordinat, dan menghapus venue yang belum dipakai.
+- [ ] Peserta dapat membuka panduan venue melalui Google Maps dari halaman publik.
 - [ ] Admin dapat menambah, mengedit, dan mempublikasikan agenda tanpa bentrok venue/waktu; revisi terpublikasi wajib memiliki alasan dan audit.
 - [ ] Admin dapat mengelola kompetisi dan status pendaftaran.
 - [x] Admin dapat melihat, menyetujui, atau menolak registrasi serta pemain per PD PERPAMSI.

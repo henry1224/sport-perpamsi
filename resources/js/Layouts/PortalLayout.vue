@@ -20,7 +20,10 @@ const menuGroups = computed(() => isAdmin.value ? [
     { label: 'Dashboard', href: '/admin/dashboard', icon: 'dashboard' },
   ] },
   { label: 'Persiapan Lomba', items: [
-    { label: 'Master Data', href: '/admin/master-data', icon: 'database' },
+    { label: 'Master Cabor', href: '/admin/master-data?tab=sports', icon: 'database' },
+    { label: 'Kategori', href: '/admin/master-data?tab=categories', icon: 'clipboard' },
+    { label: 'Regulasi', href: '/admin/master-data?tab=regulations', icon: 'report' },
+    { label: 'Master Venue', href: '/admin/venues', icon: 'venue' },
     { label: 'Data Lomba', href: '/admin/events', icon: 'trophy' },
   ] },
   { label: 'Registrasi', items: [
@@ -28,7 +31,7 @@ const menuGroups = computed(() => isAdmin.value ? [
     { label: 'Verifikasi Peserta', href: '/admin/entries', icon: 'users' },
   ] },
   { label: 'Operasional', items: [
-    { label: 'Venue & Agenda', href: '/admin/venue-agenda', icon: 'calendar' },
+    { label: 'Agenda & Jadwal', href: '/admin/agenda', icon: 'calendar' },
     { label: 'Panitia & Akses', href: '/admin/assignments', icon: 'shield' },
     { label: 'Pertandingan & Skor', href: '/admin/skor', icon: 'scoreboard' },
   ] },
@@ -46,7 +49,7 @@ const menuGroups = computed(() => isAdmin.value ? [
   ] },
 ]);
 
-const active = (href) => href && page.url === href;
+const active = (href) => href && page.url.startsWith(href);
 const logout = () => router.post('/logout');
 </script>
 
@@ -60,6 +63,7 @@ const logout = () => router.post('/logout');
       <symbol id="portal-icon-users" viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm6-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-3c0-3 3.1-5 7-5s7 2 7 5v3H2Zm15.5 0v-3c0-1.4-.5-2.7-1.5-3.7 3.3.2 6 1.9 6 4.7v2h-4.5Z" /></symbol>
       <symbol id="portal-icon-shield" viewBox="0 0 24 24"><path d="m12 2 8 3v6c0 5.1-3.4 9.8-8 11-4.6-1.2-8-5.9-8-11V5l8-3Zm0 4.2L8 7.7V11c0 3.2 1.9 6.3 4 7.4 2.1-1.1 4-4.2 4-7.4V7.7l-4-1.5Z" /></symbol>
       <symbol id="portal-icon-calendar" viewBox="0 0 24 24"><path d="M7 2h2v3h6V2h2v3h3v17H4V5h3V2Zm11 9H6v9h12v-9ZM6 7v2h12V7H6Zm2 6h3v3H8v-3Zm5 0h3v3h-3v-3Z" /></symbol>
+      <symbol id="portal-icon-venue" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.6 8 12 8 12s8-6.4 8-12a8 8 0 0 0-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" /></symbol>
       <symbol id="portal-icon-scoreboard" viewBox="0 0 24 24"><path d="M3 4h18v16H3V4Zm3 3v3h4V7H6Zm8 0v3h4V7h-4ZM6 14v3h4v-3H6Zm8 0v3h4v-3h-4Zm-2-7h1v10h-1V7Z" /></symbol>
       <symbol id="portal-icon-report" viewBox="0 0 24 24"><path d="M5 2h10l4 4v16H5V2Zm9 2v4h4l-4-4ZM8 12h8v-2H8v2Zm0 4h8v-2H8v2Zm0 4h6v-2H8v2Z" /></symbol>
       <symbol id="portal-icon-clipboard" viewBox="0 0 24 24"><path d="M9 3h6l1 2h3v17H5V5h3l1-2Zm1.2 2-.5 1h4.6l-.5-1h-3.6ZM8 10v2h8v-2H8Zm0 4v2h8v-2H8Zm0 4v2h5v-2H8Z" /></symbol>
@@ -117,7 +121,11 @@ const logout = () => router.post('/logout');
 </template>
 
 <style>
-.portal-shell { min-height: 100vh; background: #eef3f6; color: #152331; }
+.portal-shell { --portal-bg:#eef3f6; --portal-surface:#fff; --portal-surface-soft:#f7f9fa; --portal-border:#d9e3e9; --portal-border-strong:#c7d4dc; --portal-text:#172535; --portal-muted:#71808b; --portal-primary:#1946a3; --portal-primary-soft:#edf4fc; --portal-success:#087365; --portal-success-soft:#eefaf6; --portal-danger:#a1432e; --portal-danger-soft:#fff4ef; --portal-radius:14px; --portal-control-radius:8px; --portal-shadow:0 8px 24px rgba(25,53,76,.06); min-height: 100vh; background: var(--portal-bg); color: var(--portal-text); }
+.portal-shell, .portal-shell *, html:has(.portal-shell), html:has(.portal-shell) body { scrollbar-color:var(--portal-primary) var(--portal-bg); }
+.portal-shell::-webkit-scrollbar-track, .portal-shell *::-webkit-scrollbar-track, html:has(.portal-shell)::-webkit-scrollbar-track, html:has(.portal-shell) body::-webkit-scrollbar-track { background:var(--portal-bg); }
+.portal-shell::-webkit-scrollbar-thumb, .portal-shell *::-webkit-scrollbar-thumb, html:has(.portal-shell)::-webkit-scrollbar-thumb, html:has(.portal-shell) body::-webkit-scrollbar-thumb { background:var(--portal-primary); border-color:var(--portal-bg); }
+.portal-shell::-webkit-scrollbar-thumb:hover, .portal-shell *::-webkit-scrollbar-thumb:hover, html:has(.portal-shell)::-webkit-scrollbar-thumb:hover, html:has(.portal-shell) body::-webkit-scrollbar-thumb:hover { background:#2a68b7; }
 .portal-icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 .portal-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 50; display: flex; width: 286px; flex-direction: column; overflow: hidden; color: #fff; background: #071126; border-right: 1px solid rgba(54,194,240,.22); }
 .portal-sidebar::after { content: ""; position: absolute; right: -90px; bottom: 80px; width: 220px; height: 220px; border: 34px solid rgba(54,194,240,.06); transform: rotate(18deg); pointer-events: none; }
@@ -151,9 +159,19 @@ const logout = () => router.post('/logout');
 .portal-topbar strong { margin-top: 4px; font-size: 14px; }
 .menu-button { display: none; margin-right: auto; padding: 9px 13px; color: #071126; background: #f6c64a; border: 0; font-weight: 900; text-transform: uppercase; }
 .portal-content { width: min(1440px, 100%); margin: 0 auto; padding: 30px 34px 64px; }
+.portal-content :is(input,select,textarea):focus-visible { border-color:var(--portal-primary)!important; box-shadow:0 0 0 3px rgba(25,70,163,.1)!important; outline:0; }
+.portal-content button:focus-visible,.portal-content a:focus-visible { outline:3px solid rgba(25,70,163,.24); outline-offset:2px; }
 .portal-content .page-head { padding-top: 8px !important; }
-.portal-content .section-title h1, .portal-content .section-title h2 { color: #071126; }
-.portal-content .section-title p { color: #63727e; }
+.portal-content .section-title h1, .portal-content .section-title h2 { color: var(--portal-text); font-weight: 750; }
+.portal-content .section-title p { color: var(--portal-primary); font-weight: 800; }
+.portal-content .section-title span { color: var(--portal-muted); font-weight: 800; }
+.portal-content .portal-card { overflow:hidden; color:var(--portal-text); background:var(--portal-surface); border:1px solid var(--portal-border); border-radius:var(--portal-radius); box-shadow:var(--portal-shadow); }
+.portal-content .portal-card-head { padding:18px 20px; background:var(--portal-surface-soft); border-bottom:1px solid var(--portal-border); }
+.portal-content .portal-field { display:grid; gap:7px; color:#536571; font-size:11px; font-weight:750; }
+.portal-content .portal-field input, .portal-content .portal-field select, .portal-content .portal-field textarea { width:100%; min-height:42px; padding:10px 12px; color:var(--portal-text); background:var(--portal-surface); border:1px solid var(--portal-border-strong); border-radius:var(--portal-control-radius); font:inherit; }
+.portal-content .portal-button { min-height:40px; padding:9px 13px; color:var(--portal-primary); background:var(--portal-surface); border:1px solid var(--portal-border-strong); border-radius:var(--portal-control-radius); font-weight:800; cursor:pointer; }
+.portal-content .portal-button.primary { color:#fff; background:var(--portal-primary); border-color:var(--portal-primary); }
+.portal-content .portal-button.danger { color:var(--portal-danger); background:var(--portal-danger-soft); border-color:#efcfc4; }
 .portal-flash { margin: 18px 34px 0; padding: 12px 16px; font-weight: 800; border-left: 5px solid; }
 .portal-flash.success { color: #0b5f54; background: #dcf7f1; border-color: #20c6b7; }
 .portal-flash.error { color: #8b2c18; background: #ffebe4; border-color: #f05a28; }

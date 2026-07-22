@@ -19,7 +19,7 @@ class TournamentEventPublicationTest extends TestCase
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
         $event = TournamentEvent::query()->whereNull('registration_published_at')->whereNotNull('sport_category_id')->with('category')->firstOrFail();
         $event->entries()->delete();
-        $regulation = SportRegulation::query()->create(['sport_id' => $event->sport_id, 'version' => 1, 'title' => 'Regulasi Uji', 'content' => 'Aturan uji publikasi.', 'is_active' => true, 'created_by' => $admin->id]);
+        $regulation = SportRegulation::query()->create(['sport_id' => $event->sport_id, 'version' => 2, 'title' => 'Regulasi Uji', 'content' => 'Aturan uji publikasi.', 'is_active' => true, 'created_by' => $admin->id]);
 
         $this->actingAs($admin)->post(route('admin.events.publish', $event), [
             'registration_open_at' => now()->subMinute()->toDateTimeString(),
@@ -31,7 +31,7 @@ class TournamentEventPublicationTest extends TestCase
         $this->assertSame('registration_open', $event->status);
         $this->assertSame($admin->id, $event->registration_published_by);
         $this->assertSame($event->category->min_members, $event->registration_rules['min_members']);
-        $this->assertSame(1, $event->registration_rules['regulation_version']);
+        $this->assertSame(2, $event->registration_rules['regulation_version']);
         $this->assertTrue($event->registrationIsOpen());
         $this->assertDatabaseHas('event_publication_audits', ['tournament_event_id' => $event->id, 'action' => 'published']);
 
@@ -67,7 +67,7 @@ class TournamentEventPublicationTest extends TestCase
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
         $admin->update(['account_status' => 'inactive']);
         $event = TournamentEvent::query()->firstOrFail();
-        $regulation = SportRegulation::query()->create(['sport_id' => $event->sport_id, 'version' => 1, 'title' => 'Regulasi Uji', 'content' => 'Aturan uji.', 'is_active' => true]);
+        $regulation = SportRegulation::query()->create(['sport_id' => $event->sport_id, 'version' => 2, 'title' => 'Regulasi Uji', 'content' => 'Aturan uji.', 'is_active' => true]);
 
         $this->actingAs($admin)->post(route('admin.events.publish', $event), [
             'registration_open_at' => now()->toDateTimeString(),
