@@ -61,3 +61,5 @@
 - [ ] Tidak ada status kode mentah pada UI/export.
 - [x] Perubahan master kategori tidak mengubah snapshot kompetisi terpublikasi.
 - [ ] `git diff`, test, build, migration upgrade, dan security review lulus sebelum merge.
+- [ ] Master Cabor hanya menawarkan tipe `Cabang Olahraga` dan `Eksibisi`; Padel, Golf, dan Vokal tampil sebagai `Eksibisi` saat diedit.
+- [ ] Format Bawaan pada form, tabel Master Cabor, dan editor kompetisi memakai label serta nilai yang sama dengan katalog resmi.

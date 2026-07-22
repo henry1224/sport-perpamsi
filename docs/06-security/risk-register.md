@@ -113,3 +113,5 @@ Modul belum `Done` bila:
 2. Test verifikasi belum tersedia.
 3. Audit dan rollback belum jelas untuk perubahan data.
 4. Dokumen ERD, migration, RBAC, test, dan UAT belum selaras.
+| Tipe cabor tidak konsisten antara UI dan database | Sedang | Backend hanya menerima `sport` atau `exhibition`; migration membackfill Padel, Golf, dan Vokal | `MasterDataTest` dan UAT edit master cabor |
+| Format bawaan tidak dikenal saat kompetisi dibuat | Tinggi | Satu daftar format backend dipakai validasi dan dikirim ke UI; migration menyelaraskan master existing | `MasterDataTest` dan `TournamentEventPublicationTest` |

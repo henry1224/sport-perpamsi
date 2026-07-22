@@ -7,6 +7,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sport extends Model
 {
+    public const FORMAT_LABELS = [
+        'knockout' => 'Knockout',
+        'group' => 'Fase Grup',
+        'group_or_knockout' => 'Fase Grup atau Knockout',
+        'group_then_knockout' => 'Fase Grup lalu Knockout',
+        'round_robin' => 'Round Robin',
+        'swiss' => 'Swiss',
+        'score_ranking' => 'Peringkat Skor',
+        'single_performance_ranking' => 'Sekali Tampil lalu Peringkat',
+        'fun_games' => 'Fun Games',
+    ];
+
     protected $guarded = [];
 
     protected $casts = ['is_active' => 'boolean'];

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Sport;
 use App\Models\SportRegulation;
 use App\Models\TournamentEvent;
 use Illuminate\Http\RedirectResponse;
@@ -54,6 +55,7 @@ class TournamentEventController extends Controller
                 ]),
             'audits' => DB::table('event_publication_audits')->join('tournament_events', 'event_publication_audits.tournament_event_id', '=', 'tournament_events.id')->latest('event_publication_audits.created_at')->limit(20)->get(['event_publication_audits.id', 'tournament_events.name as event', 'event_publication_audits.action', 'event_publication_audits.created_at']),
             'filters' => ['search' => $search, 'status' => $status, 'per_page' => $perPage],
+            'sportFormats' => Sport::FORMAT_LABELS,
         ]);
     }
 
@@ -115,7 +117,7 @@ class TournamentEventController extends Controller
             throw ValidationException::withMessages(['format' => 'Format kompetisi terkunci setelah dipublikasikan atau memiliki peserta.']);
         }
 
-        $data = $request->validate(['format' => ['required', 'string', 'max:60']]);
+        $data = $request->validate(['format' => ['required', Rule::in(array_keys(Sport::FORMAT_LABELS))]]);
         $event->update($data);
 
         return back()->with('success', 'Format kompetisi diperbarui.');

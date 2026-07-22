@@ -49,9 +49,16 @@ class MasterDataTest extends TestCase
     {
         $this->seed();
 
-        $this->assertDatabaseHas('sports', ['code' => 'badminton', 'default_format' => 'group_or_knockout', 'score_template' => 'rally_point_21_best_of_3']);
-        $this->assertDatabaseHas('sports', ['code' => 'chess', 'default_format' => 'swiss']);
-        $this->assertDatabaseHas('sports', ['code' => 'padel', 'default_format' => 'fun_games']);
+        foreach ([
+            'volleyball' => 'group_then_knockout', 'chess' => 'swiss', 'badminton' => 'group_or_knockout',
+            'table-tennis' => 'group_then_knockout', 'tennis' => 'group_then_knockout', 'golf' => 'score_ranking',
+            'padel' => 'fun_games', 'vocal' => 'single_performance_ranking', 'mini-football' => 'group_then_knockout',
+        ] as $code => $format) {
+            $this->assertDatabaseHas('sports', ['code' => $code, 'default_format' => $format]);
+        }
+        $this->assertDatabaseHas('sports', ['code' => 'padel', 'type' => 'exhibition']);
+        $this->assertDatabaseHas('sports', ['code' => 'golf', 'type' => 'exhibition']);
+        $this->assertDatabaseHas('sports', ['code' => 'vocal', 'type' => 'exhibition']);
         $this->assertDatabaseHas('sport_categories', ['code' => 'veteran-u45', 'name' => 'Ganda Veteran U45', 'min_members' => 2, 'max_members' => 2]);
         $this->assertDatabaseHas('sport_categories', ['code' => 'individual-fast', 'name' => 'Perorangan Cepat', 'min_members' => 2, 'max_members' => 2]);
         $this->assertDatabaseHas('sport_categories', ['code' => 'mens-team-veteran-40', 'min_members' => 6, 'max_members' => 6]);
