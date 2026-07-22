@@ -18,7 +18,8 @@ erDiagram
     TOURNAMENT_EVENT ||--o{ EVENT_AGENDA : scheduled_as
     VENUE ||--o{ EVENT_AGENDA : hosts
     TOURNAMENT_EVENT ||--o{ MATCH : contains
-    VENUE ||--o{ MATCH : hosts
+VENUE ||--o{ MATCH : hosts
+EVENT_AGENDA ||--o{ MATCH : schedules
     EVENT_ENTRY ||--o{ MATCH : participates
     MATCH ||--|| MATCH_SCORE : records
     MATCH ||--o{ SCORE_AUDIT : audited_by

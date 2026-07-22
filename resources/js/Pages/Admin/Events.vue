@@ -4,6 +4,7 @@ import { ref, watch } from 'vue';
 import AdminDataTable from '../../Components/AdminDataTable.vue';
 import PortalLayout from '../../Layouts/PortalLayout.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
+import { formatDateTime } from '../../lib/date';
 
 const props = defineProps({ events: Object, filters: Object, audits: Array });
 const rows = ref(props.events.data.map((event) => ({ ...event })));
@@ -68,7 +69,7 @@ const close = (event) => {
       </table>
     </AdminDataTable>
 
-    <section class="audit-card"><header><div><span>Audit Publikasi</span><h2>Aktivitas Kompetisi</h2></div><b>{{ audits.length }} aktivitas terbaru</b></header><div class="audit-list"><article v-for="item in audits" :key="item.id"><div><strong>{{ item.event }}</strong><small>{{ item.created_at }}</small></div><span>{{ { published: 'Dipublikasikan', republished: 'Dipublikasikan Ulang', closed: 'Ditutup', unpublished: 'Ditarik' }[item.action] || item.action }}</span></article><p v-if="!audits.length">Belum ada aktivitas publikasi.</p></div></section>
+    <section class="audit-card"><header><div><span>Audit Publikasi</span><h2>Aktivitas Kompetisi</h2></div><b>{{ audits.length }} aktivitas terbaru</b></header><div class="audit-list"><article v-for="item in audits" :key="item.id"><div><strong>{{ item.event }}</strong><small>{{ formatDateTime(item.created_at) }}</small></div><span>{{ { published: 'Dipublikasikan', republished: 'Dipublikasikan Ulang', closed: 'Ditutup', unpublished: 'Ditarik' }[item.action] || item.action }}</span></article><p v-if="!audits.length">Belum ada aktivitas publikasi.</p></div></section>
   </PortalLayout>
 </template>
 

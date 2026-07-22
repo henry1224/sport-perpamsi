@@ -7,6 +7,7 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 - Feature test memastikan hanya Admin mengelola venue/agenda.
 - Feature test memastikan rentang waktu bertabrakan pada venue dan tanggal sama ditolak.
 - Migration PostgreSQL dan build frontend wajib lulus sebelum merge.
+- Feature test memastikan panitia tanpa assignment melihat daftar kosong dan URL di luar scope menghasilkan `403`.
 
 ## Backend Feature Tests
 

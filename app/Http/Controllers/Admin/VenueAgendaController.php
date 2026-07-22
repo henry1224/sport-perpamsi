@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\EventAgenda;
 use App\Models\Sport;
 use App\Models\TournamentEvent;
+use App\Models\TournamentMatch;
 use App\Models\Venue;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,6 +26,7 @@ class VenueAgendaController extends Controller
             'venues' => Venue::query()->orderBy('name')->get(),
             'sports' => Sport::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'events' => TournamentEvent::query()->orderBy('name')->get(['id', 'name', 'sport_id']),
+            'matches' => TournamentMatch::query()->with('tournamentEvent:id,name')->orderBy('code')->get(['id', 'code', 'tournament_event_id', 'event_agenda_id']),
             'agendas' => EventAgenda::query()->join('venues', 'event_agendas.venue_id', '=', 'venues.id')
                 ->leftJoin('sports', 'event_agendas.sport_id', '=', 'sports.id')
                 ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
@@ -75,6 +77,16 @@ class VenueAgendaController extends Controller
         $agenda->update(['published_at' => now()]);
 
         return back()->with('success', 'Agenda berhasil dipublikasikan.');
+    }
+
+    public function scheduleMatch(Request $request, TournamentMatch $match): RedirectResponse
+    {
+        $data = $request->validate(['event_agenda_id' => ['required', 'exists:event_agendas,id']]);
+        $agenda = EventAgenda::query()->findOrFail($data['event_agenda_id']);
+        abort_if($agenda->tournament_event_id && $agenda->tournament_event_id !== $match->tournament_event_id, 422, 'Agenda tidak sesuai kompetisi pertandingan.');
+        $match->update(['event_agenda_id' => $agenda->id, 'venue_id' => $agenda->venue_id, 'scheduled_at' => $agenda->date->format('Y-m-d').' '.$agenda->start_time]);
+
+        return back()->with('success', 'Pertandingan berhasil ditempatkan pada agenda.');
     }
 
     private function venueData(Request $request, ?Venue $venue = null): array

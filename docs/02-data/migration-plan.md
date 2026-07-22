@@ -19,6 +19,7 @@ Penghapusan struktur wajib mengikuti [database-lifecycle-standard.md](./database
 12. `audit_logs`, import, dan export jobs.
 
 Status Phase 5: venue memiliki fasilitas, peta, kontak, dan status aktif; agenda memiliki relasi kompetisi, deskripsi, serta waktu publikasi. Agenda seed lama dibackfill sebagai terpublikasi.
+Match memiliki relasi agenda, venue, dan waktu mulai; scope panitia mengikuti kombinasi cabor kompetisi dan venue match.
 
 Phase 2 memakai `sport_regulations` untuk versi regulasi dan `master_data_audits` untuk audit perubahan cabor/kategori/regulasi. Master dinonaktifkan, bukan dihapus permanen.
 

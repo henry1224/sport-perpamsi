@@ -2,6 +2,7 @@
 import { router, useForm } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
+import { formatDateTime } from '../../lib/date';
 
 const props = defineProps({ application: Object, applicant: Object });
 const form = useForm({ ...props.applicant });
@@ -22,7 +23,7 @@ const resubmit = () => form.put('/registration-status');
       <span>{{ labels[application.status] }}</span>
       <h2>{{ application.status === 'verified' ? 'Akses Pengurus Daerah sudah aktif.' : 'Pengajuan sedang diproses.' }}</h2>
       <p v-if="application.review_note"><b>Catatan Admin:</b> {{ application.review_note }}</p>
-      <p>Terakhir diperbarui {{ application.updated_at }}.</p>
+      <p>Terakhir diperbarui {{ formatDateTime(application.updated_at) }}.</p>
       <form v-if="application.status === 'revision_required'" @submit.prevent="resubmit">
         <label><span>Nama</span><input v-model="form.name" required /><small v-if="form.errors.name">{{ form.errors.name }}</small></label>
         <label><span>Jabatan</span><input v-model="form.position" required /><small v-if="form.errors.position">{{ form.errors.position }}</small></label>

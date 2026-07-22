@@ -4,6 +4,7 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 
 - Agenda ganda pada venue sama dikendalikan dengan validasi irisan waktu pada create/update; concurrency database diuji sebelum go-live.
 - Venue nonaktif tidak dapat dipilih untuk agenda baru; agenda lama tetap dipertahankan untuk histori.
+- Kebocoran match lintas assignment dimitigasi dengan query scope dan pemeriksaan objek pada route detail; tanpa assignment menghasilkan daftar kosong.
 
 ## Skala
 

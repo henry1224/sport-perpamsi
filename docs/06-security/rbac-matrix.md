@@ -1,5 +1,8 @@
 # RBAC Matrix Sport PERPAMSI
 
+- Scorekeeper dan Koordinator Cabor hanya dapat melihat match dengan kombinasi cabor dan venue pada assignment aktif.
+- Akses tanpa assignment atau melalui URL match di luar scope menghasilkan `403`.
+
 ## Role
 
 1. Super Admin.
