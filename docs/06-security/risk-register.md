@@ -61,6 +61,8 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 
 ## Venue, Agenda, dan Jadwal
 
+Backup database wajib dibuat sebelum migration penghapusan kategori nonaktif. Recovery memakai restore backup karena migration bersifat forward-only.
+
 | Risiko | Dampak | Kontrol wajib | Verifikasi |
 |---|---|---|---|
 | Venue dipakai dua kegiatan pada waktu sama | Tinggi | Deteksi overlap dalam transaksi | Feature test overlap |

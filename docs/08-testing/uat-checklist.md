@@ -51,6 +51,8 @@
 
 ## Data dan Operasional
 
+- [ ] Setelah backup dan migration cleanup, hanya kategori aktif yang tersisa; kompetisi dan data turunan kategori nonaktif tidak tampil atau tersisa.
+
 - [ ] Seeder ulang tidak menimpa perubahan Admin.
 - [ ] Import memiliki preview dan rollback saat invalid.
 - [ ] Backup dan restore sudah diuji.

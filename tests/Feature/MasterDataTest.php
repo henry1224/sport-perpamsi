@@ -54,6 +54,7 @@ class MasterDataTest extends TestCase
         $this->assertDatabaseHas('sport_categories', ['code' => 'mens-team', 'name' => 'Putra', 'min_members' => 12, 'max_members' => 12]);
         $this->assertDatabaseHas('sport_categories', ['code' => 'executive', 'name' => 'Eksibisi Eksekutif', 'min_members' => 4, 'max_members' => 4]);
         $this->assertDatabaseHas('sport_categories', ['code' => 'individual', 'name' => 'Individual', 'min_members' => 1, 'max_members' => null]);
+        $this->assertSame(0, DB::table('sport_categories')->where('is_active', false)->count());
     }
 
     public function test_public_sport_page_receives_categories_and_technical_guides(): void
