@@ -16,11 +16,14 @@ Baseline JSON bukan tempat transaksi dan belum memiliki CRUD. Tambah tabel/CRUD 
 
 ## Aturan Kuota
 
-- `min_members` selalu minimal 1.
-- `max_members` boleh `null` jika panduan tidak menyebut batas maksimum.
-- Nilai pasti tetap divalidasi pada registrasi.
-- Snapshot `max_members = null` tetap berarti tidak dibatasi walau master berubah setelah publikasi.
+- Setiap kategori ditetapkan sebagai unit `individual`, `pair`, atau `team`.
+- Technical meeting wajib menetapkan `max_teams_per_pd >= 1` untuk setiap kompetisi; tidak ada kuota global per cabor dan nilai null tidak diizinkan saat publish.
+- `min_teams_per_pd` default 1.
+- `min_members_per_team` dan `max_members_per_team` wajib terisi; individual `1/1`, pasangan `2/2`, beregu mengikuti regulasi.
+- Nilai pasti divalidasi dari snapshot registrasi.
+- Perubahan master/technical meeting berikutnya tidak mengubah snapshot kompetisi terpublikasi.
 - Official, pelatih, manajer, dan pendamping tidak masuk `entry_members`.
+- Detail unit peserta mengikuti [standar multi-team](../02-data/team-entry-standard.md).
 
 ## Alur Data
 
@@ -40,13 +43,14 @@ Panduan Teknis
 
 - nama dan ikon cabor jika aset tersedia;
 - jadwal, venue, dan alamat;
-- kategori serta kuota pemain;
+- kategori, unit peserta, batas team per PD, dan anggota per team;
 - sistem pertandingan dan syarat peserta;
 - ketentuan official dan biaya;
 - format bawaan serta nomor slide sumber.
 
 ## Ambiguitas Terbuka
 
-- Golf tidak memiliki maksimum peserta pada panduan; sistem memakai minimum satu tanpa maksimum.
+- Golf tidak memiliki maksimum peserta pada panduan; technical meeting wajib menetapkan `max_teams_per_pd` sebelum kompetisi dipublikasikan.
 - Tenis Meja Ganda Campuran dibaca sebagai satu pasangan sampai klarifikasi resmi.
-- Kuota lintas kategori Tenis Lapangan perlu konfirmasi; validasi saat ini berlaku per kategori.
+- Kuota lintas kategori Tenis Lapangan perlu konfirmasi; validasi target berlaku per kompetisi/kategori.
+- Katalog tidak menyimpan angka kuota team global; keputusan technical meeting menjadi snapshot kompetisi.

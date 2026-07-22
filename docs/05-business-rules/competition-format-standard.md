@@ -1,7 +1,10 @@
 # Competition Format Standard v1
 
+> Format non-knockout (group stage, round robin, Swiss, time/distance/score ranking) belum memiliki struktur data pendukung. Drift dan aksi lihat `docs/00-project/audit-2026-07-22.md` (D18).
+
 ## Prinsip
 
+- Participant seluruh format adalah `EntryTeam`, termasuk kategori individual yang memiliki satu anggota.
 - Sistem kompetisi harus dikunci per cabor sebelum jadwal dibuat.
 - v1 mendukung format sederhana yang umum dipakai event nasional: grup/setengah kompetisi dan knockout.
 - Detail teknis cabor mengikuti technical meeting dan regulasi federasi/panitia.
@@ -46,7 +49,16 @@
 | Lari/renang | Heat lalu final | Waktu terbaik |
 | Panahan/menembak | Kualifikasi nilai lalu knockout/final | Nilai tertinggi |
 
-Format bawaan berasal dari master cabor dan menjadi nilai kompetisi draft. Setelah registrasi dipublikasikan atau peserta masuk, format kompetisi terkunci. Kuota pemain merupakan aturan kategori terpisah dan tidak diturunkan dari nama format.
+Format bawaan berasal dari master cabor dan menjadi nilai kompetisi draft. Setelah registrasi dipublikasikan atau peserta masuk, format kompetisi terkunci. Kuota team dan anggota per team merupakan snapshot terpisah dan tidak diturunkan dari nama format.
+
+## Pairing Multi-Team Satu PD
+
+- `avoid_same_pd_in_round` disimpan pada snapshot registrasi dan seeding; default `true`.
+- Generator best-effort memisahkan team dari PD sama pada penempatan ronde awal bila alternatif valid tersedia.
+- Bila mustahil, relaksasi dilakukan deterministik dengan meminimalkan pertemuan paling awal.
+- Seeding snapshot mencatat versi algoritme, entrant team, konflik yang tak terhindarkan, dan urutan relaksasi.
+- Aturan ini tidak menjamin team satu PD tidak bertemu pada ronde lanjutan karena hasil pertandingan belum diketahui.
+- Detail mengikuti [standar multi-team](../02-data/team-entry-standard.md).
 
 ## Referensi
 

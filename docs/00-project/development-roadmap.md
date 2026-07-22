@@ -59,7 +59,23 @@ Exit: hanya paket kompetisi yang disahkan Admin dapat dipilih PD.
 - [x] Validasi memakai snapshot regulasi kompetisi.
 - [x] Workflow draft, submit, verifikasi, perbaikan, penolakan, kirim ulang, pembatalan, dan audit roster.
 
-Exit: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy terverifikasi aman.
+Exit baseline: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy terverifikasi aman.
+
+## Phase 4B — Multi-Team Registration (Dependency Wajib)
+
+- [ ] `EventEntry` menjadi satu parent registrasi PD/kompetisi.
+- [ ] `EntryTeam` menjadi unit peserta seed, match, hasil, standing, dan medali.
+- [ ] Technical meeting menetapkan unit, `max_teams_per_pd`, dan batas anggota per team pada setiap kompetisi.
+- [ ] Snapshot publikasi menyimpan kuota team/member serta `avoid_same_pd_in_round=true`.
+- [ ] Label team dibentuk server dan nomor team immutable.
+- [ ] Verifikasi hybrid parent default + override team tersedia dan diaudit.
+- [ ] Perpindahan/substitusi pemain antar-team setelah verified dilarang total.
+- [ ] Entry/member/match legacy dibackfill ke team `#1` tanpa rebuild hasil lama.
+- [ ] Feature test, concurrency test, migration upgrade, risk control, dan UAT multi-team lulus.
+
+Exit: model participant konsisten dari registrasi sampai medali; seluruh team aktif efektif verified sebelum seed; tidak ada risiko kritis multi-team terbuka.
+
+Phase 4B adalah dependency minimum Phase 6. Phase 5 boleh menyelesaikan UAT venue/agenda, tetapi tidak boleh ditutup dan phase aktif tidak boleh maju sampai Phase 4B selesai atau pengecualian formal disetujui.
 
 ## Phase 5 — Venue, Agenda, dan Panitia
 
@@ -75,7 +91,9 @@ Audit implementasi: [phase-1-5-flow-audit.md](./phase-1-5-flow-audit.md). Phase 
 
 ## Phase 6 — Kompetisi dan Skor
 
-- [ ] Seeding/grup/bracket manager.
+> Beku sampai seluruh exit criteria Phase 4B terpenuhi; seluruh participant operasi turnamen wajib `EntryTeam`.
+
+- [ ] Seeding/grup/bracket manager affiliation-aware.
 - [ ] Precondition bracket lock.
 - [ ] Input skor idempotent.
 - [ ] Finalisasi dan revisi beralasan.

@@ -1,5 +1,7 @@
 # Data Dictionary Target
 
+> Drift antara kolom yang ditulis di sini dan migration nyata dicatat pada `docs/00-project/audit-2026-07-22.md` (D5, D6, D7, D24).
+
 ## Venue dan Agenda Phase 5
 
 - `venues.is_active`: hanya venue aktif dapat dipilih untuk agenda baru.
@@ -34,7 +36,7 @@
 ## Sport dan Category
 
 - `sports`: code, name, type, description, active.
-- `sport_categories`: sport_id, code, name, competition_type, scoring_type, min_members, max_members nullable, active. `max_members = null` berarti panduan tidak menetapkan maksimum.
+- Kondisi kode saat ini: `sport_categories` menyimpan sport_id, code, name, competition_type, scoring_type, min_members, max_members nullable, active. Target Phase 4B memisahkan unit peserta, kuota team per PD, dan anggota per team pada snapshot kompetisi; publish tidak menerima batas null.
 - `sport_regulations`: sport_id, version, title, content, document_url, is_active, created_by.
 - `master_data_audits`: entity_type, entity_id, action, before_json, after_json, user_id.
 
@@ -48,28 +50,38 @@
 - `sport_id`, `sport_category_id`, `sport_rule_id`.
 - `code`, `name`, `format`, `status`, `registration_open_at`, `registration_close_at`, `seed_locked_at`.
 - `registration_published_at`, `registration_published_by`: waktu dan Admin yang menetapkan paket registrasi resmi.
-- `registration_rules`: snapshot kategori, format, tipe skor, serta batas pemain saat publikasi; key maksimum bernilai null harus dipertahankan sebagai tanpa batas.
+- `registration_rules`: snapshot kategori, format, tipe skor, `participant_unit`, `min_teams_per_pd`, `max_teams_per_pd`, `min_members_per_team`, `max_members_per_team`, `avoid_same_pd_in_round`, serta versi regulasi. Semua batas wajib terisi; `max_teams_per_pd >= 1`.
 - `sport_regulation_id`: versi regulasi resmi yang dipilih Admin untuk kompetisi.
 - `event_publication_audits`: action, before/after, aktor, dan waktu publish, publish ulang, tutup, atau tarik publikasi.
 
 ## EventEntry
 
-- `regional_committee_id`: PD peserta.
-- `tournament_event_id`: kompetisi.
-- `registration_key`: key unik `{event_id}:{regional_committee_id}` untuk registrasi baru; null pada data legacy.
-- `display_name`: snapshot nama PD PERPAMSI.
-- `verification_status`, `submitted_at`, `verified_by`, `verified_at`, `verification_note`.
-- Status roster: `draft`, `pending`, `revision_required`, `verified`, `rejected`, `cancelled`.
-- `entry_registration_audits`: action, before/after roster, aktor, dan waktu perubahan.
-- `pdam_id`, `province_id`, `regency_id`, `athlete_1`, `athlete_2`, `team_name`: kolom legacy sementara, tidak ditulis flow baru.
+- Parent administratif unik per `regional_committee_id + tournament_event_id`.
+- `registration_key`: key unik `{event_id}:{regional_committee_id}`; null hanya pada data legacy sebelum backfill.
+- `verification_status`: default seluruh team (`draft`, `pending`, `revision_required`, `verified`, `rejected`, `cancelled`).
+- `submitted_at`, `verified_by`, `verified_at`, `verification_note`.
+- `entry_registration_audits`: action, before/after parent/team/roster, aktor, alasan, dan waktu.
+- `pdam_id`, `province_id`, `regency_id`, `athlete_1`, `athlete_2`, `team_name`: kolom legacy sementara, tidak ditulis flow target.
+
+## EntryTeam (Target Phase 4B)
+
+- `event_entry_id`: parent registrasi.
+- `team_no`: integer positif, unik per parent, dialokasikan server, immutable setelah submit.
+- `display_name_snapshot`: `PD PERPAMSI {provinsi} #{team_no}` bila snapshot histori diperlukan.
+- `verification_status_override`: nullable; effective status = override atau status parent.
+- `verification_note`, `verified_by`, `verified_at`, `cancelled_at` untuk keputusan override.
+- `seed_no` dan referensi seeding/match berada pada unit team, bukan parent.
+- Team yang sudah dipakai operasi turnamen tidak dihapus; gunakan status.
 
 ## EntryMember
 
-- `event_entry_id`, `name`, `normalized_name`, `member_type`, `gender`, `shirt_number`, `position`.
-- Unique `event_entry_id + normalized_name` mencegah nama pemain ganda dalam satu roster.
-- `identity_hash`/identitas terkontrol untuk pencegahan duplikasi sesuai kebijakan privasi.
+- Target: `entry_team_id`, `name`, `normalized_name`, `member_type`, `gender`, `shirt_number`, `position`.
+- Identitas kanonik/`identity_hash` mencegah pemain sama berada pada dua team dalam kompetisi yang sama.
+- `entry_team_id` tidak dapat dipindahkan setelah team efektif verified.
 - `status` dan catatan verifikasi bila verifikasi per pemain dipakai.
 - Official tidak masuk tabel ini.
+
+Semantik parent, team, status efektif, dan penguncian roster mengikuti [standar multi-team](./team-entry-standard.md).
 
 ## Venue
 
@@ -92,7 +104,7 @@
 
 ## Match, Score, Audit
 
-- Match menyimpan event, venue, slot entry, jadwal, status, pemenang.
+- Target Phase 6: Match menyimpan event, venue, slot `entry_team`, jadwal, status, dan pemenang team.
 - MatchScore menyimpan payload skor dan aktor verifikasi.
 - Audit menyimpan before/after, alasan, aktor, dan waktu secara append-only.
 

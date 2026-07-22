@@ -8,9 +8,9 @@ Aturan: status akun dan scope PD/cabor/match diperiksa pada setiap write.
 
 ## Regional Delegation
 
-Entities: Province, RegionalCommittee, EventEntry, EntryMember, VerificationRecord.
+Entities: Province, RegionalCommittee, EventEntry, EntryTeam, EntryMember, VerificationRecord.
 
-Aturan: satu provinsi satu PD PERPAMSI; entry dan pemain tidak bergantung pada PDAM.
+Aturan: satu provinsi satu PD PERPAMSI; satu `EventEntry` menjadi parent registrasi PD/kompetisi; satu atau lebih `EntryTeam` menjadi unit peserta; pemain tidak bergantung pada PDAM dan dimiliki tepat satu team. Status efektif team mengikuti override team atau status default parent sesuai [standar multi-team](../02-data/team-entry-standard.md).
 
 ## Competition Master
 
@@ -20,9 +20,9 @@ Aturan: peraturan berversi, `max_members` dapat null, publikasi membuat snapshot
 
 ## Tournament Operations
 
-Entities: Match, MatchScore, ScoreAudit, Bracket, Standing, MedalRanking.
+Entities: EntryTeam, SeedingSnapshot, Match, MatchScore, ScoreAudit, Bracket, Standing, MedalRanking.
 
-Aturan: bracket lock memiliki precondition, skor final direvisi melalui workflow audit.
+Aturan: seed, bracket, match, hasil, standing, dan medali menunjuk `EntryTeam`; bracket lock memiliki precondition effective status verified dan menyimpan participant/roster snapshot; skor final direvisi melalui workflow audit.
 
 ## Public and Reporting
 

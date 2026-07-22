@@ -18,6 +18,24 @@
 - [x] Jumlah dan duplikasi pemain divalidasi sesuai snapshot regulasi kompetisi.
 - [x] Status registrasi dan event pada portal PD tampil dalam Bahasa Indonesia.
 
+## Phase 4B — Multi-Team
+
+- [ ] Technical meeting menetapkan batas team per PD dan anggota per team untuk setiap kompetisi; publish tanpa batas lengkap ditolak.
+- [ ] PD melihat satu parent registrasi dan daftar team bernomor pada kategori yang sama.
+- [ ] PD dapat menambah team sampai batas snapshot dan menerima pesan Bahasa Indonesia saat batas tercapai.
+- [ ] Team individual berisi satu pemain, pasangan berisi dua pemain, dan beregu mengikuti snapshot.
+- [ ] Label team otomatis `PD PERPAMSI {provinsi} #{team_no}` dan tidak dapat diubah PD.
+- [ ] Admin dapat memverifikasi seluruh parent sekaligus.
+- [ ] Admin dapat meminta revisi/menolak hanya satu team tanpa mengubah team saudara.
+- [ ] UI membedakan status parent, override, dan effective status dengan label Indonesia.
+- [ ] Reset override mengembalikan team ke status parent dan tercatat audit.
+- [ ] Pemindahan/substitusi pemain antar-team setelah verified ditolak dengan pesan Indonesia.
+- [ ] Team belum efektif verified tidak masuk seed/bracket.
+- [ ] Pairing ronde awal memisahkan team satu PD bila alternatif tersedia; relaksasi mustahil terlihat pada audit Admin.
+- [ ] Public peserta, bracket, dan hasil menampilkan label team bernomor.
+- [ ] Satu PD dapat memperoleh beberapa medali kategori sama dan semua medali masuk klasemen agregat.
+- [ ] Team cancelled mempertahankan nomor dan histori; nomor tidak dipakai ulang.
+
 ## Master Admin
 
 - [x] Admin dapat mengelola cabor dan kategori tanpa menghapus histori.
@@ -46,7 +64,7 @@
 ## Public dan Hasil
 
 - [ ] Public melihat agenda terbit, venue, cabor, bracket, hasil, dan klasemen.
-- [ ] Nama peserta publik memakai `PD PERPAMSI {provinsi}`.
+- [ ] Nama participant publik memakai `PD PERPAMSI {provinsi} #{team_no}`; klasemen agregat memakai nama PD tanpa nomor.
 - [ ] Draft dan data pribadi tidak tampil publik.
 - [ ] Klasemen hanya memakai hasil final/terverifikasi.
 - [ ] Revisi hasil memperbarui public dan tetap memiliki audit.

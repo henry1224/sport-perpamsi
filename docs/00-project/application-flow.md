@@ -45,15 +45,18 @@ Status: `Partial` — tabel dan seeder dasar tersedia; CRUD Admin belum lengkap.
 
 Status: `Done` — daftar, status pengajuan, verifikasi/perbaikan/penolakan Admin, audit, unique pengajuan aktif, dan blokir akun belum terverifikasi tersedia.
 
-### 3. Registrasi Cabor dan Pemain
+### 3. Registrasi Cabor, Team, dan Pemain
 
 1. Pengurus Daerah hanya melihat kompetisi/cabor/kategori yang dipublikasikan Admin.
-2. Sistem membuat registrasi atas nama PD PERPAMSI.
-3. Pengurus Daerah memasukkan pemain sesuai snapshot regulasi yang sudah fix saat publikasi.
-4. Admin/verifikator memeriksa dan memberi status Indonesia.
-5. Hanya registrasi terverifikasi masuk kompetisi.
+2. Technical meeting menetapkan unit peserta, batas team per PD, dan anggota per team sebelum publish.
+3. Sistem membuat satu parent `EventEntry` atas nama PD PERPAMSI.
+4. PD membuat `EntryTeam` sampai batas snapshot dan memasukkan pemain per team.
+5. Label team dibentuk server sebagai `PD PERPAMSI {provinsi} #{team_no}`.
+6. Admin memverifikasi default parent dan dapat memberi override team tertentu.
+7. Hanya team dengan effective status verified masuk seed, grup, bracket, match, dan klasemen.
+8. Perpindahan pemain antar-team setelah verified dilarang total.
 
-Status: `Partial` — filter publikasi, snapshot regulasi, periode, dan kontrol publish/tutup Admin tersedia; preview, audit event, serta revisi roster belum lengkap.
+Status: `Target Phase 4B` — kode saat ini baru mendukung single-roster `EventEntry → EntryMember`; parent/team, verifikasi hybrid, kuota dinamis, dan roster immutable belum diimplementasikan. Sumber: `docs/02-data/team-entry-standard.md`.
 
 ### 4. Penugasan Panitia
 
@@ -62,7 +65,7 @@ Status: `Partial` — filter publikasi, snapshot regulasi, periode, dan kontrol 
 3. Policy backend membatasi menu dan action berdasarkan assignment.
 4. Penonaktifan akun langsung memblokir akses.
 
-Status: `Planned`.
+Status: `Partial` — assignment cabor/venue + policy scope panitia tersedia dan diuji (`SportAssignmentTest`, `StaffMatchScopeTest`); menu panitia dan penonaktifan session eksplisit belum lengkap. Detail drift pada `docs/00-project/audit-2026-07-22.md` D19.
 
 ### 5. Agenda dan Pertandingan
 
@@ -77,7 +80,7 @@ Status: `Partial` — input skor dasar tersedia; CRUD agenda, assignment, lock, 
 ### 6. Publikasi
 
 1. Public hanya membaca agenda terbit serta hasil final/terverifikasi.
-2. Peserta, bracket, hasil, dan klasemen memakai `PD PERPAMSI {provinsi}`.
+2. Peserta, bracket, dan hasil kategori memakai `PD PERPAMSI {provinsi} #{team_no}`; klasemen agregat memakai nama PD tanpa nomor.
 3. Draft, data pribadi, ID internal, dan audit tidak tampil publik.
 4. Cache diinvalidasi saat publikasi/finalisasi/revisi.
 

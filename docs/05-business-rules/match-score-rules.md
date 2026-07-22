@@ -1,5 +1,7 @@
 # Match dan Score Rules
 
+> Kode saat ini memakai vocabulary status Inggris (`scheduled/live/final/verified/disputed`) tanpa CHECK enum dan tanpa state machine. Drift dan aksi lihat `docs/00-project/audit-2026-07-22.md` (D14).
+
 ## Status Match
 
 1. draft: match belum siap dipublish.
@@ -18,6 +20,9 @@
 - Match final tidak bisa diedit langsung.
 - Revisi skor final wajib memiliki alasan.
 - Semua perubahan skor penting masuk audit log.
+- Match menunjuk dua `EntryTeam` dari kompetisi sama dan menyimpan snapshot label/roster participant.
+- Team efektif verified terkunci; pencabutan verifikasi setelah bracket lock wajib workflow unlock/reseed resmi.
+- Perpindahan atau substitusi anggota antar-team setelah verified dilarang total.
 
 ## Aturan Ranking
 

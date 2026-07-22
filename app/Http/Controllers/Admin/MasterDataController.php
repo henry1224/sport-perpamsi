@@ -173,18 +173,19 @@ class MasterDataController extends Controller
 
     private function categoryData(Request $request, ?SportCategory $category = null): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'sport_id' => ['required', 'exists:sports,id'],
             'code' => ['required', 'string', 'max:30', 'alpha_dash:ascii', Rule::unique('sport_categories')->where('sport_id', $request->input('sport_id'))->ignore($category)],
             'name' => ['required', 'string', 'max:100'],
             'competition_type' => ['required', Rule::in(['single', 'doubles', 'team'])],
             'min_members' => ['required', 'integer', 'min:1'],
             'max_members' => ['nullable', 'integer', 'gte:min_members', 'max:100'],
-            'scoring_type' => ['required', 'string', 'max:50'],
             'bracket_enabled' => ['required', 'boolean'],
             'sort_order' => ['required', 'integer', 'min:0'],
             'is_active' => ['required', 'boolean'],
         ]);
+
+        return $data + ['scoring_type' => Sport::query()->findOrFail($data['sport_id'])->score_template ?? 'points'];
     }
 
     private function audit(Request $request, string $type, int $id, string $action, ?array $before, array $after): void

@@ -9,7 +9,7 @@ Tanggal audit: 22 Juli 2026. Scope hanya Phase 1–5; Phase 6–7 tetap ditunda 
 | 1 | Daftar PD → status pending → revisi/verifikasi/penolakan → aktivasi akun | `committee_applications`, audit, middleware, `CommitteeApplicationTest` | Lengkap |
 | 2 | Master cabor → kategori/kuota → regulasi berversi → audit | Master Admin, constraint, seeder, `MasterDataTest` | Lengkap |
 | 3 | Kompetisi draft → preview → snapshot → publish/close/unpublish | `registration_rules`, audit publikasi, `TournamentEventPublicationTest` | Lengkap |
-| 4 | Portal PD → draft roster → submit → verifikasi/revisi/tolak/batal | `entry_members`, audit roster, `EntryRosterWorkflowTest` | Lengkap |
+| 4 | Portal PD → draft roster → submit → verifikasi/revisi/tolak/batal | Baseline single-roster valid, tetapi belum mendukung parent `EventEntry` + multi `EntryTeam`, verifikasi hybrid, kuota team, dan roster immutable | Perlu rework Phase 4B |
 | 5 | Venue → agenda → konflik → publish → jadwal match → scope panitia | assignment, policy deny-default, audit agenda, `VenueAgendaManagementTest`, `StaffMatchScopeTest` | Lengkap secara kode |
 
 ## Perbaikan Audit
@@ -27,8 +27,9 @@ Daftar Pengurus Daerah
 → Login Portal PD
 → Admin siapkan master dan kompetisi
 → Admin publish snapshot registrasi
-→ PD isi dan ajukan roster
-→ Admin verifikasi roster
+→ Phase 4B: PD membuat parent entry, team, dan anggota per team
+→ Admin verifikasi default parent atau override team
+→ Hanya team efektif verified masuk kompetisi
 → Admin siapkan venue dan agenda
 → Admin assign panitia ke cabor/venue
 → Match dijadwalkan ke agenda
@@ -39,5 +40,7 @@ Daftar Pengurus Daerah
 ## Batas Audit
 
 - UAT manual belum dianggap selesai hanya karena automated test lulus.
+- Phase 4 single-roster tetap menjadi bukti baseline, tetapi tidak memenuhi kebutuhan multi-team yang disahkan 22 Juli 2026.
+- Phase 5 tidak boleh ditutup dan Phase 6 tetap beku sampai Phase 4B lulus migration, test, UAT, dan risk gate.
 - Input skor panitia, finalisasi, revisi hasil, bracket manager, dan klasemen adalah Phase 6.
 - Import/export, load test, backup/restore, dan operasional produksi adalah Phase 7.

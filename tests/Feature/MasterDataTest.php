@@ -32,7 +32,7 @@ class MasterDataTest extends TestCase
         $this->actingAs($admin)->post(route('admin.master-data.regulations.store'), ['sport_id' => $sport->id, 'title' => 'Regulasi Test', 'content' => 'Aturan versi pertama.', 'venue_id' => $venue->id])->assertSessionHasNoErrors();
         $this->actingAs($admin)->post(route('admin.master-data.regulations.store'), ['sport_id' => $sport->id, 'title' => 'Regulasi Test Revisi', 'content' => 'Aturan versi kedua.'])->assertSessionHasNoErrors();
 
-        $this->assertDatabaseHas('sport_categories', ['sport_id' => $sport->id, 'code' => 'PUTRA']);
+        $this->assertDatabaseHas('sport_categories', ['sport_id' => $sport->id, 'code' => 'PUTRA', 'scoring_type' => 'points']);
         $this->assertDatabaseHas('sport_regulations', ['sport_id' => $sport->id, 'version' => 2]);
         $this->assertSame($venue->id, SportRegulation::query()->where('sport_id', $sport->id)->where('version', 1)->firstOrFail()->technical_guide['venue_id']);
         $this->assertDatabaseCount('master_data_audits', 4);

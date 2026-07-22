@@ -1,12 +1,14 @@
 # Standar Publikasi Registrasi Cabor
 
+> Workflow revisi regulasi berversi setelah entry masuk (butir 69) belum diimplementasikan. Drift dan aksi lihat `docs/00-project/audit-2026-07-22.md` (D23).
+
 Dokumen ini menjadi sumber kebenaran hubungan Admin, regulasi kompetisi, kategori yang tampil di portal Pengurus Daerah, dan pendaftaran pemain.
 
 ## Prinsip
 
 1. Master cabor dan kategori tidak otomatis menjadi pilihan Pengurus Daerah.
 2. Admin membuat satu `tournament_event` sebagai paket registrasi resmi untuk satu cabor dan kategori.
-3. Admin menetapkan format, regulasi, jumlah pemain, dan periode registrasi sebelum publikasi.
+3. Admin menetapkan format, regulasi, unit peserta, batas team per PD, batas anggota per team, dan periode registrasi sebelum publikasi berdasarkan technical meeting.
 4. `sports.default_format` hanya menjadi Format Bawaan saat kompetisi dibuat; `tournament_events.format` menjadi Format Kompetisi aktual.
 5. Format Kompetisi dapat diubah selama draft dan dikunci setelah publikasi.
 6. Publikasi menyimpan snapshot regulasi pada kompetisi.
@@ -38,9 +40,13 @@ Dokumen ini menjadi sumber kebenaran hubungan Admin, regulasi kompetisi, kategor
 - Jenis kompetisi.
 - Tipe skor.
 - Format kompetisi.
-- Minimum pemain.
-- Maksimum pemain.
+- Unit peserta: individual, pasangan, atau team.
+- Minimum dan maksimum team per PD; maksimum wajib integer positif.
+- Minimum dan maksimum anggota per team.
+- Aturan komposisi anggota bila ada.
+- `avoid_same_pd_in_round`, default `true`.
 - ID, versi, dan judul regulasi.
+- `snapshot_version`.
 
 Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diterbitkan.
 
@@ -59,15 +65,22 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 
 1. Dashboard hanya memuat kompetisi yang dipublikasikan Admin.
 2. PD memilih paket kompetisi resmi, bukan seluruh master kategori.
-3. Form dan validasi pemain memakai snapshot regulasi kompetisi.
-4. PD mengirim satu entry per kompetisi kecuali regulasi mengizinkan multi-entry.
-5. PD tetap dapat melihat entry setelah registrasi ditutup, tetapi tidak dapat mengirim entry baru.
+3. Sistem membuat satu parent `EventEntry` per PD/kompetisi.
+4. PD membuat `EntryTeam` sampai batas `max_teams_per_pd` pada snapshot.
+5. Form dan validasi pemain bekerja per team memakai snapshot anggota per team.
+6. Label team dibentuk server; client tidak mengirim nomor atau nama bebas.
+7. PD submit parent; status parent menjadi default seluruh team.
+8. Admin dapat memverifikasi parent sekaligus dan memberi override team tertentu.
+9. Hanya team efektif verified masuk seed/bracket.
+10. PD tetap melihat parent/team setelah registrasi ditutup, tetapi tidak dapat membuat team baru.
+
+Semantik lengkap mengikuti [standar multi-team](../02-data/team-entry-standard.md).
 
 ## Perubahan Setelah Publikasi
 
 - Belum ada entry: Admin boleh memperbaiki lalu mempublikasikan ulang.
 - Sudah ada entry: Admin hanya boleh menutup registrasi; perubahan regulasi membutuhkan revisi berversi dan audit.
-- Perubahan jumlah pemain tidak boleh diam-diam membatalkan entry lama.
+- Perubahan jumlah team atau anggota per team tidak boleh diam-diam membatalkan parent/team lama.
 - Perubahan kategori yang mengubah identitas kompetisi membuat `tournament_event` baru.
 
 ## Constraint dan Test Wajib
@@ -75,8 +88,8 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 - Status default kompetisi `registration_draft`.
 - Kompetisi belum terpublikasi tidak muncul dan detail mengembalikan 404 untuk PD.
 - Submit ditolak bila belum terpublikasi, status bukan `registration_open`, belum masuk waktu buka, atau melewati waktu tutup.
-- Validasi roster memakai `registration_rules`, bukan master kategori aktif.
-- Satu PD tidak dapat mendaftarkan kompetisi sama dua kali.
+- Validasi jumlah team dan roster per team memakai `registration_rules`, bukan master kategori aktif.
+- Satu PD hanya memiliki satu parent entry per kompetisi; banyak team sah sampai batas snapshot.
 - Publish, perubahan regulasi, dan penutupan registrasi wajib diaudit saat audit event tersedia.
 - Regulasi harus aktif dan berasal dari cabor kompetisi yang sama.
 - Tarik publikasi ditolak setelah entry pertama tersedia.
