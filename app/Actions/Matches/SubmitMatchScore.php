@@ -15,21 +15,24 @@ class SubmitMatchScore
         [$scoreA, $scoreB] = $this->parseScore($data['score']);
 
         return DB::transaction(function () use ($data, $scoreA, $scoreB) {
-            $match = TournamentMatch::query()->with(['entryA', 'entryB'])->where('code', $data['id'])->firstOrFail();
+            $match = TournamentMatch::query()->with(['entryA', 'entryB', 'teamA', 'teamB'])->where('code', $data['id'])->firstOrFail();
             $before = [
                 'score_summary' => $match->score_summary,
                 'status' => $match->status,
                 'winner_entry_id' => $match->winner_entry_id,
+                'winner_team_id' => $match->winner_team_id,
             ];
             $winnerId = $scoreA === $scoreB ? null : ($scoreA > $scoreB ? $match->entry_a_id : $match->entry_b_id);
+            $winnerTeamId = $scoreA === $scoreB ? null : ($scoreA > $scoreB ? $match->team_a_id : $match->team_b_id);
 
             $match->update([
                 'score_summary' => $scoreA.'-'.$scoreB,
                 'status' => $data['status'],
                 'winner_entry_id' => $winnerId,
+                'winner_team_id' => $winnerTeamId,
             ]);
 
-            $payload = ['score_a' => $scoreA, 'score_b' => $scoreB, 'winner_entry_id' => $winnerId];
+            $payload = ['score_a' => $scoreA, 'score_b' => $scoreB, 'winner_entry_id' => $winnerId, 'winner_team_id' => $winnerTeamId];
 
             MatchScore::query()->updateOrCreate(
                 ['match_id' => $match->id],

@@ -16,7 +16,7 @@ class AssignedMatchController extends Controller
         $scopes = SportAssignment::query()->where('user_id', $request->user()->id)->where('is_active', true)
             ->get(['sport_id', 'venue_id']);
 
-        $matches = TournamentMatch::query()->with(['entryA:id,display_name', 'entryB:id,display_name', 'venue:id,name', 'tournamentEvent:id,name,sport_id'])
+        $matches = TournamentMatch::query()->with(['entryA:id,display_name', 'entryB:id,display_name', 'teamA:id,label', 'teamB:id,label', 'venue:id,name', 'tournamentEvent:id,name,sport_id'])
             ->whereNotNull('venue_id')->whereNotNull('scheduled_at')
             ->when($scopes->isEmpty(), fn ($query) => $query->whereRaw('1 = 0'))
             ->when($scopes->isNotEmpty(), fn ($query) => $query->where(function ($query) use ($scopes) {
@@ -27,7 +27,7 @@ class AssignedMatchController extends Controller
             }))->orderBy('scheduled_at')->get()->map(fn ($match) => [
                 'id' => $match->id, 'code' => $match->code, 'event' => $match->tournamentEvent->name,
                 'venue' => $match->venue->name, 'scheduled_at' => $match->scheduled_at->toISOString(),
-                'team_a' => $match->entryA?->display_name ?? 'TBD', 'team_b' => $match->entryB?->display_name ?? 'TBD', 'status' => $match->status,
+                'team_a' => $match->teamA?->label ?? $match->entryA?->display_name ?? 'TBD', 'team_b' => $match->teamB?->label ?? $match->entryB?->display_name ?? 'TBD', 'status' => $match->status,
             ]);
 
         return Inertia::render('Staff/Matches', ['matches' => $matches]);
@@ -37,7 +37,7 @@ class AssignedMatchController extends Controller
     {
         abort_unless($this->assigned($request, $match), 403);
 
-        return Inertia::render('Staff/Match', ['match' => $match->load(['entryA:id,display_name', 'entryB:id,display_name', 'venue:id,name', 'tournamentEvent:id,name'])]);
+        return Inertia::render('Staff/Match', ['match' => $match->load(['entryA:id,display_name', 'entryB:id,display_name', 'teamA:id,label', 'teamB:id,label', 'venue:id,name', 'tournamentEvent:id,name'])]);
     }
 
     private function assigned(Request $request, TournamentMatch $match): bool

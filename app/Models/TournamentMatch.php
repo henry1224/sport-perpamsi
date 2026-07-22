@@ -23,6 +23,16 @@ class TournamentMatch extends Model
         return $this->belongsTo(EventEntry::class, 'entry_b_id');
     }
 
+    public function teamA(): BelongsTo
+    {
+        return $this->belongsTo(EntryTeam::class, 'team_a_id');
+    }
+
+    public function teamB(): BelongsTo
+    {
+        return $this->belongsTo(EntryTeam::class, 'team_b_id');
+    }
+
     public function venue(): BelongsTo
     {
         return $this->belongsTo(Venue::class);
