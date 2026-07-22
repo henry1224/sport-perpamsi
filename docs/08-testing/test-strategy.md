@@ -68,6 +68,7 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 - Venue dapat dinonaktifkan dan tidak tersedia untuk agenda baru.
 - Update agenda terpublikasi membutuhkan alasan dan menghasilkan audit before/after dengan aktor.
 - Publikasi agenda menghasilkan audit append-only.
+- Upgrade migration menyisakan nol kategori nonaktif dan tidak menghapus kategori aktif.
 
 - Semua test P0/P1 lulus.
 - Tidak ada risiko kritis terbuka.

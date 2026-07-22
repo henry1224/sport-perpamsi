@@ -39,6 +39,7 @@ EVENT_AGENDA ||--o{ MATCH : schedules
 - Agenda terkait venue dan opsional kompetisi/cabor.
 - Assignment cabor dan venue menjadi sumber scope panitia; scope match mengikuti jadwal venue pada fase operasional pertandingan.
 - Master yang sudah direferensikan memakai restrict delete.
+- Pengecualian cleanup 22 Juli 2026: kategori nonaktif beserta seluruh graph kompetisi turunannya dihapus untuk mempersempit scope ke kategori resmi aktif.
 - Audit append-only.
 - `EventAgenda 1—N EventAgendaAudit N—1 User` melacak revisi dan publikasi jadwal.
 
