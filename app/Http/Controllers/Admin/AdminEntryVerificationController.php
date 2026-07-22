@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\EventEntry;
+use App\Models\EntryTeam;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +21,7 @@ class AdminEntryVerificationController extends Controller
 
         $entries = EventEntry::query()
             ->with([
-                'members:id,event_entry_id,name',
+                'teams.members:id,event_entry_id,entry_team_id,name',
                 'regionalCommittee:id,name',
                 'tournamentEvent:id,code,name,status',
             ])
@@ -38,7 +39,7 @@ class AdminEntryVerificationController extends Controller
             ->through(fn ($entry) => [
                 'id' => $entry->id,
                 'display_name' => $entry->display_name,
-                'members' => $entry->members->pluck('name'),
+                'teams' => $entry->teams->map(fn ($team) => ['id' => $team->id, 'label' => $team->label, 'members' => $team->members->pluck('name'), 'override' => $team->verification_status_override, 'effective_status' => $team->effectiveStatus()]),
                 'committee' => $entry->regionalCommittee?->name,
                 'event' => $entry->tournamentEvent?->name,
                 'event_code' => $entry->tournamentEvent?->code,
@@ -98,6 +99,23 @@ class AdminEntryVerificationController extends Controller
         return back()->with('success', 'Perbaikan roster diminta.');
     }
 
+    public function overrideTeam(Request $request, EntryTeam $team): RedirectResponse
+    {
+        $data = $request->validate(['status' => ['required', 'in:revision_required,verified,rejected,cancelled'], 'reason' => ['required', 'string', 'max:255']]);
+        $before = $team->toArray();
+        $team->update(['verification_status_override' => $data['status'], 'verification_note' => $data['reason'], 'verified_by' => $data['status'] === 'verified' ? $request->user()->id : null, 'verified_at' => $data['status'] === 'verified' ? now() : null, 'cancelled_at' => $data['status'] === 'cancelled' ? now() : null]);
+        $this->auditTeam($team, 'override_set', $before, $data['reason'], $request);
+        return back()->with('success', 'Status tim diperbarui.');
+    }
+
+    public function resetTeamOverride(Request $request, EntryTeam $team): RedirectResponse
+    {
+        $before = $team->toArray();
+        $team->update(['verification_status_override' => null, 'verification_note' => null, 'verified_by' => null, 'verified_at' => null, 'cancelled_at' => null]);
+        $this->auditTeam($team, 'override_reset', $before, 'Reset ke status parent', $request);
+        return back()->with('success', 'Override tim direset.');
+    }
+
     private function audit(EventEntry $entry, string $action, array $before, Request $request): void
     {
         DB::table('entry_registration_audits')->insert(['event_entry_id' => $entry->id, 'action' => $action, 'before_json' => json_encode($before), 'after_json' => json_encode($this->state($entry)), 'user_id' => $request->user()->id, 'created_at' => now(), 'updated_at' => now()]);
@@ -105,6 +123,11 @@ class AdminEntryVerificationController extends Controller
 
     private function state(EventEntry $entry): array
     {
-        return ['status' => $entry->verification_status, 'note' => $entry->verification_note, 'members' => $entry->members()->pluck('name')->all()];
+        return ['status' => $entry->verification_status, 'note' => $entry->verification_note, 'teams' => $entry->teams()->with('members')->get()->toArray()];
+    }
+
+    private function auditTeam(EntryTeam $team, string $action, array $before, string $reason, Request $request): void
+    {
+        DB::table('entry_team_audits')->insert(['entry_team_id' => $team->id, 'action' => $action, 'before_json' => json_encode($before), 'after_json' => json_encode($team->fresh()->toArray()), 'reason' => $reason, 'user_id' => $request->user()->id, 'created_at' => now(), 'updated_at' => now()]);
     }
 }

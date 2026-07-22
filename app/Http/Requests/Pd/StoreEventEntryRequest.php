@@ -10,64 +10,35 @@ class StoreEventEntryRequest extends FormRequest
 {
     protected function prepareForValidation(): void
     {
-        $this->merge(['intent' => $this->input('intent', 'submit')]);
+        $teams = $this->input('teams');
+        if (! is_array($teams) && is_array($this->input('members'))) $teams = [['members' => $this->input('members')]];
+        $this->merge(['intent' => $this->input('intent', 'submit'), 'teams' => $teams]);
     }
 
-    public function authorize(): bool
-    {
-        return $this->user()?->isPdAdmin() && (bool) $this->user()->regional_committee_id;
-    }
+    public function authorize(): bool { return $this->user()?->isPdAdmin() && (bool) $this->user()->regional_committee_id; }
 
     public function rules(): array
     {
-        $rules = $this->rulesSnapshot();
-        $memberRules = ['required', 'array', 'min:'.($this->input('intent') === 'draft' ? 1 : ($rules['min_members'] ?? 1))];
-
-        if (($rules['max_members'] ?? null) !== null) {
-            $memberRules[] = 'max:'.$rules['max_members'];
-        }
-
-        return [
-            'intent' => ['required', 'in:draft,submit'],
-            'members' => $memberRules,
-            'members.*.name' => ['required', 'string', 'max:120'],
-        ];
+        $snapshot = $this->snapshot();
+        $minimum = $this->input('intent') === 'draft' ? 1 : ($snapshot['min_members_per_team'] ?? $snapshot['min_members'] ?? 1);
+        $memberRules = ['required', 'array', 'min:'.$minimum];
+        $maximum = $snapshot['max_members_per_team'] ?? $snapshot['max_members'] ?? null;
+        if ($maximum !== null) $memberRules[] = 'max:'.$maximum;
+        return ['intent' => ['required', 'in:draft,submit'], 'teams' => ['required', 'array', 'min:1', 'max:'.($snapshot['max_teams_per_pd'] ?? 1)], 'teams.*.members' => $memberRules, 'teams.*.members.*.name' => ['required', 'string', 'max:120']];
     }
 
     public function withValidator(Validator $validator): void
     {
-        $validator->after(function (Validator $v) {
-            $user = $this->user();
+        $validator->after(function (Validator $validator) {
+            if ($validator->errors()->has('teams.0.members')) $validator->errors()->add('members', 'Daftar pemain wajib diisi sesuai kuota.');
+            $names = collect($this->input('teams', []))->flatMap(fn ($team) => $team['members'] ?? [])->pluck('name')->map(fn ($name) => mb_strtolower(trim((string) $name)))->filter();
+            if ($names->duplicates()->isNotEmpty()) { $validator->errors()->add('teams', 'Pemain tidak boleh terdaftar pada dua tim dalam kompetisi yang sama.'); $validator->errors()->add('members', 'Nama pemain tidak boleh sama dalam satu pendaftaran.'); }
             $event = $this->route('event');
-            $names = collect($this->input('members', []))
-                ->pluck('name')
-                ->map(fn ($name) => mb_strtolower(trim((string) $name)))
-                ->filter();
-
-            if ($names->duplicates()->isNotEmpty()) {
-                $v->errors()->add('members', 'Nama pemain tidak boleh sama dalam satu pendaftaran.');
-            }
-
-            if ($event instanceof TournamentEvent && $event->entries()->where('regional_committee_id', $user->regional_committee_id)->whereIn('verification_status', ['pending', 'verified'])->exists()) {
-                $v->errors()->add('members', 'Pendaftaran sedang diproses atau sudah terverifikasi.');
-            }
+            if ($event instanceof TournamentEvent && $event->entries()->where('regional_committee_id', $this->user()->regional_committee_id)->whereIn('verification_status', ['pending', 'verified'])->exists()) { $validator->errors()->add('teams', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); $validator->errors()->add('members', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); }
         });
     }
 
-    public function messages(): array
-    {
-        return [
-            'members.required' => 'Daftar pemain wajib diisi.',
-            'members.min' => 'Jumlah pemain belum memenuhi batas minimum.',
-            'members.max' => 'Jumlah pemain melebihi batas maksimum.',
-            'members.*.name.required' => 'Nama pemain wajib diisi.',
-        ];
-    }
+    public function messages(): array { return ['teams.required' => 'Daftar tim wajib diisi.', 'teams.max' => 'Jumlah tim melebihi kuota kompetisi.', 'teams.*.members.min' => 'Jumlah pemain tim belum memenuhi batas minimum.', 'teams.*.members.max' => 'Jumlah pemain tim melebihi batas maksimum.', 'teams.*.members.*.name.required' => 'Nama pemain wajib diisi.']; }
 
-    private function rulesSnapshot(): array
-    {
-        $event = $this->route('event');
-
-        return $event instanceof TournamentEvent ? ($event->registration_rules ?? []) : [];
-    }
+    private function snapshot(): array { $event = $this->route('event'); return $event instanceof TournamentEvent ? ($event->registration_rules ?? []) : []; }
 }

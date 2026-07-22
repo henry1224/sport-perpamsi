@@ -58,6 +58,8 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/entries/{entry}/verify', [AdminEntryVerificationController::class, 'verify'])->name('entries.verify');
     Route::post('/entries/{entry}/reject', [AdminEntryVerificationController::class, 'reject'])->name('entries.reject');
     Route::post('/entries/{entry}/revision', [AdminEntryVerificationController::class, 'revision'])->name('entries.revision');
+    Route::post('/entry-teams/{team}/override', [AdminEntryVerificationController::class, 'overrideTeam'])->name('entry-teams.override');
+    Route::delete('/entry-teams/{team}/override', [AdminEntryVerificationController::class, 'resetTeamOverride'])->name('entry-teams.override.reset');
     Route::get('/committee-applications', [CommitteeApplicationController::class, 'index'])->name('committee-applications.index');
     Route::post('/committee-applications/{application}/verify', [CommitteeApplicationController::class, 'verify'])->name('committee-applications.verify');
     Route::post('/committee-applications/{application}/revision', [CommitteeApplicationController::class, 'revision'])->name('committee-applications.revision');

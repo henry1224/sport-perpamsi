@@ -46,11 +46,13 @@ class PublicDataService
                 ->join('sports', 'tournament_events.sport_id', '=', 'sports.id')
                 ->leftJoin('event_entries as a', 'matches.entry_a_id', '=', 'a.id')
                 ->leftJoin('event_entries as b', 'matches.entry_b_id', '=', 'b.id')
+                ->leftJoin('entry_teams as ta', 'matches.team_a_id', '=', 'ta.id')
+                ->leftJoin('entry_teams as tb', 'matches.team_b_id', '=', 'tb.id')
                 ->whereNotNull('matches.entry_a_id')
                 ->whereNotNull('matches.entry_b_id')
                 ->orderBy('matches.id')
                 ->limit(24)
-                ->select('matches.code as id', 'sports.name as sport', 'a.display_name as team_a', 'b.display_name as team_b', 'matches.score_summary as score', 'matches.status')
+                ->select('matches.code as id', 'sports.name as sport', DB::raw('COALESCE(ta.label, a.display_name) as team_a'), DB::raw('COALESCE(tb.label, b.display_name) as team_b'), 'matches.score_summary as score', 'matches.status')
                 ->get()
                 ->map(fn ($row) => [
                     'id' => $row->id,

@@ -42,14 +42,19 @@ const menuGroups = computed(() => isAdmin.value ? [
   { label: 'Operasional', items: [{ label: 'Pertandingan Tugas', href: '/panitia/pertandingan', icon: 'scoreboard' }] },
 ] : [
   { label: 'Umum', items: [
-    { label: 'Dashboard', href: '/pd/dashboard', icon: 'dashboard' },
+    { label: 'Dashboard', href: '/pd/dashboard', icon: 'dashboard', exact: true },
   ] },
   { label: 'Pendaftaran', items: [
-    { label: 'Registrasi Cabor', href: '/pd/dashboard#cabor', icon: 'clipboard' },
+    { label: 'Registrasi Cabor', href: '/pd/dashboard?section=cabor#cabor', icon: 'clipboard', activeOn: ['/pd/events/'] },
   ] },
 ]);
 
-const active = (href) => href && page.url.startsWith(href);
+const active = (item) => {
+  if (!item.href) return false;
+  const target = item.href.split('#')[0];
+  if (item.exact) return page.url === target;
+  return page.url.startsWith(target) || item.activeOn?.some((path) => page.url.startsWith(path));
+};
 const logout = () => router.post('/logout');
 </script>
 
@@ -88,7 +93,7 @@ const logout = () => router.post('/logout');
             v-for="item in group.items"
             :key="item.label"
             :href="item.href"
-            :class="['portal-link', { active: active(item.href), planned: item.planned }]"
+            :class="['portal-link', { active: active(item), planned: item.planned }]"
             @click="open = false"
           >
             <span><svg aria-hidden="true"><use :href="`#portal-icon-${item.icon}`" /></svg></span>

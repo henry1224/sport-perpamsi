@@ -21,6 +21,8 @@ const requestRevision = (id) => {
   if (!note?.trim()) return;
   router.post(`/admin/entries/${id}/revision`, { note }, { preserveScroll: true });
 };
+const overrideTeam = (id, status) => { const reason = prompt('Alasan perubahan status tim:'); if (reason?.trim()) router.post(`/admin/entry-teams/${id}/override`, { status, reason }, { preserveScroll: true }); };
+const resetOverride = (id) => router.delete(`/admin/entry-teams/${id}/override`, { preserveScroll: true });
 </script>
 
 <template>
@@ -41,7 +43,7 @@ const requestRevision = (id) => {
           <tr v-for="entry in rows" :key="entry.id">
             <td><div class="primary-cell"><strong>{{ entry.display_name }}</strong><small>{{ entry.committee }}</small></div></td>
             <td><div class="primary-cell"><strong>{{ entry.event }}</strong><small>{{ entry.event_code }}</small></div></td>
-            <td><ol class="members"><li v-for="member in entry.members" :key="member">{{ member }}</li></ol></td>
+            <td><div v-for="team in entry.teams" :key="team.id" class="team"><strong>{{ team.label }}</strong><ol class="members"><li v-for="member in team.members" :key="member">{{ member }}</li></ol><small>{{ statusLabel(team.effective_status) }}<template v-if="team.override"> · override</template></small><div class="team-actions"><button @click="overrideTeam(team.id, 'verified')">Setujui Tim</button><button @click="overrideTeam(team.id, 'revision_required')">Perbaikan</button><button class="danger" @click="overrideTeam(team.id, 'rejected')">Tolak</button><button v-if="team.override" @click="resetOverride(team.id)">Reset</button></div></div></td>
             <td><span class="status-badge info">{{ statusLabel(entry.event_status) }}</span></td>
             <td><div class="row-actions"><button class="primary" @click="approve(entry.id)">Setujui</button><button @click="requestRevision(entry.id)">Perbaikan</button><button class="danger" @click="reject(entry.id)">Tolak</button></div></td>
           </tr>
@@ -57,4 +59,7 @@ const requestRevision = (id) => {
 .flash { margin-bottom: 14px; padding: 12px 16px; color: #087365; background: #eefaf6; border: 1px solid #b9e3d6; border-radius: 10px; font-weight: 750; }
 .members { max-height: 104px; margin: 0; padding-left: 18px; overflow: auto; color: #526573; }
 .members li + li { margin-top: 3px; }
+.team + .team { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--portal-border); }
+.team strong,.team small { display:block; }.team small { color:var(--portal-muted); }
+.team-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.team-actions button{min-height:28px;padding:5px 7px;font-size:9px}
 </style>

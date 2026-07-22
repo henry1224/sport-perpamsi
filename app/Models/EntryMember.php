@@ -13,4 +13,9 @@ class EntryMember extends Model
     {
         return $this->belongsTo(EventEntry::class);
     }
+
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(EntryTeam::class, 'entry_team_id');
+    }
 }

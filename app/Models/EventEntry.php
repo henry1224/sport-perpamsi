@@ -29,4 +29,9 @@ class EventEntry extends Model
     {
         return $this->hasMany(EntryMember::class);
     }
+
+    public function teams(): HasMany
+    {
+        return $this->hasMany(EntryTeam::class)->orderBy('team_no');
+    }
 }
