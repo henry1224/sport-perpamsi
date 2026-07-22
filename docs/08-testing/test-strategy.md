@@ -25,19 +25,21 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 12. Validasi roster memakai snapshot walau master kategori berubah.
 13. Publish ditolak untuk kategori tidak aktif/tidak cocok dan periode invalid.
 14. Kategori/peraturan yang sudah dipakai tidak dapat diubah tanpa workflow versi.
-15. Bracket tidak dapat dikunci jika verifikasi belum selesai.
-16. Venue dan waktu agenda yang bertabrakan ditolak.
-17. Panitia tidak dapat mengakses cabor atau match di luar assignment.
-18. Scorekeeper tidak dapat mengubah hasil final langsung.
-19. Revisi final wajib alasan, approval, dan audit.
-20. Klasemen hanya memakai hasil final/terverifikasi.
-21. Public tidak melihat draft, data pribadi, ID internal, atau audit.
-22. Seeder dapat dijalankan ulang tanpa menimpa data operasional.
-23. Hanya Admin terverifikasi dapat membuat akun panitia serta menetapkan atau mencabut assignment cabor dan venue.
-24. Admin dapat mengelola cabor/kategori, regulasi selalu membuat versi baru, dan seluruh perubahan master tercatat audit.
-25. Publish wajib memakai regulasi dari cabor yang sama, snapshot menyimpan versinya, dan unpublish ditolak setelah entry tersedia.
-26. PD dapat menyimpan draft, submit, memperbaiki, mengirim ulang, dan membatalkan roster sendiri tanpa menghapus histori.
-27. PD tidak dapat mengubah atau membatalkan roster milik PD lain maupun roster pending/verified.
+15. Format Kompetisi dapat diubah saat draft dan ditolak setelah publikasi.
+16. Seed kategori, roster, Format Bawaan, dan sistem skor sesuai panduan teknis slide 5-23.
+17. Bracket tidak dapat dikunci jika verifikasi belum selesai.
+18. Venue dan waktu agenda yang bertabrakan ditolak.
+19. Panitia tidak dapat mengakses cabor atau match di luar assignment.
+20. Scorekeeper tidak dapat mengubah hasil final langsung.
+21. Revisi final wajib alasan, approval, dan audit.
+22. Klasemen hanya memakai hasil final/terverifikasi.
+23. Public tidak melihat draft, data pribadi, ID internal, atau audit.
+24. Seeder dapat dijalankan ulang tanpa menimpa data operasional.
+25. Hanya Admin terverifikasi dapat membuat akun panitia serta menetapkan atau mencabut assignment cabor dan venue.
+26. Admin dapat mengelola cabor/kategori, regulasi selalu membuat versi baru, dan seluruh perubahan master tercatat audit.
+27. Publish wajib memakai regulasi dari cabor yang sama, snapshot menyimpan versinya, dan unpublish ditolak setelah entry tersedia.
+28. PD dapat menyimpan draft, submit, memperbaiki, mengirim ulang, dan membatalkan roster sendiri tanpa menghapus histori.
+29. PD tidak dapat mengubah atau membatalkan roster milik PD lain maupun roster pending/verified.
 
 ## Frontend/E2E
 

@@ -43,6 +43,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [API contract v1](./03-product/api-contract-v1.md): endpoint public dan action admin/panitia baseline.
 - [Agenda standard](./03-product/agenda-standard.md): agenda, venue, cabor, jam dari screenshot awal.
 - [Seminar standard](./03-product/seminar-standard.md): konten NIWC, sesi, peserta, biaya, dan implementasi menu Seminar.
+- [Standar informasi teknis cabor](./03-product/sport-technical-guide-standard.md): sumber data, kuota opsional, snapshot, dan tampilan publik.
 
 ### 04 Design
 

@@ -1,10 +1,10 @@
 code,name,type,default_format,score_template
 volleyball,Voli,sport,group_then_knockout,set_points
-chess,Catur,sport,round_robin_or_swiss,match_points
-badminton,Bulu Tangkis,sport,group_then_knockout,games_points
+chess,Catur,sport,swiss,swiss_match_points
+badminton,Bulu Tangkis,sport,group_or_knockout,rally_point_21_best_of_3
 table-tennis,Tenis Meja,sport,group_then_knockout,games_points
-tennis,Tenis Lapangan,sport,knockout_or_group_then_knockout,sets_games
+tennis,Tenis Lapangan,sport,group_then_knockout,sets_games
 golf,Golf,exhibition,score_ranking,strokes
-padel,Padel,exhibition,knockout_or_exhibition,sets_games
-vocal,Vokal,exhibition,score_ranking,judge_score
+padel,Padel,exhibition,fun_games,fun_games
+vocal,Vokal,exhibition,single_performance_ranking,judge_score
 mini-football,Mini Football,sport,group_then_knockout,goals

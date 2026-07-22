@@ -34,6 +34,8 @@ EVENT_AGENDA ||--o{ MATCH : schedules
 - Peraturan cabor berversi; kompetisi menyimpan versi yang berlaku.
 - Portal PD membaca `TournamentEvent` terpublikasi, bukan seluruh `SportCategory`.
 - `TournamentEvent.registration_rules` menjadi snapshot regulasi setelah publish.
+- `sport_categories.max_members` nullable; null berarti tidak ada maksimum yang dinyatakan panduan.
+- Official tidak disimpan sebagai `entry_members`.
 - Agenda terkait venue dan opsional kompetisi/cabor.
 - Assignment cabor dan venue menjadi sumber scope panitia; scope match mengikuti jadwal venue pada fase operasional pertandingan.
 - Master yang sudah direferensikan memakai restrict delete.

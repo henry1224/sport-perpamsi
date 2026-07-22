@@ -44,3 +44,6 @@
 - Aturan walkover, diskualifikasi, cedera, dan keterlambatan.
 - Tie-break final jika semua indikator sama.
 - Apakah golf, padel, dan vokal dihitung ke medali/ranking umum atau hanya eksibisi.
+- Batas peserta Golf per PD karena slide 21 hanya menyatakan biaya per orang tanpa kuota maksimum.
+- Konfirmasi teks Ganda Campuran Tenis Meja pada slide 11 yang tertulis `1 Orang`; baseline sistem memakai satu pasangan atau dua pemain.
+- Konfirmasi kuota Tenis Lapangan karena setiap kategori tertulis tiga pasangan, sedangkan ringkasan PD juga menyebut maksimal tiga pasangan.

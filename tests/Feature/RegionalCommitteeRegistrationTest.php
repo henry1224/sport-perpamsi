@@ -98,6 +98,45 @@ class RegionalCommitteeRegistrationTest extends TestCase
         $this->actingAs($admin)
             ->post(route('pd.events.entries.store', $event), ['members' => []])
             ->assertSessionHasErrors('members');
+
+        $tooMany = collect(range(1, $event->category->max_members + 1))->map(fn ($number) => ['name' => 'Pemain Batas '.$number])->all();
+        $this->actingAs($admin)
+            ->post(route('pd.events.entries.store', $event), ['members' => $tooMany])
+            ->assertSessionHasErrors('members');
+    }
+
+    public function test_category_without_maximum_accepts_larger_roster_and_keeps_snapshot(): void
+    {
+        $this->seed();
+
+        $admin = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereHas('category', fn ($query) => $query->whereNull('max_members'))->with('category')->firstOrFail();
+        $event->update([
+            'status' => 'registration_open',
+            'registration_published_at' => now(),
+            'registration_rules' => [
+                'category_name' => $event->category->name,
+                'competition_type' => $event->category->competition_type,
+                'scoring_type' => $event->category->scoring_type,
+                'format' => $event->format,
+                'min_members' => $event->category->min_members,
+                'max_members' => null,
+            ],
+        ]);
+        $event->category->update(['max_members' => 1]);
+        EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $admin->regional_committee_id)->delete();
+        $members = collect(range(1, 5))->map(fn ($number) => ['name' => 'Pegolf '.$number])->all();
+
+        $this->actingAs($admin)
+            ->get(route('pd.events.show', $event))
+            ->assertInertia(fn ($page) => $page->where('category.max_members', null));
+
+        $this->actingAs($admin)
+            ->post(route('pd.events.entries.store', $event), ['members' => $members])
+            ->assertSessionHasNoErrors();
+
+        $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $admin->regional_committee_id)->firstOrFail();
+        $this->assertCount(5, $entry->members);
     }
 
     public function test_pd_only_sees_registration_published_by_admin(): void

@@ -56,3 +56,9 @@ Hari tidak diimpor. Sistem menolak bentrok venue dan waktu selesai sebelum waktu
 ## Match
 
 Peserta memakai kode/public ID `event_entry`, bukan nama bebas. Import tidak boleh melewati assignment, status, atau audit.
+# Ketentuan Kuota
+
+- Kolom `min_members` wajib bilangan minimal 1.
+- Kolom `max_members` boleh kosong jika sumber resmi tidak menetapkan maksimum.
+- Nilai kosong diimpor sebagai `null`, bukan `1` atau nilai minimum.
+- Data official tidak boleh dicampur ke template `entry_members`.

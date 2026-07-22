@@ -61,6 +61,8 @@ Publish ditolak bila kategori tidak aktif, cabor tidak cocok, periode invalid, a
 - Nama peserta menggunakan `PD PERPAMSI {provinsi}`.
 - Filter: event, cabor, kategori, venue, tanggal, status, dan pencarian.
 - Throttle dan cache mengikuti data standard.
+- `/cabor` mengirim kategori aktif dan informasi teknis: jadwal, venue, sistem, syarat, official, biaya, dan slide sumber.
+- `max_members: null` berarti tidak dibatasi dan tidak boleh diubah client menjadi angka default.
 
 ## Status Response
 

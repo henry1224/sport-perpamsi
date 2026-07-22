@@ -75,3 +75,4 @@
 - Match detail menampilkan segment bila tersedia.
 - Admin dapat input segment sesuai template cabor.
 - Jika cabor belum punya template, gunakan skor utama manual dan catatan hasil.
+- Informasi teknis publik menjelaskan sistem pertandingan, tetapi struktur skor transaksi tetap mengikuti `score_template` cabor dan snapshot kompetisi.

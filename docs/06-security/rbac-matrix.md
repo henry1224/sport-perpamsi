@@ -39,4 +39,6 @@
 | Revisi final | yes | approval | no | request | no | no | view |
 | Audit/export | yes | yes | own | scoped | scoped | assigned | yes |
 
+Admin mengelola master dan publikasi. PD hanya mengelola roster pemain milik PD sendiri. Panitia tidak dapat mengubah master, kuota, atau snapshot registrasi. Informasi teknis publik hanya read-only.
+
 Policy wajib memblokir horizontal privilege escalation meski URL diketahui.

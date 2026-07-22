@@ -21,6 +21,7 @@ const activityCount = props.agenda.length;
 const sportCount = props.sports.filter((s) => s.type === 'sport').length;
 const exhibitionCount = props.sports.filter((s) => s.type === 'exhibition').length;
 const topResults = props.results.slice(0, 3);
+const sportIcon = (code) => props.assets?.mascots?.[code?.toLowerCase()] || null;
 </script>
 
 <template>
@@ -102,7 +103,7 @@ const topResults = props.results.slice(0, 3);
       <SectionTitle eyebrow="Game Roster" title="Cabor & Eksibisi" :meta="`${sportCards.length} aktivitas`" />
       <div class="game-grid">
         <Link v-for="sport in sportCards" :key="sport.code" href="/cabor" class="game-card">
-          <img v-if="assets.mascots[sport.code]" :src="assets.mascots[sport.code]" alt="" />
+          <img v-if="sportIcon(sport.code)" :src="sportIcon(sport.code)" alt="" />
           <span>{{ sport.type }}</span>
           <h3>{{ sport.name }}</h3>
           <p>{{ sport.default_format.replaceAll('_', ' ') }}</p>

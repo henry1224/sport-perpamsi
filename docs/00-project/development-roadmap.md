@@ -39,6 +39,8 @@ Exit: akun belum terverifikasi tidak dapat masuk; race condition provinsi diuji.
 
 Exit: Admin dapat menyiapkan master valid tanpa membuatnya otomatis terlihat PD.
 
+Pengecualian Phase 5: koreksi CRUD cabor, Format Bawaan, penguncian Format Kompetisi, serta kategori resmi panduan slide 5-23; diperlukan agar master dan assignment panitia memakai data konsisten tanpa mengubah histori terpublikasi.
+
 ## Phase 3 — Kompetisi dan Publikasi Registrasi
 
 - [x] Kompetisi memiliki status draft/open/closed dan periode registrasi.

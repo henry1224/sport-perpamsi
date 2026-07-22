@@ -14,7 +14,7 @@ const page = usePage();
 const flash = computed(() => page.props.flash || {});
 const canRegister = computed(() => props.event.registration_open);
 const minMembers = computed(() => props.category?.min_members || 1);
-const maxMembers = computed(() => props.category?.max_members || 1);
+const maxMembers = computed(() => props.category?.max_members ?? null);
 const editableEntry = computed(() => props.entries.find((entry) => ['draft', 'revision_required', 'rejected', 'cancelled'].includes(entry.verification_status)));
 const lockedEntry = computed(() => props.entries.find((entry) => ['pending', 'verified'].includes(entry.verification_status)));
 const initialMembers = editableEntry.value?.members?.length ? editableEntry.value.members.map((name) => ({ name })) : Array.from({ length: minMembers.value }, () => ({ name: '' }));
@@ -25,7 +25,7 @@ const form = useForm({
 });
 
 const addMember = () => {
-  if (form.members.length < maxMembers.value) form.members.push({ name: '' });
+  if (maxMembers.value === null || form.members.length < maxMembers.value) form.members.push({ name: '' });
 };
 
 const removeMember = (index) => {
@@ -61,7 +61,7 @@ const statusLabel = (s) => ({ draft: 'Draft', verified: 'Terverifikasi', pending
       <form class="entry-form" v-if="(canRegister || editableEntry?.verification_status === 'revision_required') && !lockedEntry">
         <div>
           <h3>{{ editableEntry ? 'Perbarui Roster' : 'Daftarkan Pemain' }}</h3>
-          <p class="hint">{{ minMembers }}–{{ maxMembers }} pemain untuk kategori ini.</p>
+          <p class="hint">{{ maxMembers === null ? `Minimal ${minMembers} pemain` : minMembers === maxMembers ? `${minMembers} pemain` : `${minMembers}–${maxMembers} pemain` }} untuk kategori ini.</p>
         </div>
         <div v-for="(member, index) in form.members" :key="index" class="member-row">
           <label>
@@ -72,7 +72,7 @@ const statusLabel = (s) => ({ draft: 'Draft', verified: 'Terverifikasi', pending
           <button v-if="form.members.length > minMembers" type="button" class="remove" @click="removeMember(index)">Hapus</button>
         </div>
         <small v-if="form.errors.members" class="err">{{ form.errors.members }}</small>
-        <button v-if="form.members.length < maxMembers" type="button" class="add" @click="addMember">+ Tambah Pemain</button>
+        <button v-if="maxMembers === null || form.members.length < maxMembers" type="button" class="add" @click="addMember">+ Tambah Pemain</button>
 
         <div class="form-actions"><button type="button" class="draft" :disabled="form.processing" @click="submit('draft')">Simpan Draft</button><button type="button" class="submit" :disabled="form.processing" @click="submit('submit')">{{ form.processing ? 'Mengirim…' : editableEntry?.verification_status === 'revision_required' ? 'Kirim Ulang' : 'Ajukan Pendaftaran' }}</button></div>
         <p class="hint">Draft dapat diubah. Setelah diajukan, roster terkunci sampai Admin meminta perbaikan.</p>

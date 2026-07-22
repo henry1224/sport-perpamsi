@@ -42,6 +42,13 @@ Phase 2 memakai `sport_regulations` untuk versi regulasi dan `master_data_audits
 - Seeder demo masih menulis kolom legacy untuk kompatibilitas bracket, lalu membuat roster pada `entry_members`.
 - Penghapusan kolom/tabel legacy ditunda sampai audit referensi, observasi rilis, backup, dan upgrade test lulus.
 
+## Sinkronisasi Panduan Teknis — 22 Juli 2026
+
+- Migration `2026_07_22_000012` memperbarui Format Bawaan dan sistem skor sembilan cabor.
+- Kategori resmi slide 5-23 ditambah atau diperbarui; kategori lama yang tidak tercantum hanya dinonaktifkan, tidak dihapus.
+- Kompetisi yang sudah dipublikasikan tetap memakai snapshot dan tidak ikut berubah.
+- Rollback data memakai forward-fix agar histori dan relasi lama tidak dihapus.
+
 ## Constraint Wajib
 
 - Unique satu PD PERPAMSI per provinsi.

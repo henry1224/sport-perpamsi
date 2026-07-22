@@ -86,4 +86,21 @@ class TournamentEventPublicationTest extends TestCase
         $this->actingAs($admin)->post(route('admin.events.unpublish', $event))->assertStatus(422);
         $this->assertNotNull($event->fresh()->registration_published_at);
     }
+
+    public function test_format_can_change_only_before_publication(): void
+    {
+        $this->seed();
+
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $draft = TournamentEvent::query()->whereNull('registration_published_at')->firstOrFail();
+        $draft->entries()->delete();
+
+        $this->actingAs($admin)->put(route('admin.events.format.update', $draft), ['format' => 'round_robin'])->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertSame('round_robin', $draft->fresh()->format);
+
+        $published = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
+        $original = $published->format;
+        $this->actingAs($admin)->put(route('admin.events.format.update', $published), ['format' => 'ranking'])->assertSessionHasErrors('format');
+        $this->assertSame($original, $published->fresh()->format);
+    }
 }

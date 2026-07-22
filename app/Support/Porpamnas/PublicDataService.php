@@ -2,6 +2,7 @@
 
 namespace App\Support\Porpamnas;
 
+use App\Actions\Matches\SubmitMatchScore;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -16,6 +17,7 @@ class PublicDataService
             ...$data,
             'results' => $this->results(),
             'provinceRankings' => $this->provinceRankings(),
+            'sportTechnicalGuides' => collect(json_decode(file_get_contents(base_path('data/seed/sport_technical_guides.json')), true)),
             'assets' => $this->assets(),
         ];
     }
@@ -78,7 +80,7 @@ class PublicDataService
     public function updateScore(array $data): array
     {
         if (Schema::hasTable('matches')) {
-            app(\App\Actions\Matches\SubmitMatchScore::class)->handle($data);
+            app(SubmitMatchScore::class)->handle($data);
 
             return $this->adminScoreRows();
         }
@@ -143,7 +145,7 @@ class PublicDataService
                 ->join('sports', 'sport_categories.sport_id', '=', 'sports.id')
                 ->where('sport_categories.is_active', true)
                 ->orderBy('sport_categories.sort_order')
-                ->select('sports.code as sport_code', 'sport_categories.code', 'sport_categories.name', 'sport_categories.competition_type', 'sport_categories.scoring_type', 'sport_categories.bracket_enabled')
+                ->select('sports.code as sport_code', 'sport_categories.code', 'sport_categories.name', 'sport_categories.competition_type', 'sport_categories.scoring_type', 'sport_categories.min_members', 'sport_categories.max_members', 'sport_categories.bracket_enabled')
                 ->get(),
             'tournamentEvents' => DB::table('tournament_events')
                 ->join('sports', 'tournament_events.sport_id', '=', 'sports.id')

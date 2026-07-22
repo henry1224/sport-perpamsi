@@ -21,10 +21,15 @@ class StoreEventEntryRequest extends FormRequest
     public function rules(): array
     {
         $rules = $this->rulesSnapshot();
+        $memberRules = ['required', 'array', 'min:'.($this->input('intent') === 'draft' ? 1 : ($rules['min_members'] ?? 1))];
+
+        if (($rules['max_members'] ?? null) !== null) {
+            $memberRules[] = 'max:'.$rules['max_members'];
+        }
 
         return [
             'intent' => ['required', 'in:draft,submit'],
-            'members' => ['required', 'array', 'min:'.($this->input('intent') === 'draft' ? 1 : ($rules['min_members'] ?? 1)), 'max:'.($rules['max_members'] ?? 1)],
+            'members' => $memberRules,
             'members.*.name' => ['required', 'string', 'max:120'],
         ];
     }

@@ -34,7 +34,7 @@
 ## Sport dan Category
 
 - `sports`: code, name, type, description, active.
-- `sport_categories`: sport_id, code, name, competition_type, scoring_type, min_members, max_members, active.
+- `sport_categories`: sport_id, code, name, competition_type, scoring_type, min_members, max_members nullable, active. `max_members = null` berarti panduan tidak menetapkan maksimum.
 - `sport_regulations`: sport_id, version, title, content, document_url, is_active, created_by.
 - `master_data_audits`: entity_type, entity_id, action, before_json, after_json, user_id.
 
@@ -48,7 +48,7 @@
 - `sport_id`, `sport_category_id`, `sport_rule_id`.
 - `code`, `name`, `format`, `status`, `registration_open_at`, `registration_close_at`, `seed_locked_at`.
 - `registration_published_at`, `registration_published_by`: waktu dan Admin yang menetapkan paket registrasi resmi.
-- `registration_rules`: snapshot kategori, format, tipe skor, serta batas pemain saat publikasi.
+- `registration_rules`: snapshot kategori, format, tipe skor, serta batas pemain saat publikasi; key maksimum bernilai null harus dipertahankan sebagai tanpa batas.
 - `sport_regulation_id`: versi regulasi resmi yang dipilih Admin untuk kompetisi.
 - `event_publication_audits`: action, before/after, aktor, dan waktu publish, publish ulang, tutup, atau tarik publikasi.
 
@@ -69,6 +69,7 @@
 - Unique `event_entry_id + normalized_name` mencegah nama pemain ganda dalam satu roster.
 - `identity_hash`/identitas terkontrol untuk pencegahan duplikasi sesuai kebijakan privasi.
 - `status` dan catatan verifikasi bila verifikasi per pemain dipakai.
+- Official tidak masuk tabel ini.
 
 ## Venue
 

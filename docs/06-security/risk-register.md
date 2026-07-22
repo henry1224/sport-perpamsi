@@ -38,6 +38,7 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Jumlah pemain melebihi aturan cabor | Tinggi | Batas min/max berasal dari master kategori/peraturan | Boundary test |
 | Registrasi dilakukan setelah penutupan | Tinggi | Status event dicek backend, bukan hanya tombol UI | Feature test status |
 | Kategori berubah setelah peserta terdaftar | Tinggi | Kategori terkunci setelah registrasi pertama atau memakai workflow migrasi | Test lock kategori |
+| Kategori atau sistem pertandingan berbeda dari panduan panitia | Tinggi | Baseline seed dan migration mengacu slide 5-23; kompetisi terpublikasi memakai snapshot | Seeder dan migration test |
 | Seluruh master kategori tampil sebagai pilihan PD | Tinggi | Dashboard hanya membaca kompetisi dengan `registration_published_at`; detail unpublished 404 | Feature test publikasi |
 | Master kategori berubah setelah publish | Tinggi | Snapshot `registration_rules` pada kompetisi | Feature test snapshot |
 | Kompetisi baru otomatis terbuka | Tinggi | Default status `registration_draft`; publish action eksplisit | Migration dan feature test |

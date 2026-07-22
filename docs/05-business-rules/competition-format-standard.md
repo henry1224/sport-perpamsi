@@ -46,6 +46,8 @@
 | Lari/renang | Heat lalu final | Waktu terbaik |
 | Panahan/menembak | Kualifikasi nilai lalu knockout/final | Nilai tertinggi |
 
+Format bawaan berasal dari master cabor dan menjadi nilai kompetisi draft. Setelah registrasi dipublikasikan atau peserta masuk, format kompetisi terkunci. Kuota pemain merupakan aturan kategori terpisah dan tidak diturunkan dari nama format.
+
 ## Referensi
 
 - O2SN 2026 memakai sistem kompetisi/round-robin dan knockout pada cabor tertentu: https://repositori.kemendikdasmen.go.id/36365/1/Panduan_O2SN_2026_update.pdf
