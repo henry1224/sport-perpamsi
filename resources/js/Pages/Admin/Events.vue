@@ -1,6 +1,7 @@
 <script setup>
 import { router, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import ActionIconButton from '../../Components/ActionIconButton.vue';
 import AdminDataTable from '../../Components/AdminDataTable.vue';
 import Modal from '../../Components/Modal.vue';
 import PortalLayout from '../../Layouts/PortalLayout.vue';
@@ -101,7 +102,7 @@ const close = (event) => {
             <td><span :class="['status-badge', statusTone(event.status)]">{{ statusLabel(event.status) }}</span></td>
             <td><div class="period-display"><strong>{{ event.open_at ? formatDateTime(event.open_at) : 'Belum dijadwalkan' }}</strong><small v-if="event.close_at">hingga {{ formatDateTime(event.close_at) }}</small></div></td>
             <td><div class="count-cell"><span><strong>{{ event.entries_count }}</strong><small>pendaftaran</small></span><small class="team-cap">{{ event.rules?.max_teams_per_pd || 1 }} tim/PD</small></div></td>
-            <td><div class="row-actions"><button v-if="!event.published && event.entries_count === 0" type="button" @click="openEvent(event)">Edit</button><button v-if="!event.published && event.entries_count === 0" class="primary" type="button" @click="openPublish(event)">Publikasi</button><button v-if="event.published && event.status === 'registration_open'" class="danger" type="button" :disabled="busy === event.code" @click="close(event)">Tutup</button><button v-if="event.published && event.entries_count === 0" type="button" :disabled="busy === event.code" @click="unpublish(event)">Tarik</button><button v-if="!event.published && event.entries_count === 0" class="danger" type="button" @click="deleteEvent(event)">Hapus</button></div></td>
+            <td><div class="row-actions"><ActionIconButton v-if="!event.published && event.entries_count === 0" icon="edit" label="Edit Data Lomba" @click="openEvent(event)" /><ActionIconButton v-if="!event.published && event.entries_count === 0" icon="publish" label="Publikasikan Data Lomba" tone="active" @click="openPublish(event)" /><ActionIconButton v-if="event.published && event.status === 'registration_open'" icon="power" label="Tutup Registrasi" tone="danger" :disabled="busy === event.code" @click="close(event)" /><ActionIconButton v-if="event.published && event.entries_count === 0" icon="unpublish" label="Tarik Publikasi" :disabled="busy === event.code" @click="unpublish(event)" /><ActionIconButton v-if="!event.published && event.entries_count === 0" icon="delete" label="Hapus Data Lomba" tone="danger" @click="deleteEvent(event)" /></div></td>
           </tr>
           </template>
           <tr v-if="!pageRows.length" class="empty-row"><td colspan="7">Tidak ada kompetisi sesuai filter.</td></tr>

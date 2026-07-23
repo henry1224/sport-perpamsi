@@ -3,7 +3,7 @@ defineProps({ icon: { type: String, required: true }, label: { type: String, req
 </script>
 
 <template>
-  <button type="button" :class="['action-icon', tone]" :title="label" :aria-label="label" :disabled="disabled"><svg viewBox="0 0 24 24" aria-hidden="true"><path v-if="icon === 'show'" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Zm10 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path v-else-if="icon === 'edit'" d="m4 16.5-.5 4 4-.5L19 8.5 15.5 5 4 16.5ZM14 6.5 17.5 10"/><path v-else-if="icon === 'delete'" d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7m4 4v6m4-6v6"/><path v-else d="M12 2v10m6.4-6.4a9 9 0 1 1-12.8 0"/></svg></button>
+  <button type="button" :class="['action-icon', tone]" :title="label" :aria-label="label" :disabled="disabled"><svg viewBox="0 0 24 24" aria-hidden="true"><path v-if="icon === 'show'" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Zm10 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path v-else-if="icon === 'edit'" d="m4 16.5-.5 4 4-.5L19 8.5 15.5 5 4 16.5ZM14 6.5 17.5 10"/><path v-else-if="icon === 'delete'" d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7m4 4v6m4-6v6"/><path v-else-if="icon === 'publish'" d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v6h14v-6"/><path v-else-if="icon === 'unpublish'" d="M12 8v12m0 0 4.5-4.5M12 20l-4.5-4.5M5 10V4h14v6"/><path v-else d="M12 2v10m6.4-6.4a9 9 0 1 1-12.8 0"/></svg></button>
 </template>
 
 <style scoped>
