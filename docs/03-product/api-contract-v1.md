@@ -82,8 +82,9 @@ Publish ditolak bila kategori tidak aktif, cabor tidak cocok, periode invalid, a
 - Hasil kategori, peserta, dan bracket memakai label unit `PD PERPAMSI {provinsi} #{team_no}`; klasemen agregat memakai nama PD tanpa nomor.
 - Filter: event, cabor, kategori, venue, tanggal, status, dan pencarian.
 - Throttle dan cache mengikuti data standard.
-- `/cabor` mengirim kategori aktif dan informasi teknis: jadwal, venue, sistem, syarat, official, biaya, dan slide sumber.
+- `/cabor` hanya mengirim cabor/kategori aktif dan informasi teknis: jadwal, venue, sistem, syarat, official, serta biaya. Ringkasan tampil pada kartu; detail panjang dibuka melalui modal tanpa metadata versi/slide sumber.
 - `max_teams_per_pd` dan batas anggota per team wajib terisi sebelum publish; nilainya ditetapkan technical meeting per kompetisi.
+- Cabor nonaktif tidak tersedia untuk event/agenda baru dan tidak tampil publik; event, registrasi, pertandingan, serta histori lama tidak dihapus otomatis.
 
 ## Status Response
 

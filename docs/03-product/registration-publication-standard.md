@@ -75,6 +75,8 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 ## CRUD Data Lomba
 
 - Admin dapat membuat kompetisi draft dari cabor dan kategori aktif.
+- Cabor nonaktif tidak dapat dipakai untuk kompetisi atau agenda baru dan tidak tampil publik; data kompetisi, registrasi, pertandingan, serta histori existing tetap disimpan.
+- Perubahan status aktif cabor hanya mengubah `is_active`; default registrasi bawaan wajib tetap utuh.
 - Form wajib memilih kode, nama, kategori, format kompetisi, versi regulasi, dan periode registrasi.
 - Form menampilkan default master untuk kuota team, official, dan rangkap kategori; Admin dapat override sebelum publish.
 - Pembuatan kompetisi tidak membuat participant, bracket, match, skor, atau audit skor otomatis.

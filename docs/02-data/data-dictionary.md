@@ -36,6 +36,7 @@
 ## Sport dan Category
 
 - `sports`: code, name, type, description, active.
+- `sports.is_active = false`: cabor tetap tersimpan sebagai histori, tetapi tidak tampil publik dan tidak dapat dipilih untuk event atau agenda baru. Relasi lama tidak dihapus otomatis.
 - `sports.default_max_officials_per_pd`, `official_roles`, `allow_member_cross_category`, `max_categories_per_member`, `official_can_compete`: default aturan registrasi pada level cabor.
 - `sport_categories` menyimpan sport_id, code, name, competition_type (`individual`, `doubles`, atau `team`), scoring_type, min_members, max_members nullable, active. Phase 4B memisahkan unit peserta, kuota team per PD, dan anggota per team pada snapshot kompetisi; publish tidak menerima batas null.
 - `sport_categories.default_max_teams_per_pd`: nilai awal kuota team saat Data Lomba dibuat; dapat dioverride pada draft.

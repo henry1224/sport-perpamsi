@@ -46,7 +46,7 @@ Panduan Teknis
 - kategori, unit peserta, batas team per PD, dan anggota per team;
 - sistem pertandingan dan syarat peserta;
 - ketentuan official dan biaya;
-- format bawaan serta nomor slide sumber.
+- format bawaan; metadata versi dan nomor slide sumber tidak ditampilkan kepada publik.
 
 ## Ambiguitas Terbuka
 

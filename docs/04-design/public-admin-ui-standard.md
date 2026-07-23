@@ -68,6 +68,17 @@ Dilarang:
 - Card/list punya hierarchy: cabor, peserta, venue, waktu, status.
 - Empty state wajib ada.
 
+### Cabor
+
+- Kartu hanya menampilkan ringkasan agar grid tetap pendek dan mudah dipindai.
+- Persyaratan, sistem pertandingan, official, biaya, dan informasi panjang dibuka melalui modal dark.
+- Modal tidak menampilkan metadata internal versi regulasi atau slide sumber.
+
+### Error
+
+- Status `403`, `404`, `419`, `500`, dan `503` memakai template public yang sama dengan `STOP.png` dan teks sesuai status.
+- Tindakan kembali wajib jelas dan dapat digunakan dengan keyboard.
+
 ### Bracket
 
 - Jika cabor punya kategori, kategori tampil di bawah tab cabor.
