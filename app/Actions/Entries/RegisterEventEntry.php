@@ -48,9 +48,14 @@ class RegisterEventEntry
                 })->all());
             }
             $entry->teams()->where('team_no', '>', count($data['teams']))->whereNull('cancelled_at')->update(['cancelled_at' => now()]);
+            $entry->members()->where('member_type', 'official')->delete();
+            $entry->members()->createMany(collect($data['officials'] ?? [])->map(function ($official) use ($entry) {
+                $name = trim($official['name']);
+                return ['entry_team_id' => null, 'name' => $name, 'normalized_name' => mb_strtolower($name), 'identity_hash' => hash('sha256', mb_strtolower($name)), 'member_type' => 'official', 'position' => $official['role'], 'event_entry_id' => $entry->id];
+            })->all());
 
             $action = $data['intent'] === 'draft' ? 'draft_saved' : (in_array($before['status'] ?? null, ['revision_required', 'rejected', 'cancelled'], true) ? 'resubmitted' : 'submitted');
-            DB::table('entry_registration_audits')->insert(['event_entry_id' => $entry->id, 'action' => $action, 'before_json' => $before ? json_encode($before) : null, 'after_json' => json_encode($this->state($entry->load('teams.members'))), 'user_id' => $user->id, 'created_at' => now(), 'updated_at' => now()]);
+            DB::table('entry_registration_audits')->insert(['event_entry_id' => $entry->id, 'action' => $action, 'before_json' => $before ? json_encode($before) : null, 'after_json' => json_encode($this->state($entry->load('teams.members', 'members'))), 'user_id' => $user->id, 'created_at' => now(), 'updated_at' => now()]);
 
             return $entry;
         });
@@ -58,6 +63,6 @@ class RegisterEventEntry
 
     private function state(EventEntry $entry): array
     {
-        return ['status' => $entry->verification_status, 'note' => $entry->verification_note, 'teams' => $entry->teams->map(fn ($team) => ['team_no' => $team->team_no, 'label' => $team->label, 'members' => $team->members->pluck('name')->all()])->all()];
+        return ['status' => $entry->verification_status, 'note' => $entry->verification_note, 'teams' => $entry->teams->map(fn ($team) => ['team_no' => $team->team_no, 'label' => $team->label, 'members' => $team->members->pluck('name')->all()])->all(), 'officials' => $entry->members->where('member_type', 'official')->map(fn ($member) => ['name' => $member->name, 'role' => $member->position])->values()->all()];
     }
 }

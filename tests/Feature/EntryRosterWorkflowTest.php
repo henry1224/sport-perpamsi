@@ -69,4 +69,47 @@ class EntryRosterWorkflowTest extends TestCase
         $this->actingAs($pd)->delete(route('pd.entries.destroy', $entry))->assertForbidden();
         $this->assertSame('pending', $entry->fresh()->verification_status);
     }
+
+    public function test_official_is_blocked_when_already_registered_as_player_and_rule_forbids_competing(): void
+    {
+        $this->seed();
+        $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
+        [$playerEvent, $officialEvent] = TournamentEvent::query()->whereNotNull('registration_published_at')->with('category')->limit(2)->get();
+        $this->openForRegistration($playerEvent, ['official_can_compete' => false]);
+        $this->openForRegistration($officialEvent, ['max_officials_per_pd' => 2, 'official_roles' => ['coach'], 'official_can_compete' => false]);
+        EventEntry::query()->where('regional_committee_id', $pd->regional_committee_id)->whereIn('tournament_event_id', [$playerEvent->id, $officialEvent->id])->delete();
+
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $playerEvent), ['intent' => 'draft', 'members' => $this->members($playerEvent, 'Pemain', 'Budi Rangkap')])->assertSessionHasNoErrors();
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $officialEvent), ['intent' => 'draft', 'members' => $this->members($officialEvent, 'Atlet'), 'officials' => [['name' => 'Budi Rangkap', 'role' => 'coach']]])->assertSessionHasErrors('officials');
+        $this->assertDatabaseMissing('entry_members', ['event_entry_id' => EventEntry::query()->where('tournament_event_id', $officialEvent->id)->value('id'), 'name' => 'Budi Rangkap', 'member_type' => 'official']);
+    }
+
+    public function test_allowed_official_lists_sports_where_they_also_play(): void
+    {
+        $this->seed();
+        $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
+        [$playerEvent, $officialEvent] = TournamentEvent::query()->whereNotNull('registration_published_at')->with(['category', 'sport'])->limit(2)->get();
+        $this->openForRegistration($playerEvent);
+        $this->openForRegistration($officialEvent, ['max_officials_per_pd' => 2, 'official_roles' => ['coach'], 'official_can_compete' => true]);
+        EventEntry::query()->where('regional_committee_id', $pd->regional_committee_id)->whereIn('tournament_event_id', [$playerEvent->id, $officialEvent->id])->delete();
+
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $playerEvent), ['intent' => 'draft', 'members' => $this->members($playerEvent, 'Pemain', 'Sari Rangkap')])->assertSessionHasNoErrors();
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $officialEvent), ['intent' => 'draft', 'members' => $this->members($officialEvent, 'Atlet'), 'officials' => [['name' => 'Sari Rangkap', 'role' => 'coach']]])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('entry_members', ['name' => 'Sari Rangkap', 'member_type' => 'official', 'position' => 'coach']);
+        $this->actingAs($pd)->get(route('pd.events.show', $officialEvent))->assertInertia(fn ($page) => $page
+            ->where('category.official_can_compete', true)
+            ->where('entries', fn ($entries) => collect($entries)->flatMap(fn ($entry) => $entry['officials'])->contains(fn ($official) => $official['name'] === 'Sari Rangkap' && in_array($playerEvent->sport->name, $official['playing_sports'], true))));
+    }
+
+    private function openForRegistration(TournamentEvent $event, array $rules = []): void
+    {
+        $event->update(['status' => 'registration_open', 'registration_open_at' => now()->subMinute(), 'registration_close_at' => now()->addDay(), 'registration_rules' => array_merge($event->registration_rules ?? [], $rules)]);
+    }
+
+    private function members(TournamentEvent $event, string $prefix, ?string $firstName = null): array
+    {
+        return collect(range(1, $event->registration_rules['min_members_per_team'] ?? $event->registration_rules['min_members'] ?? 1))
+            ->map(fn ($number) => ['name' => $number === 1 && $firstName ? $firstName : $prefix.' '.$number])->all();
+    }
 }

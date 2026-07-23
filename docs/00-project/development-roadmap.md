@@ -48,8 +48,12 @@ Pengecualian Phase 5: koreksi CRUD cabor, Format Bawaan, penguncian Format Kompe
 - [x] Portal PD hanya menampilkan kompetisi terpublikasi.
 - [x] Admin dapat publish dan menutup registrasi.
 - [x] Preview publikasi, penetapan versi regulasi, tarik publikasi sebelum ada entry, dan audit event.
+- [x] CRUD Admin untuk membuat, mengubah, dan mengarsipkan Data Lomba tersedia.
+- [x] Data kompetisi operasional memiliki kategori dan `sport_regulation_id` yang valid.
 
-Exit: hanya paket kompetisi yang disahkan Admin dapat dipilih PD.
+Status: `Code Complete, UAT Pending` — CRUD, publikasi, kategori, dan regulasi kompetisi tersedia.
+
+Exit: Admin dapat membuat paket kompetisi lengkap; hanya paket yang disahkan dapat dipilih PD.
 
 ## Phase 4 — Registrasi Cabor dan Pemain
 
@@ -83,10 +87,14 @@ Phase 4B selesai secara kode dan automated test. Phase 5 boleh ditutup setelah U
 - [x] Venue memiliki detail, kontak, peta, fasilitas, status aktif, serta form tambah/edit/nonaktif.
 - [x] Agenda memiliki kompetisi, publikasi, validasi konflik waktu, edit, dan audit revisi.
 - [x] Kamus label status Indonesia terpusat untuk portal utama.
-- [x] Akun panitia dan assignment per cabor/venue terhubung ke jadwal pertandingan.
+- [ ] Akun panitia dan assignment per cabor/venue terhubung ke jadwal pertandingan operasional.
 - [x] Policy dan menu panitia berbasis scope cabor/venue dengan deny-default.
+- [ ] Pertandingan operasional terhubung ke agenda, venue, dan waktu.
+- [ ] Data pertandingan/skor demo dipisahkan dari data operasional dan tidak dibuat otomatis oleh seed baseline.
 
-Exit: CRUD, seed ulang, audit, dan restrict delete lulus.
+Status: `Partial` — CRUD venue/agenda dan policy tersedia; wiring pertandingan, assignment panitia, cleanup demo, dan UAT masih terbuka.
+
+Exit: CRUD, audit, restrict delete, wiring jadwal, assignment panitia, cleanup demo, dan UAT lulus.
 
 Audit implementasi: [phase-1-5-flow-audit.md](./phase-1-5-flow-audit.md). Phase 5 belum ditutup sampai UAT manual dan review commit selesai.
 

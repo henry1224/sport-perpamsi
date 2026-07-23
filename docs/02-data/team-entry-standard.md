@@ -1,6 +1,6 @@
 # Standar Entry dan Multi-Team
 
-> Status: **Target Phase 4B**. Kode saat ini masih memakai `EventEntry` sebagai registrasi, roster, dan peserta pertandingan. Implementasi schema, API, UI, dan test belum tersedia.
+> Status: **Code Complete, UAT Pending**. `EventEntry` menjadi parent registrasi, `EntryTeam` menjadi unit peserta, dan `EntryMember` terikat ke tepat satu team. Automated test tersedia; UAT manual dan review commit masih wajib.
 
 Dokumen ini menjadi sumber kebenaran untuk satu PD PERPAMSI yang mengirim satu atau lebih unit peserta pada kompetisi yang sama.
 
@@ -24,8 +24,8 @@ TournamentEvent
 
 | Contoh kategori | `participant_unit` | Anggota per team | Contoh banyak team |
 |---|---|---:|---|
-| Catur perorangan | `individual` | 1 | lima pecatur = lima team |
-| Catur beregu | `team` | sesuai regulasi | satu regu = satu team |
+| Catur perorangan | `individual` | 1 | maksimal dua pecatur = dua team |
+| Catur beregu | `team` | 3 | satu regu = satu team berisi tiga atlet |
 | Bulu tangkis ganda | `pair` | 2 | dua pasangan = dua team |
 | Golf individual | `individual` | 1 | lima pegolf = lima team |
 | Padel | `pair` | 2 | dua pasangan = dua team |
@@ -59,6 +59,11 @@ Contoh: `PD PERPAMSI Kalimantan Timur #2`.
   "max_teams_per_pd": 1,
   "min_members_per_team": 1,
   "max_members_per_team": 1,
+  "max_officials_per_pd": 2,
+  "official_roles": ["team_manager", "coach"],
+  "allow_member_cross_category": true,
+  "max_categories_per_member": null,
+  "official_can_compete": false,
   "member_gender_rule": null,
   "avoid_same_pd_in_round": true,
   "format": "...",
@@ -75,9 +80,13 @@ Aturan:
 - Batas anggota per team wajib sesuai unit: individual `1/1`, pasangan `2/2`, beregu mengikuti regulasi.
 - Publish ditolak bila kuota team atau anggota belum lengkap/tidak konsisten.
 - Validasi registrasi selalu membaca snapshot, bukan master yang dapat berubah.
+- Official disimpan sebagai `entry_members.member_type = official` dengan peran pada `position`.
+- Jika `official_can_compete = false`, identitas official tidak boleh muncul sebagai pemain pada registrasi aktif PD yang sama.
+- Jika `official_can_compete = true`, rangkap tetap dicatat dan daftar cabor pemain ditampilkan kepada pendaftar serta Admin.
 - Team aktif dihitung terhadap `max_teams_per_pd`; team cancelled tidak memakai kuota, tetapi nomornya tidak digunakan ulang.
 - Perubahan sebelum ada entry memakai republish dan audit.
 - Perubahan setelah entry masuk wajib workflow regulasi berversi dan tidak boleh diam-diam membatalkan team existing.
+- Official disimpan terpisah dari `EntryMember`; kuota dan peran mengikuti snapshot Data Lomba.
 
 ## Verifikasi Hybrid
 

@@ -33,6 +33,8 @@
 
 Angka `Team per PD` tidak menjadi nilai global katalog. Admin wajib mengisinya pada setiap kompetisi berdasarkan hasil technical meeting; publish ditolak jika belum terisi.
 
+Baseline Catur hasil keputusan operasional: Perorangan Cepat maksimal 2 team per PD dengan 1 atlet per team; Beregu Cepat maksimal 1 team per PD dengan 3 atlet per team.
+
 Sumber baseline: Panduan PORPAMNAS IX slide 5-23, diakses 22 Juli 2026. Official tidak dihitung sebagai `entry_members`.
 
 ## Prinsip Penambahan Cabor

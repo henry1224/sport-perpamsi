@@ -29,6 +29,7 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Risiko | Dampak | Kontrol wajib | Verifikasi |
 |---|---|---|---|
 | Pemain ganda pada cabor/kategori sama | Tinggi | Identitas pemain ternormalisasi dan unique sesuai aturan event | Feature test duplikasi |
+| Official bertanding melanggar regulasi | Tinggi | Backend membandingkan identitas official dan pemain lintas cabor berdasarkan snapshot `official_can_compete` | Feature test official rangkap |
 | Satu PD mendaftarkan cabor sama berulang | Tinggi | `registration_key` unik dan validasi registrasi aktif per PD/event | Feature test registrasi ulang |
 | PD mengubah roster saat pending/verified | Kritis | Backend hanya menerima perubahan draft, revisi, ditolak, atau dibatalkan | Feature test transisi status |
 | PD mengubah atau membatalkan roster daerah lain | Kritis | Scope `regional_committee_id` dari session diperiksa backend | Feature test horizontal access |
@@ -84,6 +85,8 @@ Backup database wajib dibuat sebelum migration penghapusan kategori nonaktif. Re
 | Regulasi lama tertimpa revisi | Tinggi | Setiap revisi membuat nomor versi baru dan audit append-only | Feature test versi regulasi |
 | Agenda draft tampil publik | Tinggi | Public hanya membaca status terbit | Feature test publikasi |
 | Perubahan jadwal tidak terlacak | Tinggi | `event_agenda_audits` menyimpan before/after, aktor, alasan, action, dan waktu | `VenueAgendaManagementTest` |
+| Match operasional tidak memiliki agenda, venue, atau waktu | Kritis | Jadwal dianggap valid hanya bila tiga relasi terisi konsisten dalam transaksi | Feature test wiring match |
+| Agenda seed dianggap sebagai jadwal pertandingan final | Tinggi | Bedakan baseline agenda dan match operasional; UAT wajib memeriksa relasi | Audit data dan UAT |
 
 ## Panitia dan Hak Akses
 
@@ -105,6 +108,8 @@ Backup database wajib dibuat sebelum migration penghapusan kategori nonaktif. Re
 | Pemenang tidak sesuai skor | Kritis | Kalkulasi server berdasarkan template skor | Unit test tiap template |
 | Klasemen membaca match belum final | Tinggi | Query hanya status final/terverifikasi | Ranking test |
 | Cache publik menampilkan data lama | Sedang | Invalidasi saat publikasi/finalisasi/revisi | Integration test cache |
+| Bracket terkunci sebelum kompetisi dipublikasikan | Kritis | Lock mensyaratkan publikasi dan seluruh team efektif verified | Feature test bracket lock |
+| Seeder demo membuat ratusan match seolah data operasional | Tinggi | Demo seeder eksplisit, tidak masuk baseline, dan memiliki cleanup terpisah | Rerun seed dan audit jumlah data |
 
 ## Data, Import, dan Operasional
 
@@ -115,6 +120,8 @@ Backup database wajib dibuat sebelum migration penghapusan kategori nonaktif. Re
 | Data hilang saat deployment | Kritis | Backup sebelum migration dan restore test | Runbook evidence |
 | Traffic publik memperlambat admin | Tinggi | Cache public, pagination, index, rate limit | Load test |
 | Perubahan dilakukan langsung di `main` | Tinggi | `AGENTS.md`, workflow wajib, branch protection/PR | Review Git history |
+| Cleanup demo ikut menghapus master atau registrasi resmi | Kritis | Backup, daftar scope eksplisit, transaksi, dry-run jumlah baris, dan verifikasi pasca-cleanup | Restore test dan audit count |
+| Kompetisi tidak memiliki kategori atau versi regulasi | Tinggi | Constraint aplikasi sebelum publish dan laporan data tidak lengkap | Feature test publish dan audit data |
 
 ## Definition of Done Risiko
 

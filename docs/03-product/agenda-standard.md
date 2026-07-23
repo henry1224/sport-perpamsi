@@ -75,3 +75,11 @@ Agenda khusus seminar NIWC mengikuti [seminar-standard.md](./seminar-standard.md
 - Ladies Program memakai dua venue pada jam sama.
 - Jika venue/jam berubah, agenda disimpan sebagai revisi dan public menampilkan data terbaru.
 - Detail teknis cabor berasal dari `sport-technical-guide-standard.md`; agenda hanya menjadi sumber waktu dan lokasi operasional terbaru.
+
+## Keterhubungan Operasional
+
+- Agenda pertandingan memilih `tournament_event_id`; agenda umum boleh tanpa kompetisi.
+- Match belum dianggap terjadwal sebelum memiliki `event_agenda_id`, `venue_id`, dan `scheduled_at`.
+- Venue dan waktu match mengikuti agenda terpilih; perubahan agenda wajib memperbarui atau memvalidasi ulang match terkait.
+- Assignment panitia memakai pasangan cabor dan venue dari match yang sudah terjadwal.
+- Data agenda seed adalah baseline jadwal acara, bukan bukti bahwa match operasional sudah dibuat.

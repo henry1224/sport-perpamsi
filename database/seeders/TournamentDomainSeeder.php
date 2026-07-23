@@ -32,13 +32,14 @@ class TournamentDomainSeeder extends Seeder
                 'competition_type' => $row['competition_type'],
                 'min_members' => (int) $row['min_members'],
                 'max_members' => $row['max_members'] === '' ? null : (int) $row['max_members'],
+                'default_max_teams_per_pd' => ($row['sport_code'] === 'badminton' && in_array($row['code'], ['mens-double', 'womens-double', 'mixed-double', 'veteran-u45'], true)) || ($row['sport_code'] === 'chess' && $row['code'] === 'individual-fast') ? 2 : 1,
                 'scoring_type' => $row['scoring_type'],
                 'bracket_enabled' => (bool) $row['bracket_enabled'],
                 'sort_order' => (int) $row['sort_order'],
                 'is_active' => true,
                 'created_at' => $now,
                 'updated_at' => $now,
-            ]], ['sport_id', 'code'], ['name', 'competition_type', 'min_members', 'max_members', 'scoring_type', 'bracket_enabled', 'sort_order', 'is_active', 'updated_at']);
+            ]], ['sport_id', 'code'], ['name', 'competition_type', 'min_members', 'max_members', 'default_max_teams_per_pd', 'scoring_type', 'bracket_enabled', 'sort_order', 'is_active', 'updated_at']);
         }
 
         $categories = DB::table('sport_categories')->get()->keyBy(fn ($row) => $row->sport_id.'-'.$row->code);
@@ -63,11 +64,13 @@ class TournamentDomainSeeder extends Seeder
         $format = $sport->default_format ?: 'knockout';
         $entriesCount = $category && $category->bracket_enabled ? min(64, $regionalCommittees->count()) : min(16, $regionalCommittees->count());
         $bracketSize = $category && $category->bracket_enabled ? 2 ** (int) ceil(log(max(2, $entriesCount), 2)) : null;
+        $maxTeamsPerPd = $category?->default_max_teams_per_pd ?? 1;
 
         DB::table('tournament_events')->insertOrIgnore([[
             'public_id' => (string) Str::uuid(),
             'sport_id' => $sport->id,
             'sport_category_id' => $category?->id,
+            'sport_regulation_id' => DB::table('sport_regulations')->where('sport_id', $sport->id)->where('is_active', true)->latest('version')->value('id'),
             'code' => $eventCode,
             'name' => trim($sport->name.($category ? ' - '.$category->name : '')),
             'format' => $format,
@@ -79,6 +82,15 @@ class TournamentDomainSeeder extends Seeder
                 'format' => $format,
                 'min_members' => $category?->min_members ?? 1,
                 'max_members' => $category?->max_members ?? 1,
+                'max_teams_per_pd' => $maxTeamsPerPd,
+                'min_members_per_team' => $category?->min_members ?? 1,
+                'max_members_per_team' => $category?->max_members ?? 1,
+                'max_officials_per_pd' => $sport->default_max_officials_per_pd,
+                'official_roles' => json_decode($sport->official_roles ?: '[]', true) ?: [],
+                'allow_member_cross_category' => $sport->allow_member_cross_category,
+                'max_categories_per_member' => $sport->max_categories_per_member,
+                'official_can_compete' => $sport->official_can_compete,
+                'avoid_same_pd_in_round' => true,
             ]),
             'registration_published_at' => null,
             'registration_open_at' => null,

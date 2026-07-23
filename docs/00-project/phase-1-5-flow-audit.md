@@ -8,9 +8,9 @@ Tanggal audit: 22 Juli 2026. Scope hanya Phase 1–5; Phase 6–7 tetap ditunda 
 |---|---|---|---|
 | 1 | Daftar PD → status pending → revisi/verifikasi/penolakan → aktivasi akun | `committee_applications`, audit, middleware, `CommitteeApplicationTest` | Lengkap |
 | 2 | Master cabor → kategori/kuota → regulasi berversi → audit | Master Admin, constraint, seeder, `MasterDataTest` | Lengkap |
-| 3 | Kompetisi draft → preview → snapshot → publish/close/unpublish | `registration_rules`, audit publikasi, `TournamentEventPublicationTest` | Lengkap |
+| 3 | Kompetisi draft → CRUD → preview → snapshot → publish/close/unpublish | `registration_rules`, audit publikasi, `TournamentEventPublicationTest` | Lengkap secara kode; UAT manual terbuka |
 | 4/4B | Portal PD → parent entry → multi-team → submit → verifikasi parent/override → roster lock | `EntryTeam`, snapshot kuota, audit override, backfill/seed tim `#1`, `MultiTeamRegistrationTest` | Lengkap secara kode; UAT manual terbuka |
-| 5 | Venue → agenda → konflik → publish → jadwal match → scope panitia | assignment, policy deny-default, audit agenda, `VenueAgendaManagementTest`, `StaffMatchScopeTest` | Lengkap secara kode |
+| 5 | Venue → agenda → konflik → publish → jadwal match → scope panitia | policy deny-default, audit agenda, `VenueAgendaManagementTest`, `StaffMatchScopeTest` | Partial: data operasional belum terhubung |
 
 ## Perbaikan Audit
 
@@ -47,3 +47,14 @@ Daftar Pengurus Daerah
 - Phase 6 tetap beku sampai UAT Phase 4B dan Phase 5 serta review commit selesai.
 - Input skor panitia, finalisasi, revisi hasil, bracket manager, dan klasemen adalah Phase 6.
 - Import/export, load test, backup/restore, dan operasional produksi adalah Phase 7.
+
+## Reaudit Data Operasional — 22 Juli 2026
+
+- Database memuat 15 kompetisi; seluruhnya memiliki kategori dan `sport_regulation_id` yang valid.
+- Seeder demo menghasilkan 475 registrasi, 475 team, 993 pemain, 756 match, 264 skor, dan 229 audit skor.
+- Sebanyak 756 match belum memiliki agenda, venue, atau jadwal; 34 agenda belum terhubung ke kompetisi.
+- Belum ada `sport_assignments` dan belum ada akun panitia operasional.
+- Tidak ada kompetisi `bracket_locked` tanpa `registration_published_at` setelah cleanup dan normalisasi.
+- Tidak ditemukan orphan member, team tanpa member, roster verified kosong, atau duplikasi `identity_hash` dalam kompetisi sama.
+
+Status Phase 5 tetap `Partial` sampai wiring data operasional, assignment panitia, dan UAT selesai.

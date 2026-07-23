@@ -32,14 +32,7 @@ class MasterDataController extends Controller
 
     public function storeSport(Request $request): RedirectResponse
     {
-        $data = $request->validate([
-            'code' => ['required', 'string', 'max:30', 'alpha_dash:ascii', 'unique:sports,code'],
-            'name' => ['required', 'string', 'max:100'],
-            'type' => ['required', Rule::in(['sport', 'exhibition'])],
-            'default_format' => ['required', Rule::in(array_keys(Sport::FORMAT_LABELS))],
-            'score_template' => ['nullable', 'string', 'max:100'],
-        ]);
-
+        $data = $this->sportData($request);
         $sport = Sport::query()->create($data + ['is_active' => true]);
         $this->audit($request, 'sport', $sport->id, 'created', null, $sport->toArray());
 
@@ -48,14 +41,7 @@ class MasterDataController extends Controller
 
     public function updateSport(Request $request, Sport $sport): RedirectResponse
     {
-        $data = $request->validate([
-            'code' => ['required', 'string', 'max:30', 'alpha_dash:ascii', Rule::unique('sports', 'code')->ignore($sport)],
-            'name' => ['required', 'string', 'max:100'],
-            'type' => ['required', Rule::in(['sport', 'exhibition'])],
-            'default_format' => ['required', Rule::in(array_keys(Sport::FORMAT_LABELS))],
-            'score_template' => ['nullable', 'string', 'max:100'],
-            'is_active' => ['required', 'boolean'],
-        ]);
+        $data = $this->sportData($request, $sport);
         $before = $sport->toArray();
         $sport->update($data);
         $this->audit($request, 'sport', $sport->id, 'updated', $before, $sport->fresh()->toArray());
@@ -180,12 +166,35 @@ class MasterDataController extends Controller
             'competition_type' => ['required', Rule::in(['individual', 'doubles', 'team'])],
             'min_members' => ['required', 'integer', 'min:1'],
             'max_members' => ['nullable', 'integer', 'gte:min_members', 'max:100'],
+            'default_max_teams_per_pd' => ['nullable', 'integer', 'min:1', 'max:16'],
             'bracket_enabled' => ['required', 'boolean'],
             'sort_order' => ['required', 'integer', 'min:0'],
             'is_active' => ['required', 'boolean'],
         ]);
 
-        return $data + ['scoring_type' => Sport::query()->findOrFail($data['sport_id'])->score_template ?? 'points'];
+        return $data + ['default_max_teams_per_pd' => 1, 'scoring_type' => Sport::query()->findOrFail($data['sport_id'])->score_template ?? 'points'];
+    }
+
+    private function sportData(Request $request, ?Sport $sport = null): array
+    {
+        $data = $request->validate([
+            'code' => ['required', 'string', 'max:30', 'alpha_dash:ascii', Rule::unique('sports', 'code')->ignore($sport)],
+            'name' => ['required', 'string', 'max:100'],
+            'type' => ['required', Rule::in(['sport', 'exhibition'])],
+            'default_format' => ['required', Rule::in(array_keys(Sport::FORMAT_LABELS))],
+            'score_template' => ['nullable', 'string', 'max:100'],
+            'default_max_officials_per_pd' => ['nullable', 'integer', 'min:0', 'max:20'],
+            'official_roles' => ['nullable', 'string', 'max:500'],
+            'allow_member_cross_category' => ['nullable', 'boolean'],
+            'max_categories_per_member' => ['nullable', 'integer', $request->boolean('allow_member_cross_category') ? 'min:1' : 'min:0', 'max:20'],
+            'official_can_compete' => ['nullable', 'boolean'],
+            'is_active' => [$sport ? 'required' : 'nullable', 'boolean'],
+        ]);
+        $data['official_roles'] = collect(explode(',', $data['official_roles'] ?? ''))->map(fn ($role) => trim($role))->filter()->values()->all();
+        $data['allow_member_cross_category'] = $data['allow_member_cross_category'] ?? false;
+        $data['max_categories_per_member'] = $data['allow_member_cross_category'] ? ($data['max_categories_per_member'] ?? null) : 0;
+
+        return $data + ['default_max_officials_per_pd' => 0, 'allow_member_cross_category' => false, 'official_can_compete' => false];
     }
 
     private function audit(Request $request, string $type, int $id, string $action, ?array $before, array $after): void

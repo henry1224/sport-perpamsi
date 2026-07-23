@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Sport;
+use App\Models\SportCategory;
 use App\Models\SportRegulation;
 use App\Models\TournamentEvent;
 use App\Models\User;
@@ -11,6 +13,42 @@ use Tests\TestCase;
 class TournamentEventPublicationTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_admin_can_manage_draft_event_without_creating_tournament_data(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $sport = Sport::query()->whereHas('categories')->whereHas('regulations', fn ($query) => $query->where('is_active', true))->firstOrFail();
+        $category = SportCategory::query()->where('sport_id', $sport->id)->where('is_active', true)->firstOrFail();
+        $regulation = SportRegulation::query()->where('sport_id', $sport->id)->where('is_active', true)->firstOrFail();
+        $matchCount = \DB::table('matches')->count();
+
+        $this->actingAs($admin)->post(route('admin.events.store'), [
+            'sport_id' => $sport->id, 'sport_category_id' => $category->id, 'sport_regulation_id' => $regulation->id,
+            'code' => 'event-uji-crud', 'name' => 'Event Uji CRUD', 'format' => $sport->default_format,
+        ])->assertSessionHasNoErrors();
+
+        $event = TournamentEvent::query()->where('code', 'event-uji-crud')->firstOrFail();
+        $this->assertSame('registration_draft', $event->status);
+        $this->assertSame($category->default_max_teams_per_pd, $event->registration_rules['max_teams_per_pd']);
+        $this->assertSame($sport->default_max_officials_per_pd, $event->registration_rules['max_officials_per_pd']);
+        $this->assertSame($sport->official_roles ?? [], $event->registration_rules['official_roles']);
+        $this->assertDatabaseCount('matches', $matchCount);
+        $this->assertSame(0, $event->entries()->count());
+        $this->assertSame(0, $event->matches()->count());
+
+        $this->actingAs($admin)->put(route('admin.events.update', $event), [
+            'sport_id' => $sport->id, 'sport_category_id' => $category->id, 'sport_regulation_id' => $regulation->id,
+            'code' => 'event-uji-crud', 'name' => 'Event Uji Diperbarui', 'format' => $sport->default_format,
+        ])->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('tournament_events', ['id' => $event->id, 'name' => 'Event Uji Diperbarui']);
+
+        $this->actingAs($admin)->delete(route('admin.events.destroy', $event))->assertSessionHasNoErrors();
+        $this->assertDatabaseMissing('tournament_events', ['id' => $event->id]);
+
+        $used = TournamentEvent::query()->has('entries')->firstOrFail();
+        $this->actingAs($admin)->delete(route('admin.events.destroy', $used))->assertStatus(422);
+    }
 
     public function test_super_admin_can_publish_and_close_registration(): void
     {
@@ -34,8 +72,14 @@ class TournamentEventPublicationTest extends TestCase
         $this->assertSame($event->category->min_members, $event->registration_rules['min_members']);
         $this->assertSame(2, $event->registration_rules['regulation_version']);
         $this->assertSame(3, $event->registration_rules['max_teams_per_pd']);
+        $this->assertSame($event->sport->default_max_officials_per_pd, $event->registration_rules['max_officials_per_pd']);
+        $this->assertSame($event->sport->official_roles ?? [], $event->registration_rules['official_roles']);
         $this->assertTrue($event->registrationIsOpen());
         $this->assertDatabaseHas('event_publication_audits', ['tournament_event_id' => $event->id, 'action' => 'published']);
+
+        $snapshot = $event->registration_rules;
+        $event->sport->update(['default_max_officials_per_pd' => 20, 'official_roles' => ['changed']]);
+        $this->assertSame($snapshot, $event->fresh()->registration_rules);
 
         $this->actingAs($admin)->post(route('admin.events.close', $event))->assertRedirect();
         $this->assertSame('registration_closed', $event->fresh()->status);

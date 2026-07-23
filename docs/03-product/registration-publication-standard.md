@@ -19,6 +19,14 @@ Dokumen ini menjadi sumber kebenaran hubungan Admin, regulasi kompetisi, kategor
 11. Admin wajib memilih versi regulasi dari cabor yang sama dan memeriksa preview paket sebelum publish.
 12. Publikasi hanya dapat ditarik selama belum ada entry.
 13. Publish, publish ulang, tutup, dan tarik publikasi tercatat audit.
+14. Master Cabor/Kategori menyimpan nilai default; Data Lomba boleh override sebelum publish; snapshot terpublikasi tidak berubah saat master diperbarui.
+
+## Hierarki Aturan Dinamis
+
+1. **Master Cabor**: default jumlah official, peran official, izin rangkap kategori, batas kategori per atlet, dan izin official bermain.
+2. **Master Kategori**: default maksimum team per PD serta minimum/maksimum anggota per team.
+3. **Data Lomba draft**: menyalin default master dan dapat diubah sesuai technical meeting atau regulasi terbaru.
+4. **Snapshot publish**: mengunci seluruh nilai untuk registrasi berjalan; perubahan master hanya berlaku pada Data Lomba baru/draft.
 
 ## Status Kompetisi
 
@@ -47,6 +55,9 @@ Dokumen ini menjadi sumber kebenaran hubungan Admin, regulasi kompetisi, kategor
 - `avoid_same_pd_in_round`, default `true`.
 - ID, versi, dan judul regulasi.
 - `snapshot_version`.
+- Maksimum official per PD dan daftar perannya.
+- Aturan atlet merangkap kategori dan maksimum kategori per atlet.
+- Aturan official boleh atau tidak boleh menjadi atlet.
 
 Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diterbitkan.
 
@@ -60,6 +71,16 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 6. Publikasikan; sistem membuat snapshot, waktu publikasi, dan aktor publikasi.
 7. Tutup registrasi manual atau otomatis pada batas waktu.
 8. Verifikasi seluruh entry sebelum seeding atau bracket dikunci.
+
+## CRUD Data Lomba
+
+- Admin dapat membuat kompetisi draft dari cabor dan kategori aktif.
+- Form wajib memilih kode, nama, kategori, format kompetisi, versi regulasi, dan periode registrasi.
+- Form menampilkan default master untuk kuota team, official, dan rangkap kategori; Admin dapat override sebelum publish.
+- Pembuatan kompetisi tidak membuat participant, bracket, match, skor, atau audit skor otomatis.
+- Kompetisi draft tanpa entry dapat diubah atau diarsipkan; kompetisi yang sudah memiliki entry tidak dihapus permanen.
+- `sport_category_id` dan `sport_regulation_id` wajib sesuai dengan `sport_id` sebelum publish.
+- Generator bracket/seeding hanya dijalankan melalui aksi terpisah setelah seluruh team efektif verified dan Admin mengonfirmasi peserta.
 
 ## Alur Pengurus Daerah
 

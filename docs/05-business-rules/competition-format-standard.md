@@ -2,6 +2,13 @@
 
 > Format non-knockout (group stage, round robin, Swiss, time/distance/score ranking) belum memiliki struktur data pendukung. Drift dan aksi lihat `docs/00-project/audit-2026-07-22.md` (D18).
 
+Status implementasi saat ini:
+
+- Knockout: data demo dapat dibentuk oleh seeder, tetapi generator operasional dan aksi lock belum tersedia.
+- Swiss: belum tersedia; target Phase 6 untuk Catur.
+- Score ranking: belum tersedia; target Phase 6 untuk Golf dan lomba berbasis nilai/waktu.
+- Pembuatan Data Lomba tidak boleh otomatis membuat bracket atau match.
+
 ## Prinsip
 
 - Participant seluruh format adalah `EntryTeam`, termasuk kategori individual yang memiliki satu anggota.

@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             PdamSeeder::class,
         ]);
 
-        if (app()->environment(['local', 'testing'])) {
+        if (app()->environment('testing')) {
             $this->call([
                 TournamentDomainSeeder::class,
                 TournamentBracketDemoSeeder::class,

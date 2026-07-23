@@ -22,6 +22,7 @@ class AdminEntryVerificationController extends Controller
         $entries = EventEntry::query()
             ->with([
                 'teams.members:id,event_entry_id,entry_team_id,name',
+                'members' => fn ($query) => $query->where('member_type', 'official')->select('id', 'event_entry_id', 'name', 'position'),
                 'regionalCommittee:id,name',
                 'tournamentEvent:id,code,name,status',
             ])
@@ -40,6 +41,7 @@ class AdminEntryVerificationController extends Controller
                 'id' => $entry->id,
                 'display_name' => $entry->display_name,
                 'teams' => $entry->teams->map(fn ($team) => ['id' => $team->id, 'label' => $team->label, 'members' => $team->members->pluck('name'), 'override' => $team->verification_status_override, 'effective_status' => $team->effectiveStatus()]),
+                'officials' => $entry->members->map(fn ($member) => ['name' => $member->name, 'role' => $member->position]),
                 'committee' => $entry->regionalCommittee?->name,
                 'event' => $entry->tournamentEvent?->name,
                 'event_code' => $entry->tournamentEvent?->code,
@@ -123,7 +125,7 @@ class AdminEntryVerificationController extends Controller
 
     private function state(EventEntry $entry): array
     {
-        return ['status' => $entry->verification_status, 'note' => $entry->verification_note, 'teams' => $entry->teams()->with('members')->get()->toArray()];
+        return ['status' => $entry->verification_status, 'note' => $entry->verification_note, 'teams' => $entry->teams()->with('members')->get()->toArray(), 'officials' => $entry->members()->where('member_type', 'official')->get()->toArray()];
     }
 
     private function auditTeam(EntryTeam $team, string $action, array $before, string $reason, Request $request): void

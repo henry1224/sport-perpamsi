@@ -18,6 +18,8 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [x] Pengurus Daerah hanya melihat kompetisi yang dipublikasikan Admin.
 - [-] Pengurus Daerah dapat menambah dan mengajukan daftar pemain; edit draft belum tersedia.
 - [x] Jumlah dan duplikasi pemain divalidasi sesuai snapshot regulasi kompetisi.
+- [ ] Official yang dilarang bertanding diblokir saat namanya juga terdaftar sebagai pemain.
+- [ ] Official yang diizinkan bertanding menampilkan informasi cabor lain tempat ia menjadi pemain.
 - [x] Status registrasi dan event pada portal PD tampil dalam Bahasa Indonesia.
 
 ## Phase 4B — Multi-Team
@@ -51,6 +53,9 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] Peserta dapat membuka panduan venue melalui Google Maps dari halaman publik.
 - [ ] Admin dapat menambah, mengedit, dan mempublikasikan agenda tanpa bentrok venue/waktu; revisi terpublikasi wajib memiliki alasan dan audit.
 - [ ] Admin dapat mengelola kompetisi dan status pendaftaran.
+- [ ] Admin dapat membuat Data Lomba draft dari cabor, kategori, format, dan regulasi yang sesuai.
+- [ ] Membuat Data Lomba tidak otomatis membuat peserta, bracket, pertandingan, atau skor.
+- [ ] Kompetisi tanpa kategori/regulasi valid tidak dapat dipublikasikan.
 - [x] Admin dapat melihat, menyetujui, atau menolak registrasi serta pemain per PD PERPAMSI.
 - [x] PD dapat menyimpan draft, mengirim roster, memperbaiki sesuai catatan, mengirim ulang, dan membatalkan registrasi.
 - [x] Admin dapat meminta perbaikan roster dengan catatan.
@@ -62,6 +67,7 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] Scorekeeper dapat input skor match tugasnya.
 - [ ] Koordinator dapat finalisasi sesuai permission.
 - [ ] Akun dinonaktifkan langsung kehilangan akses.
+- [ ] Match tugas panitia memiliki agenda, venue, dan waktu yang sama dengan jadwal Admin.
 
 ## Public dan Hasil
 
@@ -83,3 +89,8 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] `git diff`, test, build, migration upgrade, dan security review lulus sebelum merge.
 - [ ] Master Cabor hanya menawarkan tipe `Cabang Olahraga` dan `Eksibisi`; Padel, Golf, dan Vokal tampil sebagai `Eksibisi` saat diedit.
 - [ ] Format Bawaan pada form, tabel Master Cabor, dan editor kompetisi memakai label serta nilai yang sama dengan katalog resmi.
+- [ ] Data pertandingan demo dapat dihapus tanpa menghapus master dan data registrasi yang dipertahankan.
+- [ ] Seeder baseline tidak mengembalikan 756 match demo setelah cleanup.
+- [ ] Tidak ada match operasional tanpa agenda, venue, atau jadwal.
+- [ ] Tidak ada kompetisi operasional tanpa kategori dan versi regulasi.
+- [ ] Status `bracket_locked` hanya dipakai setelah publikasi dan verifikasi peserta selesai.

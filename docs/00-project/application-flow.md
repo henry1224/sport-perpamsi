@@ -56,7 +56,7 @@ Status: `Done` — daftar, status pengajuan, verifikasi/perbaikan/penolakan Admi
 7. Hanya team dengan effective status verified masuk seed, grup, bracket, match, dan klasemen.
 8. Perpindahan pemain antar-team setelah verified dilarang total.
 
-Status: `Target Phase 4B` — kode saat ini baru mendukung single-roster `EventEntry → EntryMember`; parent/team, verifikasi hybrid, kuota dinamis, dan roster immutable belum diimplementasikan. Sumber: `docs/02-data/team-entry-standard.md`.
+Status: `Code Complete, UAT Pending` — parent/team, verifikasi hybrid, kuota snapshot, identity hash, dan roster immutable tersedia; UAT manual serta review commit masih wajib. Sumber: `docs/02-data/team-entry-standard.md`.
 
 ### 4. Penugasan Panitia
 
@@ -75,7 +75,7 @@ Status: `Partial` — assignment cabor/venue + policy scope panitia tersedia dan
 4. Scorekeeper memasukkan skor match tugasnya.
 5. Finalisasi dan revisi memakai permission, alasan, dan audit.
 
-Status: `Partial` — input skor dasar tersedia; CRUD agenda, assignment, lock, dan revisi formal belum lengkap.
+Status: `Partial` — CRUD agenda tersedia, tetapi data operasional belum terhubung: match belum memiliki agenda/venue/jadwal, assignment panitia kosong, serta bracket lock dan revisi skor formal belum lengkap.
 
 ### 6. Publikasi
 

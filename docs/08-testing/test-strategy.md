@@ -64,6 +64,22 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 46. Setiap team dapat meraih medali; satu PD dapat memperoleh beberapa medali kategori sama dan seluruhnya masuk klasemen.
 47. Migration backfill membuat team `#1` tanpa mengubah match/hasil lama dan tanpa orphan/cross-event participant.
 
+## Gap Recovery Phase 3–5
+
+48. Admin dapat membuat, mengubah, dan mengarsipkan Data Lomba draft dengan kategori serta regulasi dari cabor yang sama.
+49. Membuat Data Lomba tidak otomatis membuat entry, team, match, skor, atau audit skor.
+50. Publish ditolak bila kategori atau `sport_regulation_id` kosong/tidak sesuai cabor.
+51. Match dianggap terjadwal hanya setelah agenda, venue, dan waktu terisi dari agenda yang valid.
+52. Assignment panitia hanya membuka match dengan pasangan cabor dan venue yang sesuai.
+53. Seeder baseline tidak membuat data pertandingan demo; demo seeder eksplisit dapat dijalankan dan dibersihkan terpisah.
+54. Cleanup demo menghapus score audit, match score, dan match tanpa menghapus master cabor, kategori, regulasi, venue, atau PD.
+55. Status `bracket_locked` ditolak bila kompetisi belum pernah dipublikasikan atau masih memiliki team belum efektif verified.
+56. Data Lomba baru menyalin default aturan dari Master Cabor/Kategori dan dapat dioverride saat draft.
+57. Perubahan default master tidak mengubah snapshot kompetisi yang sudah dipublikasikan.
+58. Snapshot menyimpan kuota/peran official serta aturan atlet merangkap kategori.
+59. Official ditolak bila juga terdaftar sebagai pemain dan snapshot tidak mengizinkan official bertanding.
+60. Jika official boleh bertanding, portal PD menampilkan daftar cabor tempat official tersebut juga tercatat sebagai pemain.
+
 ## Frontend/E2E
 
 1. Pengguna memilih Masuk atau Daftar Pengurus Daerah.

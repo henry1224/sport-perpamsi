@@ -21,7 +21,14 @@ class Sport extends Model
 
     protected $guarded = [];
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $casts = [
+        'is_active' => 'boolean',
+        'official_roles' => 'array',
+        'allow_member_cross_category' => 'boolean',
+        'official_can_compete' => 'boolean',
+        'default_max_officials_per_pd' => 'integer',
+        'max_categories_per_member' => 'integer',
+    ];
 
     public function categories(): HasMany
     {

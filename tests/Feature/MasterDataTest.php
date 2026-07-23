@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Sport;
 use App\Models\SportRegulation;
+use App\Models\TournamentEvent;
 use App\Models\User;
 use App\Models\Venue;
 use Database\Seeders\SportRegulationSeeder;
@@ -16,6 +17,37 @@ class MasterDataTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_chess_categories_separate_team_limit_from_members_per_team(): void
+    {
+        $this->seed();
+
+        $individual = TournamentEvent::query()->where('code', 'chess-individual-fast')->with('category')->firstOrFail();
+        $team = TournamentEvent::query()->where('code', 'chess-team-fast')->with('category')->firstOrFail();
+
+        $this->assertSame(1, $individual->category->min_members);
+        $this->assertSame(1, $individual->category->max_members);
+        $this->assertSame(2, $individual->registration_rules['max_teams_per_pd']);
+        $this->assertSame(1, $individual->registration_rules['min_members_per_team']);
+        $this->assertSame(1, $individual->registration_rules['max_members_per_team']);
+        $this->assertSame(1, $team->registration_rules['max_teams_per_pd']);
+        $this->assertSame(3, $team->registration_rules['min_members_per_team']);
+        $this->assertSame(3, $team->registration_rules['max_members_per_team']);
+    }
+
+    public function test_badminton_registration_defaults_follow_agreed_rules(): void
+    {
+        $this->seed();
+
+        $sport = Sport::query()->where('code', 'badminton')->with('categories')->firstOrFail();
+        $this->assertSame(2, $sport->default_max_officials_per_pd);
+        $this->assertSame(['team_manager', 'coach'], $sport->official_roles);
+        $this->assertTrue($sport->allow_member_cross_category);
+        $this->assertNull($sport->max_categories_per_member);
+        $this->assertFalse($sport->official_can_compete);
+        $this->assertSame(1, $sport->categories->firstWhere('code', 'mens-single')->default_max_teams_per_pd);
+        $this->assertSame(2, $sport->categories->firstWhere('code', 'mens-double')->default_max_teams_per_pd);
+    }
+
     public function test_admin_can_manage_master_and_publish_versioned_regulation(): void
     {
         $this->seed();
@@ -26,6 +58,8 @@ class MasterDataTest extends TestCase
         ])->assertRedirect()->assertSessionHasNoErrors();
 
         $sport = Sport::query()->where('code', 'TEST')->firstOrFail();
+        $this->assertFalse($sport->allow_member_cross_category);
+        $this->assertSame(0, $sport->max_categories_per_member);
         $venue = Venue::query()->where('is_active', true)->firstOrFail();
         $category = ['sport_id' => $sport->id, 'code' => 'PUTRA', 'name' => 'Putra', 'competition_type' => 'team', 'min_members' => 5, 'max_members' => 12, 'scoring_type' => 'goals', 'bracket_enabled' => true, 'sort_order' => 1, 'is_active' => true];
         $this->actingAs($admin)->post(route('admin.master-data.categories.store'), $category)->assertSessionHasNoErrors();
@@ -87,7 +121,7 @@ class MasterDataTest extends TestCase
         $this->assertDatabaseHas('sports', ['code' => 'golf', 'type' => 'exhibition']);
         $this->assertDatabaseHas('sports', ['code' => 'vocal', 'type' => 'exhibition']);
         $this->assertDatabaseHas('sport_categories', ['code' => 'veteran-u45', 'name' => 'Ganda Veteran U45', 'min_members' => 2, 'max_members' => 2]);
-        $this->assertDatabaseHas('sport_categories', ['code' => 'individual-fast', 'name' => 'Perorangan Cepat', 'min_members' => 2, 'max_members' => 2]);
+        $this->assertDatabaseHas('sport_categories', ['code' => 'individual-fast', 'name' => 'Perorangan Cepat', 'min_members' => 1, 'max_members' => 1]);
         $this->assertDatabaseHas('sport_categories', ['code' => 'mens-team-veteran-40', 'min_members' => 6, 'max_members' => 6]);
         $this->assertDatabaseHas('sport_categories', ['code' => 'open', 'name' => 'Putra', 'min_members' => 15, 'max_members' => 15]);
         $this->assertDatabaseHas('sport_categories', ['code' => 'mens-team', 'name' => 'Putra', 'min_members' => 12, 'max_members' => 12]);
@@ -108,6 +142,9 @@ class MasterDataTest extends TestCase
                 ->has('sportCategories')
                 ->has('sportTechnicalGuides')
                 ->has('sportRegulations')
+                ->where('assets.mascots.golf', '/assets/brand/mascots/Golf.png')
+                ->where('assets.mascots.padel', '/assets/brand/mascots/Padel.png')
+                ->where('assets.stop', '/assets/brand/mascots/STOP.png')
                 ->where('sportTechnicalGuides', fn ($guides) => collect($guides)->contains(fn ($guide) => $guide['sport_code'] === 'golf' && $guide['source_slides'] === '21–22')
                     && collect($guides)->contains(fn ($guide) => $guide['sport_code'] === 'badminton'
                         && in_array('Karyawan tetap BUMD Air Minum anggota PERPAMSI dengan masa kerja minimal 1 tahun', $guide['eligibility'], true)

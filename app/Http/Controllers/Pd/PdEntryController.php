@@ -24,15 +24,26 @@ class PdEntryController extends Controller
         $event->loadMissing(['sport:id,code,name', 'category:id,name,competition_type,scoring_type,bracket_enabled,min_members,max_members']);
 
         $entries = EventEntry::query()
-            ->with('teams.members:id,event_entry_id,entry_team_id,name')
+            ->with(['teams.members:id,event_entry_id,entry_team_id,name', 'members' => fn ($query) => $query->where('member_type', 'official')->select('id', 'event_entry_id', 'name', 'normalized_name', 'position')])
             ->where('tournament_event_id', $event->id)
             ->where('regional_committee_id', $user->regional_committee_id)
             ->latest('id')
-            ->get()
+            ->get();
+        $officialNames = $entries->flatMap->members->pluck('normalized_name')->filter()->unique();
+        $playingSports = $officialNames->isEmpty() ? collect() : DB::table('entry_members')
+            ->join('event_entries', 'entry_members.event_entry_id', '=', 'event_entries.id')
+            ->join('tournament_events', 'event_entries.tournament_event_id', '=', 'tournament_events.id')
+            ->join('sports', 'tournament_events.sport_id', '=', 'sports.id')
+            ->where('entry_members.member_type', 'player')->where('event_entries.regional_committee_id', $user->regional_committee_id)
+            ->whereIn('event_entries.verification_status', ['draft', 'pending', 'verified', 'revision_required'])
+            ->whereIn('entry_members.normalized_name', $officialNames)->get(['entry_members.normalized_name', 'sports.name'])
+            ->groupBy('normalized_name')->map(fn ($rows) => $rows->pluck('name')->unique()->values()->all());
+        $entries = $entries
             ->map(fn ($entry) => [
                 'id' => $entry->id,
                 'display_name' => $entry->display_name,
                 'teams' => $entry->teams->map(fn ($team) => ['id' => $team->id, 'team_no' => $team->team_no, 'label' => $team->label, 'members' => $team->members->pluck('name'), 'status' => $team->effectiveStatus(), 'override' => $team->verification_status_override]),
+                'officials' => $entry->members->map(fn ($member) => ['name' => $member->name, 'role' => $member->position, 'playing_sports' => $playingSports->get($member->normalized_name, [])]),
                 'verification_status' => $entry->verification_status,
                 'verification_note' => $entry->verification_note,
             ]);
@@ -56,6 +67,9 @@ class PdEntryController extends Controller
                 'min_members' => $rules['min_members'] ?? $event->category->min_members,
                 'max_members' => array_key_exists('max_members', $rules) ? $rules['max_members'] : $event->category->max_members,
                 'max_teams_per_pd' => $rules['max_teams_per_pd'] ?? 1,
+                'max_officials_per_pd' => $rules['max_officials_per_pd'] ?? 0,
+                'official_roles' => $rules['official_roles'] ?? [],
+                'official_can_compete' => (bool) ($rules['official_can_compete'] ?? false),
             ] : null,
             'entries' => $entries,
         ]);
@@ -82,9 +96,9 @@ class PdEntryController extends Controller
             'Pendaftaran ini tidak dapat dibatalkan.'
         );
 
-        $before = ['status' => $entry->verification_status, 'note' => $entry->verification_note, 'teams' => $entry->teams()->with('members')->get()->toArray()];
+        $before = ['status' => $entry->verification_status, 'note' => $entry->verification_note, 'teams' => $entry->teams()->with('members')->get()->toArray(), 'officials' => $entry->members()->where('member_type', 'official')->get()->toArray()];
         $entry->update(['verification_status' => 'cancelled', 'submitted_at' => null, 'verified_by' => null, 'verified_at' => null]);
-        DB::table('entry_registration_audits')->insert(['event_entry_id' => $entry->id, 'action' => 'cancelled', 'before_json' => json_encode($before), 'after_json' => json_encode(['status' => 'cancelled', 'note' => $entry->verification_note, 'teams' => $before['teams']]), 'user_id' => $user->id, 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('entry_registration_audits')->insert(['event_entry_id' => $entry->id, 'action' => 'cancelled', 'before_json' => json_encode($before), 'after_json' => json_encode(['status' => 'cancelled', 'note' => $entry->verification_note, 'teams' => $before['teams'], 'officials' => $before['officials']]), 'user_id' => $user->id, 'created_at' => now(), 'updated_at' => now()]);
 
         return back()->with('success', 'Pendaftaran dibatalkan.');
     }

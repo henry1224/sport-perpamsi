@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Sport;
+use App\Models\SportCategory;
 use App\Models\SportRegulation;
 use App\Models\TournamentEvent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -24,7 +26,7 @@ class TournamentEventController extends Controller
 
         return Inertia::render('Admin/Events', [
             'events' => TournamentEvent::query()
-                ->with(['sport:id,name,default_format', 'sport.regulations' => fn ($query) => $query->where('is_active', true)->latest('version'), 'category:id,sport_id,name,competition_type,scoring_type,min_members,max_members,is_active', 'regulation:id,sport_id,version,title'])
+                ->with(['sport:id,name,default_format,default_max_officials_per_pd,official_roles,allow_member_cross_category,max_categories_per_member,official_can_compete', 'sport.regulations' => fn ($query) => $query->where('is_active', true)->latest('version'), 'category:id,sport_id,name,competition_type,scoring_type,min_members,max_members,default_max_teams_per_pd,is_active', 'regulation:id,sport_id,version,title'])
                 ->withCount('entries')
                 ->when($status, fn ($query) => $query->where('status', $status))
                 ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
@@ -39,6 +41,8 @@ class TournamentEventController extends Controller
                 ->through(fn (TournamentEvent $event) => [
                     'code' => $event->code,
                     'name' => $event->name,
+                    'sport_id' => $event->sport_id,
+                    'category_id' => $event->sport_category_id,
                     'sport' => $event->sport?->name,
                     'default_format' => $event->sport?->default_format,
                     'category' => $event->category?->name,
@@ -56,7 +60,36 @@ class TournamentEventController extends Controller
             'audits' => DB::table('event_publication_audits')->join('tournament_events', 'event_publication_audits.tournament_event_id', '=', 'tournament_events.id')->latest('event_publication_audits.created_at')->limit(20)->get(['event_publication_audits.id', 'tournament_events.name as event', 'event_publication_audits.action', 'event_publication_audits.created_at']),
             'filters' => ['search' => $search, 'status' => $status, 'per_page' => $perPage],
             'sportFormats' => Sport::FORMAT_LABELS,
+            'sports' => Sport::query()->where('is_active', true)
+                ->with(['categories' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order'), 'regulations' => fn ($query) => $query->where('is_active', true)->latest('version')])
+                ->orderBy('name')->get(['id', 'name', 'default_format', 'default_max_officials_per_pd', 'official_roles', 'allow_member_cross_category', 'max_categories_per_member', 'official_can_compete']),
         ]);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        TournamentEvent::query()->create($this->eventData($request) + [
+            'public_id' => (string) Str::uuid(),
+            'status' => 'registration_draft',
+        ]);
+
+        return back()->with('success', 'Data lomba berhasil ditambahkan.');
+    }
+
+    public function update(Request $request, TournamentEvent $event): RedirectResponse
+    {
+        abort_if($event->registration_published_at || $event->entries()->exists(), 422, 'Data lomba hanya dapat diubah saat draft dan belum memiliki peserta.');
+        $event->update($this->eventData($request, $event));
+
+        return back()->with('success', 'Data lomba berhasil diperbarui.');
+    }
+
+    public function destroy(TournamentEvent $event): RedirectResponse
+    {
+        abort_if($event->registration_published_at || $event->entries()->exists() || $event->matches()->exists() || DB::table('event_agendas')->where('tournament_event_id', $event->id)->exists(), 422, 'Data lomba hanya dapat dihapus saat draft dan belum dipakai.');
+        $event->delete();
+
+        return back()->with('success', 'Data lomba berhasil dihapus.');
     }
 
     public function publish(Request $request, TournamentEvent $event): RedirectResponse
@@ -86,6 +119,7 @@ class TournamentEventController extends Controller
 
         DB::transaction(function () use ($event, $category, $regulation, $data, $request) {
             $before = $this->publicationState($event);
+            $draftRules = $event->registration_rules ?? [];
             $event->update([
                 'status' => 'registration_open',
                 'sport_regulation_id' => $regulation->id,
@@ -99,6 +133,11 @@ class TournamentEventController extends Controller
                     'max_teams_per_pd' => $data['max_teams_per_pd'],
                     'min_members_per_team' => $category->min_members,
                     'max_members_per_team' => $category->max_members,
+                    'max_officials_per_pd' => $draftRules['max_officials_per_pd'] ?? 0,
+                    'official_roles' => $draftRules['official_roles'] ?? [],
+                    'allow_member_cross_category' => $draftRules['allow_member_cross_category'] ?? false,
+                    'max_categories_per_member' => $draftRules['max_categories_per_member'] ?? null,
+                    'official_can_compete' => $draftRules['official_can_compete'] ?? false,
                     'avoid_same_pd_in_round' => true,
                     'regulation_id' => $regulation->id,
                     'regulation_version' => $regulation->version,
@@ -144,7 +183,7 @@ class TournamentEventController extends Controller
         abort_if($event->entries()->exists(), 422, 'Publikasi tidak dapat ditarik setelah pendaftaran masuk.');
 
         $before = $this->publicationState($event);
-        $event->update(['status' => 'registration_draft', 'sport_regulation_id' => null, 'registration_rules' => null, 'registration_published_at' => null, 'registration_published_by' => null, 'registration_open_at' => null, 'registration_close_at' => null]);
+        $event->update(['status' => 'registration_draft', 'registration_published_at' => null, 'registration_published_by' => null, 'registration_open_at' => null, 'registration_close_at' => null]);
         $this->audit($event, 'unpublished', $before, $this->publicationState($event), $request);
 
         return back()->with('success', 'Publikasi kompetisi ditarik.');
@@ -153,6 +192,46 @@ class TournamentEventController extends Controller
     private function publicationState(TournamentEvent $event): array
     {
         return ['status' => $event->status, 'sport_regulation_id' => $event->sport_regulation_id, 'rules' => $event->registration_rules, 'published_at' => $event->registration_published_at?->toISOString(), 'open_at' => $event->registration_open_at?->toISOString(), 'close_at' => $event->registration_close_at?->toISOString()];
+    }
+
+    private function eventData(Request $request, ?TournamentEvent $event = null): array
+    {
+        $data = $request->validate([
+            'sport_id' => ['required', Rule::exists('sports', 'id')->where('is_active', true)],
+            'sport_category_id' => ['required', Rule::exists('sport_categories', 'id')->where('is_active', true)],
+            'sport_regulation_id' => ['required', Rule::exists('sport_regulations', 'id')->where('is_active', true)],
+            'code' => ['required', 'string', 'max:100', 'alpha_dash:ascii', Rule::unique('tournament_events', 'code')->ignore($event)],
+            'name' => ['required', 'string', 'max:150'],
+            'format' => ['required', Rule::in(array_keys(Sport::FORMAT_LABELS))],
+            'max_teams_per_pd' => ['nullable', 'integer', 'min:1', 'max:16'],
+            'max_officials_per_pd' => ['nullable', 'integer', 'min:0', 'max:20'],
+            'official_roles' => ['nullable', 'array', 'max:10'],
+            'official_roles.*' => ['string', 'max:50'],
+            'allow_member_cross_category' => ['nullable', 'boolean'],
+            'max_categories_per_member' => ['nullable', 'integer', 'min:1', 'max:20'],
+            'official_can_compete' => ['nullable', 'boolean'],
+        ]);
+        $sport = Sport::query()->findOrFail($data['sport_id']);
+        $category = SportCategory::query()->findOrFail($data['sport_category_id']);
+        $regulation = SportRegulation::query()->findOrFail($data['sport_regulation_id']);
+
+        if ($category->sport_id !== (int) $data['sport_id'] || $regulation->sport_id !== (int) $data['sport_id']) {
+            throw ValidationException::withMessages(['sport_id' => 'Cabor, kategori, dan regulasi harus berasal dari master yang sama.']);
+        }
+
+        foreach (['max_teams_per_pd', 'max_officials_per_pd', 'official_roles', 'allow_member_cross_category', 'max_categories_per_member', 'official_can_compete'] as $key) unset($data[$key]);
+        $data['registration_rules'] = [
+            'max_teams_per_pd' => $request->integer('max_teams_per_pd') ?: $category->default_max_teams_per_pd,
+            'min_members_per_team' => $category->min_members,
+            'max_members_per_team' => $category->max_members,
+            'max_officials_per_pd' => $request->input('max_officials_per_pd', $sport->default_max_officials_per_pd),
+            'official_roles' => $request->input('official_roles', $sport->official_roles ?? []),
+            'allow_member_cross_category' => $request->has('allow_member_cross_category') ? $request->boolean('allow_member_cross_category') : $sport->allow_member_cross_category,
+            'max_categories_per_member' => $request->input('max_categories_per_member', $sport->max_categories_per_member),
+            'official_can_compete' => $request->has('official_can_compete') ? $request->boolean('official_can_compete') : $sport->official_can_compete,
+        ];
+
+        return $data;
     }
 
     private function audit(TournamentEvent $event, string $action, array $before, array $after, Request $request): void

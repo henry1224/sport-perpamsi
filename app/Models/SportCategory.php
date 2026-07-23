@@ -15,6 +15,7 @@ class SportCategory extends Model
         'is_active' => 'bool',
         'min_members' => 'integer',
         'max_members' => 'integer',
+        'default_max_teams_per_pd' => 'integer',
     ];
 
     public function sport(): BelongsTo

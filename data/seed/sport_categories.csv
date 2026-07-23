@@ -5,7 +5,7 @@ badminton,mens-double,Ganda Putra,doubles,rally_point_21_best_of_3,2,2,1,30
 badminton,womens-double,Ganda Putri,doubles,rally_point_21_best_of_3,2,2,1,40
 badminton,mixed-double,Ganda Campuran,doubles,rally_point_21_best_of_3,2,2,1,50
 badminton,veteran-u45,Ganda Veteran U45,doubles,rally_point_21_best_of_3,2,2,1,60
-chess,individual-fast,Perorangan Cepat,individual,swiss_rapid_10_minutes,2,2,0,10
+chess,individual-fast,Perorangan Cepat,individual,swiss_rapid_10_minutes,1,1,0,10
 chess,team-fast,Beregu Cepat,team,swiss_rapid_15_minutes,3,3,0,20
 tennis,mens-team-open,Beregu Putra Bebas Usia,team,sets_games,6,6,1,10
 tennis,mens-team-veteran-40,Beregu Putra Veteran KU 40 Tahun,team,sets_games,6,6,1,20

@@ -43,7 +43,7 @@ const resetOverride = (id) => router.delete(`/admin/entry-teams/${id}/override`,
           <tr v-for="entry in rows" :key="entry.id">
             <td><div class="primary-cell"><strong>{{ entry.display_name }}</strong><small>{{ entry.committee }}</small></div></td>
             <td><div class="primary-cell"><strong>{{ entry.event }}</strong><small>{{ entry.event_code }}</small></div></td>
-            <td><div v-for="team in entry.teams" :key="team.id" class="team"><strong>{{ team.label }}</strong><ol class="members"><li v-for="member in team.members" :key="member">{{ member }}</li></ol><small>{{ statusLabel(team.effective_status) }}<template v-if="team.override"> · override</template></small><div class="team-actions"><button @click="overrideTeam(team.id, 'verified')">Setujui Tim</button><button @click="overrideTeam(team.id, 'revision_required')">Perbaikan</button><button class="danger" @click="overrideTeam(team.id, 'rejected')">Tolak</button><button v-if="team.override" @click="resetOverride(team.id)">Reset</button></div></div></td>
+            <td><div v-for="team in entry.teams" :key="team.id" class="team"><strong>{{ team.label }}</strong><ol class="members"><li v-for="member in team.members" :key="member">{{ member }}</li></ol><small>{{ statusLabel(team.effective_status) }}<template v-if="team.override"> · override</template></small><div class="team-actions"><button @click="overrideTeam(team.id, 'verified')">Setujui Tim</button><button @click="overrideTeam(team.id, 'revision_required')">Perbaikan</button><button class="danger" @click="overrideTeam(team.id, 'rejected')">Tolak</button><button v-if="team.override" @click="resetOverride(team.id)">Reset</button></div></div><div v-if="entry.officials.length" class="officials"><strong>Official</strong><span v-for="official in entry.officials" :key="`${official.name}-${official.role}`">{{ official.name }} · {{ official.role.replaceAll('_', ' ') }}</span></div></td>
             <td><span class="status-badge info">{{ statusLabel(entry.event_status) }}</span></td>
             <td><div class="row-actions"><button class="primary" @click="approve(entry.id)">Setujui</button><button @click="requestRevision(entry.id)">Perbaikan</button><button class="danger" @click="reject(entry.id)">Tolak</button></div></td>
           </tr>
@@ -62,4 +62,5 @@ const resetOverride = (id) => router.delete(`/admin/entry-teams/${id}/override`,
 .team + .team { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--portal-border); }
 .team strong,.team small { display:block; }.team small { color:var(--portal-muted); }
 .team-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.team-actions button{min-height:28px;padding:5px 7px;font-size:9px}
+.officials{display:grid;gap:3px;margin-top:12px;padding:10px;color:#405361;background:#eef4fb;border-left:3px solid #1946a3}.officials strong{color:#1946a3;font-size:11px}.officials span{font-size:11px;text-transform:capitalize}
 </style>
