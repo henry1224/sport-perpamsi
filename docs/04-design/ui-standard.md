@@ -29,6 +29,23 @@ Dokumen detail pendamping: `docs/04-design/public-admin-ui-standard.md`.
 
 ## Admin Page
 
+### Urutan Halaman Data
+
+Halaman master, konfigurasi, dan daftar data Admin memakai urutan tetap:
+
+1. `SectionTitle` sesuai grup sidebar.
+2. Overview card berisi konteks singkat dan maksimal tiga statistik utama.
+3. Action header card berisi nama daftar, deskripsi, dan satu tombol `Tambah` di kanan.
+4. Toolbar filter menyatu tepat di bawah action header: `Pencarian`, filter domain, status, lalu `Per Halaman`.
+5. Tabel data dan pagination.
+6. Audit atau informasi pendukung setelah tabel.
+
+- Tombol tambah wajib membuka `Modal.vue`, bukan form inline pada tabel.
+- Modal tambah/edit memakai section bernomor atau kelompok berjudul sesuai panjang form; Regulasi mempertahankan kelompok `Informasi Utama` dan `Panduan Teknis`.
+- Urutan field mengikuti dependensi: identitas, konfigurasi utama, lalu aturan tambahan.
+- Filter wajib berdekatan dengan tabel; halaman mandiri menempatkan tombol tambah sebelum filter, sedangkan tab Master Data boleh memakai toolbar bersama sebelum action card.
+- Overview card Data Lomba, Master Data, Master Venue, dan Master PDAM memakai hierarchy dan spacing senada.
+
 - Dashboard menampilkan match hari ini, match live, pending verifikasi, revisi skor, data belum lengkap.
 - Semua data besar memakai table dengan search, filter, pagination, export.
 - Form penting menampilkan status simpan dan waktu update terakhir.

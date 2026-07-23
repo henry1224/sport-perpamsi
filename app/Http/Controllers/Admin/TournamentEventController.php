@@ -215,6 +215,10 @@ class TournamentEventController extends Controller
         $category = SportCategory::query()->findOrFail($data['sport_category_id']);
         $regulation = SportRegulation::query()->findOrFail($data['sport_regulation_id']);
 
+        if (TournamentEvent::query()->where('sport_id', $data['sport_id'])->where('sport_category_id', $data['sport_category_id'])->when($event, fn ($query) => $query->whereKeyNot($event->id))->exists()) {
+            throw ValidationException::withMessages(['sport_category_id' => 'Kategori ini sudah memiliki Data Lomba. Ubah data yang sudah ada.']);
+        }
+
         if ($category->sport_id !== (int) $data['sport_id'] || $regulation->sport_id !== (int) $data['sport_id']) {
             throw ValidationException::withMessages(['sport_id' => 'Cabor, kategori, dan regulasi harus berasal dari master yang sama.']);
         }

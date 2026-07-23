@@ -8,6 +8,7 @@ use App\Models\SportRegulation;
 use App\Models\TournamentEvent;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class TournamentEventPublicationTest extends TestCase
@@ -19,7 +20,7 @@ class TournamentEventPublicationTest extends TestCase
         $this->seed();
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
         $sport = Sport::query()->whereHas('categories')->whereHas('regulations', fn ($query) => $query->where('is_active', true))->firstOrFail();
-        $category = SportCategory::query()->where('sport_id', $sport->id)->where('is_active', true)->firstOrFail();
+        $category = SportCategory::query()->create(['public_id' => (string) Str::uuid(), 'sport_id' => $sport->id, 'code' => 'CRUD-TEST', 'name' => 'CRUD Test', 'competition_type' => 'individual', 'min_members' => 1, 'max_members' => 1, 'default_max_teams_per_pd' => 1, 'scoring_type' => 'points', 'bracket_enabled' => true, 'sort_order' => 99, 'is_active' => true]);
         $regulation = SportRegulation::query()->where('sport_id', $sport->id)->where('is_active', true)->firstOrFail();
         $matchCount = \DB::table('matches')->count();
 
@@ -88,6 +89,24 @@ class TournamentEventPublicationTest extends TestCase
         $this->actingAs($admin)->post(route('admin.events.unpublish', $event))->assertRedirect()->assertSessionHasNoErrors();
         $this->assertNull($event->fresh()->registration_published_at);
         $this->assertDatabaseHas('event_publication_audits', ['tournament_event_id' => $event->id, 'action' => 'unpublished']);
+    }
+
+    public function test_admin_cannot_create_duplicate_event_for_same_category(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereNotNull('sport_category_id')->with(['sport.regulations'])->firstOrFail();
+
+        $this->actingAs($admin)->post(route('admin.events.store'), [
+            'sport_id' => $event->sport_id,
+            'sport_category_id' => $event->sport_category_id,
+            'sport_regulation_id' => $event->sport->regulations->firstOrFail()->id,
+            'code' => 'duplicate-event',
+            'name' => 'Duplicate Event',
+            'format' => $event->format,
+        ])->assertSessionHasErrors('sport_category_id');
+
+        $this->assertDatabaseMissing('tournament_events', ['code' => 'duplicate-event']);
     }
 
     public function test_registration_period_blocks_early_and_expired_submit(): void

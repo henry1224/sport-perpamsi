@@ -103,6 +103,19 @@ Dilarang:
 
 ## Admin dan PD UI Standard
 
+### Standar Halaman Data Admin
+
+Urutan komponen wajib konsisten:
+
+1. Judul halaman sesuai grup menu sidebar.
+2. Overview card dengan konteks dan maksimal tiga statistik.
+3. Header daftar dengan satu tombol tambah.
+4. Filter tabel tepat setelah tombol tambah dan menyatu dengan header card.
+5. Tabel, empty state, dan pagination.
+6. Audit bila tersedia.
+
+Form tambah/edit wajib memakai modal light dan kelompok field yang jelas. Section bernomor dipakai untuk form bertahap; form panjang seperti Regulasi boleh memakai kelompok berjudul. Urutan field mengikuti dependensi pengisian: identitas terlebih dahulu, konfigurasi utama berikutnya, lalu aturan atau informasi tambahan.
+
 ### Layout
 
 - Admin dan PD memakai token, card, tabel, form, modal, badge, pagination, dan focus state yang sama.

@@ -19,21 +19,23 @@ const menuGroups = computed(() => isAdmin.value ? [
   { label: 'Umum', items: [
     { label: 'Dashboard', href: '/admin/dashboard', icon: 'dashboard' },
   ] },
-  { label: 'Persiapan Lomba', items: [
-    { label: 'Master Cabor', href: '/admin/master-data?tab=sports', icon: 'database' },
+  { label: 'Master Data', items: [
+    { label: 'Cabor', href: '/admin/master-data?tab=sports', icon: 'database' },
     { label: 'Kategori', href: '/admin/master-data?tab=categories', icon: 'clipboard' },
     { label: 'Regulasi', href: '/admin/master-data?tab=regulations', icon: 'report' },
-    { label: 'Master Venue', href: '/admin/venues', icon: 'venue' },
-    { label: 'Master PDAM', href: '/admin/pdams', icon: 'building' },
+    { label: 'Venue', href: '/admin/venues', icon: 'venue' },
+    { label: 'PDAM', href: '/admin/pdams', icon: 'building' },
+  ] },
+  { label: 'Penyusunan Lomba', items: [
     { label: 'Data Lomba', href: '/admin/events', icon: 'trophy' },
+    { label: 'Panitia & Akses', href: '/admin/assignments', icon: 'shield' },
+    { label: 'Agenda & Jadwal', href: '/admin/agenda', icon: 'calendar' },
   ] },
   { label: 'Registrasi', items: [
     { label: 'Verifikasi Pengurus Daerah', href: '/admin/committee-applications', icon: 'building' },
     { label: 'Verifikasi Peserta', href: '/admin/entries', icon: 'users' },
   ] },
   { label: 'Operasional', items: [
-    { label: 'Agenda & Jadwal', href: '/admin/agenda', icon: 'calendar' },
-    { label: 'Panitia & Akses', href: '/admin/assignments', icon: 'shield' },
     { label: 'Pertandingan & Skor', href: '/admin/skor', icon: 'scoreboard' },
   ] },
   { label: 'Pelaporan', items: [

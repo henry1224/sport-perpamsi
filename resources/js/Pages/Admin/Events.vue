@@ -1,6 +1,6 @@
 <script setup>
 import { router, useForm } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import AdminDataTable from '../../Components/AdminDataTable.vue';
 import Modal from '../../Components/Modal.vue';
 import PortalLayout from '../../Layouts/PortalLayout.vue';
@@ -9,13 +9,11 @@ import { formatDateTime } from '../../lib/date';
 import { statusLabel } from '../../lib/status';
 
 const props = defineProps({ events: Object, filters: Object, audits: Array, sportFormats: Object, sports: Array });
-const rows = ref(props.events.data.map((event) => ({ ...event, max_teams_per_pd: event.rules?.max_teams_per_pd || 1 })));
 const busy = ref(null);
-const previewing = ref(null);
-watch(() => props.events.data, (events) => { rows.value = events.map((event) => ({ ...event, max_teams_per_pd: event.rules?.max_teams_per_pd || 1 })); });
 const statusTone = (status) => ({ registration_open: 'success', registration_closed: 'danger', registration_draft: '', bracket_locked: 'info' }[status] || 'info');
-const formatOptions = (event) => [...new Set([event.default_format, event.format, ...Object.keys(props.sportFormats || {})].filter(Boolean))];
 const formatLabel = (format) => props.sportFormats?.[format] || format?.replaceAll('_', ' ') || 'Belum ditetapkan';
+const normalizeLabel = (value) => value?.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() || '';
+const displayName = (event) => normalizeLabel(event.name) === normalizeLabel(`${event.sport} ${event.category}`) ? event.sport : event.name;
 const eventModal = ref(false);
 const editingCode = ref(null);
 const eventForm = useForm({ sport_id: '', sport_category_id: '', sport_regulation_id: '', code: '', name: '', format: 'knockout', max_teams_per_pd: 1, max_officials_per_pd: 0, official_roles: '', allow_member_cross_category: false, max_categories_per_member: '', official_can_compete: false });
@@ -30,27 +28,22 @@ const changeSport = () => { eventForm.sport_category_id = ''; eventForm.sport_re
 const changeCategory = () => { eventForm.max_teams_per_pd = selectedCategory.value?.default_max_teams_per_pd ?? 1; };
 const saveEvent = () => eventForm.transform((data) => ({ ...data, official_roles: data.official_roles.split(',').map((role) => role.trim()).filter(Boolean) })).submit(editingCode.value ? 'put' : 'post', editingCode.value ? `/admin/events/${editingCode.value}` : '/admin/events', { preserveScroll: true, onSuccess: () => { eventModal.value = false; editingCode.value = null; eventForm.reset(); } });
 const deleteEvent = (event) => { if (confirm(`Hapus data lomba ${event.name}?`)) router.delete(`/admin/events/${event.code}`, { preserveScroll: true }); };
-
-const updateFormat = (event) => {
-  busy.value = event.code;
-  router.put(`/admin/events/${event.code}/format`, { format: event.format }, { preserveScroll: true, onFinish: () => { busy.value = null; } });
+const publishModal = ref(false);
+const publishingEvent = ref(null);
+const publishForm = useForm({ registration_open_at: '', registration_close_at: '', sport_regulation_id: '', max_teams_per_pd: 1 });
+const openPublish = (event) => {
+  publishingEvent.value = event;
+  publishForm.clearErrors();
+  Object.assign(publishForm, { registration_open_at: event.open_at || '', registration_close_at: event.close_at || '', sport_regulation_id: event.regulation_id || '', max_teams_per_pd: event.rules?.max_teams_per_pd || 1 });
+  publishModal.value = true;
 };
-
-const publish = (event) => {
-  busy.value = event.code;
-  router.post(`/admin/events/${event.code}/publish`, {
-    registration_open_at: event.open_at,
-    registration_close_at: event.close_at,
-    sport_regulation_id: event.regulation_id,
-    max_teams_per_pd: event.max_teams_per_pd,
-  }, { preserveScroll: true, onFinish: () => { busy.value = null; } });
-};
+const selectedRegulation = computed(() => publishingEvent.value?.regulations.find((item) => item.id === Number(publishForm.sport_regulation_id)));
+const publish = () => publishForm.post(`/admin/events/${publishingEvent.value.code}/publish`, { preserveScroll: true, onSuccess: () => { publishModal.value = false; publishingEvent.value = null; } });
 const unpublish = (event) => {
   if (!confirm(`Tarik publikasi ${event.name}? Kompetisi kembali menjadi draft.`)) return;
   busy.value = event.code;
   router.post(`/admin/events/${event.code}/unpublish`, {}, { preserveScroll: true, onFinish: () => { busy.value = null; } });
 };
-const selectedRegulation = (event) => event.regulations.find((item) => item.id === Number(event.regulation_id));
 const close = (event) => {
   if (!confirm(`Tutup registrasi ${event.name}?`)) return;
   busy.value = event.code;
@@ -60,49 +53,56 @@ const close = (event) => {
 
 <template>
   <PortalLayout portal="admin">
-    <div class="page-head page-title-row">
-      <SectionTitle eyebrow="Master Kompetisi" title="Publikasi Registrasi" :meta="`${events.total} paket kompetisi`" />
-      <button type="button" class="primary create-button" @click="openEvent()">Tambah Data Lomba</button>
-    </div>
-    <p class="notice">PD hanya melihat kompetisi terpublikasi. Pilih versi regulasi, periksa preview snapshot, lalu publish.</p>
+    <div class="page-head"><SectionTitle eyebrow="Penyusunan Lomba" title="Data Lomba" :meta="`${events.total} kompetisi`" /></div>
+    <section class="overview-card"><div><span>Data Kompetisi</span><h2>Susun paket lomba sebelum registrasi dibuka.</h2><p>Hubungkan cabor, kategori, regulasi, format, serta aturan peserta dalam satu data resmi.</p></div><dl><div><dt>Total Data</dt><dd>{{ events.total }}</dd></div><div><dt>Cabor Aktif</dt><dd>{{ sports.length }}</dd></div><div><dt>Audit Terbaru</dt><dd>{{ audits.length }}</dd></div></dl></section>
+    <div class="section-actions"><div><strong>Daftar Data Lomba</strong><span>Buat draft, periksa aturan, lalu publikasikan untuk Pengurus Daerah.</span></div><button type="button" class="primary create-button" @click="openEvent()">Tambah Data Lomba</button></div>
 
     <Modal :open="eventModal" :title="editingCode ? 'Edit Data Lomba' : 'Tambah Data Lomba'" theme="light" @close="eventModal = false">
-      <form class="event-form" @submit.prevent="saveEvent"><div class="event-fields">
-        <label>Cabor<select v-model="eventForm.sport_id" required @change="changeSport"><option value="">Pilih cabor</option><option v-for="sport in sports" :key="sport.id" :value="sport.id">{{ sport.name }}</option></select></label>
-        <label>Kategori<select v-model="eventForm.sport_category_id" required @change="changeCategory"><option value="">Pilih kategori</option><option v-for="category in selectedSport?.categories || []" :key="category.id" :value="category.id">{{ category.name }}</option></select></label>
-        <label>Kode<input v-model="eventForm.code" required placeholder="volleyball-mens-team" /></label>
-        <label>Nama<input v-model="eventForm.name" required placeholder="Bola Voli Putra" /></label>
-        <label>Format<select v-model="eventForm.format" required><option v-for="(label, value) in sportFormats" :key="value" :value="value">{{ label }}</option></select></label>
-        <label>Regulasi<select v-model="eventForm.sport_regulation_id" required><option value="">Pilih regulasi</option><option v-for="regulation in selectedSport?.regulations || []" :key="regulation.id" :value="regulation.id">v{{ regulation.version }} · {{ regulation.title }}</option></select></label>
-        <label>Maksimal Team per PD<input v-model.number="eventForm.max_teams_per_pd" type="number" min="1" max="16" required /></label>
-        <label>Maksimal Official per PD<input v-model.number="eventForm.max_officials_per_pd" type="number" min="0" max="20" required /></label>
-        <label>Peran Official<input v-model="eventForm.official_roles" placeholder="team_manager, coach" /></label>
-        <label>Atlet Rangkap Kategori<select v-model="eventForm.allow_member_cross_category"><option :value="true">Boleh</option><option :value="false">Tidak boleh</option></select></label>
-        <label>Maksimal Kategori per Atlet<input v-model.number="eventForm.max_categories_per_member" type="number" min="1" max="20" placeholder="Kosong = tanpa batas" /></label>
-        <label>Official Boleh Bertanding<select v-model="eventForm.official_can_compete"><option :value="false">Tidak boleh</option><option :value="true">Boleh</option></select></label>
-        <p v-for="message in eventForm.errors" :key="message" class="form-error">{{ message }}</p>
-      </div><footer><button type="button" @click="eventModal = false">Batal</button><button class="primary" :disabled="eventForm.processing">{{ eventForm.processing ? 'Menyimpan…' : 'Simpan Data Lomba' }}</button></footer></form>
+      <form class="event-form event-modal-form" @submit.prevent="saveEvent">
+        <section class="form-section"><header><span>01</span><div><strong>Identitas Kompetisi</strong><small>Pilih cabor dan kategori resmi, lalu tetapkan identitas unik Data Lomba.</small></div></header><div class="event-fields"><label>Cabor<select v-model="eventForm.sport_id" required @change="changeSport"><option value="">Pilih cabor</option><option v-for="sport in sports" :key="sport.id" :value="sport.id">{{ sport.name }}</option></select></label><label>Kategori<select v-model="eventForm.sport_category_id" required @change="changeCategory"><option value="">Pilih kategori</option><option v-for="category in selectedSport?.categories || []" :key="category.id" :value="category.id">{{ category.name }}</option></select></label><label>Kode Data Lomba<input v-model="eventForm.code" required placeholder="badminton-mixed-double" /><small>Dipakai pada URL dan integrasi data.</small></label><label>Nama Tampilan<input v-model="eventForm.name" required placeholder="Bulu Tangkis Ganda Campuran" /><small>Tidak perlu mengulang kategori jika nama sudah jelas.</small></label></div></section>
+        <section class="form-section"><header><span>02</span><div><strong>Format & Regulasi</strong><small>Format mengikuti master cabor dan regulasi menjadi sumber aturan publikasi.</small></div></header><div class="event-fields"><label>Format Pertandingan<select v-model="eventForm.format" required><option v-for="(label, value) in sportFormats" :key="value" :value="value">{{ label }}</option></select></label><label>Regulasi<select v-model="eventForm.sport_regulation_id" required><option value="">Pilih regulasi</option><option v-for="regulation in selectedSport?.regulations || []" :key="regulation.id" :value="regulation.id">v{{ regulation.version }} · {{ regulation.title }}</option></select></label></div></section>
+        <section class="form-section registration-section"><header><span>03</span><div><strong>Aturan Registrasi</strong><small>Nilai bawaan dari cabor dan kategori dapat disesuaikan selama masih draft.</small></div></header><div class="registration-summary"><div><span>Tim per PD</span><strong>{{ eventForm.max_teams_per_pd || 0 }}</strong></div><div><span>Official per PD</span><strong>{{ eventForm.max_officials_per_pd || 0 }}</strong></div><div><span>Official Bertanding</span><strong>{{ eventForm.official_can_compete ? 'Boleh' : 'Tidak' }}</strong></div></div><div class="event-fields"><label>Maksimal Tim per PD<input v-model.number="eventForm.max_teams_per_pd" type="number" min="1" max="16" required /></label><label>Maksimal Official per PD<input v-model.number="eventForm.max_officials_per_pd" type="number" min="0" max="20" required /></label><label class="wide">Peran Official<input v-model="eventForm.official_roles" placeholder="team_manager, coach" /><small>Pisahkan setiap peran dengan koma.</small></label><label>Atlet Rangkap Kategori<select v-model="eventForm.allow_member_cross_category"><option :value="true">Boleh</option><option :value="false">Tidak boleh</option></select></label><label>Maksimal Kategori per Atlet<input v-model.number="eventForm.max_categories_per_member" type="number" min="1" max="20" placeholder="Kosong = tanpa batas" /></label><label>Official Boleh Bertanding<select v-model="eventForm.official_can_compete"><option :value="false">Tidak boleh</option><option :value="true">Boleh</option></select></label></div></section>
+        <p v-for="message in eventForm.errors" :key="message" class="form-error modal-error">{{ message }}</p><footer><button type="button" @click="eventModal = false">Batal</button><button class="primary" :disabled="eventForm.processing">{{ eventForm.processing ? 'Menyimpan…' : 'Simpan Data Lomba' }}</button></footer>
+      </form>
     </Modal>
 
-    <AdminDataTable :paginator="{ ...events, data: rows }" :filters="filters" item-label="kompetisi" search-placeholder="Cari cabor, kategori, kode, atau kompetisi" :filter-options="[
+    <Modal :open="publishModal" title="Publikasi Data Lomba" theme="light" @close="publishModal = false">
+      <form v-if="publishingEvent" class="event-form publish-form" @submit.prevent="publish">
+        <div class="publish-summary">
+          <span>{{ publishingEvent.sport }} · {{ publishingEvent.category }}</span>
+          <h3>{{ publishingEvent.name }}</h3>
+          <p>{{ formatLabel(publishingEvent.format) }} · Maksimal {{ publishForm.max_teams_per_pd }} tim per PD</p>
+        </div>
+        <div class="event-fields">
+          <label class="wide">Regulasi<select v-model="publishForm.sport_regulation_id" required><option value="">Pilih regulasi</option><option v-for="item in publishingEvent.regulations" :key="item.id" :value="item.id">{{ item.label }}</option></select></label>
+          <label>Registrasi Dibuka<input v-model="publishForm.registration_open_at" type="datetime-local" required /></label>
+          <label>Registrasi Ditutup<input v-model="publishForm.registration_close_at" type="datetime-local" required /></label>
+          <label>Maksimal Tim per PD<input v-model.number="publishForm.max_teams_per_pd" type="number" min="1" max="16" required /></label>
+          <div class="regulation-preview"><span>Ringkasan Regulasi</span><strong>{{ selectedRegulation?.label || 'Pilih regulasi terlebih dahulu' }}</strong><p>{{ selectedRegulation?.content || 'Isi regulasi akan tampil di sini sebagai pemeriksaan sebelum publikasi.' }}</p><a v-if="selectedRegulation?.document_url" :href="selectedRegulation.document_url" target="_blank" rel="noopener">Buka dokumen regulasi</a></div>
+          <p v-for="message in publishForm.errors" :key="message" class="form-error">{{ message }}</p>
+        </div>
+        <footer><button type="button" @click="publishModal = false">Batal</button><button class="primary" :disabled="publishForm.processing">{{ publishForm.processing ? 'Memublikasikan…' : 'Publikasikan' }}</button></footer>
+      </form>
+    </Modal>
+
+    <AdminDataTable :paginator="events" :filters="filters" item-label="kompetisi" search-placeholder="Cari cabor, kategori, kode, atau kompetisi" :filter-options="[
       { value: 'registration_draft', label: 'Draft' }, { value: 'registration_open', label: 'Pendaftaran Dibuka' },
       { value: 'registration_closed', label: 'Pendaftaran Ditutup' }, { value: 'bracket_locked', label: 'Bracket Dikunci' },
       { value: 'ongoing', label: 'Sedang Berlangsung' }, { value: 'completed', label: 'Selesai' },
     ]" v-slot="{ rows: pageRows }">
       <table>
-        <thead><tr><th>Kompetisi</th><th>Format</th><th>Regulasi</th><th>Status</th><th>Periode Registrasi</th><th>Peserta</th><th class="actions-heading">Aksi</th></tr></thead>
+        <thead><tr><th>Data Lomba</th><th>Format</th><th>Regulasi</th><th>Status</th><th>Periode Registrasi</th><th>Peserta</th><th class="actions-heading">Aksi</th></tr></thead>
         <tbody>
           <template v-for="event in pageRows" :key="event.code">
           <tr class="event-row">
-            <td><div class="event-identity"><span class="event-mark">{{ event.sport?.slice(0, 2).toUpperCase() || 'EV' }}</span><div class="primary-cell"><strong :title="event.name">{{ event.name }}</strong><small>{{ event.sport }} · {{ event.category || 'Kategori belum ditetapkan' }}</small><code>{{ event.code }}</code></div></div></td>
-            <td><div v-if="!event.published && event.entries_count === 0" class="format-editor"><select v-model="event.format"><option v-for="format in formatOptions(event)" :key="format" :value="format">{{ formatLabel(format) }}</option></select><small>Bawaan: {{ formatLabel(event.default_format) }}</small><button type="button" :disabled="busy === event.code" @click="updateFormat(event)">Simpan</button></div><div v-else class="locked-format"><strong>{{ formatLabel(event.format) }}</strong><small>Terkunci setelah publikasi</small></div></td>
-            <td><div class="regulation-field"><select v-model="event.regulation_id" class="regulation-select" aria-label="Regulasi kompetisi" :disabled="event.entries_count > 0"><option :value="null">Pilih regulasi</option><option v-for="item in event.regulations" :key="item.id" :value="item.id">{{ item.label }}</option></select><small>{{ event.entries_count > 0 ? 'Terkunci karena sudah ada peserta' : 'Versi aturan publikasi' }}</small></div></td>
+            <td><div class="event-identity"><span class="event-mark">{{ event.sport?.slice(0, 2).toUpperCase() || 'EV' }}</span><div class="primary-cell"><strong :title="event.name">{{ displayName(event) }}</strong><small v-if="displayName(event) !== event.sport">{{ event.sport }}</small><div class="event-meta"><span>{{ event.category || 'Tanpa kategori' }}</span><code>{{ event.code }}</code></div></div></div></td>
+            <td><div class="locked-format"><strong>{{ formatLabel(event.format) }}</strong><small>Bawaan: {{ formatLabel(event.default_format) }}</small></div></td>
+            <td><div class="regulation-field"><strong>{{ event.regulation || 'Belum dipilih' }}</strong><small>{{ event.published ? 'Snapshot publikasi aktif' : 'Dipilih saat publikasi' }}</small></div></td>
             <td><span :class="['status-badge', statusTone(event.status)]">{{ statusLabel(event.status) }}</span></td>
-            <td><div class="period-fields"><input v-model="event.open_at" type="datetime-local" aria-label="Waktu buka" :disabled="event.entries_count > 0" /><span>hingga</span><input v-model="event.close_at" type="datetime-local" aria-label="Waktu tutup" :disabled="event.entries_count > 0" /></div></td>
-            <td><div class="count-cell"><span><strong>{{ event.entries_count }}</strong><small>pendaftaran</small></span><label v-if="event.entries_count === 0" class="team-limit">Maks. tim/PD<input v-model.number="event.max_teams_per_pd" type="number" min="1" max="16" /></label><small v-else class="team-cap">{{ event.rules?.max_teams_per_pd || 1 }} tim/PD</small></div></td>
-            <td><div class="row-actions"><button v-if="!event.published && event.entries_count === 0" type="button" @click="openEvent(event)">Edit</button><button class="primary" type="button" :disabled="!event.regulation_id" @click="previewing = previewing === event.code ? null : event.code">{{ previewing === event.code ? 'Tutup' : 'Preview' }}</button><button v-if="event.published && event.status === 'registration_open'" class="danger" type="button" :disabled="busy === event.code" @click="close(event)">Tutup</button><button v-if="event.published && event.entries_count === 0" class="danger" type="button" :disabled="busy === event.code" @click="unpublish(event)">Tarik</button><button v-if="!event.published && event.entries_count === 0" class="danger" type="button" @click="deleteEvent(event)">Hapus</button></div></td>
+            <td><div class="period-display"><strong>{{ event.open_at ? formatDateTime(event.open_at) : 'Belum dijadwalkan' }}</strong><small v-if="event.close_at">hingga {{ formatDateTime(event.close_at) }}</small></div></td>
+            <td><div class="count-cell"><span><strong>{{ event.entries_count }}</strong><small>pendaftaran</small></span><small class="team-cap">{{ event.rules?.max_teams_per_pd || 1 }} tim/PD</small></div></td>
+            <td><div class="row-actions"><button v-if="!event.published && event.entries_count === 0" type="button" @click="openEvent(event)">Edit</button><button v-if="!event.published && event.entries_count === 0" class="primary" type="button" @click="openPublish(event)">Publikasi</button><button v-if="event.published && event.status === 'registration_open'" class="danger" type="button" :disabled="busy === event.code" @click="close(event)">Tutup</button><button v-if="event.published && event.entries_count === 0" type="button" :disabled="busy === event.code" @click="unpublish(event)">Tarik</button><button v-if="!event.published && event.entries_count === 0" class="danger" type="button" @click="deleteEvent(event)">Hapus</button></div></td>
           </tr>
-          <tr v-if="previewing === event.code" class="preview-row"><td colspan="7"><div class="preview-card"><header><div><span>Preview Paket Registrasi</span><h3>{{ event.name }}</h3></div><span class="status-badge info">Belum dipublikasikan</span></header><dl><div><dt>Cabor</dt><dd>{{ event.sport }}</dd></div><div><dt>Kategori</dt><dd>{{ event.category }}</dd></div><div><dt>Format Kompetisi</dt><dd>{{ formatLabel(event.format) }}</dd></div><div><dt>Regulasi</dt><dd>{{ selectedRegulation(event)?.label }}</dd></div><div><dt>Periode</dt><dd>{{ event.open_at }} — {{ event.close_at }}</dd></div></dl><p>{{ selectedRegulation(event)?.content }}</p><footer><a v-if="selectedRegulation(event)?.document_url" :href="selectedRegulation(event).document_url" target="_blank" rel="noopener">Buka Dokumen Regulasi ↗</a><button class="primary" type="button" :disabled="busy === event.code || !event.open_at || !event.close_at" @click="publish(event)">{{ event.published ? 'Publish Ulang Paket' : 'Publish Paket' }}</button></footer></div></td></tr>
           </template>
           <tr v-if="!pageRows.length" class="empty-row"><td colspan="7">Tidak ada kompetisi sesuai filter.</td></tr>
         </tbody>
@@ -127,4 +127,10 @@ const close = (event) => {
 .format-editor,.locked-format { display:grid; gap:5px; min-width:170px; }.format-editor select { min-height:36px; padding:7px 9px; color:#334553; background:#fff; border:1px solid #cbd8df; border-radius:7px; text-transform:capitalize; }.format-editor small,.locked-format small { color:#7a8993; font-size:10px; }.format-editor button { width:fit-content; padding:6px 9px; color:#1946a3; background:#eff5fb; border:1px solid #bfd0dc; border-radius:6px; font-size:10px; font-weight:800; cursor:pointer; }.locked-format strong { color:#334553; font-size:12px; text-transform:capitalize; }
 .event-form{min-width:min(720px,80vw)}.event-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:20px}.event-fields label{display:grid;gap:6px;color:#60717f;font-size:11px;font-weight:800}.event-fields input,.event-fields select{min-height:42px;padding:10px 12px;border:1px solid #cbd8df;border-radius:8px}.event-form footer{display:flex;justify-content:flex-end;gap:9px;padding:0 20px 20px}.event-form footer button{min-height:40px;padding:9px 14px;border:1px solid #bfd0dc;border-radius:8px;cursor:pointer}.form-error{grid-column:1/-1;margin:0;color:#a1432e;font-size:11px;font-weight:700}@media(max-width:700px){.page-title-row{align-items:stretch;flex-direction:column}.event-fields{grid-template-columns:1fr}.event-form{min-width:0}}
 .actions-heading{text-align:right}.event-row{background:#fff}.event-identity{display:flex;align-items:flex-start;gap:12px;min-width:230px}.event-mark{display:grid;flex:0 0 38px;place-items:center;height:38px;color:#1946a3;background:#edf4ff;border:1px solid #cedcf3;border-radius:10px;font-size:11px;font-weight:900;letter-spacing:.08em}.event-identity .primary-cell{min-width:0}.event-identity strong{max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.event-identity code{width:fit-content;padding:2px 6px;color:#536571;background:#f1f5f7;border-radius:4px;font-family:inherit;font-size:10px;font-weight:750}.regulation-field{display:grid;gap:6px}.regulation-field small{color:#7a8993;font-size:10px}.regulation-select{min-width:190px;max-width:230px}.period-fields{grid-template-columns:minmax(154px,1fr);min-width:170px}.period-fields input:disabled,.regulation-select:disabled{color:#71808b;background:#f2f5f7;border-color:#dce4e8}.count-cell{gap:8px;min-width:90px}.count-cell>span{display:flex;align-items:baseline;gap:6px}.count-cell strong{font-size:24px;line-height:1}.team-limit{display:flex;align-items:center;gap:6px;margin-top:0}.team-limit input{width:54px;min-height:32px}.team-cap{padding-top:7px;border-top:1px solid #e5ecef}.format-editor,.locked-format{min-width:150px}.row-actions{min-width:118px}.row-actions button{min-width:54px}.row-actions button.primary{box-shadow:0 4px 10px rgba(54,194,240,.16)}
+</style>
+
+<style scoped>
+.wide,.regulation-preview{grid-column:1/-1}.publish-summary{padding:20px 20px 0}.publish-summary span,.regulation-preview span{color:#1946a3;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.publish-summary h3{margin:5px 0;color:#142536}.publish-summary p,.regulation-preview p{margin:0;color:#60717f;font-size:12px;line-height:1.55}.regulation-preview{display:grid;gap:7px;padding:14px;background:#f5f8fa;border:1px solid #dde6ea;border-radius:10px}.regulation-preview strong{color:#243747}.regulation-preview a{width:fit-content;color:#1946a3;font-size:11px;font-weight:800;text-decoration:none}.locked-format,.regulation-field,.period-display{display:grid;gap:5px;min-width:150px}.locked-format strong,.regulation-field strong,.period-display strong{color:#334553;font-size:12px}.locked-format small,.regulation-field small,.period-display small{color:#7a8993;font-size:10px}
+.event-hero{display:grid;grid-template-columns:1fr auto;gap:20px;margin:8px 0 24px;padding:24px;color:#fff;background:linear-gradient(135deg,#0b1d3d 0%,#12356c 68%,#1946a3 100%);border:1px solid rgba(54,194,240,.28);border-radius:16px;box-shadow:0 14px 34px rgba(7,17,38,.18)}.event-hero :deep(.section-title){margin:0}.event-hero-main>p{max-width:680px;margin:10px 0 0;color:#c7d8eb;font-size:13px;line-height:1.6}.create-button{align-self:start;display:flex;align-items:center;gap:8px;padding:11px 15px;color:#071126;background:#36c2f0;border:0;border-radius:9px;box-shadow:0 8px 20px rgba(54,194,240,.22)}.create-button span{font-size:18px;line-height:1}.event-summary{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(110px,150px)) 1fr;gap:10px;padding-top:18px;border-top:1px solid rgba(255,255,255,.14)}.event-summary>div{display:grid;gap:3px;padding:10px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:9px}.event-summary small{color:#9eb7d2;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.event-summary strong{font-size:20px}.event-summary>p{align-self:center;margin:0;color:#c7d8eb;font-size:11px;line-height:1.5}.event-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}.event-meta span,.event-meta code{display:inline-flex;align-items:center;min-height:22px;padding:3px 7px;border-radius:999px;font-size:9px;font-weight:800}.event-meta span{color:#1946a3;background:#eaf1fb}.event-meta code{color:#60717f;background:#f1f5f7}.event-identity strong{max-width:280px}.event-row>td{vertical-align:middle}@media(max-width:800px){.event-hero{grid-template-columns:1fr;padding:18px}.create-button{width:100%;justify-content:center}.event-summary{grid-template-columns:repeat(3,1fr)}.event-summary>p{grid-column:1/-1}}@media(max-width:520px){.event-summary{grid-template-columns:1fr}.event-summary>p{grid-column:auto}}
+.page-head{padding:8px 0 6px}.overview-card{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;margin-bottom:18px;padding:26px 28px;color:#fff;background:linear-gradient(135deg,#0b1d3d,#1946a3);border:1px solid rgba(54,194,240,.28);border-radius:16px;box-shadow:0 14px 34px rgba(7,17,38,.16)}.overview-card>div>span{color:#36c2f0;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.overview-card h2{margin:6px 0;color:#fff;font-size:24px}.overview-card p{max-width:620px;margin:0;color:#c7d8eb;font-size:12px;line-height:1.6}.overview-card dl{display:grid;grid-template-columns:repeat(3,1fr);margin:0;overflow:hidden;border:1px solid rgba(255,255,255,.13);border-radius:11px}.overview-card dl div{display:grid;place-content:center;padding:14px;border-right:1px solid rgba(255,255,255,.13);text-align:center}.overview-card dl div:last-child{border-right:0}.overview-card dt{color:#aac1d8;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.overview-card dd{margin:5px 0 0;color:#fff;font-size:21px;font-weight:900}.section-actions{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:14px;padding:18px 20px;background:#fff;border:1px solid #d9e3e9;border-radius:14px}.section-actions div{display:grid;gap:4px}.section-actions strong{color:#142536;font-size:17px}.section-actions span{color:#71808b;font-size:12px}.section-actions .create-button{align-self:center;color:#fff;background:#1946a3;box-shadow:none}.event-modal-form{display:grid;overflow:hidden;background:#f6f8fa}.event-modal-form .form-section{display:grid;gap:16px;padding:20px 22px;background:#fff;border-bottom:1px solid #e4ebef}.event-modal-form .form-section>header{display:flex;align-items:flex-start;gap:12px}.event-modal-form .form-section>header>span{display:grid;place-items:center;width:30px;height:30px;flex:0 0 auto;color:#1946a3;background:#eaf1fb;border:1px solid #cfdded;border-radius:8px;font-size:10px;font-weight:900}.event-modal-form .form-section>header>div{display:grid;gap:3px}.event-modal-form .form-section>header strong{color:#172535;font-size:14px}.event-modal-form .form-section>header small{color:#71808b;font-size:11px}.event-modal-form .event-fields{padding:0}.event-modal-form label>small{color:#71808b;font-weight:600}.registration-section{background:#f5f8fa!important}.registration-section .registration-summary{display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;background:#102f59;border:1px solid #102f59;border-radius:11px}.registration-section .registration-summary div{display:grid;gap:4px;padding:13px 15px;border-right:1px solid rgba(255,255,255,.14)}.registration-section .registration-summary div:last-child{border-right:0}.registration-section .registration-summary span{color:#b9d9f1;font-size:9px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}.registration-section .registration-summary strong{color:#fff;font-size:12px}.event-modal-form footer{padding:16px 22px;background:#f7f9fa;border-top:1px solid #e2e9ed}.modal-error{margin:14px 22px 0}@media(max-width:900px){.overview-card{grid-template-columns:1fr}.overview-card dl{min-height:92px}}@media(max-width:700px){.section-actions{align-items:stretch;flex-direction:column}.overview-card{padding:20px}.overview-card dl,.registration-section .registration-summary{grid-template-columns:1fr}.overview-card dl div,.registration-section .registration-summary div{border-right:0;border-bottom:1px solid rgba(255,255,255,.13)}.overview-card dl div:last-child,.registration-section .registration-summary div:last-child{border-bottom:0}.event-modal-form .form-section{padding:18px}.wide{grid-column:auto}}
 </style>
