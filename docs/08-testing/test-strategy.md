@@ -79,6 +79,10 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 58. Snapshot menyimpan kuota/peran official serta aturan atlet merangkap kategori.
 59. Official ditolak bila juga terdaftar sebagai pemain dan snapshot tidak mengizinkan official bertanding.
 60. Jika official boleh bertanding, portal PD menampilkan daftar cabor tempat official tersebut juga tercatat sebagai pemain.
+61. Menonaktifkan cabor menghilangkannya dari publik dan pilihan transaksi baru tanpa menghapus histori.
+62. Toggle status cabor mempertahankan seluruh default aturan registrasi.
+63. Halaman error `403`, `404`, `419`, `500`, dan `503` memakai template serta aset `STOP.png`.
+64. Nama sama pada identitas berbeda dicatat sebagai risiko sampai `player_id`/NIK/KTA tersedia.
 
 ## Frontend/E2E
 

@@ -56,4 +56,4 @@
 - Header cabor dan ikon jika aset tersedia.
 - Jadwal serta venue.
 - Kategori dan label kuota: angka pasti, rentang, atau `Minimal {n} pemain`.
-- Sistem pertandingan, syarat peserta, official, biaya, format, dan slide sumber.
+- Kartu memuat ringkasan; modal memuat sistem pertandingan, syarat peserta, official, biaya, dan format tanpa metadata versi/slide sumber.

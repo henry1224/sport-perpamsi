@@ -72,6 +72,8 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 ## Public dan Hasil
 
 - [ ] Public melihat agenda terbit, venue, cabor, bracket, hasil, dan klasemen.
+- [ ] Cabor nonaktif tidak tampil publik; detail cabor panjang tampil melalui modal tanpa versi atau slide sumber.
+- [ ] Halaman `403`, `404`, `419`, `500`, dan `503` menampilkan `STOP.png`, teks sesuai status, dan tindakan kembali.
 - [ ] Nama participant publik memakai `PD PERPAMSI {provinsi} #{team_no}`; klasemen agregat memakai nama PD tanpa nomor.
 - [ ] Draft dan data pribadi tidak tampil publik.
 - [ ] Klasemen hanya memakai hasil final/terverifikasi.
@@ -89,6 +91,8 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] `git diff`, test, build, migration upgrade, dan security review lulus sebelum merge.
 - [ ] Master Cabor hanya menawarkan tipe `Cabang Olahraga` dan `Eksibisi`; Padel, Golf, dan Vokal tampil sebagai `Eksibisi` saat diedit.
 - [ ] Format Bawaan pada form, tabel Master Cabor, dan editor kompetisi memakai label serta nilai yang sama dengan katalog resmi.
+- [ ] Toggle aktif/nonaktif cabor tidak mengubah default kuota, peran official, aturan rangkap kategori, atau izin official bermain.
+- [ ] Cabor nonaktif tidak dapat dipilih untuk event/agenda baru dan tidak menghapus data historis.
 - [ ] Data pertandingan demo dapat dihapus tanpa menghapus master dan data registrasi yang dipertahankan.
 - [ ] Seeder baseline tidak mengembalikan 756 match demo setelah cleanup.
 - [ ] Tidak ada match operasional tanpa agenda, venue, atau jadwal.

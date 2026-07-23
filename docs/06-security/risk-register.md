@@ -122,6 +122,8 @@ Backup database wajib dibuat sebelum migration penghapusan kategori nonaktif. Re
 | Perubahan dilakukan langsung di `main` | Tinggi | `AGENTS.md`, workflow wajib, branch protection/PR | Review Git history |
 | Cleanup demo ikut menghapus master atau registrasi resmi | Kritis | Backup, daftar scope eksplisit, transaksi, dry-run jumlah baris, dan verifikasi pasca-cleanup | Restore test dan audit count |
 | Kompetisi tidak memiliki kategori atau versi regulasi | Tinggi | Constraint aplikasi sebelum publish dan laporan data tidak lengkap | Feature test publish dan audit data |
+| Dua orang berbeda memiliki nama normalisasi sama | Tinggi | Tampilkan informasi rangkap kepada operator dan blokir sesuai snapshot; migrasikan pencocokan ke `player_id`/NIK/KTA saat master identitas tersedia | UAT nama sama dan feature test setelah identitas kanonik tersedia |
+| Cabor nonaktif masih dipakai pada transaksi baru | Tinggi | Pilihan dan validasi event/agenda hanya menerima cabor aktif; data historis tetap read-only | Feature test status cabor |
 
 ## Definition of Done Risiko
 

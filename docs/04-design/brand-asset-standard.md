@@ -62,16 +62,18 @@ Tema visual: **arena sport nasional tropis-futuristik**.
 - Bulu tangkis: `bulu-tangkis.png`.
 - Catur: `catur.png`.
 - Mini Football: `mini-football.png`.
+- Golf: `Golf.png`.
+- Padel: `Padel.png`.
 - Tenis Lapangan: `tenis-lapangan.png`.
 - Tenis Meja: `tenis-meja.png`.
 - Vokal: `vokal.png`.
 - Voli: `voli.png`.
 
-### Empty State dan Success State
+### Empty, Error, dan Success State
 
 - Empty bracket: maskot cabor opacity 65%, ukuran 160px.
 - Hasil final/menang: maskot kecil 72-96px dengan accent glow.
-- Error state: jangan gunakan maskot celebratory; gunakan card netral.
+- Error `403`, `404`, `419`, `500`, dan `503`: gunakan `STOP.png`, card netral, judul sesuai status, dan tindakan kembali yang jelas.
 
 ## Layout Public Page
 

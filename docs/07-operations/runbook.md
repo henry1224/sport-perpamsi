@@ -28,6 +28,18 @@
 - Cek revisi skor yang belum selesai.
 - Review issue hari itu.
 
+## Cleanup Data Demo
+
+1. Backup database dan pastikan environment bukan production.
+2. Tinjau jumlah data demo yang akan dibersihkan.
+3. Jalankan:
+
+```bash
+php artisan demo:cleanup-tournament --force
+```
+
+4. Verifikasi master cabor, kategori, regulasi, venue, PD, dan registrasi resmi tetap tersedia.
+
 ## Eskalasi
 
 - Issue skor: Scorekeeper ke Koordinator Cabor ke Admin Event.

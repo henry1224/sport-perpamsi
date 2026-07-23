@@ -90,9 +90,9 @@ Phase 4B selesai secara kode dan automated test. Phase 5 boleh ditutup setelah U
 - [ ] Akun panitia dan assignment per cabor/venue terhubung ke jadwal pertandingan operasional.
 - [x] Policy dan menu panitia berbasis scope cabor/venue dengan deny-default.
 - [ ] Pertandingan operasional terhubung ke agenda, venue, dan waktu.
-- [ ] Data pertandingan/skor demo dipisahkan dari data operasional dan tidak dibuat otomatis oleh seed baseline.
+- [x] Data pertandingan/skor demo dipisahkan dari data operasional, tidak dibuat otomatis oleh seed baseline, dan dapat dibersihkan melalui command khusus.
 
-Status: `Partial` — CRUD venue/agenda dan policy tersedia; wiring pertandingan, assignment panitia, cleanup demo, dan UAT masih terbuka.
+Status: `Partial` — CRUD venue/agenda, policy, dan cleanup demo tersedia; wiring pertandingan, assignment panitia operasional, dan UAT masih terbuka.
 
 Exit: CRUD, audit, restrict delete, wiring jadwal, assignment panitia, cleanup demo, dan UAT lulus.
 
