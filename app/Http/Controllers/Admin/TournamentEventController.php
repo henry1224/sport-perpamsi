@@ -97,20 +97,18 @@ class TournamentEventController extends Controller
         $data = $request->validate([
             'registration_open_at' => ['required', 'date'],
             'registration_close_at' => ['required', 'date', 'after:registration_open_at'],
-            'sport_regulation_id' => ['required', Rule::exists('sport_regulations', 'id')->where('is_active', true)],
-            'max_teams_per_pd' => ['required', 'integer', 'min:1', 'max:16'],
         ]);
 
-        $event->loadMissing('category');
+        $event->loadMissing(['category', 'sport']);
         $category = $event->category;
-        $regulation = SportRegulation::query()->findOrFail($data['sport_regulation_id']);
+        $regulation = SportRegulation::query()->where('sport_id', $event->sport_id)->where('is_active', true)->latest('version')->first();
 
         if (! $category || ! $category->is_active || $category->sport_id !== $event->sport_id) {
             throw ValidationException::withMessages(['event' => 'Kategori aktif dan cabor kompetisi harus sesuai sebelum dipublikasikan.']);
         }
 
-        if ($regulation->sport_id !== $event->sport_id) {
-            throw ValidationException::withMessages(['sport_regulation_id' => 'Regulasi harus berasal dari cabor kompetisi yang sama.']);
+        if (! $regulation) {
+            throw ValidationException::withMessages(['event' => 'Cabor belum memiliki regulasi aktif. Lengkapi Master Regulasi sebelum publikasi.']);
         }
 
         if ($event->registration_published_at && $event->entries()->exists()) {
@@ -119,25 +117,25 @@ class TournamentEventController extends Controller
 
         DB::transaction(function () use ($event, $category, $regulation, $data, $request) {
             $before = $this->publicationState($event);
-            $draftRules = $event->registration_rules ?? [];
             $event->update([
                 'status' => 'registration_open',
+                'format' => $event->sport->default_format,
                 'sport_regulation_id' => $regulation->id,
                 'registration_rules' => [
                     'category_name' => $category->name,
                     'competition_type' => $category->competition_type,
                     'scoring_type' => $category->scoring_type,
-                    'format' => $event->format,
+                    'format' => $event->sport->default_format,
                     'min_members' => $category->min_members,
                     'max_members' => $category->max_members,
-                    'max_teams_per_pd' => $data['max_teams_per_pd'],
+                    'max_teams_per_pd' => $category->default_max_teams_per_pd,
                     'min_members_per_team' => $category->min_members,
                     'max_members_per_team' => $category->max_members,
-                    'max_officials_per_pd' => $draftRules['max_officials_per_pd'] ?? 0,
-                    'official_roles' => $draftRules['official_roles'] ?? [],
-                    'allow_member_cross_category' => $draftRules['allow_member_cross_category'] ?? false,
-                    'max_categories_per_member' => $draftRules['max_categories_per_member'] ?? null,
-                    'official_can_compete' => $draftRules['official_can_compete'] ?? false,
+                    'max_officials_per_pd' => $event->sport->default_max_officials_per_pd,
+                    'official_roles' => $event->sport->official_roles ?? [],
+                    'allow_member_cross_category' => $event->sport->allow_member_cross_category,
+                    'max_categories_per_member' => $event->sport->max_categories_per_member,
+                    'official_can_compete' => $event->sport->official_can_compete,
                     'avoid_same_pd_in_round' => true,
                     'regulation_id' => $regulation->id,
                     'regulation_version' => $regulation->version,
@@ -153,18 +151,6 @@ class TournamentEventController extends Controller
         });
 
         return back()->with('success', 'Registrasi kompetisi dipublikasikan.');
-    }
-
-    public function updateFormat(Request $request, TournamentEvent $event): RedirectResponse
-    {
-        if ($event->registration_published_at || $event->entries()->exists()) {
-            throw ValidationException::withMessages(['format' => 'Format kompetisi terkunci setelah dipublikasikan atau memiliki peserta.']);
-        }
-
-        $data = $request->validate(['format' => ['required', Rule::in(array_keys(Sport::FORMAT_LABELS))]]);
-        $event->update($data);
-
-        return back()->with('success', 'Format kompetisi diperbarui.');
     }
 
     public function close(Request $request, TournamentEvent $event): RedirectResponse
@@ -199,40 +185,38 @@ class TournamentEventController extends Controller
         $data = $request->validate([
             'sport_id' => ['required', Rule::exists('sports', 'id')->where('is_active', true)],
             'sport_category_id' => ['required', Rule::exists('sport_categories', 'id')->where('is_active', true)],
-            'sport_regulation_id' => ['required', Rule::exists('sport_regulations', 'id')->where('is_active', true)],
-            'code' => ['required', 'string', 'max:100', 'alpha_dash:ascii', Rule::unique('tournament_events', 'code')->ignore($event)],
-            'name' => ['required', 'string', 'max:150'],
-            'format' => ['required', Rule::in(array_keys(Sport::FORMAT_LABELS))],
-            'max_teams_per_pd' => ['nullable', 'integer', 'min:1', 'max:16'],
-            'max_officials_per_pd' => ['nullable', 'integer', 'min:0', 'max:20'],
-            'official_roles' => ['nullable', 'array', 'max:10'],
-            'official_roles.*' => ['string', 'max:50'],
-            'allow_member_cross_category' => ['nullable', 'boolean'],
-            'max_categories_per_member' => ['nullable', 'integer', 'min:1', 'max:20'],
-            'official_can_compete' => ['nullable', 'boolean'],
         ]);
         $sport = Sport::query()->findOrFail($data['sport_id']);
         $category = SportCategory::query()->findOrFail($data['sport_category_id']);
-        $regulation = SportRegulation::query()->findOrFail($data['sport_regulation_id']);
+        $regulation = SportRegulation::query()->where('sport_id', $sport->id)->where('is_active', true)->latest('version')->first();
 
         if (TournamentEvent::query()->where('sport_id', $data['sport_id'])->where('sport_category_id', $data['sport_category_id'])->when($event, fn ($query) => $query->whereKeyNot($event->id))->exists()) {
             throw ValidationException::withMessages(['sport_category_id' => 'Kategori ini sudah memiliki Data Lomba. Ubah data yang sudah ada.']);
         }
 
-        if ($category->sport_id !== (int) $data['sport_id'] || $regulation->sport_id !== (int) $data['sport_id']) {
-            throw ValidationException::withMessages(['sport_id' => 'Cabor, kategori, dan regulasi harus berasal dari master yang sama.']);
+        if ($category->sport_id !== (int) $data['sport_id']) {
+            throw ValidationException::withMessages(['sport_id' => 'Cabor dan kategori harus berasal dari master yang sama.']);
         }
 
-        foreach (['max_teams_per_pd', 'max_officials_per_pd', 'official_roles', 'allow_member_cross_category', 'max_categories_per_member', 'official_can_compete'] as $key) unset($data[$key]);
+        if (! $regulation) {
+            throw ValidationException::withMessages(['sport_id' => 'Cabor belum memiliki regulasi aktif. Lengkapi Master Regulasi terlebih dahulu.']);
+        }
+
+        $data += [
+            'sport_regulation_id' => $regulation->id,
+            'code' => Str::slug($sport->code.'-'.$category->code),
+            'name' => $sport->name.' - '.$category->name,
+            'format' => $sport->default_format,
+        ];
         $data['registration_rules'] = [
-            'max_teams_per_pd' => $request->integer('max_teams_per_pd') ?: $category->default_max_teams_per_pd,
+            'max_teams_per_pd' => $category->default_max_teams_per_pd,
             'min_members_per_team' => $category->min_members,
             'max_members_per_team' => $category->max_members,
-            'max_officials_per_pd' => $request->input('max_officials_per_pd', $sport->default_max_officials_per_pd),
-            'official_roles' => $request->input('official_roles', $sport->official_roles ?? []),
-            'allow_member_cross_category' => $request->has('allow_member_cross_category') ? $request->boolean('allow_member_cross_category') : $sport->allow_member_cross_category,
-            'max_categories_per_member' => $request->input('max_categories_per_member', $sport->max_categories_per_member),
-            'official_can_compete' => $request->has('official_can_compete') ? $request->boolean('official_can_compete') : $sport->official_can_compete,
+            'max_officials_per_pd' => $sport->default_max_officials_per_pd,
+            'official_roles' => $sport->official_roles ?? [],
+            'allow_member_cross_category' => $sport->allow_member_cross_category,
+            'max_categories_per_member' => $sport->max_categories_per_member,
+            'official_can_compete' => $sport->official_can_compete,
         ];
 
         return $data;

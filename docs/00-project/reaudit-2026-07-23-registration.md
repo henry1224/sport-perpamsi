@@ -45,3 +45,4 @@ Official wajib melengkapi foto 3×4 dan KTP. Draft boleh disimpan belum lengkap;
 - Deteksi rangkap berbasis identitas hanya efektif untuk anggota yang sudah memiliki NIK/KTA; 993 anggota legacy masih menunggu pelengkapan manual.
 - Unduh dokumen privat oleh Admin belum dibuat; verifikator saat ini melihat identitas dan jumlah kelengkapan.
 - Aturan kuota, peran official, dan izin rangkap tetap mengikuti snapshot Data Lomba, bukan nilai bebas dari form PD.
+- Mulai standardisasi 23 Juli 2026, draft Data Lomba tidak menerima override format/regulasi/kuota/official; seluruh nilai diwarisi dari master dan dikunci saat publish.

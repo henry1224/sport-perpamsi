@@ -16,7 +16,7 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] Nama portal memakai `PD PERPAMSI {provinsi}`.
 - [ ] Pengurus Daerah hanya melihat data PD sendiri.
 - [x] Pengurus Daerah hanya melihat kompetisi yang dipublikasikan Admin.
-- [-] Pengurus Daerah dapat menambah dan mengajukan daftar pemain; edit draft belum tersedia.
+- [-] Pengurus Daerah dapat menambah, mengedit draft, dan mengajukan daftar pemain; automated test lulus, manual UAT masih pending.
 - [x] Jumlah dan duplikasi pemain divalidasi sesuai snapshot regulasi kompetisi.
 - [ ] Official yang dilarang bertanding diblokir saat namanya juga terdaftar sebagai pemain.
 - [ ] Official yang diizinkan bertanding menampilkan informasi cabor lain tempat ia menjadi pemain.
@@ -59,7 +59,8 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] Peserta dapat membuka panduan venue melalui Google Maps dari halaman publik.
 - [ ] Admin dapat menambah, mengedit, dan mempublikasikan agenda tanpa bentrok venue/waktu; revisi terpublikasi wajib memiliki alasan dan audit.
 - [ ] Admin dapat mengelola kompetisi dan status pendaftaran.
-- [ ] Admin dapat membuat Data Lomba draft dari cabor, kategori, format, dan regulasi yang sesuai.
+- [ ] Admin dapat membuat Data Lomba draft dengan memilih cabor dan kategori; format, regulasi, kuota, serta aturan official tampil otomatis dari master.
+- [ ] Perubahan Master Cabor, Kategori, atau Regulasi menyinkronkan draft terkait tanpa mengubah Data Lomba terpublikasi.
 - [ ] Membuat Data Lomba tidak otomatis membuat peserta, bracket, pertandingan, atau skor.
 - [ ] Kompetisi tanpa kategori/regulasi valid tidak dapat dipublikasikan.
 - [x] Admin dapat melihat, menyetujui, atau menolak registrasi serta pemain per PD PERPAMSI.

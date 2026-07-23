@@ -25,7 +25,7 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 12. Validasi roster memakai snapshot walau master kategori berubah.
 13. Publish ditolak untuk kategori tidak aktif/tidak cocok dan periode invalid.
 14. Kategori/peraturan yang sudah dipakai tidak dapat diubah tanpa workflow versi.
-15. Format Kompetisi dapat diubah saat draft dan ditolak setelah publikasi.
+15. Format Data Lomba draft selalu mengikuti Format Bawaan Master Cabor; snapshot terpublikasi tidak berubah saat master diperbarui.
 16. Seed kategori, roster, Format Bawaan, dan sistem skor sesuai panduan teknis slide 5-23.
 17. Bracket tidak dapat dikunci jika verifikasi belum selesai.
 18. Venue dan waktu agenda yang bertabrakan ditolak.
@@ -66,15 +66,15 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 
 ## Gap Recovery Phase 3–5
 
-48. Admin dapat membuat, mengubah, dan mengarsipkan Data Lomba draft dengan kategori serta regulasi dari cabor yang sama.
+48. Admin dapat membuat, mengubah, dan mengarsipkan Data Lomba draft dengan memilih cabor serta kategori yang saling sesuai.
 49. Membuat Data Lomba tidak otomatis membuat entry, team, match, skor, atau audit skor.
-50. Publish ditolak bila kategori atau `sport_regulation_id` kosong/tidak sesuai cabor.
+50. Pembuatan dan publish ditolak bila kategori tidak sesuai atau cabor belum memiliki regulasi aktif.
 51. Match dianggap terjadwal hanya setelah agenda, venue, dan waktu terisi dari agenda yang valid.
 52. Assignment panitia hanya membuka match dengan pasangan cabor dan venue yang sesuai.
 53. Seeder baseline tidak membuat data pertandingan demo; demo seeder eksplisit dapat dijalankan dan dibersihkan terpisah.
 54. Cleanup demo menghapus score audit, match score, dan match tanpa menghapus master cabor, kategori, regulasi, venue, atau PD.
 55. Status `bracket_locked` ditolak bila kompetisi belum pernah dipublikasikan atau masih memiliki team belum efektif verified.
-56. Data Lomba baru menyalin default aturan dari Master Cabor/Kategori dan dapat dioverride saat draft.
+56. Data Lomba draft mengambil format, regulasi aktif, kuota, dan aturan official dari master tanpa override manual.
 57. Perubahan default master tidak mengubah snapshot kompetisi yang sudah dipublikasikan.
 58. Snapshot menyimpan kuota/peran official serta aturan atlet merangkap kategori.
 59. Official ditolak bila juga terdaftar sebagai pemain dan snapshot tidak mengizinkan official bertanding.
@@ -89,6 +89,7 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 68. Identitas NIK/KTA yang sama memicu aturan official rangkap walau nama berbeda.
 69. Submit pemain ditolak tanpa asal PDAM valid; official tidak meminta PDAM.
 70. Master PDAM mendukung pencarian, filter provinsi, tambah, dan edit tanpa menghapus referensi pemain.
+71. Perubahan Master Cabor, Kategori, atau Regulasi menyinkronkan Data Lomba draft terkait tanpa mengubah snapshot terpublikasi.
 
 ## Frontend/E2E
 

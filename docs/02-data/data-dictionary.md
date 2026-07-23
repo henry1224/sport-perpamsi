@@ -39,7 +39,7 @@
 - `sports.is_active = false`: cabor tetap tersimpan sebagai histori, tetapi tidak tampil publik dan tidak dapat dipilih untuk event atau agenda baru. Relasi lama tidak dihapus otomatis.
 - `sports.default_max_officials_per_pd`, `official_roles`, `allow_member_cross_category`, `max_categories_per_member`, `official_can_compete`: default aturan registrasi pada level cabor.
 - `sport_categories` menyimpan sport_id, code, name, competition_type (`individual`, `doubles`, atau `team`), scoring_type, min_members, max_members nullable, active. Phase 4B memisahkan unit peserta, kuota team per PD, dan anggota per team pada snapshot kompetisi; publish tidak menerima batas null.
-- `sport_categories.default_max_teams_per_pd`: nilai awal kuota team saat Data Lomba dibuat; dapat dioverride pada draft.
+- `sport_categories.default_max_teams_per_pd`: sumber kuota team untuk Data Lomba draft; perubahan dilakukan pada Master Kategori dan otomatis disinkronkan sampai Data Lomba dipublikasikan.
 - `sport_regulations`: sport_id, version, title, content, document_url, is_active, created_by.
 - `master_data_audits`: entity_type, entity_id, action, before_json, after_json, user_id.
 
@@ -54,7 +54,7 @@
 - `code`, `name`, `format`, `status`, `registration_open_at`, `registration_close_at`, `seed_locked_at`.
 - `registration_published_at`, `registration_published_by`: waktu dan Admin yang menetapkan paket registrasi resmi.
 - `registration_rules`: snapshot kategori, format, tipe skor, `participant_unit`, `min_teams_per_pd`, `max_teams_per_pd`, `min_members_per_team`, `max_members_per_team`, `max_officials_per_pd`, `official_roles`, `allow_member_cross_category`, `max_categories_per_member`, `official_can_compete`, `avoid_same_pd_in_round`, serta versi regulasi.
-- `sport_regulation_id`: versi regulasi resmi yang dipilih Admin untuk kompetisi.
+- `sport_regulation_id`: regulasi aktif terbaru dari Master Regulasi saat draft disinkronkan; versi tersebut dikunci saat publikasi.
 - `event_publication_audits`: action, before/after, aktor, dan waktu publish, publish ulang, tutup, atau tarik publikasi.
 
 ## EventEntry

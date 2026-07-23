@@ -33,7 +33,7 @@ PUBLIC: agenda, peserta PD PERPAMSI, bracket, hasil, klasemen
 4. Master yang sudah dipakai hanya dapat dinonaktifkan/diarsipkan.
 5. Seeder baseline tidak menimpa data operasional; seeder demo hanya berjalan pada local/testing.
 
-Status: `Partial` — tabel dan seeder dasar tersedia; CRUD Admin belum lengkap.
+Status: `Code Complete, Manual UAT Pending` — CRUD master cabor, kategori, regulasi, venue, PDAM, agenda, dan Data Lomba tersedia; Data Lomba draft memakai master sebagai sumber tunggal.
 
 ### 2. Daftar dan Verifikasi Pengurus Daerah
 
