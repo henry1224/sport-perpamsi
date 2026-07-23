@@ -6,6 +6,8 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 
 ### 00 Project
 
+- [Reaudit registrasi 23 Juli 2026](./00-project/reaudit-2026-07-23-registration.md): sinkronisasi Data Lomba, registrasi PD, identitas NIK/KTA, dokumen pemain/official, dan verifikasi Admin.
+
 - [Roadmap pengembangan terkendali](./00-project/development-roadmap.md): phase aktif, dependency, checklist, dan exit criteria.
 - [Standar eksekusi phase](./00-project/phase-execution-standard.md): gate wajib sebelum task, aturan phase aktif, dan larangan melompat phase.
 - [Peta aplikasi dan alur end-to-end](./00-project/application-flow.md): fitur saat ini, target v1, relasi data, dan gap pengembangan.

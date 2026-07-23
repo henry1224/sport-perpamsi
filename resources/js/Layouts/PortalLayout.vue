@@ -24,6 +24,7 @@ const menuGroups = computed(() => isAdmin.value ? [
     { label: 'Kategori', href: '/admin/master-data?tab=categories', icon: 'clipboard' },
     { label: 'Regulasi', href: '/admin/master-data?tab=regulations', icon: 'report' },
     { label: 'Master Venue', href: '/admin/venues', icon: 'venue' },
+    { label: 'Master PDAM', href: '/admin/pdams', icon: 'building' },
     { label: 'Data Lomba', href: '/admin/events', icon: 'trophy' },
   ] },
   { label: 'Registrasi', items: [

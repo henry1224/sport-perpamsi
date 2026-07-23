@@ -83,6 +83,12 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 62. Toggle status cabor mempertahankan seluruh default aturan registrasi.
 63. Halaman error `403`, `404`, `419`, `500`, dan `503` memakai template serta aset `STOP.png`.
 64. Nama sama pada identitas berbeda dicatat sebagai risiko sampai `player_id`/NIK/KTA tersedia.
+65. Submit pemain ditolak tanpa foto, form pendaftaran, KTP, kartu pensiun, dan SK karyawan tetap.
+66. Submit official ditolak tanpa foto dan KTP.
+67. Draft mempertahankan dokumen existing saat form diperbarui tanpa upload ulang.
+68. Identitas NIK/KTA yang sama memicu aturan official rangkap walau nama berbeda.
+69. Submit pemain ditolak tanpa asal PDAM valid; official tidak meminta PDAM.
+70. Master PDAM mendukung pencarian, filter provinsi, tambah, dan edit tanpa menghapus referensi pemain.
 
 ## Frontend/E2E
 

@@ -22,7 +22,7 @@ Baseline JSON bukan tempat transaksi dan belum memiliki CRUD. Tambah tabel/CRUD 
 - `min_members_per_team` dan `max_members_per_team` wajib terisi; individual `1/1`, pasangan `2/2`, beregu mengikuti regulasi.
 - Nilai pasti divalidasi dari snapshot registrasi.
 - Perubahan master/technical meeting berikutnya tidak mengubah snapshot kompetisi terpublikasi.
-- Official, pelatih, manajer, dan pendamping tidak masuk `entry_members`.
+- Official, pelatih, manajer, dan pendamping disimpan sebagai `entry_members.member_type = official`, terpisah dari team pemain.
 - Detail unit peserta mengikuti [standar multi-team](../02-data/team-entry-standard.md).
 
 ## Alur Data

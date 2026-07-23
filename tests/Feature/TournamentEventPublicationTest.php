@@ -97,7 +97,7 @@ class TournamentEventPublicationTest extends TestCase
         $pdAdmin = User::query()->where('role', 'pd_admin')->firstOrFail();
         $event = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
         $event->entries()->where('regional_committee_id', $pdAdmin->regional_committee_id)->delete();
-        $payload = ['members' => collect(range(1, $event->registration_rules['min_members']))->map(fn ($number) => ['name' => 'Pemain Waktu '.$number])->all()];
+        $payload = ['intent' => 'draft', 'members' => collect(range(1, $event->registration_rules['min_members']))->map(fn ($number) => ['name' => 'Pemain Waktu '.$number])->all()];
 
         $event->update(['registration_open_at' => now()->addDay(), 'registration_close_at' => now()->addWeek()]);
         $this->actingAs($pdAdmin)->post(route('pd.events.entries.store', $event), $payload)->assertSessionHas('error');

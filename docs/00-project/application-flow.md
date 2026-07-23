@@ -56,7 +56,7 @@ Status: `Done` — daftar, status pengajuan, verifikasi/perbaikan/penolakan Admi
 7. Hanya team dengan effective status verified masuk seed, grup, bracket, match, dan klasemen.
 8. Perpindahan pemain antar-team setelah verified dilarang total.
 
-Status: `Code Complete, UAT Pending` — parent/team, verifikasi hybrid, kuota snapshot, dan roster immutable tersedia. Kontrol official/pemain lintas cabor masih mencocokkan `normalized_name`; NIK/KTA atau `player_id` menjadi target identitas kanonik. UAT manual serta review commit masih wajib. Sumber: `docs/02-data/team-entry-standard.md`.
+Status: `Code Complete, UAT Pending` — parent/team, verifikasi hybrid, kuota snapshot, roster immutable, identitas NIK/KTA, dan dokumen peserta tersedia. Kontrol official/pemain lintas cabor memakai hash NIK/KTA; tabel master `players` tetap menjadi target identitas kanonik lintas event. UAT manual serta review commit masih wajib. Sumber: `docs/02-data/team-entry-standard.md`.
 
 ### 4. Penugasan Panitia
 

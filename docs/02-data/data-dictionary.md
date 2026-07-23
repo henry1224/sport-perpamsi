@@ -80,11 +80,14 @@ Status implementasi: tersedia secara kode dan migration; UAT manual masih wajib.
 
 ## EntryMember
 
-- Target: `entry_team_id`, `name`, `normalized_name`, `member_type`, `gender`, `shirt_number`, `position`.
+- `entry_team_id`, `name`, `normalized_name`, `member_type`, `gender`, `shirt_number`, `position`.
+- `identity_type`, `identity_number`, `identity_hash`: NIK/KTA dan hash stabil untuk mendeteksi pemain/official rangkap tanpa mengandalkan nama.
+- `pdam_id`: asal perusahaan pemain, wajib sebelum submit dan null untuk official; referensi ke Master PDAM nasional.
+- `documents`: JSON path file privat. Pemain memakai `photo`, `registration_form`, `identity_card`, `pension_card`, `employee_decree`; official memakai `photo` dan `identity_card`.
 - Identitas kanonik/`identity_hash` mencegah pemain sama berada pada dua team dalam kompetisi yang sama.
 - `entry_team_id` tidak dapat dipindahkan setelah team efektif verified.
 - `status` dan catatan verifikasi bila verifikasi per pemain dipakai.
-- Official tidak masuk tabel ini.
+- Official masuk tabel ini dengan `member_type = official`, `entry_team_id = null`, dan peran pada `position`.
 
 Semantik parent, team, status efektif, dan penguncian roster mengikuti [standar multi-team](./team-entry-standard.md).
 

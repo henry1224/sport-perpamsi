@@ -4,7 +4,7 @@
 
 ## Tujuan
 
-Menetapkan identitas, registrasi akun, registrasi cabor, pemain, verifikasi, dan nama publik tanpa ketergantungan pada PDAM atau instansi asal.
+Menetapkan identitas kontingen, registrasi akun, registrasi cabor, pemain, verifikasi, dan nama publik berbasis PD PERPAMSI. PDAM tidak menjadi identitas kontingen, tetapi wajib dicatat sebagai asal setiap pemain.
 
 ## Identitas Kanonik
 

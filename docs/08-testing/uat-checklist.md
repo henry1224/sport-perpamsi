@@ -20,6 +20,12 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [x] Jumlah dan duplikasi pemain divalidasi sesuai snapshot regulasi kompetisi.
 - [ ] Official yang dilarang bertanding diblokir saat namanya juga terdaftar sebagai pemain.
 - [ ] Official yang diizinkan bertanding menampilkan informasi cabor lain tempat ia menjadi pemain.
+- [ ] Form pemain dan official tampil terpisah serta mudah dibedakan.
+- [ ] Pemain tidak dapat submit tanpa lima dokumen wajib; official tidak dapat submit tanpa foto dan KTP.
+- [ ] NIK/KTA sama terdeteksi sebagai rangkap walau nama ditulis berbeda.
+- [ ] Roster legacy tanpa NIK/KTA dapat dibuka sebagai draft tetapi tidak dapat diajukan ulang sebelum identitas dan dokumen dilengkapi.
+- [ ] Pengguna dapat mencari seluruh Master PDAM berdasarkan nama, kota, atau provinsi dan memilih asal untuk setiap pemain.
+- [ ] Asal PDAM tampil pada riwayat registrasi dan verifikasi Admin tanpa mengganti nama kontingen PD PERPAMSI.
 - [x] Status registrasi dan event pada portal PD tampil dalam Bahasa Indonesia.
 
 ## Phase 4B — Multi-Team

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminEntryVerificationController;
 use App\Http\Controllers\Admin\CommitteeApplicationController;
 use App\Http\Controllers\Admin\MasterDataController;
+use App\Http\Controllers\Admin\PdamController;
 use App\Http\Controllers\Admin\ScoreController;
 use App\Http\Controllers\Admin\SportAssignmentController;
 use App\Http\Controllers\Admin\TournamentEventController;
@@ -65,6 +66,9 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/committee-applications/{application}/revision', [CommitteeApplicationController::class, 'revision'])->name('committee-applications.revision');
     Route::post('/committee-applications/{application}/reject', [CommitteeApplicationController::class, 'reject'])->name('committee-applications.reject');
     Route::get('/events', [TournamentEventController::class, 'index'])->name('events.index');
+    Route::get('/pdams', [PdamController::class, 'index'])->name('pdams.index');
+    Route::post('/pdams', [PdamController::class, 'store'])->name('pdams.store');
+    Route::put('/pdams/{pdam}', [PdamController::class, 'update'])->name('pdams.update');
     Route::post('/events', [TournamentEventController::class, 'store'])->name('events.store');
     Route::put('/events/{event:code}', [TournamentEventController::class, 'update'])->name('events.update');
     Route::delete('/events/{event:code}', [TournamentEventController::class, 'destroy'])->name('events.destroy');

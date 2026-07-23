@@ -15,7 +15,7 @@ Eksekusi harian wajib mengikuti [phase-execution-standard.md](./phase-execution-
 
 - [x] Portal publik, seminar, login, dashboard dasar, registrasi legacy, verifikasi dasar, skor dasar.
 - [x] Dokumen target PD PERPAMSI dan risk register.
-- [x] Tandai PDAM sebagai legacy; registrasi baru tidak menerima atau menulis instansi asal.
+- [x] PDAM tidak dipakai sebagai identitas kontingen; Master PDAM dipakai sebagai referensi asal pemain.
 
 Exit: dokumen, ERD, migration, RBAC, test, UAT, dan risiko konsisten.
 
@@ -57,7 +57,7 @@ Exit: Admin dapat membuat paket kompetisi lengkap; hanya paket yang disahkan dap
 
 ## Phase 4 — Registrasi Cabor dan Pemain
 
-- [x] Registrasi baru `event_entries` memakai PD PERPAMSI tanpa PDAM.
+- [x] `event_entries` memakai PD PERPAMSI; asal PDAM disimpan per `entry_members.pdam_id`.
 - [x] Tabel `entry_members` dan backfill pemain legacy.
 - [x] Validasi jumlah/duplikasi pemain dari master kategori.
 - [x] Validasi memakai snapshot regulasi kompetisi.
