@@ -123,6 +123,10 @@ Backup database wajib dibuat sebelum migration penghapusan kategori nonaktif. Re
 | Cleanup demo ikut menghapus master atau registrasi resmi | Kritis | Backup, daftar scope eksplisit, transaksi, dry-run jumlah baris, dan verifikasi pasca-cleanup | Restore test dan audit count |
 | Kompetisi tidak memiliki kategori atau versi regulasi | Tinggi | Constraint aplikasi sebelum publish dan laporan data tidak lengkap | Feature test publish dan audit data |
 | Dua orang berbeda memiliki nama normalisasi sama | Tinggi | Tampilkan informasi rangkap kepada operator dan blokir sesuai snapshot; migrasikan pencocokan ke `player_id`/NIK/KTA saat master identitas tersedia | UAT nama sama dan feature test setelah identitas kanonik tersedia |
+| Dokumen identitas peserta terbuka ke publik | Kritis | Simpan pada disk privat, jangan kirim path ke props public/PD, dan batasi akses unduh Admin saat endpoint tersedia | Feature test props dan authorization download |
+| NIK/KTA sama dipakai pemain atau official berbeda | Tinggi | Normalisasi nomor dan deteksi `identity_hash` pada seluruh registrasi aktif PD | Feature test rangkap lintas cabor |
+| Anggota legacy belum memiliki NIK/KTA | Tinggi | Jangan backfill dari nama; wajibkan identitas dan dokumen saat revisi/submit berikutnya serta tampilkan status kelengkapan ke Admin | Audit jumlah null dan UAT revisi roster legacy |
+| Pemain memilih PDAM tidak valid atau PDAM dihapus saat terpakai | Tinggi | Validasi FK `pdams.id`, pencarian dari master, dan `restrictOnDelete` pada relasi pemain | Feature test registrasi dan delete constraint |
 | Cabor nonaktif masih dipakai pada transaksi baru | Tinggi | Pilihan dan validasi event/agenda hanya menerima cabor aktif; data historis tetap read-only | Feature test status cabor |
 
 ## Definition of Done Risiko

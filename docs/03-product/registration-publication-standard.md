@@ -96,6 +96,7 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 8. Admin dapat memverifikasi parent sekaligus dan memberi override team tertentu.
 9. Hanya team efektif verified masuk seed/bracket.
 10. PD tetap melihat parent/team setelah registrasi ditutup, tetapi tidak dapat membuat team baru.
+11. Pemain dan official mengisi NIK/KTA pada form terpisah; submit memvalidasi dokumen wajib serta aturan rangkap dari snapshot.
 
 Semantik lengkap mengikuti [standar multi-team](../02-data/team-entry-standard.md).
 

@@ -3,16 +3,25 @@
 namespace Tests\Feature;
 
 use App\Models\EventEntry;
+use App\Models\Pdam;
 use App\Models\TournamentEvent;
 use App\Models\User;
 use App\Support\Porpamnas\PublicDataService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class RegionalCommitteeRegistrationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Storage::fake('local');
+    }
 
     public function test_entries_from_one_province_share_one_regional_committee(): void
     {
@@ -45,7 +54,7 @@ class RegionalCommitteeRegistrationTest extends TestCase
             ],
         ]);
         EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $admin->regional_committee_id)->delete();
-        $payload = ['members' => collect(range(1, $event->category->min_members))->map(fn ($number) => ['name' => 'Pemain Uji '.$number])->all()];
+        $payload = ['teams' => [['members' => $this->submissionMembers($event->category->min_members, 'Pemain Uji')]]];
 
         $this->actingAs($admin)
             ->post(route('pd.events.entries.store', $event), $payload)
@@ -125,14 +134,14 @@ class RegionalCommitteeRegistrationTest extends TestCase
         ]);
         $event->category->update(['max_members' => 1]);
         EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $admin->regional_committee_id)->delete();
-        $members = collect(range(1, 5))->map(fn ($number) => ['name' => 'Pegolf '.$number])->all();
+        $members = $this->submissionMembers(5, 'Pegolf');
 
         $this->actingAs($admin)
             ->get(route('pd.events.show', $event))
             ->assertInertia(fn ($page) => $page->where('category.max_members', null));
 
         $this->actingAs($admin)
-            ->post(route('pd.events.entries.store', $event), ['members' => $members])
+            ->post(route('pd.events.entries.store', $event), ['teams' => [['members' => $members]]])
             ->assertSessionHasNoErrors();
 
         $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $admin->regional_committee_id)->firstOrFail();
@@ -166,7 +175,7 @@ class RegionalCommitteeRegistrationTest extends TestCase
         $lockedMinimum = $event->registration_rules['min_members'];
         $event->category->update(['min_members' => $lockedMinimum + 5, 'max_members' => $lockedMinimum + 5]);
         EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $admin->regional_committee_id)->delete();
-        $payload = ['members' => collect(range(1, $lockedMinimum))->map(fn ($number) => ['name' => 'Pemain Snapshot '.$number])->all()];
+        $payload = ['teams' => [['members' => $this->submissionMembers($lockedMinimum, 'Pemain Snapshot')]]];
 
         $this->actingAs($admin)
             ->post(route('pd.events.entries.store', $event), $payload)
@@ -207,5 +216,14 @@ class RegionalCommitteeRegistrationTest extends TestCase
         $this->assertGreaterThan(0, $rankings->sum('silver'));
         $this->assertGreaterThan(0, $rankings->sum('bronze'));
         $this->assertSame($rankings->sum('gold') * 2, $rankings->sum('bronze'));
+    }
+
+    private function submissionMembers(int $count, string $prefix): array
+    {
+        return collect(range(1, $count))->map(function ($number) use ($prefix) {
+            $member = ['name' => $prefix.' '.$number, 'pdam_id' => Pdam::query()->value('id'), 'identity_type' => 'nik', 'identity_number' => '3173'.str_pad((string) $number, 12, '0', STR_PAD_LEFT)];
+            foreach (['photo', 'registration_form', 'identity_card', 'pension_card', 'employee_decree'] as $key) $member['documents'][$key] = UploadedFile::fake()->create($key.'.pdf', 100, 'application/pdf');
+            return $member;
+        })->all();
     }
 }

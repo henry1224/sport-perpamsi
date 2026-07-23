@@ -24,4 +24,9 @@ class Pdam extends Model
     {
         return $this->hasMany(EventEntry::class);
     }
+
+    public function members(): HasMany
+    {
+        return $this->hasMany(EntryMember::class);
+    }
 }

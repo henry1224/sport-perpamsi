@@ -81,6 +81,10 @@ Aturan:
 - Publish ditolak bila kuota team atau anggota belum lengkap/tidak konsisten.
 - Validasi registrasi selalu membaca snapshot, bukan master yang dapat berubah.
 - Official disimpan sebagai `entry_members.member_type = official` dengan peran pada `position`.
+- Pemain dan official wajib memiliki `identity_type` serta `identity_number` sebelum submit; deteksi rangkap memakai `identity_hash` dari NIK/KTA.
+- Setiap pemain wajib memilih asal PDAM dari master nasional. PDAM tidak mengubah nama kontingen PD PERPAMSI dan tidak berlaku untuk official.
+- Dokumen pemain wajib: foto 3×4, form pendaftaran, KTP, kartu DAPENMA/dana pensiun lain, dan SK karyawan tetap.
+- Dokumen official wajib: foto 3×4 dan KTP. File disimpan privat; UI hanya menerima status kelengkapan.
 - Jika `official_can_compete = false`, identitas official tidak boleh muncul sebagai pemain pada registrasi aktif PD yang sama.
 - Jika `official_can_compete = true`, rangkap tetap dicatat dan daftar cabor pemain ditampilkan kepada pendaftar serta Admin.
 - Team aktif dihitung terhadap `max_teams_per_pd`; team cancelled tidak memakai kuota, tetapi nomornya tidak digunakan ulang.

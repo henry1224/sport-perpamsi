@@ -17,7 +17,7 @@ Platform resmi PORPAMNAS untuk pendaftaran PD PERPAMSI, pemain, master lomba, pa
 ## Identitas Peserta
 
 - Satu provinsi memiliki satu `PD PERPAMSI {Nama Provinsi}`.
-- Tidak ada PDAM atau instansi asal dalam alur registrasi peserta.
+- Kontingen tetap memakai PD PERPAMSI provinsi; setiap pemain wajib memilih asal PDAM dari Master PDAM nasional.
 - Nama PD dipakai pada peserta publik, bracket, hasil, klasemen, dan laporan.
 - Registrasi publik membuat pengajuan akses PD, bukan membuat PD duplikat.
 

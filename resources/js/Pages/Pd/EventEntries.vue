@@ -1,118 +1,85 @@
 <script setup>
 import { Link, router, useForm, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import PortalLayout from '../../Layouts/PortalLayout.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
 import { statusLabel } from '../../lib/status';
 
-const props = defineProps({
-  event: Object,
-  category: Object,
-  entries: Array,
-});
-
+const props = defineProps({ event: Object, category: Object, entries: Array, pdams: Array });
 const page = usePage();
+const activeSection = ref('players');
+const openPdam = ref(null);
 const flash = computed(() => page.props.flash || {});
-const canRegister = computed(() => props.event.registration_open);
 const minMembers = computed(() => props.category?.min_members || 1);
 const maxMembers = computed(() => props.category?.max_members ?? null);
 const maxTeams = computed(() => props.category?.max_teams_per_pd || 1);
 const maxOfficials = computed(() => props.category?.max_officials_per_pd || 0);
 const officialRoles = computed(() => props.category?.official_roles || []);
-const officialCanCompete = computed(() => !!props.category?.official_can_compete);
 const editableEntry = computed(() => props.entries.find((entry) => ['draft', 'revision_required', 'rejected', 'cancelled'].includes(entry.verification_status)));
 const lockedEntry = computed(() => props.entries.find((entry) => ['pending', 'verified'].includes(entry.verification_status)));
-const blankMembers = () => Array.from({ length: minMembers.value }, () => ({ name: '' }));
-const initialTeams = editableEntry.value?.teams?.length ? editableEntry.value.teams.map((team) => ({ members: team.members.map((name) => ({ name })) })) : [{ members: blankMembers() }];
-const initialOfficials = editableEntry.value?.officials?.map((official) => ({ name: official.name, role: official.role || officialRoles.value[0] || '' })) || [];
-
-const form = useForm({
-  intent: 'draft',
-  teams: initialTeams,
-  officials: initialOfficials,
-});
-
-const addMember = (team) => {
-  if (maxMembers.value === null || team.members.length < maxMembers.value) team.members.push({ name: '' });
-};
-
-const removeMember = (team, index) => {
-  if (team.members.length > minMembers.value) team.members.splice(index, 1);
-};
+const playerDocuments = { photo: 'Foto 3×4', registration_form: 'Form Pendaftaran', identity_card: 'KTP Pemain', pension_card: 'Kartu DAPENMA PAMSI / Dana Pensiun Lainnya', employee_decree: 'SK Karyawan Tetap' };
+const officialDocuments = { photo: 'Foto 3×4', identity_card: 'KTP Official' };
+const pdamLabel = (pdam) => [pdam.name, pdam.city, pdam.province].filter(Boolean).join(' · ');
+const blankMember = () => ({ id: null, name: '', pdam_id: null, pdam_search: '', identity_type: 'nik', identity_number: '', documents: {} });
+const normalizeMember = (member) => ({ ...blankMember(), ...member, pdam_search: member.pdam_name || '', documents: {}, existing_documents: member.documents || [] });
+const blankMembers = () => Array.from({ length: minMembers.value }, blankMember);
+const initialTeams = editableEntry.value?.teams?.length ? editableEntry.value.teams.map((team) => ({ members: team.members.map(normalizeMember) })) : [{ members: blankMembers() }];
+const initialOfficials = editableEntry.value?.officials?.map((official) => ({ ...normalizeMember(official), role: official.role || officialRoles.value[0] || '' })) || [];
+const form = useForm({ intent: 'draft', teams: initialTeams, officials: initialOfficials });
+const memberError = (teamIndex, memberIndex, field) => form.errors[`teams.${teamIndex}.members.${memberIndex}.${field}`];
+const officialError = (index, field) => form.errors[`officials.${index}.${field}`];
+const hasDocument = (member, key) => !!member.documents[key] || member.existing_documents?.includes(key);
+const setFile = (member, key, event) => { member.documents[key] = event.target.files?.[0] || null; };
+const filteredPdams = (member) => { const search = member.pdam_search.trim().toLowerCase(); return props.pdams.filter((pdam) => !search || pdamLabel(pdam).toLowerCase().includes(search)).slice(0, 30); };
+const selectPdam = (member, pdam) => { member.pdam_id = pdam.id; member.pdam_search = pdamLabel(pdam); openPdam.value = null; };
+const addMember = (team) => { if (maxMembers.value === null || team.members.length < maxMembers.value) team.members.push(blankMember()); };
+const removeMember = (team, index) => { if (team.members.length > minMembers.value) team.members.splice(index, 1); };
 const addTeam = () => { if (form.teams.length < maxTeams.value) form.teams.push({ members: blankMembers() }); };
 const removeTeam = (index) => { if (form.teams.length > 1) form.teams.splice(index, 1); };
-const addOfficial = () => { if (form.officials.length < maxOfficials.value) form.officials.push({ name: '', role: officialRoles.value[0] || '' }); };
-const removeOfficial = (index) => form.officials.splice(index, 1);
-
-const submit = (intent) => {
-  form.intent = intent;
-  form.post(`/pd/events/${props.event.code}/entries`, {
-    preserveScroll: true,
-  });
-};
-
-const cancel = (id) => {
-  if (!confirm('Batalkan pendaftaran ini?')) return;
-  router.delete(`/pd/entries/${id}`, { preserveScroll: true });
-};
-
+const addOfficial = () => { if (form.officials.length < maxOfficials.value) form.officials.push({ ...blankMember(), role: officialRoles.value[0] || '' }); };
+const submit = (intent) => { form.intent = intent; form.post(`/pd/events/${props.event.code}/entries`, { preserveScroll: true, forceFormData: true }); };
+const cancel = (id) => { if (confirm('Batalkan pendaftaran ini?')) router.delete(`/pd/entries/${id}`, { preserveScroll: true }); };
 </script>
 
 <template>
   <PortalLayout portal="pd">
-    <div class="page-head">
-      <SectionTitle eyebrow="Pendaftaran Peserta" :title="event.name" :meta="`${event.sport} · ${category?.name || 'Umum'}`" />
-      <Link href="/pd/dashboard" class="back">← Kembali ke Dashboard</Link>
-    </div>
+    <div class="page-head"><SectionTitle eyebrow="Pendaftaran Cabor" :title="event.name" :meta="`${event.sport} · ${category?.name || 'Umum'}`" /><Link href="/pd/dashboard" class="back">← Kembali ke Dashboard</Link></div>
+    <div v-if="flash.success" class="flash ok">{{ flash.success }}</div><div v-if="flash.error" class="flash err">{{ flash.error }}</div>
 
-    <div v-if="flash.success" class="flash ok">{{ flash.success }}</div>
-    <div v-if="flash.error" class="flash err">{{ flash.error }}</div>
-
-    <section class="entry-panel">
-      <form class="entry-form portal-card" v-if="(canRegister || editableEntry?.verification_status === 'revision_required') && !lockedEntry">
-        <div class="portal-card-head">
-          <h3>{{ editableEntry ? 'Perbarui Roster' : 'Daftarkan Pemain' }}</h3>
-          <p class="hint">Maksimal {{ maxTeams }} tim. {{ maxMembers === null ? `Minimal ${minMembers} pemain per tim` : minMembers === maxMembers ? `${minMembers} pemain per tim` : `${minMembers}–${maxMembers} pemain per tim` }}.</p>
-        </div>
-        <fieldset v-for="(team, teamIndex) in form.teams" :key="teamIndex" class="team-block"><legend>Tim #{{ teamIndex + 1 }}</legend><div v-for="(member, index) in team.members" :key="index" class="member-row">
-          <label class="portal-field">
-            <span>Nama Pemain {{ index + 1 }}</span>
-            <input v-model="member.name" type="text" maxlength="120" required />
-            <small v-if="form.errors[`teams.${teamIndex}.members.${index}.name`]" class="err">{{ form.errors[`teams.${teamIndex}.members.${index}.name`] }}</small>
-          </label>
-          <button v-if="team.members.length > minMembers" type="button" class="remove portal-button danger" @click="removeMember(team, index)">Hapus</button>
-        </div>
-        <button v-if="maxMembers === null || team.members.length < maxMembers" type="button" class="add portal-button" @click="addMember(team)">+ Tambah Pemain</button><button v-if="form.teams.length > 1" type="button" class="portal-button danger" @click="removeTeam(teamIndex)">Hapus Tim</button></fieldset>
-        <small v-if="form.errors.teams" class="err">{{ form.errors.teams }}</small><button v-if="form.teams.length < maxTeams" type="button" class="add portal-button" @click="addTeam">+ Tambah Tim</button>
-
-        <section v-if="maxOfficials > 0" class="official-block">
-          <header><div><strong>Official Kontingen</strong><small>Maksimal {{ maxOfficials }} official · {{ officialRoles.join(', ').replaceAll('_', ' ') }}</small></div><b>{{ form.officials.length }}/{{ maxOfficials }}</b></header>
-          <div :class="['official-policy-alert', officialCanCompete ? 'allowed' : 'blocked']"><strong>{{ officialCanCompete ? 'Official boleh bertanding' : 'Official tidak boleh bertanding' }}</strong><span>{{ officialCanCompete ? 'Sistem menginformasikan cabor lain tempat official tercatat sebagai pemain.' : 'Pendaftaran diblokir jika official ditemukan sebagai pemain pada cabor ini atau cabor lain.' }}</span></div>
-          <div v-for="(official, index) in form.officials" :key="index" class="official-row">
-            <label class="portal-field"><span>Nama Official {{ index + 1 }}</span><input v-model="official.name" type="text" maxlength="120" required /><small v-if="form.errors[`officials.${index}.name`]" class="err">{{ form.errors[`officials.${index}.name`] }}</small></label>
-            <label class="portal-field"><span>Peran</span><select v-model="official.role" required><option v-for="role in officialRoles" :key="role" :value="role">{{ role.replaceAll('_', ' ') }}</option></select><small v-if="form.errors[`officials.${index}.role`]" class="err">{{ form.errors[`officials.${index}.role`] }}</small></label>
-            <button type="button" class="remove portal-button danger" @click="removeOfficial(index)">Hapus</button>
-            <p v-if="editableEntry?.officials?.[index]?.playing_sports?.length" class="playing-info">Juga terdaftar sebagai pemain: <strong>{{ editableEntry.officials[index].playing_sports.join(', ') }}</strong></p>
-          </div>
-          <small v-if="form.errors.officials" class="err">{{ form.errors.officials }}</small>
-          <button v-if="form.officials.length < maxOfficials" type="button" class="add portal-button" @click="addOfficial">+ Tambah Official</button>
-        </section>
-
-        <div class="form-actions"><button type="button" class="draft portal-button" :disabled="form.processing" @click="submit('draft')">Simpan Draft</button><button type="button" class="submit portal-button primary" :disabled="form.processing" @click="submit('submit')">{{ form.processing ? 'Mengirim…' : editableEntry?.verification_status === 'revision_required' ? 'Kirim Ulang' : 'Ajukan Pendaftaran' }}</button></div>
-        <p class="hint">Draft dapat diubah. Setelah diajukan, roster terkunci sampai Admin meminta perbaikan.</p>
-      </form>
-      <div v-else class="locked-notice"><strong>{{ lockedEntry ? statusLabel(lockedEntry.verification_status) : 'Pendaftaran Ditutup' }}</strong><span v-if="lockedEntry">Roster sudah dikirim. Form terbuka kembali bila Admin meminta perbaikan.</span><span v-else>Periode registrasi untuk kompetisi ini sudah berakhir.</span></div>
-
-      <div class="entry-list portal-card">
-        <h3 class="portal-card-head">Pendaftaran PD Anda ({{ entries.length }})</h3>
-        <div class="roster-table"><table><thead><tr><th>Kontingen</th><th>Tim, Pemain, dan Official</th><th>Status</th><th style="text-align:right">Aksi</th></tr></thead><tbody><tr v-for="e in entries" :key="e.id"><td><div class="entry-main"><strong>{{ e.display_name }}</strong><small v-if="e.verification_note" class="note">Catatan: {{ e.verification_note }}</small></div></td><td><div v-for="team in e.teams" :key="team.id" class="team-summary"><strong>{{ team.label }}</strong><span>{{ team.members.join(', ') }}</span><small>{{ statusLabel(team.status) }}</small></div><div v-if="e.officials?.length" class="official-summary"><strong>Official</strong><span v-for="official in e.officials" :key="`${official.name}-${official.role}`">{{ official.name }} · {{ official.role.replaceAll('_', ' ') }}<small v-if="official.playing_sports.length">Bermain: {{ official.playing_sports.join(', ') }}</small></span></div></td><td><span class="tag" :class="e.verification_status">{{ statusLabel(e.verification_status) }}</span></td><td><div class="row-actions"><button v-if="['draft', 'pending', 'revision_required', 'rejected'].includes(e.verification_status)" class="del" @click="cancel(e.id)">Batalkan</button></div></td></tr><tr v-if="!entries.length"><td colspan="4" class="empty">Belum ada pendaftaran untuk event ini.</td></tr></tbody></table></div>
-      </div>
+    <section class="rules-strip portal-card">
+      <div><small>Format</small><strong>{{ event.format }}</strong></div><div><small>Kuota Tim</small><strong>{{ form.teams.length }}/{{ maxTeams }}</strong></div><div><small>Pemain per Tim</small><strong>{{ maxMembers === null ? `Min. ${minMembers}` : `${minMembers}–${maxMembers}` }}</strong></div><div><small>Official</small><strong>{{ form.officials.length }}/{{ maxOfficials }}</strong></div>
+      <p :class="category?.official_can_compete ? 'allowed' : 'blocked'">{{ category?.official_can_compete ? 'Official boleh bermain; sistem menampilkan cabor rangkap berdasarkan NIK/KTA.' : 'Official tidak boleh bermain; identitas rangkap otomatis diblokir.' }}</p>
     </section>
+
+    <form v-if="(event.registration_open || editableEntry?.verification_status === 'revision_required') && !lockedEntry" class="registration-shell portal-card" @submit.prevent>
+      <header class="form-head"><div><span>FORM REGISTRASI PD</span><h3>{{ editableEntry ? 'Perbarui Data Peserta' : 'Lengkapi Data Peserta' }}</h3><p>Draft dapat disimpan tanpa lampiran lengkap. Semua dokumen wajib sebelum diajukan.</p></div><div class="progress"><b>{{ form.teams.reduce((sum, team) => sum + team.members.length, 0) }}</b><small>Pemain</small></div></header>
+      <nav class="form-tabs" aria-label="Bagian form"><button type="button" :class="{ active: activeSection === 'players' }" @click="activeSection = 'players'">Pemain <span>{{ form.teams.reduce((sum, team) => sum + team.members.length, 0) }}</span></button><button type="button" :class="{ active: activeSection === 'officials' }" @click="activeSection = 'officials'">Official <span>{{ form.officials.length }}</span></button></nav>
+
+      <div v-show="activeSection === 'players'" class="section-stack">
+        <article v-for="(team, teamIndex) in form.teams" :key="teamIndex" class="team-card"><header><div><small>UNIT PESERTA</small><h4>Tim #{{ teamIndex + 1 }}</h4></div><button v-if="form.teams.length > 1" type="button" class="text-danger" @click="removeTeam(teamIndex)">Hapus Tim</button></header>
+          <div v-for="(member, memberIndex) in team.members" :key="member.id || memberIndex" class="person-card">
+            <div class="person-title"><b>{{ memberIndex + 1 }}</b><div><strong>Pemain {{ memberIndex + 1 }}</strong><small>Identitas dan dokumen pemain</small></div><button v-if="team.members.length > minMembers" type="button" class="text-danger" @click="removeMember(team, memberIndex)">Hapus</button></div>
+            <div class="identity-grid"><label class="portal-field"><span>Nama Lengkap</span><input v-model="member.name" maxlength="120"><small v-if="memberError(teamIndex, memberIndex, 'name')" class="err">{{ memberError(teamIndex, memberIndex, 'name') }}</small></label><div class="portal-field pdam-field"><span>Asal PDAM</span><input v-model="member.pdam_search" type="search" autocomplete="off" placeholder="Cari nama PDAM, kota, atau provinsi" @focus="openPdam = `${teamIndex}-${memberIndex}`" @input="member.pdam_id = null; openPdam = `${teamIndex}-${memberIndex}`"><div v-if="openPdam === `${teamIndex}-${memberIndex}`" class="pdam-dropdown"><button v-for="pdam in filteredPdams(member)" :key="pdam.id" type="button" @mousedown.prevent="selectPdam(member, pdam)"><strong>{{ pdam.name }}</strong><small>{{ [pdam.city, pdam.province].filter(Boolean).join(' · ') }}</small></button><p v-if="!filteredPdams(member).length">PDAM tidak ditemukan.</p></div><small v-if="memberError(teamIndex, memberIndex, 'pdam_id')" class="err">{{ memberError(teamIndex, memberIndex, 'pdam_id') }}</small></div><label class="portal-field"><span>Jenis Identitas</span><select v-model="member.identity_type"><option value="nik">NIK</option><option value="kta">KTA</option></select></label><label class="portal-field"><span>Nomor NIK/KTA</span><input v-model="member.identity_number" maxlength="50" placeholder="Nomor tanpa spasi"><small v-if="memberError(teamIndex, memberIndex, 'identity_number')" class="err">{{ memberError(teamIndex, memberIndex, 'identity_number') }}</small></label></div>
+            <div class="documents"><div class="documents-head"><strong>Kelengkapan Pemain</strong><small>JPG, PNG, atau PDF · maksimal 5 MB</small></div><label v-for="(label, key) in playerDocuments" :key="key" :class="['upload-row', { ready: hasDocument(member, key) }]"><span><b>{{ hasDocument(member, key) ? '✓' : '○' }}</b>{{ label }}</span><input type="file" accept=".jpg,.jpeg,.png,.pdf" @change="setFile(member, key, $event)"><em>{{ member.documents[key]?.name || (member.existing_documents?.includes(key) ? 'Sudah tersimpan' : 'Pilih file') }}</em><small v-if="memberError(teamIndex, memberIndex, `documents.${key}`)" class="err">{{ memberError(teamIndex, memberIndex, `documents.${key}`) }}</small></label></div>
+          </div>
+          <button v-if="maxMembers === null || team.members.length < maxMembers" type="button" class="portal-button secondary" @click="addMember(team)">+ Tambah Pemain</button>
+        </article>
+        <button v-if="form.teams.length < maxTeams" type="button" class="portal-button secondary" @click="addTeam">+ Tambah Tim</button><small v-if="form.errors.teams" class="err">{{ form.errors.teams }}</small>
+      </div>
+
+      <div v-show="activeSection === 'officials'" class="section-stack"><div :class="['policy-alert', category?.official_can_compete ? 'allowed' : 'blocked']"><strong>{{ category?.official_can_compete ? 'Official boleh merangkap pemain' : 'Official dilarang merangkap pemain' }}</strong><span>Pemeriksaan memakai NIK/KTA pada seluruh registrasi aktif PD.</span></div>
+        <article v-for="(official, index) in form.officials" :key="official.id || index" class="person-card"><div class="person-title"><b>O</b><div><strong>Official {{ index + 1 }}</strong><small>Data official dipisahkan dari roster pemain</small></div><button type="button" class="text-danger" @click="form.officials.splice(index, 1)">Hapus</button></div><div class="identity-grid official"><label class="portal-field"><span>Nama Lengkap</span><input v-model="official.name" maxlength="120"></label><label class="portal-field"><span>Peran</span><select v-model="official.role"><option v-for="role in officialRoles" :key="role" :value="role">{{ role }}</option></select></label><label class="portal-field"><span>Jenis Identitas</span><select v-model="official.identity_type"><option value="nik">NIK</option><option value="kta">KTA</option></select></label><label class="portal-field"><span>Nomor NIK/KTA</span><input v-model="official.identity_number" maxlength="50"></label></div><div class="documents"><div class="documents-head"><strong>Kelengkapan Official</strong><small>Foto dan KTP wajib saat diajukan</small></div><label v-for="(label, key) in officialDocuments" :key="key" :class="['upload-row', { ready: hasDocument(official, key) }]"><span><b>{{ hasDocument(official, key) ? '✓' : '○' }}</b>{{ label }}</span><input type="file" accept=".jpg,.jpeg,.png,.pdf" @change="setFile(official, key, $event)"><em>{{ official.documents[key]?.name || (official.existing_documents?.includes(key) ? 'Sudah tersimpan' : 'Pilih file') }}</em><small v-if="officialError(index, `documents.${key}`)" class="err">{{ officialError(index, `documents.${key}`) }}</small></label></div><p v-if="official.playing_sports?.length" class="playing">Juga bermain: {{ official.playing_sports.join(', ') }}</p></article>
+        <button v-if="form.officials.length < maxOfficials" type="button" class="portal-button secondary" @click="addOfficial">+ Tambah Official</button><p v-if="maxOfficials === 0" class="empty-note">Regulasi cabor tidak menyediakan kuota official.</p><small v-if="form.errors.officials" class="err">{{ form.errors.officials }}</small>
+      </div>
+      <footer class="form-actions"><button type="button" class="portal-button secondary" :disabled="form.processing" @click="submit('draft')">Simpan Draft</button><button type="button" class="portal-button primary" :disabled="form.processing" @click="submit('submit')">Ajukan Pendaftaran</button></footer>
+    </form>
+
+    <div v-if="lockedEntry" class="locked-notice"><strong>Pendaftaran {{ statusLabel(lockedEntry.verification_status).toLowerCase() }}</strong><span>Data dikunci selama proses verifikasi.</span></div>
+    <section class="entry-list portal-card"><div class="portal-card-head"><h3>Riwayat Pendaftaran</h3></div><div class="roster-table"><table><thead><tr><th>Peserta</th><th>Status</th><th>Official</th><th></th></tr></thead><tbody><tr v-for="entry in entries" :key="entry.id"><td><strong>{{ entry.display_name }}</strong><small>{{ entry.teams.map(team => `${team.label}: ${team.members.map(member => `${member.name} (${member.pdam_name || 'PDAM belum diisi'})`).join(', ')}`).join(' · ') }}</small></td><td><span :class="['tag', entry.verification_status]">{{ statusLabel(entry.verification_status) }}</span></td><td>{{ entry.officials.map(item => item.name).join(', ') || '—' }}</td><td><button v-if="['draft','pending','revision_required','rejected'].includes(entry.verification_status)" class="text-danger" @click="cancel(entry.id)">Batalkan</button></td></tr><tr v-if="!entries.length"><td colspan="4" class="empty-note">Belum ada pendaftaran.</td></tr></tbody></table></div></section>
   </PortalLayout>
 </template>
 
 <style scoped>
-.team-block{display:grid;gap:10px;margin:0;padding:14px;border:1px solid var(--portal-border);border-radius:10px}.team-block legend{padding:0 6px;color:var(--portal-primary);font-weight:800}.team-summary{display:grid;gap:3px}.team-summary+.team-summary{margin-top:10px;padding-top:10px;border-top:1px solid var(--portal-border)}.team-summary span,.team-summary small{color:var(--portal-muted);font-size:11px}
-.official-block{display:grid;gap:12px;padding:15px;background:#f8fafb;border:1px solid var(--portal-border);border-radius:11px}.official-block>header{display:flex;align-items:center;justify-content:space-between;gap:12px}.official-block>header div{display:grid;gap:3px}.official-block>header strong{color:var(--portal-text)}.official-block>header small{color:var(--portal-muted)}.official-block>header b{padding:5px 8px;color:var(--portal-primary);background:#eaf1fb;border-radius:7px;font-size:10px}.official-policy-alert{display:grid;gap:3px;padding:11px 12px;border:1px solid;border-radius:8px}.official-policy-alert strong{font-size:11px}.official-policy-alert span{font-size:11px;line-height:1.45}.official-policy-alert.allowed{color:#087365;background:#eefaf6;border-color:#b9e3d6}.official-policy-alert.blocked{color:#a1432e;background:#fff4ef;border-color:#efcfc4}.official-row{display:grid;grid-template-columns:1fr minmax(150px,.45fr) auto;gap:10px;align-items:end;padding:12px;background:#fff;border:1px solid #e1e9ed;border-radius:9px}.playing-info{grid-column:1/-1;margin:0;padding:8px 10px;color:#1946a3;background:#eef4fb;border-radius:7px;font-size:11px}.official-summary{display:grid;gap:4px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--portal-border)}.official-summary>strong{color:var(--portal-primary);font-size:11px}.official-summary>span{display:grid;color:#536571;font-size:11px}.official-summary small{color:#1946a3}
-.page-head { padding:8px 0 18px; }.back { display:inline-flex; margin-top:8px; color:var(--portal-primary); text-decoration:none; font-size:12px; font-weight:800; }.flash { margin-bottom:14px; padding:12px 16px; border:1px solid; border-radius:var(--portal-control-radius); font-weight:750; }.flash.ok { color:var(--portal-success); background:var(--portal-success-soft); border-color:#b9e3d6; }.flash.err { color:var(--portal-danger); background:var(--portal-danger-soft); border-color:#efcfc4; }.entry-panel { display:grid; grid-template-columns:minmax(330px,.8fr) minmax(0,1.2fr); gap:18px; align-items:start; }.entry-form,.entry-list { display:grid; gap:14px; padding:20px; }.entry-form > div:first-child,.entry-list > h3 { margin:-20px -20px 4px; }.entry-form h3,.entry-list h3 { margin:0; color:var(--portal-text); font-size:17px; }.entry-form > div:first-child .hint { margin-top:6px; }.hint { margin:0; color:var(--portal-muted); font-size:12px; line-height:1.5; }.member-row { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:end; }label span { letter-spacing:.04em; }button:disabled { opacity:.55; cursor:wait; }.form-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.members { margin:0; padding-left:20px; color:#536571; font-size:13px; line-height:1.65; }.locked-notice { display:grid; gap:6px; padding:20px; color:#655000; background:#fff9e8; border:1px solid #eedb94; border-radius:var(--portal-radius); }.locked-notice strong { color:#4d3f09; }.locked-notice span { font-size:12px; line-height:1.5; }.roster-table { overflow:auto; margin:0 -20px -20px; }.roster-table table { width:100%; min-width:680px; border-collapse:collapse; }.roster-table th,.roster-table td { padding:13px 16px; border-bottom:1px solid #e5ecef; color:#334553; text-align:left; vertical-align:middle; }.roster-table th { color:#60717f; background:var(--portal-surface-soft); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }.roster-table tbody tr:hover { background:#f8fbfd; }.entry-main { display:grid; gap:4px; }.entry-main strong { color:#203444; }.entry-main small { color:var(--portal-muted); font-weight:650; }.entry-main small.note { color:var(--portal-danger); }.tag { display:inline-flex; padding:5px 9px; border:1px solid; border-radius:999px; font-size:10px; font-weight:800; text-transform:uppercase; }.tag.verified { color:var(--portal-success); background:var(--portal-success-soft); border-color:#b9e3d6; }.tag.pending { color:#745b00; background:#fff5cf; border-color:#eedb94; }.tag.rejected,.tag.revision_required { color:var(--portal-danger); background:var(--portal-danger-soft); border-color:#efcfc4; }.tag.draft,.tag.cancelled { color:#536571; background:#edf2f5; border-color:#d3dde3; }.row-actions { display:flex; justify-content:flex-end; }.del { min-height:34px; padding:7px 10px; color:var(--portal-danger); background:var(--portal-danger-soft); border:1px solid #efcfc4; border-radius:var(--portal-control-radius); font-size:10px; font-weight:800; cursor:pointer; }.err { color:var(--portal-danger); font-size:11px; font-weight:700; }.empty { margin:0; padding:24px !important; color:#7a8993 !important; text-align:center !important; }@media(max-width:900px){.entry-panel{grid-template-columns:1fr}.form-actions{grid-template-columns:1fr}.official-row{grid-template-columns:1fr}}
+.page-head{padding:8px 0 18px}.back{display:inline-flex;margin-top:8px;color:var(--portal-primary);font-size:12px;font-weight:800;text-decoration:none}.flash,.locked-notice{margin-bottom:14px;padding:13px 16px;border:1px solid;border-radius:10px}.flash.ok{color:#087365;background:#eefaf6;border-color:#b9e3d6}.flash.err,.err{color:var(--portal-danger)}.rules-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-bottom:18px;padding:0;overflow:hidden}.rules-strip div{display:grid;gap:4px;padding:16px;background:#fff}.rules-strip small,.form-head span,.team-card header small{color:#73838d;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.rules-strip strong{color:#213746}.rules-strip p{grid-column:1/-1;margin:0;padding:11px 16px;font-size:11px;font-weight:700}.allowed{color:#087365;background:#eefaf6}.blocked{color:#a1432e;background:#fff4ef}.registration-shell,.entry-list{margin-bottom:18px;padding:0;overflow:hidden}.form-head{display:flex;justify-content:space-between;gap:20px;padding:22px 24px;background:linear-gradient(120deg,#f8fafb,#edf4f7)}.form-head h3{margin:4px 0;color:#173346;font-size:22px}.form-head p{margin:0;color:#687985;font-size:12px}.progress{display:grid;min-width:82px;padding:10px;text-align:center;background:#fff;border:1px solid #d9e4e9;border-radius:12px}.progress b{color:var(--portal-primary);font-size:24px}.progress small{color:#687985}.form-tabs{display:flex;padding:0 24px;border-bottom:1px solid #dce6ea}.form-tabs button{padding:15px 18px;color:#657680;background:none;border:0;border-bottom:3px solid transparent;font-weight:800;cursor:pointer}.form-tabs button.active{color:var(--portal-primary);border-color:var(--portal-primary)}.form-tabs span{margin-left:7px;padding:3px 7px;background:#eaf1f5;border-radius:999px;font-size:10px}.section-stack{display:grid;gap:16px;padding:22px 24px}.team-card,.person-card{display:grid;gap:14px;padding:16px;border:1px solid #dce6ea;border-radius:12px;background:#fbfcfd}.team-card>header,.person-title,.documents-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.team-card h4{margin:2px 0 0;color:#173346}.person-card{background:#fff}.person-title b{display:grid;place-items:center;width:34px;height:34px;color:#fff;background:#1946a3;border-radius:10px}.person-title div{display:grid;flex:1}.person-title small,.documents-head small{color:#758590;font-size:11px}.identity-grid{display:grid;grid-template-columns:1.4fr .55fr 1fr;gap:12px}.identity-grid.official{grid-template-columns:1.3fr 1fr .55fr 1fr}.documents{display:grid;gap:8px;padding:13px;background:#f5f8fa;border-radius:10px}.upload-row{display:grid;grid-template-columns:minmax(230px,1fr) auto;gap:3px 12px;align-items:center;padding:10px 12px;background:#fff;border:1px solid #dde6ea;border-radius:8px;cursor:pointer}.upload-row.ready{border-color:#afd9cd;background:#f3fbf8}.upload-row span{display:flex;gap:9px;align-items:center;color:#415765;font-size:12px;font-weight:750}.upload-row b{color:#8b9aa3}.upload-row.ready b{color:#087365}.upload-row input{position:absolute;width:1px;height:1px;opacity:0}.upload-row em{color:var(--portal-primary);font-size:11px;font-style:normal;font-weight:800}.upload-row .err{grid-column:1/-1}.policy-alert{display:grid;gap:3px;padding:13px 15px;border-radius:10px}.policy-alert span{font-size:11px}.playing{margin:0;padding:9px 11px;color:#1946a3;background:#eef4fb;border-radius:8px;font-size:11px}.form-actions{display:flex;justify-content:flex-end;gap:10px;padding:18px 24px;background:#f7f9fa;border-top:1px solid #dce6ea}.text-danger{color:var(--portal-danger);background:none;border:0;font-size:11px;font-weight:800;cursor:pointer}.locked-notice{display:grid;gap:4px;color:#655000;background:#fff9e8;border-color:#eedb94}.entry-list .portal-card-head{padding:18px 20px}.roster-table{overflow:auto}.roster-table table{width:100%;min-width:720px;border-collapse:collapse}.roster-table th,.roster-table td{padding:13px 16px;border-top:1px solid #e5ecef;text-align:left;vertical-align:top}.roster-table th{color:#60717f;background:#f7f9fa;font-size:10px;text-transform:uppercase}.roster-table td>strong,.roster-table td>small{display:block}.roster-table td>small{margin-top:4px;color:#657680;line-height:1.5}.tag{display:inline-flex;padding:5px 9px;border-radius:999px;background:#edf2f5;font-size:10px;font-weight:800}.empty-note{padding:18px;color:#758590;text-align:center}.portal-field{display:grid;gap:6px}.portal-field span{color:#526875;font-size:10px;font-weight:800;text-transform:uppercase}.portal-field input,.portal-field select{width:100%;min-height:42px;padding:9px 11px;border:1px solid #cedbe1;border-radius:8px;background:#fff}.portal-button{min-height:40px;padding:9px 14px;border-radius:8px;font-weight:800;cursor:pointer}.portal-button.primary{color:#fff;background:var(--portal-primary);border:1px solid var(--portal-primary)}.portal-button.secondary{color:var(--portal-primary);background:#fff;border:1px solid #bfd0da}.portal-button:disabled{opacity:.55;cursor:wait}@media(max-width:900px){.rules-strip{grid-template-columns:1fr 1fr}.identity-grid,.identity-grid.official{grid-template-columns:1fr}.form-head{align-items:flex-start}.section-stack{padding:16px}.upload-row{grid-template-columns:1fr}.form-actions{display:grid;grid-template-columns:1fr 1fr}}@media(max-width:560px){.rules-strip{grid-template-columns:1fr}.form-head{display:grid}.form-tabs button{flex:1}.form-actions{grid-template-columns:1fr}}
+.identity-grid:not(.official){grid-template-columns:1.2fr 1.4fr .5fr 1fr}.pdam-field{position:relative}.pdam-field .selected{color:#087365}.pdam-dropdown{position:absolute;z-index:30;top:100%;right:0;left:0;display:grid;max-height:280px;margin-top:6px;overflow:auto;background:#fff;border:1px solid #c9d8df;border-radius:10px;box-shadow:0 18px 42px rgba(19,48,68,.18)}.pdam-dropdown button{display:grid;gap:3px;width:100%;padding:10px 12px;color:#29404f;text-align:left;background:#fff;border:0;border-bottom:1px solid #edf1f3;cursor:pointer}.pdam-dropdown button:hover,.pdam-dropdown button:focus{background:#eef5fb;outline:0}.pdam-dropdown button strong{font-size:12px}.pdam-dropdown button small{color:#71828d;font-size:10px}.pdam-dropdown p{margin:0;padding:16px;color:#71828d;font-size:11px;text-align:center}
 </style>

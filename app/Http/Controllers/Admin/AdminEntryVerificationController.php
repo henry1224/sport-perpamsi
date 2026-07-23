@@ -21,8 +21,9 @@ class AdminEntryVerificationController extends Controller
 
         $entries = EventEntry::query()
             ->with([
-                'teams.members:id,event_entry_id,entry_team_id,name',
-                'members' => fn ($query) => $query->where('member_type', 'official')->select('id', 'event_entry_id', 'name', 'position'),
+                'teams.members:id,event_entry_id,entry_team_id,pdam_id,name,identity_type,identity_number,documents',
+                'teams.members.pdam:id,name',
+                'members' => fn ($query) => $query->where('member_type', 'official')->select('id', 'event_entry_id', 'name', 'identity_type', 'identity_number', 'position', 'documents'),
                 'regionalCommittee:id,name',
                 'tournamentEvent:id,code,name,status',
             ])
@@ -40,8 +41,8 @@ class AdminEntryVerificationController extends Controller
             ->through(fn ($entry) => [
                 'id' => $entry->id,
                 'display_name' => $entry->display_name,
-                'teams' => $entry->teams->map(fn ($team) => ['id' => $team->id, 'label' => $team->label, 'members' => $team->members->pluck('name'), 'override' => $team->verification_status_override, 'effective_status' => $team->effectiveStatus()]),
-                'officials' => $entry->members->map(fn ($member) => ['name' => $member->name, 'role' => $member->position]),
+                'teams' => $entry->teams->map(fn ($team) => ['id' => $team->id, 'label' => $team->label, 'members' => $team->members->map(fn ($member) => $this->memberPayload($member)), 'override' => $team->verification_status_override, 'effective_status' => $team->effectiveStatus()]),
+                'officials' => $entry->members->map(fn ($member) => $this->memberPayload($member) + ['role' => $member->position]),
                 'committee' => $entry->regionalCommittee?->name,
                 'event' => $entry->tournamentEvent?->name,
                 'event_code' => $entry->tournamentEvent?->code,
@@ -53,6 +54,11 @@ class AdminEntryVerificationController extends Controller
             'entries' => $entries,
             'filters' => ['search' => $search, 'status' => $status, 'per_page' => $perPage],
         ]);
+    }
+
+    private function memberPayload($member): array
+    {
+        return ['name' => $member->name, 'pdam' => $member->pdam?->name ?: 'PDAM belum diisi', 'identity' => $member->identity_number ? strtoupper($member->identity_type).' · '.$member->identity_number : 'Identitas belum diisi', 'document_count' => count($member->documents ?? [])];
     }
 
     public function verify(Request $request, EventEntry $entry): RedirectResponse
