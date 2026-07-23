@@ -29,8 +29,9 @@ class TournamentEventPublicationTest extends TestCase
             'code' => 'event-uji-crud', 'name' => 'Event Uji CRUD', 'format' => $sport->default_format,
         ])->assertSessionHasNoErrors();
 
-        $event = TournamentEvent::query()->where('code', 'event-uji-crud')->firstOrFail();
+        $event = TournamentEvent::query()->where('code', Str::slug($sport->code.'-'.$category->code))->firstOrFail();
         $this->assertSame('registration_draft', $event->status);
+        $this->assertSame($sport->name.' - '.$category->name, $event->name);
         $this->assertSame($category->default_max_teams_per_pd, $event->registration_rules['max_teams_per_pd']);
         $this->assertSame($sport->default_max_officials_per_pd, $event->registration_rules['max_officials_per_pd']);
         $this->assertSame($sport->official_roles ?? [], $event->registration_rules['official_roles']);
@@ -38,11 +39,12 @@ class TournamentEventPublicationTest extends TestCase
         $this->assertSame(0, $event->entries()->count());
         $this->assertSame(0, $event->matches()->count());
 
+        $category->update(['name' => 'CRUD Test Diperbarui']);
         $this->actingAs($admin)->put(route('admin.events.update', $event), [
             'sport_id' => $sport->id, 'sport_category_id' => $category->id, 'sport_regulation_id' => $regulation->id,
             'code' => 'event-uji-crud', 'name' => 'Event Uji Diperbarui', 'format' => $sport->default_format,
         ])->assertSessionHasNoErrors();
-        $this->assertDatabaseHas('tournament_events', ['id' => $event->id, 'name' => 'Event Uji Diperbarui']);
+        $this->assertDatabaseHas('tournament_events', ['id' => $event->id, 'name' => $sport->name.' - CRUD Test Diperbarui']);
 
         $this->actingAs($admin)->delete(route('admin.events.destroy', $event))->assertSessionHasNoErrors();
         $this->assertDatabaseMissing('tournament_events', ['id' => $event->id]);
@@ -72,7 +74,7 @@ class TournamentEventPublicationTest extends TestCase
         $this->assertSame($admin->id, $event->registration_published_by);
         $this->assertSame($event->category->min_members, $event->registration_rules['min_members']);
         $this->assertSame(2, $event->registration_rules['regulation_version']);
-        $this->assertSame(3, $event->registration_rules['max_teams_per_pd']);
+        $this->assertSame($event->category->default_max_teams_per_pd, $event->registration_rules['max_teams_per_pd']);
         $this->assertSame($event->sport->default_max_officials_per_pd, $event->registration_rules['max_officials_per_pd']);
         $this->assertSame($event->sport->official_roles ?? [], $event->registration_rules['official_roles']);
         $this->assertTrue($event->registrationIsOpen());
@@ -150,22 +152,5 @@ class TournamentEventPublicationTest extends TestCase
 
         $this->actingAs($admin)->post(route('admin.events.unpublish', $event))->assertStatus(422);
         $this->assertNotNull($event->fresh()->registration_published_at);
-    }
-
-    public function test_format_can_change_only_before_publication(): void
-    {
-        $this->seed();
-
-        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
-        $draft = TournamentEvent::query()->whereNull('registration_published_at')->firstOrFail();
-        $draft->entries()->delete();
-
-        $this->actingAs($admin)->put(route('admin.events.format.update', $draft), ['format' => 'round_robin'])->assertRedirect()->assertSessionHasNoErrors();
-        $this->assertSame('round_robin', $draft->fresh()->format);
-
-        $published = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
-        $original = $published->format;
-        $this->actingAs($admin)->put(route('admin.events.format.update', $published), ['format' => 'ranking'])->assertSessionHasErrors('format');
-        $this->assertSame($original, $published->fresh()->format);
     }
 }

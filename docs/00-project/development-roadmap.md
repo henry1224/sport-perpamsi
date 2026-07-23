@@ -50,8 +50,9 @@ Pengecualian Phase 5: koreksi CRUD cabor, Format Bawaan, penguncian Format Kompe
 - [x] Preview publikasi, penetapan versi regulasi, tarik publikasi sebelum ada entry, dan audit event.
 - [x] CRUD Admin untuk membuat, mengubah, dan mengarsipkan Data Lomba tersedia.
 - [x] Data kompetisi operasional memiliki kategori dan `sport_regulation_id` yang valid.
+- [x] Draft Data Lomba mewarisi nama, kode, format, regulasi aktif, kuota, dan aturan official dari master tanpa konfigurasi ulang.
 
-Status: `Code Complete, UAT Pending` — CRUD, publikasi, kategori, dan regulasi kompetisi tersedia.
+Status: `Code Complete, Automated Passed, Manual UAT Pending` — CRUD, pewarisan master, publikasi, snapshot, kategori, dan regulasi kompetisi tersedia.
 
 Exit: Admin dapat membuat paket kompetisi lengkap; hanya paket yang disahkan dapat dipilih PD.
 

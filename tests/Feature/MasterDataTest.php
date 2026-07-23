@@ -79,6 +79,36 @@ class MasterDataTest extends TestCase
         $this->actingAs($pdAdmin)->get(route('admin.master-data.index'))->assertForbidden();
     }
 
+    public function test_master_changes_resync_draft_event_without_touching_published_snapshot(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $draft = TournamentEvent::query()->whereNull('registration_published_at')->with('sport')->firstOrFail();
+        $published = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
+        $publishedSnapshot = $published->registration_rules;
+        $sport = $draft->sport;
+
+        $this->actingAs($admin)->put(route('admin.master-data.sports.update', $sport), [
+            'code' => $sport->code,
+            'name' => $sport->name,
+            'type' => $sport->type,
+            'default_format' => 'round_robin',
+            'score_template' => $sport->score_template,
+            'default_max_officials_per_pd' => 7,
+            'official_roles' => 'coach, manager',
+            'allow_member_cross_category' => false,
+            'max_categories_per_member' => 0,
+            'official_can_compete' => false,
+            'is_active' => true,
+        ])->assertSessionHasNoErrors();
+
+        $draft->refresh();
+        $this->assertSame('round_robin', $draft->format);
+        $this->assertSame(7, $draft->registration_rules['max_officials_per_pd']);
+        $this->assertSame(['coach', 'manager'], $draft->registration_rules['official_roles']);
+        $this->assertSame($publishedSnapshot, $published->fresh()->registration_rules);
+    }
+
     public function test_category_menu_receives_sports_and_category_relations_from_database(): void
     {
         $this->seed();

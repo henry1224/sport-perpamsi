@@ -72,7 +72,6 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/events', [TournamentEventController::class, 'store'])->name('events.store');
     Route::put('/events/{event:code}', [TournamentEventController::class, 'update'])->name('events.update');
     Route::delete('/events/{event:code}', [TournamentEventController::class, 'destroy'])->name('events.destroy');
-    Route::put('/events/{event:code}/format', [TournamentEventController::class, 'updateFormat'])->name('events.format.update');
     Route::post('/events/{event:code}/publish', [TournamentEventController::class, 'publish'])->name('events.publish');
     Route::post('/events/{event:code}/close', [TournamentEventController::class, 'close'])->name('events.close');
     Route::post('/events/{event:code}/unpublish', [TournamentEventController::class, 'unpublish'])->name('events.unpublish');

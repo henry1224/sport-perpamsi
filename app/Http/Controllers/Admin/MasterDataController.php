@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Sport;
 use App\Models\SportCategory;
 use App\Models\SportRegulation;
+use App\Models\TournamentEvent;
 use App\Models\Venue;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,6 +45,7 @@ class MasterDataController extends Controller
         $data = $this->sportData($request, $sport);
         $before = $sport->toArray();
         $sport->update($data);
+        $this->syncDraftEvents($sport->id);
         $this->audit($request, 'sport', $sport->id, 'updated', $before, $sport->fresh()->toArray());
 
         return back()->with('success', 'Cabor berhasil diperbarui.');
@@ -80,6 +82,7 @@ class MasterDataController extends Controller
     {
         $before = $category->toArray();
         $category->update($this->categoryData($request, $category));
+        $this->syncDraftEvents($category->sport_id);
         $this->audit($request, 'sport_category', $category->id, 'updated', $before, $category->fresh()->toArray());
 
         return back()->with('success', 'Kategori berhasil diperbarui.');
@@ -111,6 +114,7 @@ class MasterDataController extends Controller
         $data['technical_guide'] = $this->technicalGuide($data);
         $data['version'] = (int) SportRegulation::query()->where('sport_id', $data['sport_id'])->max('version') + 1;
         $regulation = SportRegulation::query()->create($data + ['created_by' => $request->user()->id]);
+        $this->syncDraftEvents($regulation->sport_id);
         $this->audit($request, 'sport_regulation', $regulation->id, 'created', null, $regulation->toArray());
 
         return back()->with('success', 'Versi regulasi berhasil diterbitkan.');
@@ -126,6 +130,7 @@ class MasterDataController extends Controller
         $data['technical_guide'] = $this->technicalGuide($data);
         $before = $regulation->toArray();
         $regulation->update($data);
+        $this->syncDraftEvents($regulation->sport_id);
         $this->audit($request, 'sport_regulation', $regulation->id, 'updated', $before, $regulation->fresh()->toArray());
 
         return back()->with('success', 'Regulasi berhasil diperbarui.');
@@ -143,6 +148,35 @@ class MasterDataController extends Controller
         }
 
         return array_filter($guide, fn ($value) => $value !== null && $value !== [] && $value !== '');
+    }
+
+    private function syncDraftEvents(int $sportId): void
+    {
+        $sport = Sport::query()->findOrFail($sportId);
+        $regulationId = SportRegulation::query()->where('sport_id', $sportId)->where('is_active', true)->latest('version')->value('id');
+
+        TournamentEvent::query()->where('sport_id', $sportId)->whereNull('registration_published_at')->with('category')->each(function (TournamentEvent $event) use ($sport, $regulationId) {
+            if (! $event->category) {
+                return;
+            }
+            $category = $event->category;
+            $event->update([
+                'code' => Str::slug($sport->code.'-'.$category->code),
+                'name' => $sport->name.' - '.$category->name,
+                'format' => $sport->default_format,
+                'sport_regulation_id' => $regulationId,
+                'registration_rules' => [
+                    'max_teams_per_pd' => $category->default_max_teams_per_pd,
+                    'min_members_per_team' => $category->min_members,
+                    'max_members_per_team' => $category->max_members,
+                    'max_officials_per_pd' => $sport->default_max_officials_per_pd,
+                    'official_roles' => $sport->official_roles ?? [],
+                    'allow_member_cross_category' => $sport->allow_member_cross_category,
+                    'max_categories_per_member' => $sport->max_categories_per_member,
+                    'official_can_compete' => $sport->official_can_compete,
+                ],
+            ]);
+        });
     }
 
     public function destroyRegulation(Request $request, SportRegulation $regulation): RedirectResponse
