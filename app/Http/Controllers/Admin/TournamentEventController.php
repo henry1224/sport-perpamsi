@@ -7,6 +7,8 @@ use App\Models\Sport;
 use App\Models\SportCategory;
 use App\Models\SportRegulation;
 use App\Models\TournamentEvent;
+use App\Models\EntryTeam;
+use App\Models\EntryMember;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +28,12 @@ class TournamentEventController extends Controller
 
         return Inertia::render('Admin/Events', [
             'events' => TournamentEvent::query()
+                ->addSelect([
+                    'teams_count' => EntryTeam::query()->selectRaw('count(*)')->join('event_entries', 'entry_teams.event_entry_id', '=', 'event_entries.id')->whereColumn('event_entries.tournament_event_id', 'tournament_events.id')->whereNull('entry_teams.cancelled_at'),
+                    'verified_teams_count' => EntryTeam::query()->selectRaw('count(*)')->join('event_entries', 'entry_teams.event_entry_id', '=', 'event_entries.id')->whereColumn('event_entries.tournament_event_id', 'tournament_events.id')->whereNull('entry_teams.cancelled_at')->whereRaw("COALESCE(entry_teams.verification_status_override, event_entries.verification_status) = 'verified'"),
+                    'players_count' => EntryMember::query()->selectRaw('count(*)')->join('entry_teams', 'entry_members.entry_team_id', '=', 'entry_teams.id')->join('event_entries', 'entry_teams.event_entry_id', '=', 'event_entries.id')->whereColumn('event_entries.tournament_event_id', 'tournament_events.id')->whereNull('entry_teams.cancelled_at')->where('entry_members.member_type', 'player'),
+                    'verified_players_count' => EntryMember::query()->selectRaw('count(*)')->join('entry_teams', 'entry_members.entry_team_id', '=', 'entry_teams.id')->join('event_entries', 'entry_teams.event_entry_id', '=', 'event_entries.id')->whereColumn('event_entries.tournament_event_id', 'tournament_events.id')->whereNull('entry_teams.cancelled_at')->where('entry_members.member_type', 'player')->where('entry_members.verification_status', 'verified'),
+                ])
                 ->with(['sport:id,name,default_format,default_max_officials_per_pd,official_roles,allow_member_cross_category,max_categories_per_member,official_can_compete', 'sport.regulations' => fn ($query) => $query->where('is_active', true)->latest('version'), 'category:id,sport_id,name,competition_type,scoring_type,min_members,max_members,default_max_teams_per_pd,is_active', 'regulation:id,sport_id,version,title'])
                 ->withCount('entries')
                 ->when($status, fn ($query) => $query->where('status', $status))
@@ -46,12 +54,21 @@ class TournamentEventController extends Controller
                     'sport' => $event->sport?->name,
                     'default_format' => $event->sport?->default_format,
                     'category' => $event->category?->name,
+                    'competition_type' => $event->category?->competition_type,
+                    'min_members' => $event->category?->min_members,
+                    'max_members' => $event->category?->max_members,
                     'format' => $event->format,
                     'status' => $event->status,
                     'published' => (bool) $event->registration_published_at,
                     'open_at' => $event->registration_open_at?->format('Y-m-d\TH:i'),
                     'close_at' => $event->registration_close_at?->format('Y-m-d\TH:i'),
                     'entries_count' => $event->entries_count,
+                    'teams_count' => (int) $event->teams_count,
+                    'verified_teams_count' => (int) $event->verified_teams_count,
+                    'players_count' => (int) $event->players_count,
+                    'verified_players_count' => (int) $event->verified_players_count,
+                    'verification_complete' => $event->teams_count >= 2 && $event->teams_count === $event->verified_teams_count && $event->players_count > 0 && $event->players_count === $event->verified_players_count,
+                    'bracket_size' => $event->bracket_size,
                     'regulation_id' => $event->sport_regulation_id,
                     'regulation' => $event->regulation ? 'v'.$event->regulation->version.' · '.$event->regulation->title : null,
                     'regulations' => $event->sport?->regulations->map(fn ($regulation) => ['id' => $regulation->id, 'label' => 'v'.$regulation->version.' · '.$regulation->title, 'content' => $regulation->content, 'document_url' => $regulation->document_url])->values(),
@@ -161,6 +178,34 @@ class TournamentEventController extends Controller
         $this->audit($event, 'closed', $before, $this->publicationState($event), $request);
 
         return back()->with('success', 'Registrasi kompetisi ditutup.');
+    }
+
+    public function lockBracket(Request $request, TournamentEvent $event): RedirectResponse
+    {
+        abort_unless($event->registration_published_at && $event->status === 'registration_closed', 422, 'Bracket hanya dapat dikunci setelah pendaftaran ditutup.');
+
+        $teams = EntryTeam::query()->with('eventEntry')->whereHas('eventEntry', fn ($query) => $query->where('tournament_event_id', $event->id))->whereNull('cancelled_at')->orderBy('id')->get();
+        $verified = $teams->filter(fn ($team) => $team->effectiveStatus() === 'verified');
+        $players = EntryMember::query()->whereIn('entry_team_id', $teams->pluck('id'))->where('member_type', 'player');
+        $playersCount = (clone $players)->count();
+        $verifiedPlayersCount = (clone $players)->where('verification_status', 'verified')->count();
+
+        abort_if($teams->count() < 2, 422, 'Minimal dua team diperlukan untuk mengunci bracket.');
+        abort_if($teams->count() !== $verified->count(), 422, $teams->count() - $verified->count().' team belum diverifikasi. Selesaikan verifikasi sebelum mengunci bracket.');
+        abort_if($playersCount === 0 || $playersCount !== $verifiedPlayersCount, 422, $playersCount - $verifiedPlayersCount.' pemain belum diverifikasi. Selesaikan verifikasi pemain sebelum mengunci bracket.');
+
+        DB::transaction(function () use ($event, $verified, $request) {
+            $before = $this->publicationState($event);
+            $verified->values()->each(fn ($team, $index) => $team->update(['seed_no' => $index + 1]));
+            $event->update([
+                'status' => 'bracket_locked',
+                'bracket_size' => 2 ** (int) ceil(log($verified->count(), 2)),
+                'seed_locked_at' => now(),
+            ]);
+            $this->audit($event, 'bracket_locked', $before, $this->publicationState($event), $request);
+        });
+
+        return back()->with('success', 'Bracket dikunci. Seluruh team terverifikasi telah mendapat nomor seed.');
     }
 
     public function unpublish(Request $request, TournamentEvent $event): RedirectResponse

@@ -9,7 +9,7 @@ class EntryMember extends Model
 {
     protected $guarded = [];
 
-    protected $casts = ['documents' => 'array'];
+    protected $casts = ['documents' => 'array', 'verified_at' => 'datetime'];
 
     public function eventEntry(): BelongsTo
     {

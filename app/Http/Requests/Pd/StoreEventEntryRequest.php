@@ -31,6 +31,7 @@ class StoreEventEntryRequest extends FormRequest
         return [
             'intent' => ['required', 'in:draft,submit'],
             'teams' => ['required', 'array', 'min:1', 'max:'.($snapshot['max_teams_per_pd'] ?? 1)],
+            'teams.*.id' => ['nullable', 'integer'],
             'teams.*.members' => $memberRules,
             'teams.*.members.*.name' => ['required', 'string', 'max:120'],
             'teams.*.members.*.id' => ['nullable', 'integer'],
@@ -57,7 +58,7 @@ class StoreEventEntryRequest extends FormRequest
             if ($names->duplicates()->isNotEmpty()) { $validator->errors()->add('teams', 'Pemain tidak boleh terdaftar pada dua tim dalam kompetisi yang sama.'); $validator->errors()->add('members', 'Nama pemain tidak boleh sama dalam satu pendaftaran.'); }
             if ($playerIdentities->duplicates()->isNotEmpty()) $validator->errors()->add('teams', 'NIK/KTA pemain tidak boleh digunakan lebih dari satu kali.');
             $event = $this->route('event');
-            if ($event instanceof TournamentEvent && $event->entries()->where('regional_committee_id', $this->user()->regional_committee_id)->whereIn('verification_status', ['pending', 'verified'])->exists()) { $validator->errors()->add('teams', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); $validator->errors()->add('members', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); }
+            if ($event instanceof TournamentEvent && $event->entries()->where('regional_committee_id', $this->user()->regional_committee_id)->where(fn ($query) => $query->where('verification_status', 'verified')->orWhere(fn ($query) => $query->where('verification_status', 'pending')->whereDoesntHave('teams', fn ($query) => $query->where('verification_status_override', 'revision_required'))))->exists()) { $validator->errors()->add('teams', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); $validator->errors()->add('members', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); }
             if (! $event instanceof TournamentEvent) return;
 
             $officials = collect($this->input('officials', []));

@@ -104,7 +104,8 @@ Audit implementasi: [phase-1-5-flow-audit.md](./phase-1-5-flow-audit.md). Phase 
 > Beku sampai seluruh exit criteria Phase 4B terpenuhi; seluruh participant operasi turnamen wajib `EntryTeam`.
 
 - [ ] Seeding/grup/bracket manager affiliation-aware.
-- [ ] Precondition bracket lock.
+- [x] Precondition bracket lock: minimal dua team, seluruh team aktif efektif verified, progres verifikasi terlihat, dan nomor seed tersimpan saat lock.
+- [x] Verifikasi pemain individual dengan audit dan gate parent/bracket agar pengajuan tidak terlewat.
 - [ ] Input skor idempotent.
 - [ ] Finalisasi dan revisi beralasan.
 - [ ] Klasemen cabor dan medali PD PERPAMSI.

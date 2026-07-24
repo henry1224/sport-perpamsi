@@ -1,6 +1,6 @@
 <script setup>
 import { watch, onUnmounted } from 'vue';
-const props = defineProps({ open: Boolean, title: String, theme: { type: String, default: 'dark' } });
+const props = defineProps({ open: Boolean, title: String, theme: { type: String, default: 'dark' }, stacked: Boolean });
 const emit = defineEmits(['close']);
 
 const onKey = (e) => { if (e.key === 'Escape') emit('close'); };
@@ -14,7 +14,7 @@ onUnmounted(() => { document.body.style.overflow = ''; window.removeEventListene
 <template>
   <Teleport to="body">
     <Transition name="fade">
-      <div v-if="open" :class="['modal-backdrop', theme]" @click.self="emit('close')">
+      <div v-if="open" :class="['modal-backdrop', theme, { stacked }]" @click.self="emit('close')">
         <div class="modal-shell" role="dialog" aria-modal="true" aria-labelledby="modal-title">
           <header>
             <h3 id="modal-title">{{ title }}</h3>
@@ -29,6 +29,7 @@ onUnmounted(() => { document.body.style.overflow = ''; window.removeEventListene
 
 <style scoped>
 .modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; background: rgba(5,11,28,.78); backdrop-filter: blur(6px); }
+.modal-backdrop.stacked { z-index: 140; }
 .modal-shell { position: relative; width: min(760px, 100%); max-height: 88vh; display: grid; grid-template-rows: auto 1fr; overflow: hidden; color:#fff; background:#071126; border:1px solid rgba(255,255,255,.14); box-shadow:14px 14px 0 rgba(54,194,240,.16),0 40px 120px rgba(0,0,0,.5); clip-path:polygon(22px 0,100% 0,100% calc(100% - 22px),calc(100% - 22px) 100%,0 100%,0 22px); }
 .modal-shell::before { content:"DETAIL"; position:absolute; right:18px; top:-14px; color:transparent; -webkit-text-stroke:1px rgba(255,255,255,.055); font-size:110px; font-weight:1000; letter-spacing:-.08em; pointer-events:none; }
 header { position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; gap:12px; padding:22px 24px; background:linear-gradient(90deg,rgba(54,194,240,.11),transparent 62%); border-bottom:1px dashed rgba(255,255,255,.16); }

@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Sport extends Model
 {
     public const FORMAT_LABELS = [
-        'knockout' => 'Knockout',
+        'knockout' => 'Sistem Gugur',
         'group' => 'Fase Grup',
-        'group_or_knockout' => 'Fase Grup atau Knockout',
-        'group_then_knockout' => 'Fase Grup lalu Knockout',
+        'group_or_knockout' => 'Fase Grup atau Sistem Gugur',
+        'group_then_knockout' => 'Fase Grup dilanjutkan Sistem Gugur',
         'round_robin' => 'Round Robin',
         'swiss' => 'Swiss',
         'score_ranking' => 'Peringkat Skor',

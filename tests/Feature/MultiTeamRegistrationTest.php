@@ -104,6 +104,48 @@ class MultiTeamRegistrationTest extends TestCase
         $this->assertDatabaseHas('entry_teams', ['id' => $team->id, 'event_entry_id' => $entry->id, 'team_no' => 1]);
     }
 
+    public function test_team_revision_is_scoped_and_requires_verified_players_before_approval(): void
+    {
+        Storage::fake('local');
+        $this->seed();
+        $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
+        $rules = array_merge($event->registration_rules, ['max_teams_per_pd' => 2, 'min_members_per_team' => 1, 'max_members_per_team' => 1]);
+        $event->update(['status' => 'registration_open', 'registration_open_at' => now()->subMinute(), 'registration_close_at' => now()->addDay(), 'registration_rules' => $rules]);
+        EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->delete();
+
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [
+            ['members' => [$this->member('Tim Satu', '3173000000000101', true)]],
+            ['members' => [$this->member('Tim Dua', '3173000000000102', true)]],
+        ]])->assertSessionHasNoErrors();
+
+        $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->with('teams.members')->firstOrFail();
+        [$firstTeam, $secondTeam] = $entry->teams;
+        $this->actingAs($admin)->post(route('admin.entry-teams.override', $secondTeam), ['status' => 'revision_required', 'reason' => 'Perbaiki identitas pemain kedua.'])->assertRedirect();
+        $this->assertSame('Perbaiki identitas pemain kedua.', $secondTeam->fresh()->verification_note);
+
+        $secondMember = $secondTeam->members->first();
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [[
+            'id' => $secondTeam->id,
+            'members' => [[...$this->member('Tim Dua Diperbaiki', '3173000000000102'), 'id' => $secondMember->id]],
+        ]]])->assertSessionHasNoErrors();
+
+        $this->assertSame('Tim Satu', $firstTeam->members()->firstOrFail()->name);
+        $this->assertSame('Tim Dua Diperbaiki', $secondMember->fresh()->name);
+        $this->assertNull($secondTeam->fresh()->verification_status_override);
+        $this->assertSame('pending', $secondMember->fresh()->verification_status);
+        $this->assertDatabaseHas('entry_registration_audits', ['event_entry_id' => $entry->id, 'action' => 'team_resubmitted']);
+        $this->assertDatabaseHas('entry_team_audits', ['entry_team_id' => $secondTeam->id, 'action' => 'resubmitted', 'reason' => 'Perbaikan tim dikirim ulang oleh PD.']);
+
+        $this->actingAs($admin)->post(route('admin.entry-teams.override', $secondTeam), ['status' => 'verified', 'reason' => 'Setujui tim.'])->assertRedirect()->assertSessionHas('error');
+        $this->actingAs($admin)->post(route('admin.entry-members.verify', $secondMember))->assertRedirect();
+        $this->actingAs($admin)->post(route('admin.entry-teams.override', $secondTeam), ['status' => 'verified', 'reason' => 'Dokumen lengkap.'])->assertRedirect();
+        $this->actingAs($admin)->delete(route('admin.entry-teams.override.reset', $secondTeam), ['reason' => 'Kembali mengikuti status pendaftaran.'])->assertRedirect();
+        $this->assertNull($secondTeam->fresh()->verification_status_override);
+        $this->assertDatabaseHas('entry_team_audits', ['entry_team_id' => $secondTeam->id, 'action' => 'override_reset', 'reason' => 'Kembali mengikuti status pendaftaran.']);
+    }
+
     private function member(string $name, string $identityNumber, bool $withDocuments = false): array
     {
         $member = ['name' => $name, 'pdam_id' => Pdam::query()->value('id'), 'identity_type' => 'nik', 'identity_number' => $identityNumber];

@@ -54,7 +54,7 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 36. Verifikasi parent berlaku kepada team tanpa override.
 37. Override satu team tidak mengubah team lain; reset override mengembalikan effective status ke parent.
 38. API/UI menghasilkan parent status, override nullable, dan effective status yang sama.
-39. Team belum efektif verified tidak masuk seed/bracket; bracket lock menolak pending/revision_required.
+39. Team belum efektif verified tidak masuk seed/bracket; bracket lock menolak pending/revision_required dan perbedaan total team terhadap team verified.
 40. Pemain tidak dapat dipindah, ditukar, delete-create, atau disubstitusi antar-team setelah verified.
 41. Koreksi identitas dalam team sama wajib kewenangan, alasan, bukti, dan audit.
 42. `avoid_same_pd_in_round=true` memisahkan team satu PD pada ronde awal bila alternatif valid tersedia.
@@ -74,6 +74,8 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 53. Seeder baseline tidak membuat data pertandingan demo; demo seeder eksplisit dapat dijalankan dan dibersihkan terpisah.
 54. Cleanup demo menghapus score audit, match score, dan match tanpa menghapus master cabor, kategori, regulasi, venue, atau PD.
 55. Status `bracket_locked` ditolak bila kompetisi belum pernah dipublikasikan atau masih memiliki team belum efektif verified.
+56. Bracket lock berhasil setelah seluruh team aktif verified dan mengisi nomor seed pada setiap `EntryTeam`.
+57. Persetujuan parent ditolak bila satu pemain masih pending; aksi verifikasi pemain mengubah status, mencatat audit, dan membuka persetujuan setelah seluruh pemain verified.
 56. Data Lomba draft mengambil format, regulasi aktif, kuota, dan aturan official dari master tanpa override manual.
 57. Perubahan default master tidak mengubah snapshot kompetisi yang sudah dipublikasikan.
 58. Snapshot menyimpan kuota/peran official serta aturan atlet merangkap kategori.
@@ -88,6 +90,18 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 67. Draft mempertahankan dokumen existing saat form diperbarui tanpa upload ulang.
 68. Identitas NIK/KTA yang sama memicu aturan official rangkap walau nama berbeda.
 69. Submit pemain ditolak tanpa asal PDAM valid; official tidak meminta PDAM.
+70. Revisi roster mempertahankan `entry_member_id`; pemain yang telah diperiksa tidak dapat dihapus atau dipindahkan diam-diam.
+71. Dokumen privat dapat dibuka Super Admin dan PD pemilik, ditolak untuk PD lain, dan key dokumen tidak valid menghasilkan 404.
+72. Override perbaikan team membuka hanya team tersebut; resubmit mempertahankan ID/nomor team saudara dan tidak mengubah official.
+73. Persetujuan team ditolak bila satu pemain belum verified; setelah seluruh pemain verified, override diterima.
+74. Reset override membutuhkan alasan, menghapus status/catatan khusus team, dan menyimpan `entry_team_audits`.
+75. Portal PD menampilkan label format manusia, kuota team terpakai/sisa, batas pemain, feedback team, dan tidak menampilkan kode internal.
+76. Perbaikan pemain otomatis membuka team terkait dan menyalin catatan ke feedback team.
+77. Parent rejected tetap terkunci untuk PD sampai Admin membuka kembali sebagai revision required; setelah itu PD dapat mengajukan ulang.
+78. Persetujuan parent ditolak sampai seluruh team aktif disetujui dan seluruh pemain team aktif verified; team cancelled tidak dihitung.
+79. Pemain tidak dapat diverifikasi ketika effective status team revision required, rejected, cancelled, atau verified.
+80. Penolakan parent menghapus override team aktif dengan audit, lalu parent dapat dibuka kembali tanpa deadlock.
+81. Resubmit per-team mencatat audit registrasi dan audit team tanpa mengubah team lain atau official.
 70. Master PDAM mendukung pencarian, filter provinsi, tambah, dan edit tanpa menghapus referensi pemain.
 71. Perubahan Master Cabor, Kategori, atau Regulasi menyinkronkan Data Lomba draft terkait tanpa mengubah snapshot terpublikasi.
 
