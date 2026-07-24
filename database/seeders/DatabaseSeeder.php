@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             RegionalCommitteeSeeder::class,
             SportMasterSeeder::class,
             SportRegulationSeeder::class,
+            TournamentEventSeeder::class,
             VenueSeeder::class,
             EventAgendaSeeder::class,
             PdamSeeder::class,

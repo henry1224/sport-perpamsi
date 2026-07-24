@@ -25,6 +25,14 @@ class PdDashboardController extends Controller
             ->groupBy('tournament_event_id', 'verification_status')
             ->get()
             ->groupBy('tournament_event_id');
+        $playerCounts = EventEntry::query()
+            ->join('entry_members', 'event_entries.id', '=', 'entry_members.event_entry_id')
+            ->where('event_entries.regional_committee_id', $committee->id)
+            ->where('entry_members.member_type', 'player')
+            ->selectRaw('event_entries.tournament_event_id, entry_members.verification_status, count(*) as total')
+            ->groupBy('event_entries.tournament_event_id', 'entry_members.verification_status')
+            ->get()
+            ->groupBy('tournament_event_id');
 
         $events = TournamentEvent::query()
             ->with(['sport:id,code,name', 'category:id,name,competition_type,min_members,max_members'])
@@ -39,8 +47,9 @@ class PdDashboardController extends Controller
             ->orderBy('name')
             ->paginate($perPage, ['id', 'code', 'name', 'sport_id', 'sport_category_id', 'status', 'format', 'registration_rules', 'registration_published_at', 'registration_open_at', 'registration_close_at'])
             ->withQueryString()
-            ->through(function ($event) use ($counts) {
+            ->through(function ($event) use ($counts, $playerCounts) {
                 $eventCounts = collect($counts->get($event->id, []))->pluck('total', 'verification_status');
+                $eventPlayerCounts = collect($playerCounts->get($event->id, []))->pluck('total', 'verification_status');
                 $rules = $event->registration_rules ?? [];
 
                 return [
@@ -49,13 +58,13 @@ class PdDashboardController extends Controller
                     'sport' => $event->sport?->name,
                     'category' => $rules['category_name'] ?? $event->category?->name,
                     'competition_type' => $rules['competition_type'] ?? $event->category?->competition_type,
-                    'member_limit' => ($rules['min_members'] ?? null) === null
+                    'member_limit' => ($rules['min_members_per_team'] ?? $rules['min_members'] ?? null) === null
                         ? null
-                        : (($rules['max_members'] ?? null) === null
-                            ? 'Minimal '.$rules['min_members'].' pemain'
-                            : ($rules['min_members'] === $rules['max_members']
-                                ? $rules['min_members'].' pemain'
-                                : $rules['min_members'].'–'.$rules['max_members'].' pemain')),
+                        : (($rules['max_members_per_team'] ?? $rules['max_members'] ?? null) === null
+                            ? 'Minimal '.($rules['min_members_per_team'] ?? $rules['min_members']).' pemain'
+                            : (($rules['min_members_per_team'] ?? $rules['min_members']) === ($rules['max_members_per_team'] ?? $rules['max_members'])
+                                ? ($rules['min_members_per_team'] ?? $rules['min_members']).' pemain'
+                                : ($rules['min_members_per_team'] ?? $rules['min_members']).'–'.($rules['max_members_per_team'] ?? $rules['max_members']).' pemain')),
                     'format' => $rules['format'] ?? $event->format,
                     'status' => $event->status,
                     'registration_open' => $event->registrationIsOpen(),
@@ -63,6 +72,13 @@ class PdDashboardController extends Controller
                         'verified' => (int) $eventCounts->get('verified', 0),
                         'pending' => (int) $eventCounts->get('pending', 0),
                         'rejected' => (int) $eventCounts->get('rejected', 0),
+                    ],
+                    'players' => [
+                        'total' => (int) $eventPlayerCounts->sum(),
+                        'verified' => (int) $eventPlayerCounts->get('verified', 0),
+                        'pending' => (int) $eventPlayerCounts->get('pending', 0),
+                        'revision_required' => (int) $eventPlayerCounts->get('revision_required', 0),
+                        'rejected' => (int) $eventPlayerCounts->get('rejected', 0),
                     ],
                 ];
             });

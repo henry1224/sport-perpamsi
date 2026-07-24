@@ -85,6 +85,9 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 - Kompetisi draft tanpa entry dapat diubah atau diarsipkan; kompetisi yang sudah memiliki entry tidak dihapus permanen.
 - `sport_category_id` wajib sesuai dengan `sport_id`; `sport_regulation_id` selalu memakai regulasi aktif terbaru cabor saat publish.
 - Generator bracket/seeding hanya dijalankan melalui aksi terpisah setelah seluruh team efektif verified dan Admin mengonfirmasi peserta.
+- Data Lomba menampilkan progres `team terverifikasi / seluruh team aktif`; tombol `Kunci Bracket` hanya aktif ketika nilainya sama dan minimal dua team tersedia.
+- Penguncian bracket memberi nomor seed deterministik, mengisi `bracket_size` serta `seed_locked_at`, lalu mengubah status menjadi `bracket_locked`.
+- Progres verifikasi Data Lomba menampilkan `pemain verified / seluruh pemain` dan `team verified / seluruh team`; kedua hitungan wajib lengkap sebelum bracket dikunci.
 
 ## Alur Pengurus Daerah
 
@@ -92,6 +95,10 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 2. PD memilih paket kompetisi resmi, bukan seluruh master kategori.
 3. Sistem membuat satu parent `EventEntry` per PD/kompetisi.
 4. PD membuat `EntryTeam` sampai batas `max_teams_per_pd` pada snapshot.
+5. Portal PD menampilkan label aturan dalam Bahasa Indonesia, sisa kuota team, jumlah pemain per team, batas official, dan kebijakan official bertanding; kode internal seperti `group_or_knockout` tidak ditampilkan.
+6. Setelah submit, penambahan team baru terkunci. Perbaikan per-team hanya membuka team dengan override `revision_required`; perubahan kuota atau penambahan team membutuhkan revisi parent.
+7. Penolakan tidak otomatis membuka form. Admin membuka kembali parent sebagai `revision_required` atau mereset/mengubah override team, kemudian PD mendapat tombol pengajuan ulang sesuai lingkup perbaikan.
+8. Pendaftaran yang dibatalkan PD dapat diajukan ulang hanya selama periode pendaftaran masih terbuka; setelah ditutup, data tetap terkunci sebagai histori.
 5. Form dan validasi pemain bekerja per team memakai snapshot anggota per team.
 6. Label team dibentuk server; client tidak mengirim nomor atau nama bebas.
 7. PD submit parent; status parent menjadi default seluruh team.

@@ -153,4 +153,51 @@ class TournamentEventPublicationTest extends TestCase
         $this->actingAs($admin)->post(route('admin.events.unpublish', $event))->assertStatus(422);
         $this->assertNotNull($event->fresh()->registration_published_at);
     }
+
+    public function test_bracket_lock_requires_every_active_team_to_be_verified(): void
+    {
+        $this->seed();
+
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereHas('entries.teams')->with('entries.teams')->firstOrFail();
+        $event->update(['status' => 'registration_closed', 'registration_published_at' => now()]);
+        $event->entries()->update(['verification_status' => 'verified']);
+        $event->entries->flatMap->teams->each->update(['verification_status_override' => null, 'cancelled_at' => null, 'seed_no' => null]);
+        $pending = $event->entries->firstOrFail();
+        $pending->update(['verification_status' => 'pending']);
+
+        $this->actingAs($admin)->post(route('admin.events.bracket.lock', $event))->assertStatus(422);
+        $this->assertSame('registration_closed', $event->fresh()->status);
+
+        $pending->update(['verification_status' => 'verified']);
+        $event->entries()->with('members')->get()->flatMap->members->each->update(['verification_status' => 'verified']);
+        $this->actingAs($admin)->post(route('admin.events.bracket.lock', $event))->assertRedirect()->assertSessionHasNoErrors();
+
+        $event->refresh();
+        $this->assertSame('bracket_locked', $event->status);
+        $this->assertNotNull($event->seed_locked_at);
+        $this->assertSame($event->entries()->withCount('teams')->get()->sum('teams_count'), $event->entries()->with('teams')->get()->flatMap->teams->whereNotNull('seed_no')->count());
+    }
+
+    public function test_parent_entry_waits_until_every_player_is_verified(): void
+    {
+        $this->seed();
+
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $entry = TournamentEvent::query()->whereHas('entries.members')->firstOrFail()->entries()->with(['members', 'teams'])->firstOrFail();
+        $entry->update(['verification_status' => 'pending']);
+        $entry->teams->each->update(['verification_status_override' => null, 'cancelled_at' => null]);
+        $entry->members->each->update(['verification_status' => 'verified']);
+        $pendingPlayer = $entry->members->where('member_type', 'player')->firstOrFail();
+        $pendingPlayer->update(['verification_status' => 'pending']);
+
+        $this->actingAs($admin)->post(route('admin.entries.verify', $entry))->assertStatus(422);
+        $this->actingAs($admin)->post(route('admin.entry-members.verify', $pendingPlayer))->assertRedirect()->assertSessionHasNoErrors();
+        foreach ($entry->teams as $team) $this->actingAs($admin)->post(route('admin.entry-teams.override', $team), ['status' => 'verified', 'reason' => 'Seluruh pemain lengkap.'])->assertRedirect()->assertSessionHasNoErrors();
+        $this->actingAs($admin)->post(route('admin.entries.verify', $entry))->assertRedirect()->assertSessionHasNoErrors();
+
+        $this->assertSame('verified', $entry->fresh()->verification_status);
+        $this->assertSame('verified', $pendingPlayer->fresh()->verification_status);
+        $this->assertDatabaseHas('entry_member_audits', ['entry_member_id' => $pendingPlayer->id, 'action' => 'verified']);
+    }
 }

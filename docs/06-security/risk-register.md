@@ -30,6 +30,7 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 |---|---|---|---|
 | Pemain ganda pada cabor/kategori sama | Tinggi | Identitas pemain ternormalisasi dan unique sesuai aturan event | Feature test duplikasi |
 | Official bertanding melanggar regulasi | Tinggi | Backend membandingkan identitas official dan pemain lintas cabor berdasarkan snapshot `official_can_compete` | Feature test official rangkap |
+| Dokumen peserta privat diakses PD lain atau lewat manipulasi path | Kritis | Route dokumen mengambil path dari JSON server dan mengizinkan hanya Super Admin atau PD pemilik entry | Feature test owner/admin/PD lain dan key tidak valid |
 | Satu PD mendaftarkan cabor sama berulang | Tinggi | `registration_key` unik dan validasi registrasi aktif per PD/event | Feature test registrasi ulang |
 | PD mengubah roster saat pending/verified | Kritis | Backend hanya menerima perubahan draft, revisi, ditolak, atau dibatalkan | Feature test transisi status |
 | PD mengubah atau membatalkan roster daerah lain | Kritis | Scope `regional_committee_id` dari session diperiksa backend | Feature test horizontal access |
@@ -50,6 +51,11 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Client memalsukan nomor atau label team | Tinggi | Nomor dan `PD PERPAMSI {provinsi} #{team_no}` dibentuk server | Payload tampering test |
 | Pemain dipindah/substitusi antar-team setelah verified | Kritis | `entry_team_id` immutable setelah verified; koreksi bukan substitusi dan wajib audit | Feature test transfer/swap/delete-create |
 | Override verifikasi satu team memengaruhi team lain | Kritis | Effective-status resolver tunggal; override nullable terisolasi dan reset eksplisit | Feature test isolasi/reset override |
+| Revisi satu team membuka perubahan roster team lain | Kritis | Payload wajib membawa `entry_team_id`; backend hanya menerima team ber-override `revision_required`, official dan team saudara tidak diproses | Feature test scoped team revision |
+| Team disetujui saat pemain belum verified | Kritis | Backend menghitung seluruh pemain team sebelum menerima override `verified` | Feature test approval gate |
+| Feedback perbaikan team tidak terlihat PD | Tinggi | Kirim `verification_note` dan audit team ke portal PD, sorot team bermasalah, dan buka form team terkait | Inertia payload test dan UAT Admin–PD |
+| Pemain diminta perbaikan tetapi team tetap terkunci | Tinggi | Aksi revisi pemain otomatis menetapkan override team `revision_required` dengan alasan sama dan audit | Feature test member revision opens team |
+| Entry ditolak dapat diedit tanpa keputusan Admin | Kritis | PD tetap terkunci pada status rejected; hanya Admin dapat membuka kembali menjadi `revision_required` dengan alasan dan audit | Feature test rejected entry reopen |
 | Team belum efektif verified masuk seed/bracket | Kritis | Lock memeriksa setiap effective status team aktif | Feature test bracket lock |
 | Team satu PD bertemu di ronde awal walau alternatif tersedia | Tinggi | Snapshot `avoid_same_pd_in_round=true`; generator affiliation-aware | Pairing test |
 | Constraint seeding mustahil dipenuhi | Tinggi | Relaksasi deterministik minimum dan audit konflik | Determinism/audit test |
@@ -130,6 +136,10 @@ Backup database wajib dibuat sebelum migration penghapusan kategori nonaktif. Re
 | Anggota legacy belum memiliki NIK/KTA | Tinggi | Jangan backfill dari nama; wajibkan identitas dan dokumen saat revisi/submit berikutnya serta tampilkan status kelengkapan ke Admin | Audit jumlah null dan UAT revisi roster legacy |
 | Pemain memilih PDAM tidak valid atau PDAM dihapus saat terpakai | Tinggi | Validasi FK `pdams.id`, pencarian dari master, dan `restrictOnDelete` pada relasi pemain | Feature test registrasi dan delete constraint |
 | Cabor nonaktif masih dipakai pada transaksi baru | Tinggi | Pilihan dan validasi event/agenda hanya menerima cabor aktif; data historis tetap read-only | Feature test status cabor |
+| Parent disetujui saat team masih pending/revision/rejected | Kritis | Persetujuan parent mensyaratkan seluruh team aktif efektif verified dan seluruh pemain team aktif verified | Feature test alur parent-team-player |
+| Verifikasi pemain dilakukan saat team sedang revision/rejected | Tinggi | Perubahan status pemain hanya diterima ketika effective status team pending | Feature test transisi pemain |
+| Penolakan parent menyisakan override team dan membuat perbaikan buntu | Tinggi | Penolakan parent menghapus override team aktif dalam transaksi dan mencatat audit per team | Feature test reject-reopen-resubmit |
+| Team cancelled masih masuk progres atau gate persetujuan | Tinggi | Semua hitungan dan gate verifikasi memakai definisi team aktif `cancelled_at IS NULL` | Feature test team cancelled |
 
 ## Definition of Done Risiko
 

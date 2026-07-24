@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\TournamentEventController;
 use App\Http\Controllers\Admin\VenueAgendaController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\CommitteeRegistrationController;
+use App\Http\Controllers\EntryMemberDocumentController;
 use App\Http\Controllers\Pd\PdDashboardController;
 use App\Http\Controllers\Pd\PdEntryController;
 use App\Http\Controllers\Public\PublicPageController;
@@ -38,6 +39,7 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth')->name('logout');
 Route::get('/registration-status', [CommitteeRegistrationController::class, 'status'])->middleware('auth')->name('registration.status');
 Route::put('/registration-status', [CommitteeRegistrationController::class, 'update'])->middleware('auth')->name('registration.update');
+Route::get('/entry-members/{member}/documents/{document}', EntryMemberDocumentController::class)->middleware('auth')->name('entry-members.documents.show');
 
 Route::middleware(['auth', 'pd.admin'])->prefix('pd')->name('pd.')->group(function () {
     Route::get('/dashboard', [PdDashboardController::class, 'index'])->name('dashboard');
@@ -61,6 +63,9 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/entries/{entry}/revision', [AdminEntryVerificationController::class, 'revision'])->name('entries.revision');
     Route::post('/entry-teams/{team}/override', [AdminEntryVerificationController::class, 'overrideTeam'])->name('entry-teams.override');
     Route::delete('/entry-teams/{team}/override', [AdminEntryVerificationController::class, 'resetTeamOverride'])->name('entry-teams.override.reset');
+    Route::post('/entry-members/{member}/verify', [AdminEntryVerificationController::class, 'verifyMember'])->name('entry-members.verify');
+    Route::post('/entry-members/{member}/revision', [AdminEntryVerificationController::class, 'revisionMember'])->name('entry-members.revision');
+    Route::post('/entry-members/{member}/reject', [AdminEntryVerificationController::class, 'rejectMember'])->name('entry-members.reject');
     Route::get('/committee-applications', [CommitteeApplicationController::class, 'index'])->name('committee-applications.index');
     Route::post('/committee-applications/{application}/verify', [CommitteeApplicationController::class, 'verify'])->name('committee-applications.verify');
     Route::post('/committee-applications/{application}/revision', [CommitteeApplicationController::class, 'revision'])->name('committee-applications.revision');
@@ -74,6 +79,7 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::delete('/events/{event:code}', [TournamentEventController::class, 'destroy'])->name('events.destroy');
     Route::post('/events/{event:code}/publish', [TournamentEventController::class, 'publish'])->name('events.publish');
     Route::post('/events/{event:code}/close', [TournamentEventController::class, 'close'])->name('events.close');
+    Route::post('/events/{event:code}/lock-bracket', [TournamentEventController::class, 'lockBracket'])->name('events.bracket.lock');
     Route::post('/events/{event:code}/unpublish', [TournamentEventController::class, 'unpublish'])->name('events.unpublish');
     Route::get('/assignments', [SportAssignmentController::class, 'index'])->name('assignments.index');
     Route::post('/assignments/users', [SportAssignmentController::class, 'storeUser'])->name('assignments.users.store');

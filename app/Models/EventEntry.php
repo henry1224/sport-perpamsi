@@ -10,6 +10,8 @@ class EventEntry extends Model
 {
     protected $guarded = [];
 
+    protected $casts = ['submitted_at' => 'datetime', 'verified_at' => 'datetime'];
+
     public function tournamentEvent(): BelongsTo
     {
         return $this->belongsTo(TournamentEvent::class);

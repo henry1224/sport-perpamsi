@@ -24,6 +24,17 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] Pemain tidak dapat submit tanpa lima dokumen wajib; official tidak dapat submit tanpa foto dan KTP.
 - [ ] NIK/KTA sama terdeteksi sebagai rangkap walau nama ditulis berbeda.
 - [ ] Roster legacy tanpa NIK/KTA dapat dibuka sebagai draft tetapi tidak dapat diajukan ulang sebelum identitas dan dokumen dilengkapi.
+- [ ] Admin membuka detail pemain, foto, lima dokumen, catatan, dan histori verifikasi tanpa melihat path storage.
+- [ ] PD membuka kembali detail roster serta dokumen miliknya; akun PD lain mendapat 403.
+- [ ] Revisi nama/data mempertahankan ID pemain dan histori; penghapusan pemain yang telah diperiksa ditolak.
+- [ ] Data Lomba membuka Verifikasi Peserta terfilter berdasarkan kategori yang diklik.
+- [ ] Admin meminta perbaikan satu team; portal PD hanya membuka team tersebut dan menampilkan alasan, sementara team lain serta official tetap terkunci.
+- [ ] PD mengirim ulang perbaikan team; status pemain team kembali menunggu dan team saudara tidak berubah.
+- [ ] Admin tidak dapat menyetujui team sebelum seluruh pemain verified.
+- [ ] Reset override memakai modal, alasan wajib, dan status team kembali mengikuti parent.
+- [ ] Portal PD menampilkan `Fase Grup atau Sistem Gugur`, bukan `group_or_knockout`, serta menjelaskan sisa kuota dan batas pemain per team.
+- [ ] Admin meminta perbaikan pemain satu kali; team terkait otomatis terbuka pada portal PD tanpa aksi tambahan.
+- [ ] Entry ditolak menampilkan alasan dan tidak dapat diedit PD; Admin memilih Buka untuk Perbaikan lalu form serta tombol pengajuan ulang tersedia.
 - [ ] Pengguna dapat mencari seluruh Master PDAM berdasarkan nama, kota, atau provinsi dan memilih asal untuk setiap pemain.
 - [ ] Asal PDAM tampil pada riwayat registrasi dan verifikasi Admin tanpa mengganti nama kontingen PD PERPAMSI.
 - [x] Status registrasi dan event pada portal PD tampil dalam Bahasa Indonesia.
@@ -105,3 +116,18 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] Tidak ada match operasional tanpa agenda, venue, atau jadwal.
 - [ ] Tidak ada kompetisi operasional tanpa kategori dan versi regulasi.
 - [ ] Status `bracket_locked` hanya dipakai setelah publikasi dan verifikasi peserta selesai.
+- [ ] Data Lomba menampilkan perbandingan team terverifikasi terhadap total team; selisih sekecil apa pun menonaktifkan `Kunci Bracket`.
+- [ ] Setelah seluruh team terverifikasi, Admin dapat mengunci bracket dan seluruh team memperoleh nomor seed.
+- [ ] Admin melihat hitungan pemain verified terhadap total pemain pada antrian dan Data Lomba.
+- [ ] Tombol persetujuan parent nonaktif selama masih ada pemain belum verified atau team aktif belum disetujui.
+- [ ] Aksi verifikasi, perbaikan, dan penolakan tersedia pada setiap pemain dan tercatat dalam audit.
+- [ ] Aksi pemain tidak tersedia ketika team sedang perbaikan, ditolak, dibatalkan, atau sudah disetujui.
+- [ ] Penolakan parent menghapus override team aktif, mencatat audit, dan dapat dibuka kembali tanpa status buntu.
+- [ ] Team cancelled beserta pemainnya tidak masuk hitungan progres dan gate persetujuan parent.
+- [ ] Pendaftaran cancelled dapat diajukan ulang saat periode masih buka dan terkunci setelah periode tutup.
+
+### Data Demo Verifikasi Pemain
+
+- `aceh@gmail.com`: satu team Ganda Campuran, dua pemain, satu verified dan satu pending.
+- `pd-kalimantan-timur@perpamsi.local`: satu team Ganda Campuran, dua pemain pending.
+- Seeder eksplisit: `php artisan db:seed --class=PdVerificationDemoSeeder`.

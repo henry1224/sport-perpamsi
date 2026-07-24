@@ -85,6 +85,7 @@ Aturan:
 - Setiap pemain wajib memilih asal PDAM dari master nasional. PDAM tidak mengubah nama kontingen PD PERPAMSI dan tidak berlaku untuk official.
 - Dokumen pemain wajib: foto 3×4, form pendaftaran, KTP, kartu DAPENMA/dana pensiun lain, dan SK karyawan tetap.
 - Dokumen official wajib: foto 3×4 dan KTP. File disimpan privat; UI hanya menerima status kelengkapan.
+- Dokumen privat hanya dibuka melalui route terautentikasi berdasarkan `entry_member_id` dan key dokumen; path storage tidak pernah diterima dari client.
 - Jika `official_can_compete = false`, identitas official tidak boleh muncul sebagai pemain pada registrasi aktif PD yang sama.
 - Jika `official_can_compete = true`, rangkap tetap dicatat dan daftar cabor pemain ditampilkan kepada pendaftar serta Admin.
 - Team aktif dihitung terhadap `max_teams_per_pd`; team cancelled tidak memakai kuota, tetapi nomornya tidak digunakan ulang.
@@ -114,11 +115,25 @@ effective_team_status =
 - Submit parent mengubah status default menjadi `pending`.
 - Verifikasi parent menjadi keputusan default seluruh team tanpa override.
 - Admin dapat memberi override `revision_required`, `verified`, `rejected`, atau `cancelled` pada team tertentu.
-- Override tidak mengubah team lain dan tidak terhapus ketika status parent berubah.
+- Override tidak mengubah team lain. Penolakan parent menghapus override team aktif dengan audit `parent_rejected` agar alur perbaikan penuh tidak buntu.
 - Reset override adalah action eksplisit, berizin, dan diaudit.
+- Override `revision_required` membuka revisi hanya untuk team tersebut; parent tetap `pending`, team saudara tetap terkunci, dan PD wajib mengirim `entry_team_id` existing.
+- Resubmit per-team mengembalikan override team ke parent default, mereset status pemain team tersebut ke `pending`, dan mencatat audit registrasi `team_resubmitted` serta audit team `resubmitted` tanpa mengubah team lain atau official.
+- Override `verified` ditolak sampai seluruh pemain team berstatus `verified`.
+- Override `rejected` bersifat final sampai Admin menjalankan reset override dengan alasan wajib.
+- `verification_note` dan histori override team wajib tampil pada portal PD sebagai feedback operasional.
+- Aksi `revision_required` pada pemain otomatis membuka team pemain tersebut dengan override dan catatan yang sama; Admin tidak perlu menjalankan dua aksi terpisah.
+- Pemain hanya dapat diperiksa ketika parent dan effective status team sama-sama `pending`.
+- Override `verified`, `rejected`, atau `cancelled` hanya dapat diberikan dari effective status `pending`; team rejected hanya dapat dibuka kembali menjadi `revision_required` atau direset.
+- Parent atau team berstatus `rejected` tidak dapat diedit PD. Admin harus mengubah keputusan menjadi `revision_required` atau reset override sebelum pengajuan ulang tersedia.
 - API/UI selalu menampilkan parent status, nullable override, dan effective status.
 - Seed/bracket hanya menerima team dengan effective status `verified`.
 - Bracket lock ditolak bila team aktif masih efektif `pending` atau `revision_required`.
+- Bracket lock juga ditolak ketika jumlah seluruh team aktif tidak sama dengan jumlah team efektif `verified`; UI wajib menampilkan selisih agar tidak ada pengajuan terlewat.
+- Penguncian minimum membutuhkan dua team, menyimpan `entry_teams.seed_no`, `tournament_events.bracket_size`, dan `seed_locked_at` dalam satu transaksi.
+- Setiap pemain memiliki status verifikasi sendiri: `pending`, `revision_required`, `verified`, atau `rejected`; perubahan status dicatat pada `entry_member_audits`.
+- Parent `EventEntry` tidak dapat disetujui sebelum seluruh team aktif efektif `verified` dan seluruh pemain pada team aktif berstatus `verified`; team cancelled dan pemainnya tidak dihitung.
+- Bracket lock mensyaratkan jumlah pemain aktif sama dengan jumlah pemain verified selain gate verifikasi team.
 - Audit mencatat before/after, aktor, alasan, waktu, dan sumber keputusan (`parent_default` atau `team_override`).
 
 ## Penguncian Roster
@@ -127,6 +142,7 @@ effective_team_status =
 - Perpindahan atau substitusi pemain antar-team setelah verified dilarang total.
 - Larangan mencakup update FK, swap, delete lalu create, dan perubahan identitas untuk menyamarkan pemain yang sama.
 - Koreksi typo yang tidak mengganti orang wajib action koreksi berizin, alasan, bukti, dan audit; kepemilikan team tidak berubah.
+- Revisi roster memperbarui `EntryMember` existing dan mempertahankan ID, dokumen, status, serta audit; penggantian orang memakai alur substitusi terpisah.
 - Pembukaan revisi satu team tidak membuka team saudara.
 - Team yang sudah direferensikan seed, match, result, standing, atau medal tidak boleh dihapus; gunakan status dan audit.
 - Roster snapshot saat bracket lock/match menjaga histori walau data administratif kemudian dikoreksi.
