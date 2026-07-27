@@ -26,6 +26,50 @@ class EntryRosterWorkflowTest extends TestCase
         $this->assertDatabaseMissing('event_entries', ['regional_committee_id' => $pd->regional_committee_id]);
     }
 
+    public function test_nik_and_kta_formats_are_validated(): void
+    {
+        $this->seed();
+        $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
+        $this->openForRegistration($event);
+        $event->entries()->where('regional_committee_id', $pd->regional_committee_id)->delete();
+        $members = $this->members($event, 'Pemain');
+
+        $members[0]['identity_number'] = '3173ABC000000001';
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'draft', 'teams' => [['members' => $members]]])->assertSessionHasErrors('teams.0.members.0.identity_number');
+
+        $members[0]['identity_number'] = '123456789012345';
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'draft', 'teams' => [['members' => $members]]])->assertSessionHasErrors('teams.0.members.0.identity_number');
+
+        $members[0]['identity_number'] = '31730101019000010';
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'draft', 'teams' => [['members' => $members]]])->assertSessionHasNoErrors();
+
+        $members[0]['identity_type'] = 'kta';
+        $members[0]['identity_number'] = 'A1';
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'draft', 'teams' => [['members' => $members]]])->assertSessionHasErrors('teams.0.members.0.identity_number');
+
+        $members[0]['identity_number'] = 'A-1';
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'draft', 'teams' => [['members' => $members]]])->assertSessionHasNoErrors();
+    }
+
+    public function test_same_name_is_allowed_but_same_identity_is_rejected(): void
+    {
+        $this->seed();
+        $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
+        $this->openForRegistration($event, ['min_members_per_team' => 2, 'max_members_per_team' => 2]);
+        $event->entries()->where('regional_committee_id', $pd->regional_committee_id)->delete();
+        $members = [
+            ['name' => 'Muhammad Rehan', 'pdam_id' => Pdam::query()->value('id'), 'identity_type' => 'nik', 'identity_number' => '3173010101900001'],
+            ['name' => 'Muhammad Rehan', 'pdam_id' => Pdam::query()->value('id'), 'identity_type' => 'nik', 'identity_number' => '3173010101900002'],
+        ];
+
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'draft', 'teams' => [['members' => $members]]])->assertSessionHasNoErrors();
+
+        $members[1]['identity_number'] = $members[0]['identity_number'];
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'draft', 'teams' => [['members' => $members]]])->assertSessionHasErrors('teams');
+    }
+
     public function test_pd_can_save_draft_submit_and_resubmit_revision(): void
     {
         Storage::fake('local');
@@ -43,17 +87,19 @@ class EntryRosterWorkflowTest extends TestCase
         $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => $this->withDocuments($members)] ]])->assertSessionHasNoErrors();
         $this->assertSame('pending', $entry->fresh()->verification_status);
 
-        $this->actingAs($admin)->post(route('admin.entries.revision', $entry), ['note' => 'Perbaiki nama pemain.'])->assertSessionHasNoErrors();
-        $this->assertSame('revision_required', $entry->fresh()->verification_status);
-
         $savedMembers = $entry->members()->where('member_type', 'player')->orderBy('id')->get();
+        $team = $entry->teams()->firstOrFail();
+        $this->actingAs($admin)->post(route('admin.entry-members.revision', $savedMembers->first()), ['note' => 'Perbaiki nama pemain.'])->assertSessionHasNoErrors();
+        $this->assertSame('revision_required', $team->fresh()->verification_status_override);
+
         foreach ($members as $index => &$member) $member['id'] = $savedMembers[$index]->id;
         $members[0]['name'] = 'Pemain Diperbaiki';
-        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => $this->withDocuments($members)] ]])->assertSessionHasNoErrors();
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['id' => $team->id, 'members' => $this->withDocuments($members)] ]])->assertSessionHasNoErrors();
         $this->assertSame('pending', $entry->fresh()->verification_status);
+        $this->assertNull($team->fresh()->verification_status_override);
         $this->assertSame($savedMembers[0]->id, $entry->members()->where('name', 'Pemain Diperbaiki')->value('id'));
         $this->assertDatabaseHas('entry_members', ['event_entry_id' => $entry->id, 'name' => 'Pemain Diperbaiki']);
-        $this->assertDatabaseHas('entry_registration_audits', ['event_entry_id' => $entry->id, 'action' => 'resubmitted']);
+        $this->assertDatabaseHas('entry_registration_audits', ['event_entry_id' => $entry->id, 'action' => 'team_resubmitted']);
     }
 
     public function test_private_member_document_is_visible_only_to_admin_and_owner_pd(): void
@@ -96,25 +142,24 @@ class EntryRosterWorkflowTest extends TestCase
         $this->assertDatabaseHas('entry_team_audits', ['entry_team_id' => $team->id, 'action' => 'member_revision_opened', 'reason' => 'Perbaiki foto pemain.']);
     }
 
-    public function test_rejected_entry_can_be_reopened_for_revision(): void
+    public function test_rejected_player_automatically_opens_its_team_for_correction(): void
     {
         $this->seed();
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
-        $entry = EventEntry::query()->with('teams')->firstOrFail();
+        $entry = EventEntry::query()->whereHas('teams.members')->with('teams.members')->firstOrFail();
         $entry->update(['verification_status' => 'pending']);
         $team = $entry->teams->first();
-        $team?->update(['verification_status_override' => 'verified']);
+        $team->update(['verification_status_override' => null, 'verification_note' => null]);
+        $member = $team->members->first();
+        $member->update(['verification_status' => 'pending']);
 
-        $this->actingAs($admin)->post(route('admin.entries.reject', $entry), ['note' => 'Dokumen tidak sah.'])->assertRedirect();
-        $this->assertSame('rejected', $entry->fresh()->verification_status);
-        if ($team) {
-            $this->assertNull($team->fresh()->verification_status_override);
-            $this->assertDatabaseHas('entry_team_audits', ['entry_team_id' => $team->id, 'action' => 'parent_rejected', 'reason' => 'Dokumen tidak sah.']);
-        }
-        $this->actingAs($admin)->post(route('admin.entries.revision', $entry), ['note' => 'Silakan unggah dokumen pengganti.'])->assertRedirect();
+        $this->actingAs($admin)->post(route('admin.entry-members.reject', $member), ['note' => 'Identitas pemain tidak memenuhi syarat.'])->assertRedirect();
 
-        $this->assertSame('revision_required', $entry->fresh()->verification_status);
-        $this->assertSame('Silakan unggah dokumen pengganti.', $entry->fresh()->verification_note);
+        $this->assertSame('rejected', $member->fresh()->verification_status);
+        $this->assertSame('revision_required', $team->fresh()->verification_status_override);
+        $this->assertSame('Identitas pemain tidak memenuhi syarat.', $team->fresh()->verification_note);
+        $this->assertDatabaseHas('entry_member_audits', ['entry_member_id' => $member->id, 'action' => 'rejected', 'reason' => 'Identitas pemain tidak memenuhi syarat.']);
+        $this->assertDatabaseHas('entry_team_audits', ['entry_team_id' => $team->id, 'action' => 'member_rejection_opened', 'reason' => 'Identitas pemain tidak memenuhi syarat.']);
     }
 
     public function test_pd_can_cancel_own_pending_entry_without_deleting_history(): void
@@ -179,19 +224,6 @@ class EntryRosterWorkflowTest extends TestCase
         $this->assertSame('pending', $member->fresh()->verification_status);
     }
 
-    public function test_full_revision_cannot_open_when_team_is_already_verified(): void
-    {
-        $this->seed();
-        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
-        $entry = EventEntry::query()->whereHas('teams')->with('teams')->firstOrFail();
-        $entry->update(['verification_status' => 'pending']);
-        $entry->teams->first()->update(['verification_status_override' => 'verified']);
-
-        $this->actingAs($admin)->post(route('admin.entries.revision', $entry), ['note' => 'Perbaiki roster.'])->assertUnprocessable();
-
-        $this->assertSame('pending', $entry->fresh()->verification_status);
-    }
-
     public function test_pd_cannot_cancel_another_committee_entry(): void
     {
         $this->seed();
@@ -213,7 +245,7 @@ class EntryRosterWorkflowTest extends TestCase
         EventEntry::query()->where('regional_committee_id', $pd->regional_committee_id)->whereIn('tournament_event_id', [$playerEvent->id, $officialEvent->id])->delete();
 
         $this->actingAs($pd)->post(route('pd.events.entries.store', $playerEvent), ['intent' => 'draft', 'teams' => [['members' => $this->members($playerEvent, 'Pemain', 'Budi Rangkap')]]])->assertSessionHasNoErrors();
-        $this->actingAs($pd)->post(route('pd.events.entries.store', $officialEvent), ['intent' => 'draft', 'teams' => [['members' => $this->members($officialEvent, 'Atlet')]], 'officials' => [['name' => 'Nama Berbeda', 'identity_type' => 'nik', 'identity_number' => '3173000000000001', 'role' => 'coach']]])->assertSessionHasErrors('officials');
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $officialEvent), ['intent' => 'draft', 'teams' => [['members' => $this->members($officialEvent, 'Atlet')]], 'officials' => [['name' => 'Nama Berbeda', 'identity_type' => 'nik', 'identity_number' => '3173010101900001', 'role' => 'coach']]])->assertSessionHasErrors('officials');
         $this->assertDatabaseMissing('entry_members', ['event_entry_id' => EventEntry::query()->where('tournament_event_id', $officialEvent->id)->value('id'), 'name' => 'Budi Rangkap', 'member_type' => 'official']);
     }
 
@@ -227,13 +259,13 @@ class EntryRosterWorkflowTest extends TestCase
         EventEntry::query()->where('regional_committee_id', $pd->regional_committee_id)->whereIn('tournament_event_id', [$playerEvent->id, $officialEvent->id])->delete();
 
         $this->actingAs($pd)->post(route('pd.events.entries.store', $playerEvent), ['intent' => 'draft', 'teams' => [['members' => $this->members($playerEvent, 'Pemain', 'Sari Rangkap')]]])->assertSessionHasNoErrors();
-        $this->actingAs($pd)->post(route('pd.events.entries.store', $officialEvent), ['intent' => 'draft', 'teams' => [['members' => $this->members($officialEvent, 'Atlet')]], 'officials' => [['name' => 'Nama Official', 'identity_type' => 'nik', 'identity_number' => '3173000000000001', 'role' => 'coach']]])->assertRedirect()->assertSessionHasNoErrors()->assertSessionMissing('error');
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $officialEvent), ['intent' => 'draft', 'teams' => [['members' => $this->members($officialEvent, 'Atlet')]], 'officials' => [['name' => 'Nama Official', 'identity_type' => 'nik', 'identity_number' => '3173010101900001', 'role' => 'coach']]])->assertRedirect()->assertSessionHasNoErrors()->assertSessionMissing('error');
 
         $official = DB::table('entry_members')->where('name', 'Nama Official')->first();
         $this->assertNotNull($official);
         $this->assertSame('official', $official->member_type);
         $this->assertSame('coach', $official->position);
-        $this->assertSame('3173000000000001', $official->identity_number);
+        $this->assertSame('3173010101900001', $official->identity_number);
         $this->actingAs($pd)->get(route('pd.events.show', $officialEvent))->assertInertia(fn ($page) => $page
             ->where('category.official_can_compete', true)
             ->where('entries', fn ($entries) => collect($entries)->flatMap(fn ($entry) => $entry['officials'])->contains(fn ($official) => $official['name'] === 'Nama Official' && in_array($playerEvent->sport->name, $official['playing_sports'], true))));
@@ -264,6 +296,8 @@ class EntryRosterWorkflowTest extends TestCase
             $this->assertStringContainsString("/{$key}-", $path);
             Storage::disk('local')->assertExists($path);
         }
+        $this->actingAs($pd)->get(route('pd.events.show', $event))->assertInertia(fn ($page) => $page
+            ->where('entries', fn ($entries) => collect($entries)->flatMap(fn ($entry) => $entry['teams'])->flatMap(fn ($team) => $team['members'])->contains(fn ($member) => count($member['document_links']) === 5 && collect($member['document_links'])->every(fn ($document) => $document['is_image'] === false))));
     }
 
     public function test_registration_document_larger_than_one_megabyte_is_rejected(): void
@@ -299,15 +333,17 @@ class EntryRosterWorkflowTest extends TestCase
             'submitted_at' => now(),
         ]);
         $team = $entry->teams()->create(['public_id' => (string) Str::uuid(), 'team_no' => 1, 'label' => 'Tim 1']);
-        foreach (['Andre', 'Arhan'] as $name) {
-            $team->members()->create(['event_entry_id' => $entry->id, 'pdam_id' => $pdamId, 'name' => $name, 'normalized_name' => mb_strtolower($name), 'member_type' => 'player', 'verification_status' => 'pending']);
+        foreach (['Andre', 'Arhan'] as $index => $name) {
+            $team->members()->create(['event_entry_id' => $entry->id, 'pdam_id' => $pdamId, 'name' => $name, 'normalized_name' => mb_strtolower($name), 'member_type' => 'player', 'verification_status' => 'pending', 'documents' => ['photo' => $index ? 'registrations/test/photo.jpg' : 'registrations/test/photo.pdf']]);
         }
 
         $this->actingAs($admin)->get(route('admin.entries.index', ['event' => 'badminton-mixed-double']))->assertInertia(fn ($page) => $page
             ->where('filters.event', 'badminton-mixed-double')
             ->where('entries.data', fn ($entries) => collect($entries)->contains(fn ($item) => $item['committee'] === 'PD PERPAMSI Aceh'
                 && $item['players_count'] === 2
-                && collect($item['teams'][0]['members'])->pluck('name')->all() === ['Andre', 'Arhan'])));
+                && collect($item['teams'][0]['members'])->pluck('name')->all() === ['Andre', 'Arhan']
+                && $item['teams'][0]['members'][0]['documents'][0]['is_image'] === false
+                && $item['teams'][0]['members'][1]['documents'][0]['is_image'] === true)));
     }
 
     private function openForRegistration(TournamentEvent $event, array $rules = []): void
@@ -318,7 +354,7 @@ class EntryRosterWorkflowTest extends TestCase
     private function members(TournamentEvent $event, string $prefix, ?string $firstName = null): array
     {
         return collect(range(1, $event->registration_rules['min_members_per_team'] ?? $event->registration_rules['min_members'] ?? 1))
-            ->map(fn ($number) => ['name' => $number === 1 && $firstName ? $firstName : $prefix.' '.$number, 'pdam_id' => Pdam::query()->value('id'), 'identity_type' => 'nik', 'identity_number' => '3173'.str_pad((string) $number, 12, '0', STR_PAD_LEFT)])->all();
+            ->map(fn ($number) => ['name' => $number === 1 && $firstName ? $firstName : $prefix.' '.$number, 'pdam_id' => Pdam::query()->value('id'), 'identity_type' => 'nik', 'identity_number' => '317301010190'.str_pad((string) $number, 4, '0', STR_PAD_LEFT)])->all();
     }
 
     private function withDocuments(array $members): array

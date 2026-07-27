@@ -33,20 +33,4 @@
 
 ## Status Tampilan Indonesia
 
-Kode internal tetap stabil dalam database, tetapi UI dan export wajib memakai label Indonesia.
-
-| Kode | Label |
-|---|---|
-| `draft` | Draft |
-| `pending` | Menunggu Verifikasi |
-| `verified` | Terverifikasi |
-| `rejected` | Ditolak |
-| `revision_required` | Perlu Perbaikan |
-| `cancelled` | Dibatalkan |
-| `registration_open` | Pendaftaran Dibuka |
-| `registration_closed` | Pendaftaran Ditutup |
-| `bracket_locked` | Bracket Dikunci |
-| `scheduled` | Terjadwal |
-| `live` | Sedang Berlangsung |
-| `final` | Selesai |
-| `disputed` | Dalam Sengketa |
+Kode status, label Indonesia, tone badge, kondisi nyata/target, dan hubungan status lintas alur hanya mengikuti [`docs/02-data/STATUS-VOCABULARY.md`](../02-data/STATUS-VOCABULARY.md). Glossary tidak mendefinisikan ulang vocabulary agar label satu kode tidak berubah antar-menu.

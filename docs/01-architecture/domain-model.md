@@ -1,32 +1,46 @@
-# Domain Model Sport PERPAMSI
+# Domain Model Sport PERPAMSI — Nyata dan Target
+
+- **NYATA**: entity memiliki tabel/model atau struktur aktif pada migration saat ini.
+- **TARGET**: konsep roadmap yang belum memiliki tabel/schema aktif; tidak boleh dipakai seolah tersedia.
+- Detail field nyata mengikuti `docs/02-data/data-dictionary.md` dan migration.
 
 ## Identity and Access
 
-Entities: User, CommitteeApplication, Role, Permission, SportAssignment.
+**NYATA:** User, CommitteeApplication, SportAssignment.
+
+**TARGET:** Role dan Permission sebagai entity terpisah. Saat ini role hanya string pada `users.role`.
 
 Aturan: status akun dan scope PD/cabor/match diperiksa pada setiap write.
 
 ## Regional Delegation
 
-Entities: Province, RegionalCommittee, EventEntry, EntryTeam, EntryMember, VerificationRecord.
+**NYATA:** Province, RegionalCommittee, EventEntry, EntryTeam, EntryMember, dan tabel audit verifikasi per entity.
+
+**TARGET:** VerificationRecord generik. Saat ini audit nyata tersimpan pada `entry_registration_audits`, `entry_team_audits`, dan `entry_member_audits`.
 
 Aturan: satu provinsi satu PD PERPAMSI; satu `EventEntry` menjadi parent registrasi PD/kompetisi; satu atau lebih `EntryTeam` menjadi unit peserta; pemain tidak bergantung pada PDAM dan dimiliki tepat satu team. Status efektif team mengikuti override team atau status default parent sesuai [standar multi-team](../02-data/team-entry-standard.md).
 
 ## Competition Master
 
-Entities: Sport, SportCategory, SportRule, TournamentEvent, Venue, EventAgenda.
+**NYATA:** Sport, SportCategory, SportRegulation, TournamentEvent, Venue, EventAgenda.
+
+`SportRule` bukan entity nyata; nama kanonik saat ini `SportRegulation` / `sport_regulations`.
 
 Aturan: peraturan berversi, `max_members` dapat null, publikasi membuat snapshot aturan, venue tidak bentrok, master terpakai tidak dihapus.
 
 ## Tournament Operations
 
-Entities: EntryTeam, SeedingSnapshot, Match, MatchScore, ScoreAudit, Bracket, Standing, MedalRanking.
+**NYATA:** EntryTeam, TournamentMatch (`matches`), MatchScore, ScoreAudit. Seed dasar tersimpan pada `entry_teams.seed_no` dan bracket lewat relasi match.
 
-Aturan: seed, bracket, match, hasil, standing, dan medali menunjuk `EntryTeam`; bracket lock memiliki precondition effective status verified dan menyimpan participant/roster snapshot; skor final direvisi melalui workflow audit.
+**TARGET:** SeedingSnapshot, Bracket, Standing, MedalRanking sebagai entity terpisah. Target belum memiliki tabel aktif.
+
+Aturan: seed, bracket, match, hasil, standing, dan medali menunjuk `EntryTeam`; bracket lock memiliki precondition effective status verified. Participant/roster snapshot penuh masih target bila belum ada struktur migration.
 
 ## Public and Reporting
 
-Entities: PublishedView, AuditLog, ExportJob, ReportSnapshot.
+**NYATA:** query/projection dari `PublicDataService` dan audit per entity.
+
+**TARGET:** PublishedView, AuditLog generik, ExportJob, ReportSnapshot. Tidak ada tabel generik tersebut saat ini.
 
 Aturan: public hanya membaca data terbit/final dan memakai identitas PD PERPAMSI.
 

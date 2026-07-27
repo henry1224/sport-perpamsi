@@ -44,8 +44,6 @@ Client tidak boleh mengirim `team_no`, label team, PD, status, atau effective st
 | Method | Path | Fungsi |
 |---|---|---|
 | POST | `/admin/entries/{entry}/verify` | Verifikasi default parent |
-| POST | `/admin/entries/{entry}/revision` | Minta revisi default parent dengan alasan |
-| POST | `/admin/entries/{entry}/reject` | Tolak default parent dengan alasan |
 | POST | `/admin/entries/{entry}/teams/{team}/verify` | Override team menjadi verified |
 | POST | `/admin/entries/{entry}/teams/{team}/revision` | Override revisi team dengan alasan |
 | POST | `/admin/entries/{entry}/teams/{team}/reject` | Override penolakan team dengan alasan |

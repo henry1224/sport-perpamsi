@@ -15,6 +15,7 @@ Dokumen detail pendamping: `docs/04-design/public-admin-ui-standard.md`.
 - Admin-first untuk data table, filter, dan aksi cepat.
 - Scorekeeper-first untuk input hasil selesai pertandingan dan minim salah tekan.
 - Status tidak boleh hanya memakai warna; wajib ada teks status.
+- Kode, label, dan tone badge pada Public, Admin, PD, dan Panitia wajib sama sesuai `docs/02-data/STATUS-VOCABULARY.md`; teks progres/alasan ditampilkan terpisah dari badge.
 - Tombol kritis wajib punya konfirmasi.
 
 ## Public Page
@@ -62,7 +63,7 @@ Halaman master, konfigurasi, dan daftar data Admin memakai urutan tetap:
 
 - Layar utama hanya menampilkan match selesai/terjadwal yang ditugaskan.
 - Input skor memakai tombol dan field besar.
-- Status match terlihat jelas: terjadwal, berlangsung, jeda, selesai, final, revisi.
+- Status match terlihat jelas memakai vocabulary nyata dari `docs/02-data/STATUS-VOCABULARY.md`; layar Panitia tidak boleh menampilkan kode mentah.
 - Setelah simpan skor, tampilkan waktu update dan aktor terakhir.
 - Jika koneksi bermasalah, tampilkan instruksi simpan manual.
 

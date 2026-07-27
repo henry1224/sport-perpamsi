@@ -127,6 +127,7 @@ class VenueAgendaController extends Controller
         $data = $request->validate(['event_agenda_id' => ['required', 'exists:event_agendas,id']]);
         $agenda = EventAgenda::query()->findOrFail($data['event_agenda_id']);
         abort_if($agenda->tournament_event_id && $agenda->tournament_event_id !== $match->tournament_event_id, 422, 'Agenda tidak sesuai kompetisi pertandingan.');
+        abort_if($agenda->sport_id && $agenda->sport_id !== $match->tournamentEvent()->value('sport_id'), 422, 'Agenda tidak sesuai cabang olahraga pertandingan.');
         $match->update(['event_agenda_id' => $agenda->id, 'venue_id' => $agenda->venue_id, 'scheduled_at' => $agenda->date->format('Y-m-d').' '.$agenda->start_time]);
 
         return back()->with('success', 'Pertandingan berhasil ditempatkan pada agenda.');

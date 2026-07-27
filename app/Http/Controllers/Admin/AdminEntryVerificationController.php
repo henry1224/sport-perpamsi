@@ -30,7 +30,7 @@ class AdminEntryVerificationController extends Controller
                 'regionalCommittee:id,name',
                 'tournamentEvent:id,code,name,status,registration_rules',
             ])
-            ->whereIn('verification_status', ['pending', 'rejected'])
+            ->where('verification_status', 'pending')
             ->when($event, fn ($query) => $query->whereHas('tournamentEvent', fn ($query) => $query->where('code', $event)))
             ->when($status, fn ($query) => $query->whereHas('tournamentEvent', fn ($query) => $query->where('status', $status)))
             ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
@@ -76,7 +76,7 @@ class AdminEntryVerificationController extends Controller
             'identity_type' => $member->identity_type,
             'identity_number' => $member->identity_number,
             'identity' => $member->identity_number ? strtoupper($member->identity_type).' · '.$member->identity_number : 'Identitas belum diisi',
-            'documents' => collect($member->documents ?? [])->keys()->map(fn ($key) => ['key' => $key, 'url' => route('entry-members.documents.show', [$member, $key])])->values(),
+            'documents' => collect($member->documents ?? [])->map(fn ($path, $key) => ['key' => $key, 'url' => route('entry-members.documents.show', [$member, $key]), 'is_image' => in_array(strtolower(pathinfo($path, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png'], true)])->values(),
             'document_count' => count($member->documents ?? []),
             'verification_status' => $member->verification_status,
             'verification_note' => $member->verification_note,
@@ -115,47 +115,14 @@ class AdminEntryVerificationController extends Controller
             'verified_at' => $status === 'verified' ? now() : null,
         ]);
         DB::table('entry_member_audits')->insert(['entry_member_id' => $member->id, 'action' => $status, 'before_json' => json_encode($before), 'after_json' => json_encode($member->only(['verification_status', 'verification_note', 'verified_by', 'verified_at'])), 'reason' => $member->verification_note, 'user_id' => $request->user()->id, 'created_at' => now(), 'updated_at' => now()]);
-        if ($status === 'revision_required' && $member->team) {
+        if (in_array($status, ['revision_required', 'rejected'], true) && $member->team) {
             $team = $member->team;
             $teamBefore = $team->toArray();
             $team->update(['verification_status_override' => 'revision_required', 'verification_note' => $member->verification_note, 'verified_by' => null, 'verified_at' => null]);
-            $this->auditTeam($team, 'member_revision_opened', $teamBefore, $member->verification_note, $request);
+            $this->auditTeam($team, $status === 'rejected' ? 'member_rejection_opened' : 'member_revision_opened', $teamBefore, $member->verification_note, $request);
         }
 
         return back()->with('success', 'Status pemain diperbarui.');
-    }
-
-    public function reject(Request $request, EventEntry $entry): RedirectResponse
-    {
-        abort_unless($entry->verification_status === 'pending', 422, 'Hanya entry menunggu yang dapat ditolak.');
-        $data = $request->validate([
-            'note' => ['required', 'string', 'max:255'],
-        ]);
-        $before = $this->state($entry);
-
-        DB::transaction(function () use ($entry, $data, $before, $request) {
-            $entry->teams()->whereNull('cancelled_at')->whereNotNull('verification_status_override')->get()->each(function ($team) use ($data, $request) {
-                $teamBefore = $team->toArray();
-                $team->update(['verification_status_override' => null, 'verification_note' => null, 'verified_by' => null, 'verified_at' => null]);
-                $this->auditTeam($team, 'parent_rejected', $teamBefore, $data['note'], $request);
-            });
-            $entry->update(['verification_status' => 'rejected', 'verification_note' => $data['note'], 'verified_by' => null, 'verified_at' => null]);
-            $this->audit($entry, 'rejected', $before, $request);
-        });
-
-        return back()->with('success', 'Entry ditolak.');
-    }
-
-    public function revision(Request $request, EventEntry $entry): RedirectResponse
-    {
-        abort_unless(in_array($entry->verification_status, ['pending', 'rejected'], true), 422, 'Hanya entry menunggu atau ditolak yang dapat dibuka untuk perbaikan.');
-        abort_if($entry->teams()->where('verification_status_override', 'verified')->exists(), 422, 'Perbaikan roster penuh tidak dapat dibuka karena ada tim terverifikasi. Gunakan Perbaikan Tim untuk tim yang bermasalah.');
-        $data = $request->validate(['note' => ['required', 'string', 'max:255']]);
-        $before = $this->state($entry);
-        $entry->update(['verification_status' => 'revision_required', 'verification_note' => $data['note'], 'verified_by' => null, 'verified_at' => null]);
-        $this->audit($entry, 'revision_required', $before, $request);
-
-        return back()->with('success', 'Perbaikan roster diminta.');
     }
 
     public function openTeamAddition(Request $request, EventEntry $entry): RedirectResponse

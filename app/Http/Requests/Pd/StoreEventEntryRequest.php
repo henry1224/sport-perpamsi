@@ -53,9 +53,8 @@ class StoreEventEntryRequest extends FormRequest
         $validator->after(function (Validator $validator) {
             if ($validator->errors()->has('teams.0.members')) $validator->errors()->add('members', 'Daftar pemain wajib diisi sesuai kuota.');
             $players = collect($this->input('teams', []))->flatMap(fn ($team) => $team['members'] ?? []);
-            $names = $players->pluck('name')->map(fn ($name) => mb_strtolower(trim((string) $name)))->filter();
+            foreach ($this->input('teams', []) as $teamIndex => $team) foreach ($team['members'] ?? [] as $index => $member) $this->validateIdentityNumber($validator, "teams.$teamIndex.members.$index.identity_number", $member);
             $playerIdentities = $players->map(fn ($member) => $this->identityHash($member))->filter();
-            if ($names->duplicates()->isNotEmpty()) { $validator->errors()->add('teams', 'Pemain tidak boleh terdaftar pada dua tim dalam kompetisi yang sama.'); $validator->errors()->add('members', 'Nama pemain tidak boleh sama dalam satu pendaftaran.'); }
             if ($playerIdentities->duplicates()->isNotEmpty()) $validator->errors()->add('teams', 'NIK/KTA pemain tidak boleh digunakan lebih dari satu kali.');
             $event = $this->route('event');
             $entry = $event instanceof TournamentEvent ? $event->entries()->where('regional_committee_id', $this->user()->regional_committee_id)->first() : null;
@@ -66,15 +65,12 @@ class StoreEventEntryRequest extends FormRequest
                 if ($entry->teams()->whereNull('cancelled_at')->count() + count($this->input('teams', [])) > $maximum) $validator->errors()->add('teams', 'Jumlah tim melewati kuota pendaftaran.');
                 $existingIdentities = $entry->members()->where('member_type', 'player')->pluck('identity_hash')->filter();
                 if ($existingIdentities->intersect($playerIdentities)->isNotEmpty()) $validator->errors()->add('teams', 'Pemain sudah terdaftar pada tim lain dalam kompetisi ini.');
-                $existingNames = $entry->members()->where('member_type', 'player')->pluck('normalized_name')->filter();
-                if ($existingNames->intersect($names)->isNotEmpty()) $validator->errors()->add('teams', 'Nama pemain sudah terdaftar pada tim lain dalam kompetisi ini.');
             } elseif ($event instanceof TournamentEvent && $event->entries()->where('regional_committee_id', $this->user()->regional_committee_id)->where(fn ($query) => $query->where('verification_status', 'verified')->orWhere(fn ($query) => $query->where('verification_status', 'pending')->whereDoesntHave('teams', fn ($query) => $query->where('verification_status_override', 'revision_required'))))->exists()) { $validator->errors()->add('teams', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); $validator->errors()->add('members', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); }
             if (! $event instanceof TournamentEvent) return;
 
             $officials = collect($this->input('officials', []));
-            $officialNames = $officials->pluck('name')->map(fn ($name) => mb_strtolower(trim((string) $name)))->filter();
+            foreach ($officials as $index => $member) $this->validateIdentityNumber($validator, "officials.$index.identity_number", $member);
             $officialIdentities = $officials->map(fn ($member) => $this->identityHash($member))->filter();
-            if ($officialNames->duplicates()->isNotEmpty()) $validator->errors()->add('officials', 'Nama official tidak boleh didaftarkan lebih dari satu kali.');
             if ($officialIdentities->duplicates()->isNotEmpty()) $validator->errors()->add('officials', 'NIK/KTA official tidak boleh digunakan lebih dari satu kali.');
 
             $sameRoster = $officialIdentities->intersect($playerIdentities)->values();
@@ -112,6 +108,13 @@ class StoreEventEntryRequest extends FormRequest
         $type = $member['identity_type'] ?? null;
         $number = preg_replace('/[^a-zA-Z0-9]/', '', (string) ($member['identity_number'] ?? ''));
         return $type && $number ? hash('sha256', strtolower($type.':'.$number)) : null;
+    }
+
+    private function validateIdentityNumber(Validator $validator, string $field, array $member): void
+    {
+        $number = (string) ($member['identity_number'] ?? '');
+        if (($member['identity_type'] ?? null) === 'nik' && ! preg_match('/^\d{16,}$/', $number)) $validator->errors()->add($field, 'NIK minimal 16 digit dan hanya boleh berisi angka.');
+        if (($member['identity_type'] ?? null) === 'kta' && ! preg_match('/^[A-Za-z0-9.\/-]{3,}$/', $number)) $validator->errors()->add($field, 'KTA minimal 3 karakter dan hanya boleh berisi huruf, angka, titik, garis miring, atau tanda hubung.');
     }
 
     private function documentRules(): array

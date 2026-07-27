@@ -80,7 +80,7 @@ class RegionalCommitteeRegistrationTest extends TestCase
             ->assertSessionHasErrors('members');
     }
 
-    public function test_member_limits_and_duplicate_names_are_validated(): void
+    public function test_member_limits_are_validated_and_duplicate_names_are_allowed(): void
     {
         $this->seed();
 
@@ -101,17 +101,19 @@ class RegionalCommitteeRegistrationTest extends TestCase
         EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $admin->regional_committee_id)->delete();
 
         $this->actingAs($admin)
-            ->post(route('pd.events.entries.store', $event), ['members' => [['name' => 'Pemain Sama'], ['name' => ' pemain sama ']]])
-            ->assertSessionHasErrors('members');
-
-        $this->actingAs($admin)
-            ->post(route('pd.events.entries.store', $event), ['members' => []])
-            ->assertSessionHasErrors('members');
+            ->post(route('pd.events.entries.store', $event), ['intent' => 'draft', 'teams' => [['members' => []]]])
+            ->assertSessionHasErrors('teams.0.members');
 
         $tooMany = collect(range(1, $event->category->max_members + 1))->map(fn ($number) => ['name' => 'Pemain Batas '.$number])->all();
         $this->actingAs($admin)
-            ->post(route('pd.events.entries.store', $event), ['members' => $tooMany])
-            ->assertSessionHasErrors('members');
+            ->post(route('pd.events.entries.store', $event), ['intent' => 'draft', 'teams' => [['members' => $tooMany]]])
+            ->assertSessionHasErrors('teams.0.members');
+
+        $sameNames = $this->submissionMembers($event->category->min_members, 'Pemain Sama');
+        foreach ($sameNames as &$member) $member['name'] = 'Pemain Sama';
+        $this->actingAs($admin)
+            ->post(route('pd.events.entries.store', $event), ['teams' => [['members' => $sameNames]]])
+            ->assertSessionHasNoErrors();
     }
 
     public function test_category_without_maximum_accepts_larger_roster_and_keeps_snapshot(): void

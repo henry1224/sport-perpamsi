@@ -151,7 +151,8 @@ Form tambah/edit wajib memakai modal light dan kelompok field yang jelas. Sectio
 - Server-side pagination.
 - Filter sticky di atas table.
 - Bulk action tidak muncul jika belum ada selection.
-- Status memakai badge konsisten.
+- Status memakai badge konsisten lintas Public, Admin, PD, dan Panitia sesuai `docs/02-data/STATUS-VOCABULARY.md`; satu kode memakai label dan tone sama pada semua layar.
+- Teks progres atau penyebab seperti `Pemain belum lengkap` ditempatkan sebagai metadata terpisah, bukan mengganti label badge.
 - Semua daftar data utama memakai pola visual `AdminDataTable`.
 - Daftar utama PD memakai `AdminDataTable`; tabel detail roster mengikuti token tabel yang sama.
 - Search memakai debounce 300 ms untuk request server.

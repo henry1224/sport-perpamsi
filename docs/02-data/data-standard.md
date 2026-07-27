@@ -1,8 +1,8 @@
 # Data Standard Sport PERPAMSI
 
-> Beberapa entitas utama (`Bracket`, `Standing`, `MedalRanking`, `AuditLog`) belum memiliki tabel; status agenda `draft/published/cancelled` juga belum di-migrate. Drift dan aksi lihat `docs/00-project/audit-2026-07-22.md` (D4, D7).
+> Kondisi schema nyata dan entity target wajib dipisahkan. `Bracket`, `Standing`, `MedalRanking`, dan `AuditLog` generik masih target; status agenda sudah tersedia di migration aktif. Detail mengikuti [data dictionary](./data-dictionary.md).
 
-Sumber kebenaran identitas dan registrasi: [delegation-standard.md](./delegation-standard.md). Kontrol risiko wajib: [risk-register.md](../06-security/risk-register.md).
+Dokumen kanonik per menu: [SOT Registry](../SOT-REGISTRY.md). Sumber kebenaran identitas akun PD: [delegation-standard.md](./delegation-standard.md). Semantik registrasi peserta: [team-entry-standard.md](./team-entry-standard.md). Kontrol risiko: [risk-register.md](../06-security/risk-register.md).
 
 ## Single Source of Truth
 
@@ -13,13 +13,17 @@ Sumber kebenaran identitas dan registrasi: [delegation-standard.md](./delegation
 
 ## Entitas Utama
 
+**NYATA:**
+
 - Province dan RegionalCommittee/PD PERPAMSI.
 - CommitteeApplication dan User.
-- Sport, SportCategory, SportRule, TournamentEvent.
-- EventEntry, EntryTeam, dan EntryMember; target relasinya mengikuti [standar multi-team](./team-entry-standard.md).
+- Sport, SportCategory, SportRegulation, TournamentEvent.
+- EventEntry, EntryTeam, dan EntryMember sesuai [standar multi-team](./team-entry-standard.md).
 - Venue dan EventAgenda.
-- Match, MatchScore, Bracket, Standing, MedalRanking.
-- SportAssignment dan AuditLog.
+- TournamentMatch, MatchScore, ScoreAudit.
+- SportAssignment dan audit per entity.
+
+**TARGET — belum memiliki tabel aktif:** Bracket terpisah, Standing, MedalRanking, dan AuditLog generik.
 
 ## Relasi Inti
 
@@ -37,11 +41,7 @@ Sumber kebenaran identitas dan registrasi: [delegation-standard.md](./delegation
 
 ## Status Data
 
-- Akun/pengajuan: `pending`, `revision_required`, `verified`, `rejected`, `suspended`, `inactive`.
-- Registrasi: `draft`, `pending`, `revision_required`, `verified`, `rejected`, `cancelled`.
-- Kompetisi: `registration_draft`, `registration_open`, `registration_closed`, `bracket_locked`, `ongoing`, `completed`, `archived`.
-- Agenda: `draft`, `published`, `cancelled`.
-- Match: `scheduled`, `live`, `final`, `verified`, `disputed`, `postponed`, `walkover`.
+Seluruh nilai nyata, target, label Indonesia, tone badge, dan hubungan antar-status hanya mengikuti [`STATUS-VOCABULARY.md`](./STATUS-VOCABULARY.md). Dokumen ini tidak mendefinisikan ulang enum.
 
 ## Master Data
 

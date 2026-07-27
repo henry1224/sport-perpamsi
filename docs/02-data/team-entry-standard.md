@@ -122,7 +122,7 @@ effective_team_status =
 - Submit parent mengubah status default menjadi `pending`.
 - Tidak ada aksi persetujuan parent terpisah. Persetujuan team aktif terakhir mengubah parent menjadi `verified` secara otomatis dalam transaksi yang sama.
 - Admin dapat memberi override `revision_required`, `verified`, `rejected`, atau `cancelled` pada team tertentu.
-- Override tidak mengubah team lain. Penolakan parent menghapus override team aktif dengan audit `parent_rejected` agar alur perbaikan penuh tidak buntu.
+- Override tidak mengubah team lain. Masalah individu ditangani melalui penolakan/perbaikan pemain, sedangkan masalah roster ditangani melalui override team `revision_required`.
 - Reset override adalah action eksplisit, berizin, dan diaudit.
 - Override `revision_required` membuka revisi hanya untuk team tersebut; parent tetap `pending`, team saudara tetap terkunci, dan PD wajib mengirim `entry_team_id` existing.
 - Resubmit per-team mengembalikan override team ke parent default, mereset status pemain team tersebut ke `pending`, dan mencatat audit registrasi `team_resubmitted` serta audit team `resubmitted` tanpa mengubah team lain atau official.

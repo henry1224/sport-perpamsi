@@ -1,5 +1,7 @@
 # Peta Aplikasi dan Alur End-to-End
 
+> Peta alur ini menjelaskan dependensi end-to-end. Baris `Status` adalah catatan saat dokumen diperbarui, bukan sumber status phase. Status terkini hanya mengikuti [`development-roadmap.md`](./development-roadmap.md); dokumen kanonik per menu mengikuti [`../SOT-REGISTRY.md`](../SOT-REGISTRY.md).
+
 ## Sumber Kebenaran
 
 - Identitas dan registrasi: [delegation-standard.md](../02-data/delegation-standard.md).
@@ -56,7 +58,7 @@ Status: `Done` — daftar, status pengajuan, verifikasi/perbaikan/penolakan Admi
 7. Hanya team dengan effective status verified masuk seed, grup, bracket, match, dan klasemen.
 8. Perpindahan pemain antar-team setelah verified dilarang total.
 
-Status: `Code Complete, UAT Pending` — parent/team, verifikasi hybrid, kuota snapshot, roster immutable, identitas NIK/KTA, dan dokumen peserta tersedia. Kontrol official/pemain lintas cabor memakai hash NIK/KTA; tabel master `players` tetap menjadi target identitas kanonik lintas event. UAT manual serta review commit masih wajib. Sumber: `docs/02-data/team-entry-standard.md`.
+Status: `Done` — parent/team, verifikasi pemain lalu team dengan finalisasi parent otomatis, kuota snapshot, roster immutable, identitas NIK/KTA, dan dokumen peserta tersedia. UAT manual dan review final lulus pada 27 Juli 2026; 73 test dengan 543 assertion serta build produksi lulus. Sumber: `docs/02-data/team-entry-standard.md`.
 
 ### 4. Penugasan Panitia
 

@@ -30,8 +30,8 @@ class MultiTeamRegistrationTest extends TestCase
         EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $user->regional_committee_id)->delete();
 
         $this->actingAs($user)->post(route('pd.events.entries.store', $event), ['teams' => [
-            ['members' => [$this->member('Pemain Satu', '3173000000000001', true)]],
-            ['members' => [$this->member('Pemain Dua', '3173000000000002', true)]],
+            ['members' => [$this->member('Pemain Satu', '3173010101900001', true)]],
+            ['members' => [$this->member('Pemain Dua', '3173010101900002', true)]],
         ], 'intent' => 'submit'])->assertSessionHasNoErrors();
 
         $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $user->regional_committee_id)->firstOrFail();
@@ -49,14 +49,14 @@ class MultiTeamRegistrationTest extends TestCase
         $event->update(['status' => 'registration_open', 'registration_open_at' => now()->subMinute(), 'registration_close_at' => now()->addDay(), 'registration_rules' => array_merge($event->registration_rules, ['max_teams_per_pd' => 2, 'min_members_per_team' => 1, 'max_members_per_team' => 1])]);
         EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->delete();
 
-        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Satu', '3173000000000301', true)]]]])->assertSessionHasNoErrors();
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Satu', '3173010101900301', true)]]]])->assertSessionHasNoErrors();
         $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->with('teams.members')->firstOrFail();
         $firstTeam = $entry->teams->first();
         $firstTeam->members->each->update(['verification_status' => 'verified']);
         $this->actingAs($admin)->post(route('admin.entry-teams.override', $firstTeam), ['status' => 'verified', 'reason' => 'Tim pertama lengkap.'])->assertRedirect();
         $this->assertSame('verified', $entry->fresh()->verification_status);
 
-        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Dua', '3173000000000302', true)]]]])->assertSessionHasNoErrors();
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Dua', '3173010101900302', true)]]]])->assertSessionHasNoErrors();
         $entry->refresh();
         $secondTeam = $entry->teams()->where('team_no', 2)->with('members')->firstOrFail();
         $this->assertSame('pending', $entry->verification_status);
@@ -87,9 +87,9 @@ class MultiTeamRegistrationTest extends TestCase
         $event->update(['status' => 'registration_open', 'registration_open_at' => now()->subMinute(), 'registration_close_at' => now()->addDay(), 'registration_rules' => $rules]);
         EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $user->regional_committee_id)->delete();
 
-        $this->actingAs($user)->post(route('pd.events.entries.store', $event), ['teams' => [
-            ['members' => [['name' => 'Pemain Sama']]],
-            ['members' => [['name' => ' pemain sama ']]],
+        $this->actingAs($user)->post(route('pd.events.entries.store', $event), ['intent' => 'draft', 'teams' => [
+            ['members' => [$this->member('Pemain Satu', '3173010101900401')]],
+            ['members' => [$this->member('Pemain Dua', '3173010101900401')]],
         ]])->assertSessionHasErrors('teams');
     }
 
@@ -107,7 +107,7 @@ class MultiTeamRegistrationTest extends TestCase
         $entry->update(['verification_status' => 'revision_required']);
         EntryTeam::query()->where('event_entry_id', $entry->id)->firstOrFail()->update(['verification_status_override' => 'verified']);
 
-        $this->actingAs($user)->post(route('pd.events.entries.store', $event), ['teams' => [['members' => [$this->member('Pengganti', '3173000000000099', true)]]], 'intent' => 'submit'])->assertStatus(422);
+        $this->actingAs($user)->post(route('pd.events.entries.store', $event), ['teams' => [['members' => [$this->member('Pengganti', '3173010101900099', true)]]], 'intent' => 'submit'])->assertStatus(422);
     }
 
     public function test_bracket_eligibility_uses_effective_team_status(): void
@@ -153,8 +153,8 @@ class MultiTeamRegistrationTest extends TestCase
         EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->delete();
 
         $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [
-            ['members' => [$this->member('Tim Satu', '3173000000000101', true)]],
-            ['members' => [$this->member('Tim Dua', '3173000000000102', true)]],
+            ['members' => [$this->member('Tim Satu', '3173010101900101', true)]],
+            ['members' => [$this->member('Tim Dua', '3173010101900102', true)]],
         ]])->assertSessionHasNoErrors();
 
         $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->with('teams.members')->firstOrFail();
@@ -165,7 +165,7 @@ class MultiTeamRegistrationTest extends TestCase
         $secondMember = $secondTeam->members->first();
         $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [[
             'id' => $secondTeam->id,
-            'members' => [[...$this->member('Tim Dua Diperbaiki', '3173000000000102'), 'id' => $secondMember->id]],
+            'members' => [[...$this->member('Tim Dua Diperbaiki', '3173010101900102'), 'id' => $secondMember->id]],
         ]]])->assertSessionHasNoErrors();
 
         $this->assertSame('Tim Satu', $firstTeam->members()->firstOrFail()->name);
@@ -193,7 +193,7 @@ class MultiTeamRegistrationTest extends TestCase
         $event->update(['status' => 'registration_open', 'registration_open_at' => now()->subMinute(), 'registration_close_at' => now()->addDay(), 'registration_rules' => array_merge($event->registration_rules, ['max_teams_per_pd' => 2, 'min_members_per_team' => 1, 'max_members_per_team' => 1])]);
         EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->delete();
 
-        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Satu', '3173000000000201', true)]]]])->assertSessionHasNoErrors();
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Satu', '3173010101900201', true)]]]])->assertSessionHasNoErrors();
         $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->with('teams.members')->firstOrFail();
         $firstTeam = $entry->teams->first();
         $firstTeam->members->each->update(['verification_status' => 'verified']);
@@ -203,7 +203,7 @@ class MultiTeamRegistrationTest extends TestCase
         $this->actingAs($admin)->post(route('admin.entries.team-addition', $entry), ['note' => 'Tambahkan tim kedua sesuai sisa kuota.'])->assertRedirect();
         $this->assertNotNull($entry->fresh()->team_addition_opened_at);
         $this->assertSame('pending', $entry->fresh()->verification_status);
-        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Dua', '3173000000000202', true)]]]])->assertSessionHasNoErrors();
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Dua', '3173010101900202', true)]]]])->assertSessionHasNoErrors();
 
         $entry->refresh();
         $this->assertNull($entry->team_addition_opened_at);
@@ -223,12 +223,12 @@ class MultiTeamRegistrationTest extends TestCase
         $event->update(['status' => 'registration_open', 'registration_open_at' => now()->subMinute(), 'registration_close_at' => now()->addDay(), 'registration_rules' => array_merge($event->registration_rules, ['max_teams_per_pd' => 2, 'min_members_per_team' => 1, 'max_members_per_team' => 1])]);
         EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->delete();
 
-        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Satu Pending', '3173000000000301', true)]]]])->assertSessionHasNoErrors();
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Satu Pending', '3173010101900301', true)]]]])->assertSessionHasNoErrors();
         $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->with('teams.members')->firstOrFail();
         $firstTeam = $entry->teams->first();
         $this->assertSame('pending', $firstTeam->effectiveStatus());
 
-        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Dua Langsung', '3173000000000302', true)]]]])->assertSessionHasNoErrors();
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Dua Langsung', '3173010101900302', true)]]]])->assertSessionHasNoErrors();
 
         $this->assertSame('Tim Satu Pending', $firstTeam->members()->firstOrFail()->name);
         $this->assertSame('pending', $firstTeam->fresh()->effectiveStatus());

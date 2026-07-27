@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\EventAgenda;
+use App\Models\TournamentMatch;
 use App\Models\User;
 use App\Models\Venue;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -60,6 +61,21 @@ class VenueAgendaManagementTest extends TestCase
 
         $this->assertDatabaseHas('event_agenda_audits', ['event_agenda_id' => $agenda->id, 'action' => 'updated', 'reason' => 'Penyesuaian operasional venue', 'user_id' => $admin->id]);
         $this->assertDatabaseHas('event_agenda_audits', ['event_agenda_id' => $agenda->id, 'action' => 'published', 'user_id' => $admin->id]);
+    }
+
+    public function test_admin_can_schedule_match_only_on_matching_sport_agenda(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $match = TournamentMatch::query()->with('tournamentEvent')->firstOrFail();
+        $agenda = EventAgenda::query()->where('sport_id', $match->tournamentEvent->sport_id)->firstOrFail();
+
+        $this->actingAs($admin)->post(route('admin.matches.schedule', $match), ['event_agenda_id' => $agenda->id])->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('matches', ['id' => $match->id, 'event_agenda_id' => $agenda->id, 'venue_id' => $agenda->venue_id]);
+        $this->assertNotNull($match->fresh()->scheduled_at);
+
+        $wrongAgenda = EventAgenda::query()->whereNotNull('sport_id')->where('sport_id', '!=', $match->tournamentEvent->sport_id)->firstOrFail();
+        $this->actingAs($admin)->post(route('admin.matches.schedule', $match), ['event_agenda_id' => $wrongAgenda->id])->assertUnprocessable();
     }
 
     public function test_admin_can_search_paginate_create_and_delete_unused_venue(): void

@@ -34,6 +34,7 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [Postgres standard](./02-data/postgres-standard.md): keputusan PostgreSQL, index, constraint, transaksi, backup.
 - [ERD konseptual](./02-data/erd.md): relasi utama.
 - [Data dictionary](./02-data/data-dictionary.md): field inti v1.
+- [Status vocabulary](./02-data/STATUS-VOCABULARY.md): source of truth kode status, label Indonesia, tone badge, dan hubungan status lintas alur.
 - [Migration plan](./02-data/migration-plan.md): urutan migration Laravel/PostgreSQL.
 - [Database lifecycle standard](./02-data/database-lifecycle-standard.md): klasifikasi active/legacy/dead dan gate wajib sebelum drop atau perubahan seeder.
 - [ERD v1 baseline](./02-data/erd-v1-baseline.md): ERD baseline development.
@@ -47,23 +48,15 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 ### 03 Product
 
 - [API contract v1](./03-product/api-contract-v1.md): endpoint public dan action admin/panitia baseline.
+- [Standar publikasi registrasi](./03-product/registration-publication-standard.md): sumber kebenaran hubungan master, Data Lomba, snapshot publikasi, dan portal PD.
 - [Agenda standard](./03-product/agenda-standard.md): agenda, venue, cabor, jam dari screenshot awal.
 - [Seminar standard](./03-product/seminar-standard.md): konten NIWC, sesi, peserta, biaya, dan implementasi menu Seminar.
 - [Standar informasi teknis cabor](./03-product/sport-technical-guide-standard.md): sumber data, kuota opsional, snapshot, dan tampilan publik.
 
 ### 04 Design
 
-- [UI standard](./04-design/ui-standard.md): standar UI umum public, admin, dan panitia.
-- [Public/Admin UI standard](./04-design/public-admin-ui-standard.md): token visual, spacing, component, dan checklist konsistensi tampilan.
-
-### 09 Development
-
-- [Git workflow](./09-development/git-workflow.md): branch, commit, merge, dan push.
-- [Coding standard](./09-development/coding-standard.md): struktur backend/frontend, route, controller, service, action, dan review checklist.
-
-### 04 Design
-
 - [UI standard](./04-design/ui-standard.md): public, admin, panitia, aksesibilitas, komponen utama.
+- [Public/Admin UI standard](./04-design/public-admin-ui-standard.md): token visual, spacing, component, dan checklist konsistensi tampilan.
 - [Wireframe map](./04-design/wireframe-map.md): screen map public, admin, panitia.
 - [Brand asset standard](./04-design/brand-asset-standard.md): penggunaan logo, maskot, warna, dan layout public.
 - [Public home concept](./04-design/public-home-concept.html): contoh layout HTML memakai logo dan maskot.
@@ -103,6 +96,10 @@ Struktur ini mengadopsi pola rapi dari `digital-bookkeeping`: folder bernomor pe
 - [Git workflow](./09-development/git-workflow.md): standar branch, commit, push, dan merge.
 
 ## Aturan Pakai
+
+1. Mulai dari [Source-of-Truth Registry](./SOT-REGISTRY.md) untuk menemukan dokumen kanonik setiap menu dan seluruh data yang saling terhubung.
+2. Semua kode status, label Bahasa Indonesia, tone badge, dan state transition mengikuti [Status Vocabulary](./02-data/STATUS-VOCABULARY.md).
+3. Bila dokumen bentrok, dokumen pada kolom `SoT Utama` di registry yang menang. Kondisi nyata dan target tidak boleh dicampur.
 
 - Sumber kebenaran publikasi cabor untuk portal PD: `03-product/registration-publication-standard.md`.
 
