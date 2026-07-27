@@ -146,6 +146,59 @@ class MultiTeamRegistrationTest extends TestCase
         $this->assertDatabaseHas('entry_team_audits', ['entry_team_id' => $secondTeam->id, 'action' => 'override_reset', 'reason' => 'Kembali mengikuti status pendaftaran.']);
     }
 
+    public function test_admin_can_open_new_team_slot_without_unlocking_verified_team(): void
+    {
+        Storage::fake('local');
+        $this->seed();
+        $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
+        $event->update(['status' => 'registration_open', 'registration_open_at' => now()->subMinute(), 'registration_close_at' => now()->addDay(), 'registration_rules' => array_merge($event->registration_rules, ['max_teams_per_pd' => 2, 'min_members_per_team' => 1, 'max_members_per_team' => 1])]);
+        EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->delete();
+
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Satu', '3173000000000201', true)]]]])->assertSessionHasNoErrors();
+        $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->with('teams.members')->firstOrFail();
+        $firstTeam = $entry->teams->first();
+        $firstTeam->members->each->update(['verification_status' => 'verified']);
+        $firstTeam->update(['verification_status_override' => 'verified', 'verified_by' => $admin->id, 'verified_at' => now()]);
+        $event->update(['status' => 'registration_closed', 'registration_close_at' => now()->subMinute()]);
+
+        $this->actingAs($admin)->post(route('admin.entries.team-addition', $entry), ['note' => 'Tambahkan tim kedua sesuai sisa kuota.'])->assertRedirect();
+        $this->assertNotNull($entry->fresh()->team_addition_opened_at);
+        $this->actingAs($admin)->post(route('admin.entries.verify', $entry))->assertUnprocessable();
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Dua', '3173000000000202', true)]]]])->assertSessionHasNoErrors();
+
+        $entry->refresh();
+        $this->assertNull($entry->team_addition_opened_at);
+        $this->assertSame('verified', $firstTeam->fresh()->verification_status_override);
+        $this->assertSame('Tim Satu', $firstTeam->members()->firstOrFail()->name);
+        $this->assertDatabaseHas('entry_teams', ['event_entry_id' => $entry->id, 'team_no' => 2]);
+        $this->assertDatabaseHas('entry_registration_audits', ['event_entry_id' => $entry->id, 'action' => 'team_addition_opened']);
+        $this->assertDatabaseHas('entry_registration_audits', ['event_entry_id' => $entry->id, 'action' => 'team_added']);
+    }
+
+    public function test_pd_can_add_second_team_while_first_team_is_still_pending(): void
+    {
+        Storage::fake('local');
+        $this->seed();
+        $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
+        $event->update(['status' => 'registration_open', 'registration_open_at' => now()->subMinute(), 'registration_close_at' => now()->addDay(), 'registration_rules' => array_merge($event->registration_rules, ['max_teams_per_pd' => 2, 'min_members_per_team' => 1, 'max_members_per_team' => 1])]);
+        EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->delete();
+
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Satu Pending', '3173000000000301', true)]]]])->assertSessionHasNoErrors();
+        $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->with('teams.members')->firstOrFail();
+        $firstTeam = $entry->teams->first();
+        $this->assertSame('pending', $firstTeam->effectiveStatus());
+
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Dua Langsung', '3173000000000302', true)]]]])->assertSessionHasNoErrors();
+
+        $this->assertSame('Tim Satu Pending', $firstTeam->members()->firstOrFail()->name);
+        $this->assertSame('pending', $firstTeam->fresh()->effectiveStatus());
+        $this->assertDatabaseHas('entry_teams', ['event_entry_id' => $entry->id, 'team_no' => 2]);
+        $this->assertDatabaseHas('entry_registration_audits', ['event_entry_id' => $entry->id, 'action' => 'team_added']);
+    }
+
     private function member(string $name, string $identityNumber, bool $withDocuments = false): array
     {
         $member = ['name' => $name, 'pdam_id' => Pdam::query()->value('id'), 'identity_type' => 'nik', 'identity_number' => $identityNumber];

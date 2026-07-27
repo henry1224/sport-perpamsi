@@ -28,7 +28,7 @@ class AdminEntryVerificationController extends Controller
                 'teams.members.pdam:id,name',
                 'members' => fn ($query) => $query->where('member_type', 'official')->select('id', 'event_entry_id', 'name', 'identity_type', 'identity_number', 'position', 'documents', 'created_at', 'updated_at'),
                 'regionalCommittee:id,name',
-                'tournamentEvent:id,code,name,status',
+                'tournamentEvent:id,code,name,status,registration_rules',
             ])
             ->whereIn('verification_status', ['pending', 'rejected'])
             ->when($event, fn ($query) => $query->whereHas('tournamentEvent', fn ($query) => $query->where('code', $event)))
@@ -52,6 +52,9 @@ class AdminEntryVerificationController extends Controller
                 'players_count' => $entry->teams->sum(fn ($team) => $team->members->count()),
                 'verified_players_count' => $entry->teams->sum(fn ($team) => $team->members->where('verification_status', 'verified')->count()),
                 'teams_ready' => $entry->teams->isNotEmpty() && $entry->teams->every(fn ($team) => $team->effectiveStatus() === 'verified'),
+                'team_addition_open' => (bool) $entry->team_addition_opened_at,
+                'can_add_team' => $entry->teams->count() < ($entry->tournamentEvent?->registration_rules['max_teams_per_pd'] ?? 1),
+                'can_open_team_addition' => $entry->tournamentEvent?->status === 'registration_closed' && $entry->teams->count() < ($entry->tournamentEvent?->registration_rules['max_teams_per_pd'] ?? 1),
                 'committee' => $entry->regionalCommittee?->name,
                 'event' => $entry->tournamentEvent?->name,
                 'event_code' => $entry->tournamentEvent?->code,
@@ -88,6 +91,7 @@ class AdminEntryVerificationController extends Controller
     public function verify(Request $request, EventEntry $entry): RedirectResponse
     {
         abort_unless($entry->verification_status === 'pending', 422, 'Hanya entry menunggu yang dapat diverifikasi.');
+        abort_if($entry->team_addition_opened_at, 422, 'Tunggu PD mengajukan tim tambahan sebelum entry disetujui.');
         $activeTeams = $entry->teams()->whereNull('cancelled_at')->get();
         abort_if($activeTeams->isEmpty() || $activeTeams->contains(fn ($team) => $team->effectiveStatus() !== 'verified'), 422, 'Seluruh tim aktif harus disetujui sebelum entry disetujui.');
         $players = EntryMember::query()->where('event_entry_id', $entry->id)->where('member_type', 'player')->whereHas('team', fn ($query) => $query->whereNull('cancelled_at'));
@@ -175,6 +179,21 @@ class AdminEntryVerificationController extends Controller
         $this->audit($entry, 'revision_required', $before, $request);
 
         return back()->with('success', 'Perbaikan roster diminta.');
+    }
+
+    public function openTeamAddition(Request $request, EventEntry $entry): RedirectResponse
+    {
+        $data = $request->validate(['note' => ['required', 'string', 'max:255']]);
+        abort_unless($entry->verification_status === 'pending', 422, 'Penambahan tim hanya dapat dibuka saat pendaftaran menunggu verifikasi.');
+        abort_if($entry->team_addition_opened_at, 422, 'Penambahan tim sudah dibuka untuk PD.');
+        abort_if(in_array($entry->tournamentEvent?->status, ['bracket_locked', 'ongoing', 'completed'], true), 422, 'Penambahan tim tidak dapat dibuka setelah bracket dikunci.');
+        $maximum = $entry->tournamentEvent?->registration_rules['max_teams_per_pd'] ?? 1;
+        abort_if($entry->teams()->whereNull('cancelled_at')->count() >= $maximum, 422, 'Kuota tim PD sudah terpenuhi.');
+        $before = $this->state($entry);
+        $entry->update(['team_addition_opened_at' => now(), 'verification_note' => $data['note']]);
+        $this->audit($entry, 'team_addition_opened', $before, $request);
+
+        return back()->with('success', 'Penambahan tim dibuka untuk PD tanpa membuka tim terverifikasi.');
     }
 
     public function overrideTeam(Request $request, EntryTeam $team): RedirectResponse

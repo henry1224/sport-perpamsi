@@ -10,7 +10,7 @@ class EventEntry extends Model
 {
     protected $guarded = [];
 
-    protected $casts = ['submitted_at' => 'datetime', 'verified_at' => 'datetime'];
+    protected $casts = ['submitted_at' => 'datetime', 'verified_at' => 'datetime', 'team_addition_opened_at' => 'datetime'];
 
     public function tournamentEvent(): BelongsTo
     {

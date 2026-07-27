@@ -17,7 +17,8 @@ class RegisterEventEntry
     {
         $existing = EventEntry::query()->with('teams')->where('registration_key', $event->id.':'.$user->regional_committee_id)->first();
         $teamRevisionIds = $existing?->teams->where('verification_status_override', 'revision_required')->pluck('id') ?? collect();
-        $canRevise = $existing?->verification_status === 'revision_required' || $teamRevisionIds->isNotEmpty();
+        $teamAddition = (bool) $existing?->team_addition_opened_at || ($existing?->verification_status === 'pending' && $teamRevisionIds->isEmpty() && $event->registrationIsOpen() && $existing->teams->whereNull('cancelled_at')->count() < ($event->registration_rules['max_teams_per_pd'] ?? 1));
+        $canRevise = $existing?->verification_status === 'revision_required' || $teamRevisionIds->isNotEmpty() || $teamAddition;
 
         if (! $event->registrationIsOpen() && ! $canRevise) {
             // ponytail: buka kembali event atau tambah alur late-registration + rebuild bracket jika dibutuhkan.
@@ -26,15 +27,15 @@ class RegisterEventEntry
 
         $user->loadMissing('committee');
 
-        return DB::transaction(function () use ($user, $event, $data, $teamRevisionIds) {
+        return DB::transaction(function () use ($user, $event, $data, $teamRevisionIds, $teamAddition) {
             $entry = EventEntry::query()->lockForUpdate()->firstOrNew(['registration_key' => $event->id.':'.$user->regional_committee_id]);
             $teamScopedRevision = $entry->exists && $entry->verification_status === 'pending' && $teamRevisionIds->isNotEmpty();
             abort_if($entry->exists && $entry->verification_status === 'verified', 422, 'Pendaftaran terverifikasi tidak dapat diubah.');
-            abort_if($entry->exists && $entry->verification_status === 'pending' && ! $teamScopedRevision, 422, 'Pendaftaran yang sedang diproses tidak dapat diubah.');
-            abort_if($entry->exists && ! $teamScopedRevision && $entry->teams()->where('verification_status_override', 'verified')->exists(), 422, 'Roster tim terverifikasi tidak dapat diubah.');
+            abort_if($entry->exists && $entry->verification_status === 'pending' && ! $teamScopedRevision && ! $teamAddition, 422, 'Pendaftaran yang sedang diproses tidak dapat diubah.');
+            abort_if($entry->exists && ! $teamScopedRevision && ! $teamAddition && $entry->teams()->where('verification_status_override', 'verified')->exists(), 422, 'Roster tim terverifikasi tidak dapat diubah.');
             abort_if($entry->exists && DB::table('matches')->whereIn('team_a_id', $entry->teams()->select('id'))->orWhereIn('team_b_id', $entry->teams()->select('id'))->exists(), 422, 'Roster yang sudah masuk pertandingan tidak dapat diubah.');
             $before = $entry->exists ? $this->state($entry->loadMissing('teams.members')) : null;
-            $entry->fill([
+            if (! $teamAddition) $entry->fill([
                 'public_id' => $entry->public_id ?: (string) Str::uuid(), 'tournament_event_id' => $event->id, 'pdam_id' => null,
                 'province_id' => $user->committee->province_id, 'regency_id' => null, 'regional_committee_id' => $user->regional_committee_id,
                 'display_name' => $user->committee->name, 'verification_status' => $data['intent'] === 'draft' ? 'draft' : 'pending',
@@ -50,7 +51,7 @@ class RegisterEventEntry
             foreach ($data['teams'] as $index => $teamData) {
                 $team = isset($teamData['id']) ? $existingTeamsById->get($teamData['id']) : null;
                 abort_if($teamScopedRevision && (! $team || ! $teamRevisionIds->contains($team->id)), 422, 'Hanya tim yang diminta perbaikan yang dapat diubah.');
-                $team ??= $existingTeams->get($index + 1)?->cancelled_at ? null : $existingTeams->get($index + 1);
+                if (! $teamAddition) $team ??= $existingTeams->get($index + 1)?->cancelled_at ? null : $existingTeams->get($index + 1);
                 $teamNo = $team?->team_no ?? $nextTeamNo++;
                 $team ??= $entry->teams()->create(['public_id' => (string) Str::uuid(), 'team_no' => $teamNo, 'label' => $entry->display_name.' #'.$teamNo]);
                 $teamBefore = $teamScopedRevision ? $team->toArray() : null;
@@ -65,18 +66,19 @@ class RegisterEventEntry
                     DB::table('entry_team_audits')->insert(['entry_team_id' => $team->id, 'action' => 'resubmitted', 'before_json' => json_encode($teamBefore), 'after_json' => json_encode($team->fresh()->toArray()), 'reason' => 'Perbaikan tim dikirim ulang oleh PD.', 'user_id' => $user->id, 'created_at' => now(), 'updated_at' => now()]);
                 }
             }
-            if (! $teamScopedRevision) $entry->teams()->whereNotIn('id', $keptTeamIds)->whereNull('cancelled_at')->update(['cancelled_at' => now()]);
-            foreach ($teamScopedRevision ? [] : ($data['officials'] ?? []) as $officialData) {
+            if (! $teamScopedRevision && ! $teamAddition) $entry->teams()->whereNotIn('id', $keptTeamIds)->whereNull('cancelled_at')->update(['cancelled_at' => now()]);
+            foreach (($teamScopedRevision || $teamAddition) ? [] : ($data['officials'] ?? []) as $officialData) {
                 $official = $this->saveMember($entry, null, $officialData, 'official', $officialData['role'], $existingMembers);
                 $keptMemberIds->push($official->id);
             }
 
-            $removedMembers = $entry->members()->whereNotIn('id', $keptMemberIds)->where(fn ($query) => $query->when(! $teamScopedRevision, fn ($query) => $query->where('member_type', 'official')->orWhereIn('entry_team_id', $keptTeamIds), fn ($query) => $query->whereIn('entry_team_id', $keptTeamIds)))->get();
+            $removedMembers = $teamAddition ? collect() : $entry->members()->whereNotIn('id', $keptMemberIds)->where(fn ($query) => $query->when(! $teamScopedRevision, fn ($query) => $query->where('member_type', 'official')->orWhereIn('entry_team_id', $keptTeamIds), fn ($query) => $query->whereIn('entry_team_id', $keptTeamIds)))->get();
             abort_if(($teamScopedRevision || in_array($before['status'] ?? null, ['revision_required', 'rejected'], true)) && $removedMembers->isNotEmpty(), 422, 'Revisi wajib mempertahankan ID pemain dan official. Pergantian orang memerlukan alur substitusi resmi.');
             abort_if($removedMembers->contains(fn ($member) => $member->verification_status !== 'pending' || DB::table('entry_member_audits')->where('entry_member_id', $member->id)->exists()), 422, 'Pemain atau official yang sudah diperiksa tidak dapat dihapus. Gunakan alur koreksi resmi.');
             $entry->members()->whereKey($removedMembers->pluck('id'))->delete();
 
-            $action = $teamScopedRevision ? 'team_resubmitted' : ($data['intent'] === 'draft' ? 'draft_saved' : (in_array($before['status'] ?? null, ['revision_required', 'rejected', 'cancelled'], true) ? 'resubmitted' : 'submitted'));
+            if ($teamAddition) $entry->update(['team_addition_opened_at' => null, 'verification_note' => null]);
+            $action = $teamAddition ? 'team_added' : ($teamScopedRevision ? 'team_resubmitted' : ($data['intent'] === 'draft' ? 'draft_saved' : (in_array($before['status'] ?? null, ['revision_required', 'rejected', 'cancelled'], true) ? 'resubmitted' : 'submitted')));
             DB::table('entry_registration_audits')->insert(['event_entry_id' => $entry->id, 'action' => $action, 'before_json' => $before ? json_encode($before) : null, 'after_json' => json_encode($this->state($entry->load('teams.members', 'members'))), 'user_id' => $user->id, 'created_at' => now(), 'updated_at' => now()]);
 
             return $entry;
