@@ -58,7 +58,17 @@ class StoreEventEntryRequest extends FormRequest
             if ($names->duplicates()->isNotEmpty()) { $validator->errors()->add('teams', 'Pemain tidak boleh terdaftar pada dua tim dalam kompetisi yang sama.'); $validator->errors()->add('members', 'Nama pemain tidak boleh sama dalam satu pendaftaran.'); }
             if ($playerIdentities->duplicates()->isNotEmpty()) $validator->errors()->add('teams', 'NIK/KTA pemain tidak boleh digunakan lebih dari satu kali.');
             $event = $this->route('event');
-            if ($event instanceof TournamentEvent && $event->entries()->where('regional_committee_id', $this->user()->regional_committee_id)->where(fn ($query) => $query->where('verification_status', 'verified')->orWhere(fn ($query) => $query->where('verification_status', 'pending')->whereDoesntHave('teams', fn ($query) => $query->where('verification_status_override', 'revision_required'))))->exists()) { $validator->errors()->add('teams', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); $validator->errors()->add('members', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); }
+            $entry = $event instanceof TournamentEvent ? $event->entries()->where('regional_committee_id', $this->user()->regional_committee_id)->first() : null;
+            $teamAddition = $entry && ($entry->team_addition_opened_at || ($entry->verification_status === 'pending' && $event->registrationIsOpen() && ! $entry->teams()->where('verification_status_override', 'revision_required')->exists() && $entry->teams()->whereNull('cancelled_at')->count() < ($this->snapshot()['max_teams_per_pd'] ?? 1)));
+            if ($teamAddition && $this->input('intent') !== 'submit') $validator->errors()->add('intent', 'Penambahan tim harus langsung diajukan untuk verifikasi.');
+            if ($teamAddition) {
+                $maximum = $this->snapshot()['max_teams_per_pd'] ?? 1;
+                if ($entry->teams()->whereNull('cancelled_at')->count() + count($this->input('teams', [])) > $maximum) $validator->errors()->add('teams', 'Jumlah tim melewati kuota pendaftaran.');
+                $existingIdentities = $entry->members()->where('member_type', 'player')->pluck('identity_hash')->filter();
+                if ($existingIdentities->intersect($playerIdentities)->isNotEmpty()) $validator->errors()->add('teams', 'Pemain sudah terdaftar pada tim lain dalam kompetisi ini.');
+                $existingNames = $entry->members()->where('member_type', 'player')->pluck('normalized_name')->filter();
+                if ($existingNames->intersect($names)->isNotEmpty()) $validator->errors()->add('teams', 'Nama pemain sudah terdaftar pada tim lain dalam kompetisi ini.');
+            } elseif ($event instanceof TournamentEvent && $event->entries()->where('regional_committee_id', $this->user()->regional_committee_id)->where(fn ($query) => $query->where('verification_status', 'verified')->orWhere(fn ($query) => $query->where('verification_status', 'pending')->whereDoesntHave('teams', fn ($query) => $query->where('verification_status_override', 'revision_required'))))->exists()) { $validator->errors()->add('teams', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); $validator->errors()->add('members', 'Pendaftaran sedang diproses atau sudah terverifikasi.'); }
             if (! $event instanceof TournamentEvent) return;
 
             $officials = collect($this->input('officials', []));

@@ -39,6 +39,7 @@ class PdEntryController extends Controller
             ->whereIn('event_entries.verification_status', ['draft', 'pending', 'verified', 'revision_required'])
             ->whereIn('entry_members.identity_hash', $officialIdentities)->get(['entry_members.identity_hash', 'sports.name'])
             ->groupBy('identity_hash')->map(fn ($rows) => $rows->pluck('name')->unique()->values()->all());
+        $maximumTeams = $event->registration_rules['max_teams_per_pd'] ?? 1;
         $entries = $entries
             ->map(fn ($entry) => [
                 'id' => $entry->id,
@@ -47,6 +48,8 @@ class PdEntryController extends Controller
                 'officials' => $entry->members->map(fn ($member) => $this->memberPayload($member) + ['role' => $member->position, 'playing_sports' => $playingSports->get($member->identity_hash, [])]),
                 'verification_status' => $entry->verification_status,
                 'verification_note' => $entry->verification_note,
+                'team_addition_open' => (bool) $entry->team_addition_opened_at,
+                'team_addition_available' => (bool) $entry->team_addition_opened_at || ($entry->verification_status === 'pending' && $event->registrationIsOpen() && ! $entry->teams->contains(fn ($team) => $team->verification_status_override === 'revision_required') && $entry->teams->whereNull('cancelled_at')->count() < $maximumTeams),
             ]);
 
         $rules = $event->registration_rules ?? [];
@@ -101,7 +104,7 @@ class PdEntryController extends Controller
         );
 
         $before = ['status' => $entry->verification_status, 'note' => $entry->verification_note, 'teams' => $entry->teams()->with('members')->get()->toArray(), 'officials' => $entry->members()->where('member_type', 'official')->get()->toArray()];
-        $entry->update(['verification_status' => 'cancelled', 'submitted_at' => null, 'verified_by' => null, 'verified_at' => null]);
+        $entry->update(['verification_status' => 'cancelled', 'submitted_at' => null, 'verified_by' => null, 'verified_at' => null, 'team_addition_opened_at' => null]);
         DB::table('entry_registration_audits')->insert(['event_entry_id' => $entry->id, 'action' => 'cancelled', 'before_json' => json_encode($before), 'after_json' => json_encode(['status' => 'cancelled', 'note' => $entry->verification_note, 'teams' => $before['teams'], 'officials' => $before['officials']]), 'user_id' => $user->id, 'created_at' => now(), 'updated_at' => now()]);
 
         return back()->with('success', 'Pendaftaran dibatalkan.');

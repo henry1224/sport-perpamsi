@@ -99,3 +99,10 @@ Phase 6 tidak boleh membuat seed/bracket baru sebelum match participant memakai 
 - Nilai `sports.type` dibatasi menjadi `sport` atau `exhibition` pada alur Admin.
 - `padel`, `golf`, dan `vocal` dibackfill sebagai `exhibition`; cabor lain sebagai `sport`.
 - `sports.default_format` dibackfill dari katalog resmi agar master dan kompetisi draft memakai kode format yang sama.
+
+## Izin Penambahan Team — 26 Juli 2026
+
+- Tambah `event_entries.team_addition_opened_at` nullable sebagai izin eksplisit satu kali untuk menambah team pada parent `pending`.
+- Migration tidak mengubah data existing dan tidak membutuhkan backfill; seluruh nilai awal `null`.
+- Izin hanya dapat dibuka Admin sebelum bracket dikunci, saat kuota team masih tersedia.
+- Submit team baru menghapus izin dalam transaksi yang sama; rollback migration hanya menghapus kolom state tanpa menghapus team atau audit.
