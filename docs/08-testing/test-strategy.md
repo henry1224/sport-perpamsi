@@ -51,7 +51,7 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 33. Publish ditolak bila `max_teams_per_pd` atau batas anggota per team belum ditetapkan technical meeting.
 34. Catur individual menghasilkan team beranggota satu; bulu tangkis ganda menghasilkan team beranggota dua; golf individual menghasilkan beberapa team beranggota satu.
 35. Jumlah team aktif dan anggota tiap team divalidasi dari snapshot, bukan master terbaru.
-36. Verifikasi parent berlaku kepada team tanpa override.
+36. Tidak ada endpoint persetujuan parent; persetujuan team aktif terakhir memfinalkan parent otomatis.
 37. Override satu team tidak mengubah team lain; reset override mengembalikan effective status ke parent.
 38. API/UI menghasilkan parent status, override nullable, dan effective status yang sama.
 39. Team belum efektif verified tidak masuk seed/bracket; bracket lock menolak pending/revision_required dan perbedaan total team terhadap team verified.
@@ -75,7 +75,7 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 54. Cleanup demo menghapus score audit, match score, dan match tanpa menghapus master cabor, kategori, regulasi, venue, atau PD.
 55. Status `bracket_locked` ditolak bila kompetisi belum pernah dipublikasikan atau masih memiliki team belum efektif verified.
 56. Bracket lock berhasil setelah seluruh team aktif verified dan mengisi nomor seed pada setiap `EntryTeam`.
-57. Persetujuan parent ditolak bila satu pemain masih pending; aksi verifikasi pemain mengubah status, mencatat audit, dan membuka persetujuan setelah seluruh pemain verified.
+57. Persetujuan team ditolak bila satu pemain masih pending; aksi verifikasi pemain mengubah status, mencatat audit, dan membuka persetujuan team setelah seluruh pemain verified.
 56. Data Lomba draft mengambil format, regulasi aktif, kuota, dan aturan official dari master tanpa override manual.
 57. Perubahan default master tidak mengubah snapshot kompetisi yang sudah dipublikasikan.
 58. Snapshot menyimpan kuota/peran official serta aturan atlet merangkap kategori.
@@ -98,15 +98,20 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 75. Portal PD menampilkan label format manusia, kuota team terpakai/sisa, batas pemain, feedback team, dan tidak menampilkan kode internal.
 76. Perbaikan pemain otomatis membuka team terkait dan menyalin catatan ke feedback team.
 77. Parent rejected tetap terkunci untuk PD sampai Admin membuka kembali sebagai revision required; setelah itu PD dapat mengajukan ulang.
-78. Persetujuan parent ditolak sampai seluruh team aktif disetujui dan seluruh pemain team aktif verified; team cancelled tidak dihitung.
+78. Parent otomatis verified setelah seluruh team aktif disetujui dan seluruh pemain team aktif verified; team cancelled tidak dihitung.
 79. Pemain tidak dapat diverifikasi ketika effective status team revision required, rejected, cancelled, atau verified.
 80. Penolakan parent menghapus override team aktif dengan audit, lalu parent dapat dibuka kembali tanpa deadlock.
 81. Resubmit per-team mencatat audit registrasi dan audit team tanpa mengubah team lain atau official.
 82. Kuota satu team tidak menampilkan tombol tambah setelah team pertama tersedia.
-83. Kuota multi-team menampilkan form tambah saat slot tersedia dan registrasi terbuka, termasuk parent pending, tanpa menunggu team existing verified.
+83. Kuota multi-team mempertahankan tombol tambah saat slot tersedia dan registrasi terbuka, termasuk parent pending atau verified, tanpa menunggu team existing verified; submit team tambahan membuka parent kembali ke pending.
 84. Backend menolak penambahan team melewati snapshot walau request dibuat tanpa UI.
-85. Panel status pending menampilkan status, penjelasan data terkunci, langkah membuka revisi parent, dan sisa kuota tanpa CTA tambah team.
+85. Panel status menampilkan status, penjelasan data terkunci, langkah berikutnya, sisa kuota, dan CTA tambah team saat slot tersedia.
 86. Admin dapat membuka penambahan team pada parent pending sebelum bracket dikunci ketika periode umum sudah ditutup; team existing tetap terkunci, izin terhapus setelah submit, dan audit `team_addition_opened` serta `team_added` tersimpan.
+87. Upgrade migration memfinalkan parent lama yang seluruh team aktif dan pemainnya sudah verified, serta tidak menyentuh parent dengan team/pemain belum selesai.
+87. Submit roster lengkap dengan banyak dokumen tidak menghasilkan HTTP 413, tetapi file individual di atas 1 MB ditolak pada UI dan validasi Laravel.
+88. Dropdown asal PDAM tertutup saat pengguna memilih PDAM atau menekan area di luar field; listener dilepas saat halaman dibongkar.
+89. Saat submit multipart berlangsung, portal menampilkan progress request aktual dari Inertia dan mengunci tombol sampai selesai.
+90. Dokumen tersimpan pada path privat berbasis PD, event, entry, jenis anggota, dan member key; nama manusia tidak muncul pada path.
 70. Master PDAM mendukung pencarian, filter provinsi, tambah, dan edit tanpa menghapus referensi pemain.
 71. Perubahan Master Cabor, Kategori, atau Regulasi menyinkronkan Data Lomba draft terkait tanpa mengubah snapshot terpublikasi.
 

@@ -46,7 +46,7 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] PD dapat menambah team sampai batas snapshot dan menerima pesan Bahasa Indonesia saat batas tercapai.
 - [ ] Team individual berisi satu pemain, pasangan berisi dua pemain, dan beregu mengikuti snapshot.
 - [ ] Label team otomatis `PD PERPAMSI {provinsi} #{team_no}` dan tidak dapat diubah PD.
-- [ ] Admin dapat memverifikasi seluruh parent sekaligus.
+- [ ] Persetujuan team aktif terakhir menyelesaikan parent otomatis tanpa tombol persetujuan pendaftaran kedua.
 - [ ] Admin dapat meminta revisi/menolak hanya satu team tanpa mengubah team saudara.
 - [ ] UI membedakan status parent, override, dan effective status dengan label Indonesia.
 - [ ] Reset override mengembalikan team ke status parent dan tercatat audit.
@@ -119,17 +119,26 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] Data Lomba menampilkan perbandingan team terverifikasi terhadap total team; selisih sekecil apa pun menonaktifkan `Kunci Bracket`.
 - [ ] Setelah seluruh team terverifikasi, Admin dapat mengunci bracket dan seluruh team memperoleh nomor seed.
 - [ ] Admin melihat hitungan pemain verified terhadap total pemain pada antrian dan Data Lomba.
-- [ ] Tombol persetujuan parent nonaktif selama masih ada pemain belum verified atau team aktif belum disetujui.
+- [ ] Tombol persetujuan parent tidak tersedia; team tidak dapat disetujui selama pemainnya belum verified.
 - [ ] Aksi verifikasi, perbaikan, dan penolakan tersedia pada setiap pemain dan tercatat dalam audit.
 - [ ] Aksi pemain tidak tersedia ketika team sedang perbaikan, ditolak, dibatalkan, atau sudah disetujui.
 - [ ] Penolakan parent menghapus override team aktif, mencatat audit, dan dapat dibuka kembali tanpa status buntu.
-- [ ] Team cancelled beserta pemainnya tidak masuk hitungan progres dan gate persetujuan parent.
+- [ ] Team cancelled beserta pemainnya tidak masuk hitungan progres dan finalisasi otomatis parent.
 - [ ] Pendaftaran cancelled dapat diajukan ulang saat periode masih buka dan terkunci setelah periode tutup.
 - [ ] Kuota satu team tidak menampilkan tombol `Tambah Tim` setelah team pertama tersedia.
-- [ ] Kuota multi-team menampilkan form `Tambah Tim` selama periode terbuka dan slot tersedia, termasuk parent pending.
+- [ ] Kuota multi-team tetap menampilkan tombol `Tambah Tim {n}` setelah Tim 1 diajukan selama periode terbuka dan slot tersedia.
 - [ ] Penambahan team tidak menunggu team existing diverifikasi; roster existing tetap terkunci.
 - [ ] Tombol `Tambah Tim` tidak tampil saat kuota penuh atau revisi hanya berlaku untuk satu team.
 - [ ] Panel `Pendaftaran menunggu verifikasi` senada dengan card portal dan menjelaskan status, data terkunci, langkah berikutnya, serta sisa kuota.
 - [ ] Admin dapat memilih `Buka Penambahan Tim` pada parent pending yang masih memiliki kuota sebelum bracket dikunci.
 - [ ] Izin penambahan team hanya membuka form team baru; team verified dan official existing tidak dapat diedit.
 - [ ] Setelah team baru diajukan, izin tertutup otomatis dan team baru masuk antrian verifikasi tanpa mengubah status team lama.
+- [ ] Parent verified kembali pending saat PD menambah team selama periode terbuka, lalu verified otomatis setelah team tambahan disetujui.
+- [ ] Upgrade deployment memfinalkan data lama yang seluruh team dan pemainnya verified; audit backfill tersedia dan data belum lengkap tidak berubah.
+- [ ] Submit roster lengkap Badminton Ganda Campuran dengan seluruh dokumen tidak menghasilkan `413 Request Entity Too Large`.
+- [ ] Dokumen individual di atas 1 MB ditolak langsung pada form dan tetap ditolak oleh validasi server.
+- [ ] Dropdown pencarian PDAM tertutup setelah memilih data atau mengklik area lain pada halaman.
+- [ ] Submit dengan dokumen menampilkan persentase dan progress bar sampai request selesai.
+- [ ] Tombol submit terkunci selama upload dan pengguna mendapat arahan untuk tidak menutup halaman.
+- [ ] Folder dokumen tersusun berdasarkan PD, cabor/event, entry, serta pemain/official tanpa memakai nama manusia.
+- [ ] Periode pendaftaran pada Data Lomba tampil `01 Jul, 2026 — 30 Jul, 2026` tanpa jam; waktu audit tetap lengkap.

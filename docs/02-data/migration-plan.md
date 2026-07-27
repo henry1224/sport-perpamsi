@@ -106,3 +106,4 @@ Phase 6 tidak boleh membuat seed/bracket baru sebelum match participant memakai 
 - Migration tidak mengubah data existing dan tidak membutuhkan backfill; seluruh nilai awal `null`.
 - Izin hanya dapat dibuka Admin sebelum bracket dikunci, saat kuota team masih tersedia.
 - Submit team baru menghapus izin dalam transaksi yang sama; rollback migration hanya menghapus kolom state tanpa menghapus team atau audit.
+- Migration `2026_07_27_000001` memfinalkan parent lama yang masih pending meski seluruh team aktif dan pemainnya sudah verified; audit `verified_automatically_backfill` menyimpan jejak perubahan. Rollback tidak mengembalikan status bisnis yang sah.

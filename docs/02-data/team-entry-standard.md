@@ -85,11 +85,14 @@ Aturan:
 - Setiap pemain wajib memilih asal PDAM dari master nasional. PDAM tidak mengubah nama kontingen PD PERPAMSI dan tidak berlaku untuk official.
 - Dokumen pemain wajib: foto 3×4, form pendaftaran, KTP, kartu DAPENMA/dana pensiun lain, dan SK karyawan tetap.
 - Dokumen official wajib: foto 3×4 dan KTP. File disimpan privat; UI hanya menerima status kelengkapan.
+- Path dokumen memakai identifier stabil, bukan nama manusia: `registrations/pd-{regional_committee_id}/{event_code}/{entry_public_id}/{player|official}/{member_key}/{document_key}-{uuid}.{ext}`.
+- Nama PD, pemain, dan official tidak dimasukkan ke folder karena dapat berubah, berpotensi duplikat, dan termasuk data pribadi.
 - Dokumen privat hanya dibuka melalui route terautentikasi berdasarkan `entry_member_id` dan key dokumen; path storage tidak pernah diterima dari client.
 - Jika `official_can_compete = false`, identitas official tidak boleh muncul sebagai pemain pada registrasi aktif PD yang sama.
 - Jika `official_can_compete = true`, rangkap tetap dicatat dan daftar cabor pemain ditampilkan kepada pendaftar serta Admin.
 - Team aktif dihitung terhadap `max_teams_per_pd`; team cancelled tidak memakai kuota, tetapi nomornya tidak digunakan ulang.
-- Penambahan team baru sah selama registrasi terbuka dan jumlah team aktif lebih kecil dari `max_teams_per_pd`, termasuk ketika parent sudah `pending`; status verifikasi team existing tidak menjadi syarat.
+- Penambahan team baru sah selama registrasi terbuka dan jumlah team aktif lebih kecil dari `max_teams_per_pd`, termasuk ketika parent sudah `pending` atau `verified`; status verifikasi team existing tidak menjadi syarat.
+- Submit team tambahan pada parent `verified` mengembalikan parent ke `pending`, mempertahankan team lama yang verified, dan hanya memasukkan team baru ke antrian pemeriksaan.
 - Setelah registrasi ditutup, penambahan hanya sah melalui izin eksplisit `team_addition_opened_at` sebelum bracket dikunci.
 - Kuota `1` berarti satu team tetap; portal tidak menampilkan tombol `Tambah Tim` setelah team pertama tersedia.
 - Kuota lebih dari `1` menampilkan tombol `Tambah Tim` hanya selama slot masih tersedia; UI menyembunyikan tombol saat kuota penuh, sementara validasi server tetap menjadi kontrol utama.
@@ -117,7 +120,7 @@ effective_team_status =
 ```
 
 - Submit parent mengubah status default menjadi `pending`.
-- Verifikasi parent menjadi keputusan default seluruh team tanpa override.
+- Tidak ada aksi persetujuan parent terpisah. Persetujuan team aktif terakhir mengubah parent menjadi `verified` secara otomatis dalam transaksi yang sama.
 - Admin dapat memberi override `revision_required`, `verified`, `rejected`, atau `cancelled` pada team tertentu.
 - Override tidak mengubah team lain. Penolakan parent menghapus override team aktif dengan audit `parent_rejected` agar alur perbaikan penuh tidak buntu.
 - Reset override adalah action eksplisit, berizin, dan diaudit.
@@ -136,7 +139,8 @@ effective_team_status =
 - Bracket lock juga ditolak ketika jumlah seluruh team aktif tidak sama dengan jumlah team efektif `verified`; UI wajib menampilkan selisih agar tidak ada pengajuan terlewat.
 - Penguncian minimum membutuhkan dua team, menyimpan `entry_teams.seed_no`, `tournament_events.bracket_size`, dan `seed_locked_at` dalam satu transaksi.
 - Setiap pemain memiliki status verifikasi sendiri: `pending`, `revision_required`, `verified`, atau `rejected`; perubahan status dicatat pada `entry_member_audits`.
-- Parent `EventEntry` tidak dapat disetujui sebelum seluruh team aktif efektif `verified` dan seluruh pemain pada team aktif berstatus `verified`; team cancelled dan pemainnya tidak dihitung.
+- Parent `EventEntry` otomatis menjadi `verified` setelah seluruh team aktif memiliki override `verified`; team cancelled dan pemainnya tidak dihitung.
+- Finalisasi otomatis ditunda selama `team_addition_opened_at` aktif. Submit team tambahan mengembalikan parent ke `pending` sampai team baru disetujui.
 - Bracket lock mensyaratkan jumlah pemain aktif sama dengan jumlah pemain verified selain gate verifikasi team.
 - Audit mencatat before/after, aktor, alasan, waktu, dan sumber keputusan (`parent_default` atau `team_override`).
 
@@ -179,7 +183,8 @@ Admin tetapkan kuota hasil technical meeting
 → PD membuat EntryTeam sampai batas snapshot
 → PD mengisi EntryMember per team
 → submit parent
-→ Admin verifikasi parent atau override team
+→ Admin verifikasi pemain dan menyetujui setiap team
+→ persetujuan team aktif terakhir memfinalkan parent otomatis
 → hanya team efektif verified masuk seed
 → bracket lock menyimpan participant/roster snapshot
 → match, hasil, standing, dan medali menunjuk EntryTeam

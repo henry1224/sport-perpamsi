@@ -61,7 +61,7 @@
 
 - Parent administratif unik per `regional_committee_id + tournament_event_id`.
 - `registration_key`: key unik `{event_id}:{regional_committee_id}`; null hanya pada data legacy sebelum backfill.
-- `verification_status`: default seluruh team (`draft`, `pending`, `revision_required`, `verified`, `rejected`, `cancelled`).
+- `verification_status`: status parent (`draft`, `pending`, `revision_required`, `verified`, `rejected`, `cancelled`); `verified` diisi otomatis saat team aktif terakhir disetujui dan kembali `pending` ketika team tambahan diajukan.
 - `submitted_at`, `verified_by`, `verified_at`, `verification_note`.
 - `entry_registration_audits`: action, before/after parent/team/roster, aktor, alasan, dan waktu.
 - `pdam_id`, `province_id`, `regency_id`, `athlete_1`, `athlete_2`, `team_name`: kolom legacy sementara, tidak ditulis flow target.
