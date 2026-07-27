@@ -133,6 +133,17 @@ Form tambah/edit wajib memakai modal light dan kelompok field yang jelas. Sectio
 - Submit disabled saat loading.
 - Write action berisiko wajib confirmation.
 
+### Status Registrasi PD
+
+- Status registrasi terkunci memakai card informasi portal, bukan alert polos: badge status, judul, penjelasan singkat, dan langkah berikutnya tersusun dengan hierarchy jelas.
+- Panel `pending` memakai token portal terang, border biru-abu, aksen status kuning lembut, radius `14px`, dan spacing `16-20px`; tidak memakai warna atau shadow baru.
+- Informasi sisa kuota menjadi metadata pendukung, bukan CTA, selama parent masih terkunci.
+- Tombol `Tambah Tim` diletakkan pada header kelompok team agar hubungan aksinya jelas.
+- Jika kuota team `1`, tombol tidak ditampilkan setelah team pertama tersedia.
+- Jika kuota team lebih dari `1`, tombol/form team baru tampil selama slot tersedia dan registrasi masih terbuka, termasuk saat parent pending. Team dan official existing tetap read-only.
+- Setelah registrasi ditutup, form team baru hanya tampil bila Admin membuka izin khusus penambahan team.
+- Disabled hanya dipakai selama request diproses. Kondisi yang tidak dapat dilakukan karena aturan bisnis disembunyikan dan dijelaskan melalui teks kapasitas.
+
 ### Table
 
 - Server-side pagination.

@@ -89,6 +89,10 @@ Aturan:
 - Jika `official_can_compete = false`, identitas official tidak boleh muncul sebagai pemain pada registrasi aktif PD yang sama.
 - Jika `official_can_compete = true`, rangkap tetap dicatat dan daftar cabor pemain ditampilkan kepada pendaftar serta Admin.
 - Team aktif dihitung terhadap `max_teams_per_pd`; team cancelled tidak memakai kuota, tetapi nomornya tidak digunakan ulang.
+- Penambahan team baru sah selama registrasi terbuka dan jumlah team aktif lebih kecil dari `max_teams_per_pd`, termasuk ketika parent sudah `pending`; status verifikasi team existing tidak menjadi syarat.
+- Setelah registrasi ditutup, penambahan hanya sah melalui izin eksplisit `team_addition_opened_at` sebelum bracket dikunci.
+- Kuota `1` berarti satu team tetap; portal tidak menampilkan tombol `Tambah Tim` setelah team pertama tersedia.
+- Kuota lebih dari `1` menampilkan tombol `Tambah Tim` hanya selama slot masih tersedia; UI menyembunyikan tombol saat kuota penuh, sementara validasi server tetap menjadi kontrol utama.
 - Perubahan sebelum ada entry memakai republish dan audit.
 - Perubahan setelah entry masuk wajib workflow regulasi berversi dan tidak boleh diam-diam membatalkan team existing.
 - Official disimpan terpisah dari `EntryMember`; kuota dan peran mengikuti snapshot Data Lomba.

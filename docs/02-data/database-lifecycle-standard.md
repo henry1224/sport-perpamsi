@@ -48,6 +48,7 @@ Jika satu poin gagal, struktur tetap dipertahankan.
 - Seeder production tidak membuat password default atau data pribadi contoh.
 - Seeder demo dipisahkan dari master dan hanya dijalankan pada environment non-production.
 - `TournamentDomainSeeder` tidak membuat roster untuk PD Kalimantan Timur karena akun tersebut disediakan khusus untuk pengujian alur registrasi PD.
+- Seeder registrasi PD demo tidak disediakan; roster manual harus dibuat melalui portal PD agar alur produksi yang sama selalu diuji.
 - Kategori panduan teknis yang tidak aktif dihapus bersama agenda, kompetisi, entry, pemain, pertandingan, skor, dan audit turunannya melalui migration destruktif terpisah setelah backup.
 - Urutan seeder mengikuti foreign key: master → relasi → demo.
 - Perubahan kode/status master memakai key stabil, bukan ID hardcoded.

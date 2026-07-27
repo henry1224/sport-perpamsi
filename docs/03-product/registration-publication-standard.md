@@ -96,16 +96,20 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 3. Sistem membuat satu parent `EventEntry` per PD/kompetisi.
 4. PD membuat `EntryTeam` sampai batas `max_teams_per_pd` pada snapshot.
 5. Portal PD menampilkan label aturan dalam Bahasa Indonesia, sisa kuota team, jumlah pemain per team, batas official, dan kebijakan official bertanding; kode internal seperti `group_or_knockout` tidak ditampilkan.
-6. Setelah submit, penambahan team baru terkunci. Perbaikan per-team hanya membuka team dengan override `revision_required`; perubahan kuota atau penambahan team membutuhkan revisi parent.
-7. Penolakan tidak otomatis membuka form. Admin membuka kembali parent sebagai `revision_required` atau mereset/mengubah override team, kemudian PD mendapat tombol pengajuan ulang sesuai lingkup perbaikan.
-8. Pendaftaran yang dibatalkan PD dapat diajukan ulang hanya selama periode pendaftaran masih terbuka; setelah ditutup, data tetap terkunci sebagai histori.
-5. Form dan validasi pemain bekerja per team memakai snapshot anggota per team.
-6. Label team dibentuk server; client tidak mengirim nomor atau nama bebas.
-7. PD submit parent; status parent menjadi default seluruh team.
-8. Admin dapat memverifikasi parent sekaligus dan memberi override team tertentu.
-9. Hanya team efektif verified masuk seed/bracket.
-10. PD tetap melihat parent/team setelah registrasi ditutup, tetapi tidak dapat membuat team baru.
-11. Pemain dan official mengisi NIK/KTA pada form terpisah; submit memvalidasi dokumen wajib serta aturan rangkap dari snapshot.
+6. Tombol `Tambah Tim` tampil ketika `max_teams_per_pd > 1`, jumlah team aktif masih di bawah kuota, dan periode registrasi masih terbuka. Berlaku pada draft maupun parent `pending`; verifikasi team existing bukan syarat penambahan team baru.
+7. Ketika kuota team sudah terpenuhi, tombol `Tambah Tim` disembunyikan dan UI menampilkan keterangan `Kuota {n} tim telah terpenuhi`; backend tetap menolak payload yang melewati snapshot kuota.
+8. Setelah submit, roster team existing terkunci tetapi slot team yang belum dipakai tetap dapat diisi langsung selama periode registrasi terbuka. Admin memakai aksi `Buka Penambahan Tim` hanya sebagai pengecualian setelah periode ditutup dan sebelum bracket dikunci.
+9. Status `pending` ditampilkan sebagai panel informasi portal yang senada dengan card lain: badge status, judul singkat, penjelasan tindakan berikutnya, dan informasi sisa kuota tanpa memberi kesan form dapat langsung diedit.
+10. Jika entry `pending` masih memiliki sisa kuota dan periode registrasi terbuka, portal langsung menampilkan form team baru. Jika periode sudah ditutup, panel menjelaskan bahwa Admin harus membuka izin `Penambahan Tim`.
+11. Penolakan tidak otomatis membuka form. Admin membuka kembali parent sebagai `revision_required` atau mereset/mengubah override team, kemudian PD mendapat tombol pengajuan ulang sesuai lingkup perbaikan.
+12. Pendaftaran yang dibatalkan PD dapat diajukan ulang hanya selama periode pendaftaran masih terbuka; setelah ditutup, data tetap terkunci sebagai histori.
+13. Form dan validasi pemain bekerja per team memakai snapshot anggota per team.
+14. Label team dibentuk server; client tidak mengirim nomor atau nama bebas.
+15. PD submit parent; status parent menjadi default seluruh team.
+16. Admin dapat memverifikasi parent sekaligus dan memberi override team tertentu.
+17. Hanya team efektif verified masuk seed/bracket.
+18. PD tetap melihat parent/team setelah registrasi ditutup, tetapi tidak dapat membuat team baru.
+19. Pemain dan official mengisi NIK/KTA pada form terpisah; submit memvalidasi dokumen wajib serta aturan rangkap dari snapshot.
 
 Semantik lengkap mengikuti [standar multi-team](../02-data/team-entry-standard.md).
 

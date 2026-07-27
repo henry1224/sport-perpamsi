@@ -125,9 +125,11 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] Penolakan parent menghapus override team aktif, mencatat audit, dan dapat dibuka kembali tanpa status buntu.
 - [ ] Team cancelled beserta pemainnya tidak masuk hitungan progres dan gate persetujuan parent.
 - [ ] Pendaftaran cancelled dapat diajukan ulang saat periode masih buka dan terkunci setelah periode tutup.
-
-### Data Demo Verifikasi Pemain
-
-- `aceh@gmail.com`: satu team Ganda Campuran, dua pemain, satu verified dan satu pending.
-- `pd-kalimantan-timur@perpamsi.local`: satu team Ganda Campuran, dua pemain pending.
-- Seeder eksplisit: `php artisan db:seed --class=PdVerificationDemoSeeder`.
+- [ ] Kuota satu team tidak menampilkan tombol `Tambah Tim` setelah team pertama tersedia.
+- [ ] Kuota multi-team menampilkan form `Tambah Tim` selama periode terbuka dan slot tersedia, termasuk parent pending.
+- [ ] Penambahan team tidak menunggu team existing diverifikasi; roster existing tetap terkunci.
+- [ ] Tombol `Tambah Tim` tidak tampil saat kuota penuh atau revisi hanya berlaku untuk satu team.
+- [ ] Panel `Pendaftaran menunggu verifikasi` senada dengan card portal dan menjelaskan status, data terkunci, langkah berikutnya, serta sisa kuota.
+- [ ] Admin dapat memilih `Buka Penambahan Tim` pada parent pending yang masih memiliki kuota sebelum bracket dikunci.
+- [ ] Izin penambahan team hanya membuka form team baru; team verified dan official existing tidak dapat diedit.
+- [ ] Setelah team baru diajukan, izin tertutup otomatis dan team baru masuk antrian verifikasi tanpa mengubah status team lama.

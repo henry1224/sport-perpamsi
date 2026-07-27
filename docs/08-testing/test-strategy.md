@@ -102,6 +102,11 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 79. Pemain tidak dapat diverifikasi ketika effective status team revision required, rejected, cancelled, atau verified.
 80. Penolakan parent menghapus override team aktif dengan audit, lalu parent dapat dibuka kembali tanpa deadlock.
 81. Resubmit per-team mencatat audit registrasi dan audit team tanpa mengubah team lain atau official.
+82. Kuota satu team tidak menampilkan tombol tambah setelah team pertama tersedia.
+83. Kuota multi-team menampilkan form tambah saat slot tersedia dan registrasi terbuka, termasuk parent pending, tanpa menunggu team existing verified.
+84. Backend menolak penambahan team melewati snapshot walau request dibuat tanpa UI.
+85. Panel status pending menampilkan status, penjelasan data terkunci, langkah membuka revisi parent, dan sisa kuota tanpa CTA tambah team.
+86. Admin dapat membuka penambahan team pada parent pending sebelum bracket dikunci ketika periode umum sudah ditutup; team existing tetap terkunci, izin terhapus setelah submit, dan audit `team_addition_opened` serta `team_added` tersimpan.
 70. Master PDAM mendukung pencarian, filter provinsi, tambah, dan edit tanpa menghapus referensi pemain.
 71. Perubahan Master Cabor, Kategori, atau Regulasi menyinkronkan Data Lomba draft terkait tanpa mengubah snapshot terpublikasi.
 

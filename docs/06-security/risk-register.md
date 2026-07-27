@@ -140,6 +140,9 @@ Backup database wajib dibuat sebelum migration penghapusan kategori nonaktif. Re
 | Verifikasi pemain dilakukan saat team sedang revision/rejected | Tinggi | Perubahan status pemain hanya diterima ketika effective status team pending | Feature test transisi pemain |
 | Penolakan parent menyisakan override team dan membuat perbaikan buntu | Tinggi | Penolakan parent menghapus override team aktif dalam transaksi dan mencatat audit per team | Feature test reject-reopen-resubmit |
 | Team cancelled masih masuk progres atau gate persetujuan | Tinggi | Semua hitungan dan gate verifikasi memakai definisi team aktif `cancelled_at IS NULL` | Feature test team cancelled |
+| Izin penambahan team membuka roster verified | Kritis | State terpisah hanya menerima payload team baru; team dan official existing tidak diproses | Feature test penambahan team setelah verifikasi |
+| Team ditambah melewati kuota atau setelah bracket | Kritis | Admin gate status event, hitung team aktif server, validasi snapshot, dan izin sekali pakai | Feature test kuota dan status bracket |
+| Parent disetujui saat PD sedang menambah team | Tinggi | Persetujuan parent ditolak selama `team_addition_opened_at` aktif | Feature test gate parent |
 
 ## Definition of Done Risiko
 
