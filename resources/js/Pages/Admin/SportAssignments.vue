@@ -16,7 +16,7 @@ const revoke = (id) => router.post(`/admin/assignments/${id}/revoke`, {}, { pres
 
 <template>
   <PortalLayout portal="admin">
-    <div class="page-head"><SectionTitle eyebrow="Operasional" title="Panitia & Akses Venue" meta="Assignment cabor dan venue" /></div>
+    <div class="page-head"><SectionTitle eyebrow="Operasional" title="Panitia & Akses Venue" /></div>
 
     <div class="forms-grid">
       <form class="form-card" @submit.prevent="createUser">

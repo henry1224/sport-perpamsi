@@ -89,7 +89,7 @@ const changeTab = (id) => { tab.value = id; router.get('/admin/master-data', { t
 
 <template>
   <PortalLayout portal="admin">
-    <div class="page-head"><SectionTitle eyebrow="Master Data" title="Master Data Lomba" meta="Sumber data resmi kompetisi" /></div>
+    <div class="page-head"><SectionTitle eyebrow="Master Data" title="Master Data Lomba" /></div>
 
     <section class="overview-card">
       <div><span>Master Data</span><h2>Kelola fondasi lomba dari satu tempat.</h2><p>Cabor, kategori, dan regulasi tersimpan terstruktur. Perubahan penting masuk audit secara otomatis.</p></div>

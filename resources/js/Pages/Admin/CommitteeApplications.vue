@@ -15,7 +15,7 @@ const review = (id, action) => {
 
 <template>
   <PortalLayout portal="admin">
-    <div class="page-head"><SectionTitle eyebrow="Akses Daerah" title="Verifikasi Pengurus Daerah" :meta="`${applications.total} pengajuan`" /></div>
+    <div class="page-head"><SectionTitle eyebrow="Akses Daerah" title="Verifikasi Pengurus Daerah" /></div>
     <AdminDataTable :paginator="applications" :filters="filters" item-label="pengajuan" search-placeholder="Cari PD, nama, atau email" :filter-options="[
       { value: 'pending', label: 'Menunggu' }, { value: 'revision_required', label: 'Perlu Perbaikan' },
       { value: 'verified', label: 'Terverifikasi' }, { value: 'rejected', label: 'Ditolak' },

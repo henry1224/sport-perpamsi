@@ -32,7 +32,7 @@ const typeLabel = { sport: 'Pertandingan', exhibition: 'Eksibisi', official: 'Ac
 
 <template>
   <PortalLayout portal="admin">
-    <div class="page-head"><SectionTitle :eyebrow="mode === 'venues' ? 'Master Data' : 'Operasional'" :title="mode === 'venues' ? 'Master Venue' : 'Agenda & Jadwal'" :meta="mode === 'venues' ? `${venues.total} venue` : 'Publikasi agenda, jadwal pertandingan, dan konflik waktu'" /></div>
+    <div class="page-head"><SectionTitle :eyebrow="mode === 'venues' ? 'Master Data' : 'Operasional'" :title="mode === 'venues' ? 'Master Venue' : 'Agenda & Jadwal'" /></div>
     <section v-if="mode === 'venues'" class="overview-card"><div><span>Direktori Lokasi</span><h2>Kelola lokasi resmi untuk seluruh agenda lomba.</h2><p>Identitas, alamat, koordinat, kontak, dan fasilitas venue tersimpan dalam satu master.</p></div><dl><div><dt>Total Venue</dt><dd>{{ venues.total }}</dd></div><div><dt>Aktif Tampil</dt><dd>{{ activeVenueCount }}</dd></div><div><dt>Data Tampil</dt><dd>{{ venueOptions.length }}</dd></div></dl></section>
     <div v-if="mode === 'venues'" class="venue-heading"><div><b>Daftar Master Venue</b><span>Tambah venue terlebih dahulu, lalu gunakan filter pada tabel.</span></div><button @click="openVenue()">Tambah Venue</button></div>
     <AdminDataTable v-if="mode === 'venues'" :paginator="venues" :filters="filters" item-label="venue" search-placeholder="Cari nama, kode, kota, atau alamat…" :filter-options="[{ value: 'active', label: 'Aktif' }, { value: 'inactive', label: 'Nonaktif' }]">

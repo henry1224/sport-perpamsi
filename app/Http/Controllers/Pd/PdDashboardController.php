@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Pd;
 
 use App\Http\Controllers\Controller;
 use App\Models\EventEntry;
+use App\Models\EntryTeam;
 use App\Models\TournamentEvent;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -33,6 +34,15 @@ class PdDashboardController extends Controller
             ->groupBy('event_entries.tournament_event_id', 'entry_members.verification_status')
             ->get()
             ->groupBy('tournament_event_id');
+        $teamCounts = EntryTeam::query()
+            ->join('event_entries', 'entry_teams.event_entry_id', '=', 'event_entries.id')
+            ->where('event_entries.regional_committee_id', $committee->id)
+            ->whereNull('entry_teams.cancelled_at')
+            ->selectRaw("event_entries.tournament_event_id, COALESCE(entry_teams.verification_status_override, event_entries.verification_status) as effective_status, count(*) as total")
+            ->groupBy('event_entries.tournament_event_id')
+            ->groupByRaw('COALESCE(entry_teams.verification_status_override, event_entries.verification_status)')
+            ->get()
+            ->groupBy('tournament_event_id');
 
         $events = TournamentEvent::query()
             ->with(['sport:id,code,name', 'category:id,name,competition_type,min_members,max_members'])
@@ -47,9 +57,10 @@ class PdDashboardController extends Controller
             ->orderBy('name')
             ->paginate($perPage, ['id', 'code', 'name', 'sport_id', 'sport_category_id', 'status', 'format', 'registration_rules', 'registration_published_at', 'registration_open_at', 'registration_close_at'])
             ->withQueryString()
-            ->through(function ($event) use ($counts, $playerCounts) {
+            ->through(function ($event) use ($counts, $playerCounts, $teamCounts) {
                 $eventCounts = collect($counts->get($event->id, []))->pluck('total', 'verification_status');
                 $eventPlayerCounts = collect($playerCounts->get($event->id, []))->pluck('total', 'verification_status');
+                $eventTeamCounts = collect($teamCounts->get($event->id, []))->pluck('total', 'effective_status');
                 $rules = $event->registration_rules ?? [];
 
                 return [
@@ -72,6 +83,13 @@ class PdDashboardController extends Controller
                         'verified' => (int) $eventCounts->get('verified', 0),
                         'pending' => (int) $eventCounts->get('pending', 0),
                         'rejected' => (int) $eventCounts->get('rejected', 0),
+                    ],
+                    'teams' => [
+                        'total' => (int) $eventTeamCounts->sum(),
+                        'verified' => (int) $eventTeamCounts->get('verified', 0),
+                        'pending' => (int) $eventTeamCounts->get('pending', 0),
+                        'revision_required' => (int) $eventTeamCounts->get('revision_required', 0),
+                        'rejected' => (int) $eventTeamCounts->get('rejected', 0),
                     ],
                     'players' => [
                         'total' => (int) $eventPlayerCounts->sum(),

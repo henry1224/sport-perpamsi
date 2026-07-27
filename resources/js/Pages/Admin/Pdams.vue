@@ -17,7 +17,7 @@ const save = () => { const options = { preserveScroll: true, onSuccess: () => { 
 
 <template>
   <PortalLayout portal="admin">
-    <div class="page-head"><SectionTitle eyebrow="Master Data" title="Master PDAM" :meta="`${pdams.total} PDAM`" /></div>
+    <div class="page-head"><SectionTitle eyebrow="Master Data" title="Master PDAM" /></div>
     <section class="overview-card"><div><span>Direktori PDAM</span><h2>Sumber asal seluruh pemain yang didaftarkan.</h2><p>Data provinsi, kota, dan identitas PDAM dipakai pada registrasi peserta.</p></div><dl><div><dt>Total PDAM</dt><dd>{{ pdams.total }}</dd></div><div><dt>Provinsi</dt><dd>{{ provinces.length }}</dd></div><div><dt>Data Tampil</dt><dd>{{ pdams.data.length }}</dd></div></dl></section>
     <div class="section-actions"><div><strong>Daftar Master PDAM</strong><span>Kelola identitas dan wilayah asal pemain.</span></div><button type="button" @click="showForm()">Tambah PDAM</button></div>
 

@@ -62,6 +62,14 @@ class MultiTeamRegistrationTest extends TestCase
         $this->assertSame('pending', $entry->verification_status);
         $this->assertSame('verified', $firstTeam->fresh()->verification_status_override);
         $this->assertNull($secondTeam->verification_status_override);
+        $this->actingAs($pd)->get(route('pd.dashboard', ['search' => $event->code]))->assertInertia(fn ($page) => $page
+            ->where('events.data.0.code', $event->code)
+            ->where('events.data.0.entries.pending', 1)
+            ->where('events.data.0.teams.total', 2)
+            ->where('events.data.0.teams.verified', 1)
+            ->where('events.data.0.teams.pending', 1)
+            ->where('events.data.0.players.total', 2)
+            ->where('events.data.0.players.verified', 1));
 
         $secondTeam->members->each->update(['verification_status' => 'verified']);
         $this->actingAs($admin)->post(route('admin.entry-teams.override', $secondTeam), ['status' => 'verified', 'reason' => 'Tim kedua lengkap.'])->assertRedirect();

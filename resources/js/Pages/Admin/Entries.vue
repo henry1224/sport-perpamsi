@@ -1,5 +1,5 @@
 <script setup>
-import { router, usePage } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import AdminDataTable from '../../Components/AdminDataTable.vue';
 import Modal from '../../Components/Modal.vue';
@@ -9,8 +9,6 @@ import Sheet from '../../Components/Sheet.vue';
 import { statusLabel } from '../../lib/status';
 
 const props = defineProps({ entries: Object, filters: Object });
-const page = usePage();
-const flash = computed(() => page.props.flash || {});
 const selectedId = ref(null);
 const teamAction = ref(null);
 const teamReason = ref('');
@@ -44,8 +42,7 @@ const rejectMember = (member) => openNoteAction({ title: 'Tolak Pemain', eyebrow
 
 <template>
   <PortalLayout portal="admin">
-    <div class="page-head"><SectionTitle eyebrow="Verifikasi Pendaftaran" title="Antrian Peserta" :meta="`${entries.total} PD menunggu pemeriksaan`" /></div>
-    <div v-if="flash.success" class="flash">{{ flash.success }}</div><div v-if="flash.error" class="flash error">{{ flash.error }}</div>
+    <div class="page-head"><SectionTitle eyebrow="Verifikasi Pendaftaran" title="Antrian Peserta" /></div>
 
     <AdminDataTable :paginator="entries" :filters="filters" item-label="pendaftaran" search-placeholder="Cari PD, kompetisi, atau pemain" :filter-options="[{ value: 'registration_open', label: 'Pendaftaran Dibuka' }, { value: 'registration_closed', label: 'Pendaftaran Ditutup' }, { value: 'bracket_locked', label: 'Bracket Dikunci' }]" v-slot="{ rows }">
       <table class="verification-table">
@@ -88,7 +85,7 @@ const rejectMember = (member) => openNoteAction({ title: 'Tolak Pemain', eyebrow
               </div>
             </details>
           </div>
-          <div v-if="selected.verification_status === 'pending'" class="team-actions"><span v-if="team.verified_players_count !== team.players_count" class="team-blocker">{{ team.players_count - team.verified_players_count }} pemain belum verified</span><button :disabled="team.players_count === 0 || team.verified_players_count !== team.players_count" :title="team.verified_players_count !== team.players_count ? 'Verifikasi seluruh pemain sebelum menyetujui tim' : 'Setujui tim'" @click="openTeamAction(team, 'verified')">Setujui Tim</button><button @click="openTeamAction(team, 'revision_required')">Perbaikan Tim</button><button class="danger" @click="openTeamAction(team, 'rejected')">Tolak Tim</button><button v-if="team.override" @click="openTeamAction(team, 'reset')">Reset Override</button></div>
+          <div v-if="selected.verification_status === 'pending' && team.effective_status === 'pending'" class="team-actions"><span v-if="team.verified_players_count !== team.players_count" class="team-blocker">{{ team.players_count - team.verified_players_count }} pemain belum verified</span><button :disabled="team.players_count === 0 || team.verified_players_count !== team.players_count" :title="team.verified_players_count !== team.players_count ? 'Verifikasi seluruh pemain sebelum menyetujui tim' : 'Setujui tim'" @click="openTeamAction(team, 'verified')">Setujui Tim</button><button @click="openTeamAction(team, 'revision_required')">Perbaikan Tim</button><button class="danger" @click="openTeamAction(team, 'rejected')">Tolak Tim</button></div><div v-else-if="selected.verification_status === 'pending' && team.override" class="team-actions"><button @click="openTeamAction(team, 'reset')">Reset Override</button></div>
         </section>
 
         <section v-if="selected.officials.length" class="official-section"><header><div><span>Kelengkapan Pendamping</span><h3>Official</h3></div><small>Official tidak masuk gate verifikasi pemain</small></header><details v-for="official in selected.officials" :key="official.id"><summary><strong>{{ official.name }}</strong><span>{{ official.role.replaceAll('_', ' ') }} · {{ official.document_count }}/2 dokumen</span></summary><div class="document-grid official-documents"><a v-for="document in official.documents" :key="document.key" :href="document.url" target="_blank" rel="noopener"><img v-if="document.key === 'photo'" :src="document.url" alt="Foto official"><div v-else class="document-file" aria-hidden="true"><strong>DOK</strong><span>File tersedia</span></div><span>{{ documentLabel(document.key) }}</span><small>Lihat dokumen <b>↗</b></small></a></div></details></section>

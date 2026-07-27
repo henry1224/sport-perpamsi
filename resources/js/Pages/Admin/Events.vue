@@ -89,7 +89,7 @@ const lockBracket = (event) => {
 
 <template>
   <PortalLayout portal="admin">
-    <div class="page-head"><SectionTitle eyebrow="Penyusunan Lomba" title="Data Lomba" :meta="`${events.total} kompetisi`" /></div>
+    <div class="page-head"><SectionTitle eyebrow="Penyusunan Lomba" title="Data Lomba" /></div>
     <section class="overview-card"><div><span>Data Kompetisi</span><h2>Susun paket lomba sebelum registrasi dibuka.</h2><p>Hubungkan cabor, kategori, regulasi, format, serta aturan peserta dalam satu data resmi.</p></div><dl><div><dt>Total Data</dt><dd>{{ events.total }}</dd></div><div><dt>Cabor Aktif</dt><dd>{{ sports.length }}</dd></div><div><dt>Audit Terbaru</dt><dd>{{ audits.length }}</dd></div></dl></section>
     <div class="section-actions"><div><strong>Daftar Data Lomba</strong><span>Buat draft, periksa aturan, lalu publikasikan untuk Pengurus Daerah.</span></div><button type="button" class="primary create-button" @click="openEvent()">Tambah Data Lomba</button></div>
     <section class="status-flow" aria-label="Alur status Data Lomba"><div v-for="([value, label, note], index) in statusFlow" :key="value" :class="['flow-step', value]"><span>{{ index + 1 }}</span><div><strong>{{ label }}</strong><small>{{ note }}</small></div></div></section>
