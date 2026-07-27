@@ -58,7 +58,6 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::get('/skor', [ScoreController::class, 'index'])->name('scores.index');
     Route::post('/skor', [ScoreController::class, 'store'])->name('scores.store');
     Route::get('/entries', [AdminEntryVerificationController::class, 'index'])->name('entries.index');
-    Route::post('/entries/{entry}/verify', [AdminEntryVerificationController::class, 'verify'])->name('entries.verify');
     Route::post('/entries/{entry}/reject', [AdminEntryVerificationController::class, 'reject'])->name('entries.reject');
     Route::post('/entries/{entry}/revision', [AdminEntryVerificationController::class, 'revision'])->name('entries.revision');
     Route::post('/entries/{entry}/team-addition', [AdminEntryVerificationController::class, 'openTeamAddition'])->name('entries.team-addition');

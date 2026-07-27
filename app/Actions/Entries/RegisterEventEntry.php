@@ -17,7 +17,7 @@ class RegisterEventEntry
     {
         $existing = EventEntry::query()->with('teams')->where('registration_key', $event->id.':'.$user->regional_committee_id)->first();
         $teamRevisionIds = $existing?->teams->where('verification_status_override', 'revision_required')->pluck('id') ?? collect();
-        $teamAddition = (bool) $existing?->team_addition_opened_at || ($existing?->verification_status === 'pending' && $teamRevisionIds->isEmpty() && $event->registrationIsOpen() && $existing->teams->whereNull('cancelled_at')->count() < ($event->registration_rules['max_teams_per_pd'] ?? 1));
+        $teamAddition = (bool) $existing?->team_addition_opened_at || ($existing && in_array($existing->verification_status, ['pending', 'verified'], true) && $teamRevisionIds->isEmpty() && $event->registrationIsOpen() && $existing->teams->whereNull('cancelled_at')->count() < ($event->registration_rules['max_teams_per_pd'] ?? 1));
         $canRevise = $existing?->verification_status === 'revision_required' || $teamRevisionIds->isNotEmpty() || $teamAddition;
 
         if (! $event->registrationIsOpen() && ! $canRevise) {
@@ -30,7 +30,7 @@ class RegisterEventEntry
         return DB::transaction(function () use ($user, $event, $data, $teamRevisionIds, $teamAddition) {
             $entry = EventEntry::query()->lockForUpdate()->firstOrNew(['registration_key' => $event->id.':'.$user->regional_committee_id]);
             $teamScopedRevision = $entry->exists && $entry->verification_status === 'pending' && $teamRevisionIds->isNotEmpty();
-            abort_if($entry->exists && $entry->verification_status === 'verified', 422, 'Pendaftaran terverifikasi tidak dapat diubah.');
+            abort_if($entry->exists && $entry->verification_status === 'verified' && ! $teamAddition, 422, 'Pendaftaran terverifikasi tidak dapat diubah.');
             abort_if($entry->exists && $entry->verification_status === 'pending' && ! $teamScopedRevision && ! $teamAddition, 422, 'Pendaftaran yang sedang diproses tidak dapat diubah.');
             abort_if($entry->exists && ! $teamScopedRevision && ! $teamAddition && $entry->teams()->where('verification_status_override', 'verified')->exists(), 422, 'Roster tim terverifikasi tidak dapat diubah.');
             abort_if($entry->exists && DB::table('matches')->whereIn('team_a_id', $entry->teams()->select('id'))->orWhereIn('team_b_id', $entry->teams()->select('id'))->exists(), 422, 'Roster yang sudah masuk pertandingan tidak dapat diubah.');
@@ -41,6 +41,7 @@ class RegisterEventEntry
                 'display_name' => $user->committee->name, 'verification_status' => $data['intent'] === 'draft' ? 'draft' : 'pending',
                 'verification_note' => null, 'submitted_at' => $data['intent'] === 'submit' ? now() : null, 'verified_by' => null, 'verified_at' => null,
             ])->save();
+            $entry->setRelation('tournamentEvent', $event);
 
             $existingTeams = $entry->teams()->with('members')->get()->keyBy('team_no');
             $existingTeamsById = $existingTeams->keyBy('id');
@@ -77,7 +78,7 @@ class RegisterEventEntry
             abort_if($removedMembers->contains(fn ($member) => $member->verification_status !== 'pending' || DB::table('entry_member_audits')->where('entry_member_id', $member->id)->exists()), 422, 'Pemain atau official yang sudah diperiksa tidak dapat dihapus. Gunakan alur koreksi resmi.');
             $entry->members()->whereKey($removedMembers->pluck('id'))->delete();
 
-            if ($teamAddition) $entry->update(['team_addition_opened_at' => null, 'verification_note' => null]);
+            if ($teamAddition) $entry->update(['verification_status' => 'pending', 'team_addition_opened_at' => null, 'verification_note' => null, 'verified_by' => null, 'verified_at' => null]);
             $action = $teamAddition ? 'team_added' : ($teamScopedRevision ? 'team_resubmitted' : ($data['intent'] === 'draft' ? 'draft_saved' : (in_array($before['status'] ?? null, ['revision_required', 'rejected', 'cancelled'], true) ? 'resubmitted' : 'submitted')));
             DB::table('entry_registration_audits')->insert(['event_entry_id' => $entry->id, 'action' => $action, 'before_json' => $before ? json_encode($before) : null, 'after_json' => json_encode($this->state($entry->load('teams.members', 'members'))), 'user_id' => $user->id, 'created_at' => now(), 'updated_at' => now()]);
 
@@ -95,10 +96,12 @@ class RegisterEventEntry
         $identityType = $member['identity_type'] ?? null;
         $identityNumber = preg_replace('/[^a-zA-Z0-9]/', '', (string) ($member['identity_number'] ?? '')) ?: null;
         $documents = $existing?->documents ?? [];
+        $memberKey = $existing?->id ?: (string) Str::uuid();
+        $directory = "registrations/pd-{$entry->regional_committee_id}/{$entry->tournamentEvent->code}/{$entry->public_id}/{$type}/{$memberKey}";
         foreach (($member['documents'] ?? []) as $key => $file) {
             if (! $file) continue;
             // ponytail: file lama dipertahankan agar rollback DB tidak kehilangan dokumen; cleanup orphan ditambah saat volume storage membutuhkan.
-            $documents[$key] = $file->store("registrations/{$entry->public_id}", 'local');
+            $documents[$key] = $file->storeAs($directory, $key.'-'.Str::uuid().'.'.$file->extension(), 'local');
         }
 
         return [

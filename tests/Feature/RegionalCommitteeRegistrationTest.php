@@ -196,9 +196,10 @@ class RegionalCommitteeRegistrationTest extends TestCase
         $entry = EventEntry::query()->firstOrFail();
         $entry->update(['verification_status' => 'pending', 'verified_by' => null, 'verified_at' => null]);
         $entry->members()->where('member_type', 'player')->update(['verification_status' => 'verified', 'verified_by' => $admin->id, 'verified_at' => now()]);
-        $entry->teams()->whereNull('cancelled_at')->update(['verification_status_override' => 'verified', 'verified_by' => $admin->id, 'verified_at' => now()]);
-
-        $this->actingAs($admin)->post(route('admin.entries.verify', $entry))->assertRedirect();
+        $entry->teams()->whereNull('cancelled_at')->update(['verification_status_override' => null, 'verified_by' => null, 'verified_at' => null]);
+        foreach ($entry->teams()->whereNull('cancelled_at')->get() as $team) {
+            $this->actingAs($admin)->post(route('admin.entry-teams.override', $team), ['status' => 'verified', 'reason' => 'Tim lengkap.'])->assertRedirect();
+        }
 
         $this->assertDatabaseHas('event_entries', [
             'id' => $entry->id,

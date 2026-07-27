@@ -49,7 +49,7 @@ class PdEntryController extends Controller
                 'verification_status' => $entry->verification_status,
                 'verification_note' => $entry->verification_note,
                 'team_addition_open' => (bool) $entry->team_addition_opened_at,
-                'team_addition_available' => (bool) $entry->team_addition_opened_at || ($entry->verification_status === 'pending' && $event->registrationIsOpen() && ! $entry->teams->contains(fn ($team) => $team->verification_status_override === 'revision_required') && $entry->teams->whereNull('cancelled_at')->count() < $maximumTeams),
+                'team_addition_available' => (bool) $entry->team_addition_opened_at || (in_array($entry->verification_status, ['pending', 'verified'], true) && $event->registrationIsOpen() && ! $entry->teams->contains(fn ($team) => $team->verification_status_override === 'revision_required') && $entry->teams->whereNull('cancelled_at')->count() < $maximumTeams),
             ]);
 
         $rules = $event->registration_rules ?? [];

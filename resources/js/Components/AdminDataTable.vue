@@ -16,6 +16,7 @@ const perPage = ref(Number(props.filters.per_page || 10));
 let timer;
 
 const load = (page = 1) => router.get(window.location.pathname, {
+  event: props.filters.event || undefined,
   search: search.value || undefined,
   status: status.value || undefined,
   per_page: perPage.value,
