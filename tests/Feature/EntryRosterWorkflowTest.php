@@ -7,7 +7,6 @@ use App\Models\EntryMember;
 use App\Models\Pdam;
 use App\Models\TournamentEvent;
 use App\Models\User;
-use Database\Seeders\PdVerificationDemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -60,11 +59,11 @@ class EntryRosterWorkflowTest extends TestCase
     {
         Storage::fake('local');
         $this->seed();
-        $this->seed(PdVerificationDemoSeeder::class);
-        $owner = User::query()->where('email', 'aceh@gmail.com')->firstOrFail();
-        $otherPd = User::query()->where('role', 'pd_admin')->whereKeyNot($owner->id)->firstOrFail();
+        $owner = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $otherPd = User::factory()->create(['role' => 'pd_admin', 'account_status' => 'verified', 'regional_committee_id' => DB::table('regional_committees')->where('id', '!=', $owner->regional_committee_id)->value('id')]);
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
-        $entry = EventEntry::query()->where('regional_committee_id', $owner->regional_committee_id)->firstOrFail();
+        $entry = EventEntry::query()->whereHas('members')->firstOrFail();
+        $entry->update(['regional_committee_id' => $owner->regional_committee_id]);
         $path = 'registrations/test/foto.pdf';
         Storage::disk('local')->put($path, 'dokumen');
         $member = EntryMember::query()->where('event_entry_id', $entry->id)->firstOrFail();
