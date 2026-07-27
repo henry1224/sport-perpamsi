@@ -1,12 +1,20 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 
 const props = defineProps({ portal: { type: String, required: true } });
 const page = usePage();
 const open = ref(false);
 const user = computed(() => page.props.auth?.user);
 const flash = computed(() => page.props.flash || {});
+const toast = ref(null);
+let toastTimer;
+watch(() => [flash.value.success, flash.value.error], ([success, error]) => {
+  clearTimeout(toastTimer);
+  toast.value = success ? { type: 'success', message: success } : error ? { type: 'error', message: error } : null;
+  if (toast.value) toastTimer = setTimeout(() => { toast.value = null; }, 5000);
+}, { immediate: true });
+onBeforeUnmount(() => clearTimeout(toastTimer));
 const isAdmin = computed(() => props.portal === 'admin');
 const isStaff = computed(() => props.portal === 'staff');
 const identity = computed(() => isAdmin.value
@@ -121,8 +129,9 @@ const logout = () => router.post('/logout');
         </div>
       </header>
 
-      <div v-if="flash.success" class="portal-flash success">{{ flash.success }}</div>
-      <div v-if="flash.error" class="portal-flash error">{{ flash.error }}</div>
+      <Transition name="toast">
+        <div v-if="toast" :class="['portal-toast', toast.type]" :role="toast.type === 'error' ? 'alert' : 'status'" :aria-live="toast.type === 'error' ? 'assertive' : 'polite'"><span aria-hidden="true">{{ toast.type === 'success' ? '✓' : '!' }}</span><p>{{ toast.message }}</p><button type="button" aria-label="Tutup notifikasi" @click="toast = null">×</button><i></i></div>
+      </Transition>
       <div class="portal-content"><slot /></div>
     </main>
   </div>
@@ -180,9 +189,14 @@ const logout = () => router.post('/logout');
 .portal-content .portal-button { min-height:40px; padding:9px 13px; color:var(--portal-primary); background:var(--portal-surface); border:1px solid var(--portal-border-strong); border-radius:var(--portal-control-radius); font-weight:800; cursor:pointer; }
 .portal-content .portal-button.primary { color:#fff; background:var(--portal-primary); border-color:var(--portal-primary); }
 .portal-content .portal-button.danger { color:var(--portal-danger); background:var(--portal-danger-soft); border-color:#efcfc4; }
-.portal-flash { margin: 18px 34px 0; padding: 12px 16px; font-weight: 800; border-left: 5px solid; }
-.portal-flash.success { color: #0b5f54; background: #dcf7f1; border-color: #20c6b7; }
-.portal-flash.error { color: #8b2c18; background: #ffebe4; border-color: #f05a28; }
+.portal-toast { position:fixed; z-index:120; top:22px; right:24px; display:grid; grid-template-columns:32px minmax(180px,360px) 28px; align-items:center; gap:10px; overflow:hidden; padding:12px 12px 12px 14px; color:#263d4d; background:#fff; border:1px solid #d5e2e8; border-left:4px solid; border-radius:10px; box-shadow:0 18px 48px rgba(17,42,61,.2); }
+.portal-toast>span { display:grid; place-items:center; width:30px; height:30px; color:#fff; border-radius:7px; font-weight:950; }
+.portal-toast p { margin:0; font-size:12px; font-weight:800; line-height:1.45; }
+.portal-toast button { display:grid; place-items:center; width:28px; height:28px; padding:0; color:#71808b; background:transparent; border:0; border-radius:6px; font-size:20px; cursor:pointer; }
+.portal-toast button:hover { color:#263d4d; background:#edf2f5; }
+.portal-toast>i { position:absolute; right:0; bottom:0; left:0; height:3px; background:currentColor; transform-origin:left; animation:toast-timeout 5s linear forwards; }
+.portal-toast.success { color:#087365; border-left-color:#0d9b7f; }.portal-toast.success>span{background:#0d9b7f}.portal-toast.error{color:#a1432e;border-left-color:#c65332}.portal-toast.error>span{background:#c65332}
+.toast-enter-active,.toast-leave-active{transition:opacity .2s ease,transform .2s ease}.toast-enter-from,.toast-leave-to{opacity:0;transform:translateY(-10px)}@keyframes toast-timeout{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 .portal-overlay { position: fixed; inset: 0; z-index: 40; background: rgba(7,17,38,.62); }
 @media (max-width: 900px) {
   .portal-sidebar { transform: translateX(-100%); transition: transform .22s ease; }
@@ -191,5 +205,6 @@ const logout = () => router.post('/logout');
   .portal-topbar { justify-content: space-between; padding: 12px 18px; }
   .menu-button { display: inline-block; }
   .portal-content { padding: 22px 16px 48px; }
+  .portal-toast { top:14px; right:14px; left:14px; grid-template-columns:32px 1fr 28px; }
 }
 </style>

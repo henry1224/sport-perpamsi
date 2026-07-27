@@ -79,7 +79,7 @@ class PdEntryController extends Controller
 
     private function memberPayload($member): array
     {
-        return ['id' => $member->id, 'name' => $member->name, 'pdam_id' => $member->pdam_id, 'pdam_name' => $member->pdam?->name, 'identity_type' => $member->identity_type, 'identity_number' => $member->identity_number, 'documents' => array_keys($member->documents ?? []), 'document_links' => collect($member->documents ?? [])->keys()->map(fn ($key) => ['key' => $key, 'url' => route('entry-members.documents.show', [$member, $key])])->values(), 'verification_status' => $member->verification_status, 'verification_note' => $member->verification_note, 'verified_at' => $member->verified_at?->format('d M Y H:i'), 'updated_at' => $member->updated_at?->format('d M Y H:i')];
+        return ['id' => $member->id, 'name' => $member->name, 'pdam_id' => $member->pdam_id, 'pdam_name' => $member->pdam?->name, 'identity_type' => $member->identity_type, 'identity_number' => $member->identity_number, 'documents' => array_keys($member->documents ?? []), 'document_links' => collect($member->documents ?? [])->map(fn ($path, $key) => ['key' => $key, 'url' => route('entry-members.documents.show', [$member, $key]), 'is_image' => in_array(strtolower(pathinfo($path, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png'], true)])->values(), 'verification_status' => $member->verification_status, 'verification_note' => $member->verification_note, 'verified_at' => $member->verified_at?->format('d M Y H:i'), 'updated_at' => $member->updated_at?->format('d M Y H:i')];
     }
 
     public function store(StoreEventEntryRequest $request, TournamentEvent $event, RegisterEventEntry $action): RedirectResponse
@@ -90,7 +90,7 @@ class PdEntryController extends Controller
             return back()->with('error', $e->getMessage())->withInput();
         }
 
-        return back()->with('success', $request->validated('intent') === 'draft' ? 'Draft roster disimpan.' : 'Pendaftaran diajukan. Menunggu verifikasi.');
+        return back()->with('success', $request->validated('intent') === 'draft' ? 'Draft roster berhasil disimpan.' : 'Pendaftaran berhasil diajukan dan menunggu verifikasi.');
     }
 
     public function destroy(Request $request, EventEntry $entry): RedirectResponse
