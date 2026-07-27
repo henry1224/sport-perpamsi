@@ -9,7 +9,7 @@ Tanggal audit: 22 Juli 2026. Scope hanya Phase 1–5; Phase 6–7 tetap ditunda 
 | 1 | Daftar PD → status pending → revisi/verifikasi/penolakan → aktivasi akun | `committee_applications`, audit, middleware, `CommitteeApplicationTest` | Lengkap |
 | 2 | Master cabor → kategori/kuota → regulasi berversi → audit | Master Admin, constraint, seeder, `MasterDataTest` | Lengkap |
 | 3 | Kompetisi draft → CRUD → preview → snapshot → publish/close/unpublish | `registration_rules`, audit publikasi, `TournamentEventPublicationTest` | Lengkap secara kode; UAT manual terbuka |
-| 4/4B | Portal PD → parent entry → multi-team → submit → verifikasi parent/override → roster lock | `EntryTeam`, snapshot kuota, audit override, backfill/seed tim `#1`, `MultiTeamRegistrationTest` | Lengkap secara kode; UAT manual terbuka |
+| 4/4B | Portal PD → parent entry → multi-team → submit → verifikasi pemain/team → finalisasi otomatis → roster lock | `EntryTeam`, snapshot kuota, audit override, backfill/seed tim `#1`, `MultiTeamRegistrationTest` | Lengkap secara kode; UAT manual terbuka |
 | 5 | Venue → agenda → konflik → publish → jadwal match → scope panitia | policy deny-default, audit agenda, `VenueAgendaManagementTest`, `StaffMatchScopeTest` | Partial: data operasional belum terhubung |
 
 ## Perbaikan Audit

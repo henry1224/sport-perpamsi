@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class EntryRosterWorkflowTest extends TestCase
@@ -129,7 +130,7 @@ class EntryRosterWorkflowTest extends TestCase
         $this->assertDatabaseHas('entry_registration_audits', ['event_entry_id' => $entry->id, 'action' => 'cancelled']);
     }
 
-    public function test_parent_approval_requires_every_active_team_approved(): void
+    public function test_last_active_team_approval_finishes_registration_automatically(): void
     {
         $this->seed();
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
@@ -139,26 +140,25 @@ class EntryRosterWorkflowTest extends TestCase
         $team->update(['verification_status_override' => null, 'cancelled_at' => null]);
         $team->members->each->update(['verification_status' => 'verified']);
 
-        $this->actingAs($admin)->post(route('admin.entries.verify', $entry))->assertUnprocessable();
         $this->actingAs($admin)->post(route('admin.entry-teams.override', $team), ['status' => 'verified', 'reason' => 'Tim lengkap.'])->assertRedirect();
-        $this->actingAs($admin)->post(route('admin.entries.verify', $entry))->assertRedirect();
 
         $this->assertSame('verified', $entry->fresh()->verification_status);
+        $this->assertDatabaseHas('entry_registration_audits', ['event_entry_id' => $entry->id, 'action' => 'verified_automatically', 'user_id' => $admin->id]);
     }
 
-    public function test_cancelled_team_and_its_players_do_not_block_parent_approval(): void
+    public function test_cancelled_team_and_its_players_do_not_block_automatic_completion(): void
     {
         $this->seed();
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
         $entry = EventEntry::query()->whereHas('teams.members')->with('teams.members')->firstOrFail();
         $entry->update(['verification_status' => 'pending']);
         $activeTeam = $entry->teams->first();
-        $activeTeam->update(['verification_status_override' => 'verified', 'cancelled_at' => null]);
+        $activeTeam->update(['verification_status_override' => null, 'cancelled_at' => null]);
         $activeTeam->members->each->update(['verification_status' => 'verified']);
         $cancelledTeam = $entry->teams()->create(['public_id' => (string) \Illuminate\Support\Str::uuid(), 'team_no' => 99, 'label' => 'Tim Batal', 'cancelled_at' => now(), 'verification_status_override' => 'cancelled']);
         $cancelledTeam->members()->create(['event_entry_id' => $entry->id, 'name' => 'Pemain Batal', 'normalized_name' => 'pemain batal', 'member_type' => 'player', 'verification_status' => 'pending']);
 
-        $this->actingAs($admin)->post(route('admin.entries.verify', $entry))->assertRedirect();
+        $this->actingAs($admin)->post(route('admin.entry-teams.override', $activeTeam), ['status' => 'verified', 'reason' => 'Tim aktif lengkap.'])->assertRedirect();
 
         $this->assertSame('verified', $entry->fresh()->verification_status);
     }
@@ -256,7 +256,58 @@ class EntryRosterWorkflowTest extends TestCase
 
         $saved = DB::table('entry_members')->where('member_type', 'player')->whereNotNull('documents')->first();
         $this->assertNotNull($saved);
-        $this->assertCount(5, json_decode($saved->documents, true));
+        $documents = json_decode($saved->documents, true);
+        $this->assertCount(5, $documents);
+        foreach ($documents as $key => $path) {
+            $this->assertStringStartsWith("registrations/pd-{$pd->regional_committee_id}/{$event->code}/", $path);
+            $this->assertStringContainsString('/player/', $path);
+            $this->assertStringContainsString("/{$key}-", $path);
+            Storage::disk('local')->assertExists($path);
+        }
+    }
+
+    public function test_registration_document_larger_than_one_megabyte_is_rejected(): void
+    {
+        Storage::fake('local');
+        $this->seed();
+        $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereNotNull('registration_published_at')->with('category')->firstOrFail();
+        $this->openForRegistration($event);
+        EventEntry::query()->where('regional_committee_id', $pd->regional_committee_id)->where('tournament_event_id', $event->id)->delete();
+        $members = $this->withDocuments($this->members($event, 'Pemain'));
+        $members[0]['documents']['photo'] = UploadedFile::fake()->create('foto-besar.pdf', 1025, 'application/pdf');
+
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => $members]]])->assertSessionHasErrors('teams.0.members.0.documents.photo');
+    }
+
+    public function test_admin_event_filter_shows_pending_aceh_registration(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $pd->committee()->update(['name' => 'PD PERPAMSI Aceh']);
+        $event = TournamentEvent::query()->where('code', 'badminton-mixed-double')->firstOrFail();
+        $pdamId = Pdam::query()->value('id');
+        $entry = EventEntry::query()->create([
+            'public_id' => (string) Str::uuid(),
+            'registration_key' => $event->id.':'.$pd->regional_committee_id,
+            'tournament_event_id' => $event->id,
+            'regional_committee_id' => $pd->regional_committee_id,
+            'pdam_id' => $pdamId,
+            'display_name' => 'PD PERPAMSI Aceh',
+            'verification_status' => 'pending',
+            'submitted_at' => now(),
+        ]);
+        $team = $entry->teams()->create(['public_id' => (string) Str::uuid(), 'team_no' => 1, 'label' => 'Tim 1']);
+        foreach (['Andre', 'Arhan'] as $name) {
+            $team->members()->create(['event_entry_id' => $entry->id, 'pdam_id' => $pdamId, 'name' => $name, 'normalized_name' => mb_strtolower($name), 'member_type' => 'player', 'verification_status' => 'pending']);
+        }
+
+        $this->actingAs($admin)->get(route('admin.entries.index', ['event' => 'badminton-mixed-double']))->assertInertia(fn ($page) => $page
+            ->where('filters.event', 'badminton-mixed-double')
+            ->where('entries.data', fn ($entries) => collect($entries)->contains(fn ($item) => $item['committee'] === 'PD PERPAMSI Aceh'
+                && $item['players_count'] === 2
+                && collect($item['teams'][0]['members'])->pluck('name')->all() === ['Andre', 'Arhan'])));
     }
 
     private function openForRegistration(TournamentEvent $event, array $rules = []): void

@@ -136,13 +136,16 @@ Backup database wajib dibuat sebelum migration penghapusan kategori nonaktif. Re
 | Anggota legacy belum memiliki NIK/KTA | Tinggi | Jangan backfill dari nama; wajibkan identitas dan dokumen saat revisi/submit berikutnya serta tampilkan status kelengkapan ke Admin | Audit jumlah null dan UAT revisi roster legacy |
 | Pemain memilih PDAM tidak valid atau PDAM dihapus saat terpakai | Tinggi | Validasi FK `pdams.id`, pencarian dari master, dan `restrictOnDelete` pada relasi pemain | Feature test registrasi dan delete constraint |
 | Cabor nonaktif masih dipakai pada transaksi baru | Tinggi | Pilihan dan validasi event/agenda hanya menerima cabor aktif; data historis tetap read-only | Feature test status cabor |
-| Parent disetujui saat team masih pending/revision/rejected | Kritis | Persetujuan parent mensyaratkan seluruh team aktif efektif verified dan seluruh pemain team aktif verified | Feature test alur parent-team-player |
+| Parent selesai saat team masih pending/revision/rejected | Kritis | Finalisasi parent hanya dijalankan atomik setelah persetujuan team terakhir dan seluruh pemain team tersebut verified | Feature test finalisasi otomatis parent-team-player |
 | Verifikasi pemain dilakukan saat team sedang revision/rejected | Tinggi | Perubahan status pemain hanya diterima ketika effective status team pending | Feature test transisi pemain |
 | Penolakan parent menyisakan override team dan membuat perbaikan buntu | Tinggi | Penolakan parent menghapus override team aktif dalam transaksi dan mencatat audit per team | Feature test reject-reopen-resubmit |
 | Team cancelled masih masuk progres atau gate persetujuan | Tinggi | Semua hitungan dan gate verifikasi memakai definisi team aktif `cancelled_at IS NULL` | Feature test team cancelled |
 | Izin penambahan team membuka roster verified | Kritis | State terpisah hanya menerima payload team baru; team dan official existing tidak diproses | Feature test penambahan team setelah verifikasi |
 | Team ditambah melewati kuota atau setelah bracket | Kritis | Admin gate status event, hitung team aktif server, validasi snapshot, dan izin sekali pakai | Feature test kuota dan status bracket |
-| Parent disetujui saat PD sedang menambah team | Tinggi | Persetujuan parent ditolak selama `team_addition_opened_at` aktif | Feature test gate parent |
+| Parent selesai saat PD sedang menambah team | Tinggi | Finalisasi otomatis ditunda selama `team_addition_opened_at` aktif; submit team tambahan membuka parent verified kembali ke pending | Feature test gate dan reopen parent |
+| Upload roster gagal dengan HTTP 413 | Tinggi | Nginx 512M, PHP post 512M, maksimal 100 file, dan validasi aplikasi 1 MB per dokumen | UAT submit roster lengkap |
+| Batas request besar disalahgunakan | Tinggi | Auth wajib, validasi tipe/ukuran per file, throttle route write, dan monitoring request abnormal | Security test dan log review |
+| Nama pemain atau PD bocor melalui path storage | Tinggi | Path memakai ID, public UUID, jenis anggota, dan UUID file; tidak memakai nama manusia | Feature test pola path dan review storage |
 
 ## Definition of Done Risiko
 

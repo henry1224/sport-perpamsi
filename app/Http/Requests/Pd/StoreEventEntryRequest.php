@@ -59,7 +59,7 @@ class StoreEventEntryRequest extends FormRequest
             if ($playerIdentities->duplicates()->isNotEmpty()) $validator->errors()->add('teams', 'NIK/KTA pemain tidak boleh digunakan lebih dari satu kali.');
             $event = $this->route('event');
             $entry = $event instanceof TournamentEvent ? $event->entries()->where('regional_committee_id', $this->user()->regional_committee_id)->first() : null;
-            $teamAddition = $entry && ($entry->team_addition_opened_at || ($entry->verification_status === 'pending' && $event->registrationIsOpen() && ! $entry->teams()->where('verification_status_override', 'revision_required')->exists() && $entry->teams()->whereNull('cancelled_at')->count() < ($this->snapshot()['max_teams_per_pd'] ?? 1)));
+            $teamAddition = $entry && ($entry->team_addition_opened_at || (in_array($entry->verification_status, ['pending', 'verified'], true) && $event->registrationIsOpen() && ! $entry->teams()->where('verification_status_override', 'revision_required')->exists() && $entry->teams()->whereNull('cancelled_at')->count() < ($this->snapshot()['max_teams_per_pd'] ?? 1)));
             if ($teamAddition && $this->input('intent') !== 'submit') $validator->errors()->add('intent', 'Penambahan tim harus langsung diajukan untuk verifikasi.');
             if ($teamAddition) {
                 $maximum = $this->snapshot()['max_teams_per_pd'] ?? 1;
@@ -117,8 +117,8 @@ class StoreEventEntryRequest extends FormRequest
     private function documentRules(): array
     {
         $rules = [];
-        foreach (['photo', 'registration_form', 'identity_card', 'pension_card', 'employee_decree'] as $key) $rules["teams.*.members.*.documents.$key"] = ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'];
-        foreach (['photo', 'identity_card'] as $key) $rules["officials.*.documents.$key"] = ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'];
+        foreach (['photo', 'registration_form', 'identity_card', 'pension_card', 'employee_decree'] as $key) $rules["teams.*.members.*.documents.$key"] = ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:1024'];
+        foreach (['photo', 'identity_card'] as $key) $rules["officials.*.documents.$key"] = ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:1024'];
         return $rules;
     }
 

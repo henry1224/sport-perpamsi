@@ -67,7 +67,7 @@ class TournamentEventController extends Controller
                     'verified_teams_count' => (int) $event->verified_teams_count,
                     'players_count' => (int) $event->players_count,
                     'verified_players_count' => (int) $event->verified_players_count,
-                    'verification_complete' => $event->teams_count >= 2 && $event->teams_count === $event->verified_teams_count && $event->players_count > 0 && $event->players_count === $event->verified_players_count,
+                    'verification_complete' => $event->teams_count > 0 && $event->teams_count === $event->verified_teams_count && $event->players_count > 0 && $event->players_count === $event->verified_players_count,
                     'bracket_size' => $event->bracket_size,
                     'regulation_id' => $event->sport_regulation_id,
                     'regulation' => $event->regulation ? 'v'.$event->regulation->version.' · '.$event->regulation->title : null,

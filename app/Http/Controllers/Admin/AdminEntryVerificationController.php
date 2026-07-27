@@ -51,9 +51,7 @@ class AdminEntryVerificationController extends Controller
                 'officials' => $entry->members->map(fn ($member) => $this->memberPayload($member) + ['role' => $member->position]),
                 'players_count' => $entry->teams->sum(fn ($team) => $team->members->count()),
                 'verified_players_count' => $entry->teams->sum(fn ($team) => $team->members->where('verification_status', 'verified')->count()),
-                'teams_ready' => $entry->teams->isNotEmpty() && $entry->teams->every(fn ($team) => $team->effectiveStatus() === 'verified'),
                 'team_addition_open' => (bool) $entry->team_addition_opened_at,
-                'can_add_team' => $entry->teams->count() < ($entry->tournamentEvent?->registration_rules['max_teams_per_pd'] ?? 1),
                 'can_open_team_addition' => $entry->tournamentEvent?->status === 'registration_closed' && $entry->teams->count() < ($entry->tournamentEvent?->registration_rules['max_teams_per_pd'] ?? 1),
                 'committee' => $entry->regionalCommittee?->name,
                 'event' => $entry->tournamentEvent?->name,
@@ -86,27 +84,6 @@ class AdminEntryVerificationController extends Controller
             'updated_at' => $member->updated_at?->format('d M Y H:i'),
             'audits' => DB::table('entry_member_audits')->where('entry_member_id', $member->id)->latest('id')->get(['action', 'reason', 'created_at']),
         ];
-    }
-
-    public function verify(Request $request, EventEntry $entry): RedirectResponse
-    {
-        abort_unless($entry->verification_status === 'pending', 422, 'Hanya entry menunggu yang dapat diverifikasi.');
-        abort_if($entry->team_addition_opened_at, 422, 'Tunggu PD mengajukan tim tambahan sebelum entry disetujui.');
-        $activeTeams = $entry->teams()->whereNull('cancelled_at')->get();
-        abort_if($activeTeams->isEmpty() || $activeTeams->contains(fn ($team) => $team->effectiveStatus() !== 'verified'), 422, 'Seluruh tim aktif harus disetujui sebelum entry disetujui.');
-        $players = EntryMember::query()->where('event_entry_id', $entry->id)->where('member_type', 'player')->whereHas('team', fn ($query) => $query->whereNull('cancelled_at'));
-        abort_if((clone $players)->count() !== (clone $players)->where('verification_status', 'verified')->count(), 422, 'Seluruh pemain harus diverifikasi sebelum entry disetujui.');
-        $before = $this->state($entry);
-        // ponytail: bracket tidak di-rebuild otomatis walau event sudah bracket_locked; tambahkan RebuildBracket action jika late-registration jadi kebutuhan.
-        $entry->update([
-            'verification_status' => 'verified',
-            'verification_note' => null,
-            'verified_by' => $request->user()->id,
-            'verified_at' => now(),
-        ]);
-        $this->audit($entry, 'verified', $before, $request);
-
-        return back()->with('success', 'Entry disetujui.');
     }
 
     public function verifyMember(Request $request, EntryMember $member): RedirectResponse
@@ -199,18 +176,30 @@ class AdminEntryVerificationController extends Controller
     public function overrideTeam(Request $request, EntryTeam $team): RedirectResponse
     {
         $data = $request->validate(['status' => ['required', 'in:revision_required,verified,rejected,cancelled'], 'reason' => ['required', 'string', 'max:255']]);
-        abort_unless($team->eventEntry?->verification_status === 'pending', 422, 'Status tim hanya dapat diubah saat pendaftaran menunggu verifikasi.');
-        $currentStatus = $team->effectiveStatus();
-        $allowedFrom = $data['status'] === 'revision_required' ? ['pending', 'rejected'] : ['pending'];
-        abort_unless(in_array($currentStatus, $allowedFrom, true), 422, 'Status tim harus dikembalikan ke menunggu verifikasi sebelum tindakan ini dilakukan.');
-        if ($data['status'] === 'verified') {
-            $players = $team->members()->where('member_type', 'player');
-            if ((clone $players)->count() === 0 || (clone $players)->where('verification_status', 'verified')->count() !== (clone $players)->count()) return back()->with('error', 'Tim belum dapat disetujui. Verifikasi seluruh pemain di dalam tim terlebih dahulu.');
-        }
-        $before = $team->toArray();
-        $team->update(['verification_status_override' => $data['status'], 'verification_note' => $data['reason'], 'verified_by' => $data['status'] === 'verified' ? $request->user()->id : null, 'verified_at' => $data['status'] === 'verified' ? now() : null, 'cancelled_at' => $data['status'] === 'cancelled' ? now() : null]);
-        $this->auditTeam($team, 'override_set', $before, $data['reason'], $request);
-        return back()->with('success', 'Status tim diperbarui.');
+        $finalized = DB::transaction(function () use ($request, $team, $data) {
+            $team = EntryTeam::query()->lockForUpdate()->findOrFail($team->id);
+            $entry = EventEntry::query()->lockForUpdate()->findOrFail($team->event_entry_id);
+            abort_unless($entry->verification_status === 'pending', 422, 'Status tim hanya dapat diubah saat pendaftaran menunggu verifikasi.');
+            $currentStatus = $team->effectiveStatus();
+            $allowedFrom = $data['status'] === 'revision_required' ? ['pending', 'rejected'] : ['pending'];
+            abort_unless(in_array($currentStatus, $allowedFrom, true), 422, 'Status tim harus dikembalikan ke menunggu verifikasi sebelum tindakan ini dilakukan.');
+            if ($data['status'] === 'verified') {
+                $players = $team->members()->where('member_type', 'player');
+                if ((clone $players)->count() === 0 || (clone $players)->where('verification_status', 'verified')->count() !== (clone $players)->count()) return false;
+            }
+            $before = $team->toArray();
+            $team->update(['verification_status_override' => $data['status'], 'verification_note' => $data['reason'], 'verified_by' => $data['status'] === 'verified' ? $request->user()->id : null, 'verified_at' => $data['status'] === 'verified' ? now() : null, 'cancelled_at' => $data['status'] === 'cancelled' ? now() : null]);
+            $this->auditTeam($team, 'override_set', $before, $data['reason'], $request);
+
+            if ($data['status'] !== 'verified' || $entry->team_addition_opened_at || $entry->teams()->whereNull('cancelled_at')->where(fn ($query) => $query->whereNull('verification_status_override')->orWhere('verification_status_override', '!=', 'verified'))->exists()) return null;
+            $entryBefore = $this->state($entry->load('teams.members', 'members'));
+            $entry->update(['verification_status' => 'verified', 'verification_note' => null, 'verified_by' => $request->user()->id, 'verified_at' => now()]);
+            $this->audit($entry, 'verified_automatically', $entryBefore, $request);
+            return true;
+        });
+
+        if ($finalized === false) return back()->with('error', 'Tim belum dapat disetujui. Verifikasi seluruh pemain di dalam tim terlebih dahulu.');
+        return back()->with('success', $finalized ? 'Tim disetujui dan pendaftaran selesai otomatis.' : 'Status tim diperbarui.');
     }
 
     public function resetTeamOverride(Request $request, EntryTeam $team): RedirectResponse

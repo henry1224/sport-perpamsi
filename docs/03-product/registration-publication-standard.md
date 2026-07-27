@@ -106,7 +106,7 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 13. Form dan validasi pemain bekerja per team memakai snapshot anggota per team.
 14. Label team dibentuk server; client tidak mengirim nomor atau nama bebas.
 15. PD submit parent; status parent menjadi default seluruh team.
-16. Admin dapat memverifikasi parent sekaligus dan memberi override team tertentu.
+16. Admin memverifikasi pemain dan menyetujui team; persetujuan team aktif terakhir memfinalkan parent otomatis tanpa persetujuan kedua.
 17. Hanya team efektif verified masuk seed/bracket.
 18. PD tetap melihat parent/team setelah registrasi ditutup, tetapi tidak dapat membuat team baru.
 19. Pemain dan official mengisi NIK/KTA pada form terpisah; submit memvalidasi dokumen wajib serta aturan rangkap dari snapshot.

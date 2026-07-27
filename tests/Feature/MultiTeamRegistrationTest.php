@@ -39,6 +39,35 @@ class MultiTeamRegistrationTest extends TestCase
         $this->assertSame(['Pemain Satu', 'Pemain Dua'], $entry->teams()->with('members')->get()->flatMap->members->pluck('name')->all());
     }
 
+    public function test_verified_registration_reopens_when_pd_adds_remaining_team(): void
+    {
+        Storage::fake('local');
+        $this->seed();
+        $pd = User::query()->where('role', 'pd_admin')->firstOrFail();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereNotNull('registration_published_at')->firstOrFail();
+        $event->update(['status' => 'registration_open', 'registration_open_at' => now()->subMinute(), 'registration_close_at' => now()->addDay(), 'registration_rules' => array_merge($event->registration_rules, ['max_teams_per_pd' => 2, 'min_members_per_team' => 1, 'max_members_per_team' => 1])]);
+        EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->delete();
+
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Satu', '3173000000000301', true)]]]])->assertSessionHasNoErrors();
+        $entry = EventEntry::query()->where('tournament_event_id', $event->id)->where('regional_committee_id', $pd->regional_committee_id)->with('teams.members')->firstOrFail();
+        $firstTeam = $entry->teams->first();
+        $firstTeam->members->each->update(['verification_status' => 'verified']);
+        $this->actingAs($admin)->post(route('admin.entry-teams.override', $firstTeam), ['status' => 'verified', 'reason' => 'Tim pertama lengkap.'])->assertRedirect();
+        $this->assertSame('verified', $entry->fresh()->verification_status);
+
+        $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Dua', '3173000000000302', true)]]]])->assertSessionHasNoErrors();
+        $entry->refresh();
+        $secondTeam = $entry->teams()->where('team_no', 2)->with('members')->firstOrFail();
+        $this->assertSame('pending', $entry->verification_status);
+        $this->assertSame('verified', $firstTeam->fresh()->verification_status_override);
+        $this->assertNull($secondTeam->verification_status_override);
+
+        $secondTeam->members->each->update(['verification_status' => 'verified']);
+        $this->actingAs($admin)->post(route('admin.entry-teams.override', $secondTeam), ['status' => 'verified', 'reason' => 'Tim kedua lengkap.'])->assertRedirect();
+        $this->assertSame('verified', $entry->fresh()->verification_status);
+    }
+
     public function test_duplicate_player_across_teams_is_rejected(): void
     {
         $this->seed();
@@ -165,7 +194,7 @@ class MultiTeamRegistrationTest extends TestCase
 
         $this->actingAs($admin)->post(route('admin.entries.team-addition', $entry), ['note' => 'Tambahkan tim kedua sesuai sisa kuota.'])->assertRedirect();
         $this->assertNotNull($entry->fresh()->team_addition_opened_at);
-        $this->actingAs($admin)->post(route('admin.entries.verify', $entry))->assertUnprocessable();
+        $this->assertSame('pending', $entry->fresh()->verification_status);
         $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => [$this->member('Tim Dua', '3173000000000202', true)]]]])->assertSessionHasNoErrors();
 
         $entry->refresh();

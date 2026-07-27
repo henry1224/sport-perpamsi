@@ -30,7 +30,7 @@ EVENT_AGENDA ||--o{ MATCH : schedules
 ## Aturan Relasi
 
 - Registrasi publik membuat `committee_applications`, bukan PD PERPAMSI baru.
-- `event_entries` tidak bergantung pada PDAM, kabupaten/kota, atau kolom pemain tetap; izin satu kali penambahan team disimpan pada `team_addition_opened_at` dan tidak mengubah status verifikasi parent.
+- `event_entries` tidak bergantung pada PDAM, kabupaten/kota, atau kolom pemain tetap; izin satu kali penambahan team disimpan pada `team_addition_opened_at`. Submit team tambahan mengembalikan parent verified ke pending tanpa membuka team lama.
 - `EventEntry` adalah parent registrasi; `EntryTeam` adalah unit peserta kompetisi; pemain disimpan pada `entry_members` milik team.
 - Nama team dibentuk server sebagai `PD PERPAMSI {provinsi} #{team_no}` sesuai [standar multi-team](./team-entry-standard.md).
 - Peraturan cabor berversi; kompetisi menyimpan versi yang berlaku.

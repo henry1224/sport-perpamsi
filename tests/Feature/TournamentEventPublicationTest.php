@@ -191,10 +191,8 @@ class TournamentEventPublicationTest extends TestCase
         $pendingPlayer = $entry->members->where('member_type', 'player')->firstOrFail();
         $pendingPlayer->update(['verification_status' => 'pending']);
 
-        $this->actingAs($admin)->post(route('admin.entries.verify', $entry))->assertStatus(422);
         $this->actingAs($admin)->post(route('admin.entry-members.verify', $pendingPlayer))->assertRedirect()->assertSessionHasNoErrors();
         foreach ($entry->teams as $team) $this->actingAs($admin)->post(route('admin.entry-teams.override', $team), ['status' => 'verified', 'reason' => 'Seluruh pemain lengkap.'])->assertRedirect()->assertSessionHasNoErrors();
-        $this->actingAs($admin)->post(route('admin.entries.verify', $entry))->assertRedirect()->assertSessionHasNoErrors();
 
         $this->assertSame('verified', $entry->fresh()->verification_status);
         $this->assertSame('verified', $pendingPlayer->fresh()->verification_status);

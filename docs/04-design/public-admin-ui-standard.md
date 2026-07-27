@@ -140,9 +140,11 @@ Form tambah/edit wajib memakai modal light dan kelompok field yang jelas. Sectio
 - Informasi sisa kuota menjadi metadata pendukung, bukan CTA, selama parent masih terkunci.
 - Tombol `Tambah Tim` diletakkan pada header kelompok team agar hubungan aksinya jelas.
 - Jika kuota team `1`, tombol tidak ditampilkan setelah team pertama tersedia.
-- Jika kuota team lebih dari `1`, tombol/form team baru tampil selama slot tersedia dan registrasi masih terbuka, termasuk saat parent pending. Team dan official existing tetap read-only.
+- Jika kuota team lebih dari `1`, tombol `Tambah Tim {n}` tetap tampil selama slot tersedia dan registrasi masih terbuka, termasuk saat parent pending atau verified. Form team baru dibuka setelah tombol dipilih; team dan official existing tetap read-only.
+- Halaman Verifikasi Peserta tidak menampilkan tombol persetujuan parent. Setelah seluruh pemain valid, Admin menyetujui team; persetujuan team terakhir menyelesaikan pendaftaran otomatis dan menghapusnya dari antrian.
 - Setelah registrasi ditutup, form team baru hanya tampil bila Admin membuka izin khusus penambahan team.
 - Disabled hanya dipakai selama request diproses. Kondisi yang tidak dapat dilakukan karena aturan bisnis disembunyikan dan dijelaskan melalui teks kapasitas.
+- Periode registrasi pada tabel Data Lomba memakai format ringkas `01 Jul, 2026` tanpa jam. Waktu audit tetap memakai tanggal dan jam lengkap.
 
 ### Table
 
