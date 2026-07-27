@@ -1,6 +1,8 @@
-# Data Dictionary Target
+# Data Dictionary — Nyata dan Target
 
-> Drift antara kolom yang ditulis di sini dan migration nyata dicatat pada `docs/00-project/audit-2026-07-22.md`. `EntryTeam`, `identity_hash`, status agenda, public ID, dan index jadwal sudah tersedia; gap aktif utama adalah wiring data operasional dan CRUD kompetisi.
+Dokumen ini membedakan schema **NYATA** (tersedia di migration aktif) dan **TARGET** (belum tersedia). Migration tetap bukti akhir kondisi nyata. Vocabulary enum mengikuti [`STATUS-VOCABULARY.md`](./STATUS-VOCABULARY.md).
+
+> Audit 27 Juli 2026 menemukan kolom nyata dan target tercampur. Setiap field target di bawah diberi label eksplisit agar tidak dianggap sudah dapat dipakai kode.
 
 ## Venue dan Agenda Phase 5
 
@@ -17,43 +19,50 @@
 - `public_id`: UUID publik bila dibutuhkan.
 - `province_id`: FK unik ke provinsi.
 - `name`: `PD PERPAMSI {nama provinsi}`, dibentuk server.
-- `is_active`: status penggunaan.
+- **TARGET — belum ada di migration:** `is_active` untuk status penggunaan.
 
 ## CommitteeApplication
 
-- `regional_committee_id`: PD yang diajukan.
-- `applicant_name`, `position`, `email`, `phone`.
-- `mandate_document_path`: dokumen privat opsional/wajib sesuai kebijakan.
-- `status`: pending, revision_required, verified, rejected.
-- `review_note`, `reviewed_by`, `reviewed_at`, `submitted_at`.
+**NYATA:**
+
+- `regional_committee_id`, `active_committee_id`: PD yang diajukan dan unique guard pengajuan aktif.
+- `user_id`: pemohon; nama, jabatan, email, dan telepon nyata tersimpan pada `users`.
+- `status`, `review_note`, `reviewed_by`, `reviewed_at`.
+
+**TARGET — belum ada di migration:**
+
+- `mandate_document_path`: dokumen mandat privat.
+- `submitted_at`: waktu submit terpisah dari timestamps standar.
+- `applicant_name` bukan target kolom bila identitas user tetap menjadi sumber tunggal.
 
 ## User
 
-- `regional_committee_id`: scope PD untuk Pengurus Daerah.
-- `role`, `account_status`, `email_verified_at`, `last_login_at`.
-- Password disimpan hashed; tidak pernah diexport.
+**NYATA:** `regional_committee_id`, `role`, `account_status`, `email_verified_at`, `name`, `position`, `email`, `phone`, password hashed.
+
+**TARGET — belum ada di migration:** `last_login_at`.
+
+Password tidak pernah diexport. Nilai role dan status mengikuti `STATUS-VOCABULARY.md`.
 
 ## Sport dan Category
 
-- `sports`: code, name, type, description, active.
+- **NYATA `sports`:** `public_id`, `code`, `name`, `type`, `default_format`, `score_template`, `is_active`, default aturan official, dan timestamps.
 - `sports.is_active = false`: cabor tetap tersimpan sebagai histori, tetapi tidak tampil publik dan tidak dapat dipilih untuk event atau agenda baru. Relasi lama tidak dihapus otomatis.
 - `sports.default_max_officials_per_pd`, `official_roles`, `allow_member_cross_category`, `max_categories_per_member`, `official_can_compete`: default aturan registrasi pada level cabor.
 - `sport_categories` menyimpan sport_id, code, name, competition_type (`individual`, `doubles`, atau `team`), scoring_type, min_members, max_members nullable, active. Phase 4B memisahkan unit peserta, kuota team per PD, dan anggota per team pada snapshot kompetisi; publish tidak menerima batas null.
 - `sport_categories.default_max_teams_per_pd`: sumber kuota team untuk Data Lomba draft; perubahan dilakukan pada Master Kategori dan otomatis disinkronkan sampai Data Lomba dipublikasikan.
-- `sport_regulations`: sport_id, version, title, content, document_url, is_active, created_by.
-- `master_data_audits`: entity_type, entity_id, action, before_json, after_json, user_id.
+- **NYATA `sport_regulations`:** `sport_id`, `version`, `title`, `content`, `document_url`, `technical_guide`, `is_active`, `created_by`.
+- **TARGET — belum ada di migration:** scope `sport_category_id` dan tanggal `effective_at`. Nama field file nyata adalah `document_url`, bukan `document_path`.
+- **NYATA `master_data_audits`:** `entity_type`, `entity_id`, `action`, `before_json`, `after_json`, `user_id`.
 
-## SportRule
-
-- `sport_id`, `sport_category_id` nullable.
-- `version`, `title`, `content`, `document_path`, `effective_at`, `is_active`.
+`SportRule` bukan entity/table nyata. Gunakan model `SportRegulation` dan tabel `sport_regulations`.
 
 ## TournamentEvent
 
 - `sport_id`, `sport_category_id`, `sport_rule_id`.
 - `code`, `name`, `format`, `status`, `registration_open_at`, `registration_close_at`, `seed_locked_at`.
 - `registration_published_at`, `registration_published_by`: waktu dan Admin yang menetapkan paket registrasi resmi.
-- `registration_rules`: snapshot kategori, format, tipe skor, `participant_unit`, `min_teams_per_pd`, `max_teams_per_pd`, `min_members_per_team`, `max_members_per_team`, `max_officials_per_pd`, `official_roles`, `allow_member_cross_category`, `max_categories_per_member`, `official_can_compete`, `avoid_same_pd_in_round`, serta versi regulasi.
+- **NYATA `registration_rules`:** snapshot kategori, format, tipe skor, `max_teams_per_pd`, `min_members_per_team`, `max_members_per_team`, `max_officials_per_pd`, `official_roles`, aturan rangkap, `avoid_same_pd_in_round`, dan referensi regulasi sesuai payload publish saat ini.
+- **TARGET — belum terbukti ditulis kode:** `participant_unit`, `min_teams_per_pd`, `snapshot_version`, `member_gender_rule`, `regulation_version`. Jangan dibaca kode sebelum producer snapshot tersedia.
 - `sport_regulation_id`: regulasi aktif terbaru dari Master Regulasi saat draft disinkronkan; versi tersebut dikunci saat publikasi.
 - `event_publication_audits`: action, before/after, aktor, dan waktu publish, publish ulang, tutup, atau tarik publikasi.
 
@@ -70,7 +79,8 @@
 
 - `event_entry_id`: parent registrasi.
 - `team_no`: integer positif, unik per parent, dialokasikan server, immutable setelah submit.
-- `display_name_snapshot`: `PD PERPAMSI {provinsi} #{team_no}` bila snapshot histori diperlukan.
+- **NYATA:** `label` menyimpan label team `PD PERPAMSI {provinsi} #{team_no}`.
+- **TARGET — belum ada di migration:** `display_name_snapshot` terpisah bila histori membutuhkan snapshot immutable.
 - `verification_status_override`: nullable; effective status = override atau status parent.
 - `verification_note`, `verified_by`, `verified_at`, `cancelled_at` untuk keputusan override.
 - `seed_no` dan referensi seeding/match berada pada unit team, bukan parent.
@@ -93,10 +103,11 @@ Semantik parent, team, status efektif, dan penguncian roster mengikuti [standar 
 
 ## Venue
 
-- `code`, `name`, `address`, `city`, `capacity`, `contact_name`, `contact_phone`.
-- `latitude`, `longitude`: koordinat opsional dengan rentang valid bumi.
-- `map_url`: URL Google Maps opsional; public memakai koordinat atau alamat sebagai fallback.
-- `facilities`, `access_notes`, `photo_path`, `is_active`.
+**NYATA:** `public_id`, `code`, `name`, `address`, `city`, `contact_name`, `contact_phone`, `latitude`, `longitude`, `map_url`, `facilities`, `is_active`.
+
+**TARGET — belum ada di migration:** `capacity`, `access_notes`, `photo_path`.
+
+Koordinat opsional memakai rentang bumi; public memakai koordinat, `map_url`, atau alamat sebagai fallback.
 
 ## EventAgenda
 

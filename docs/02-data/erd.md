@@ -1,4 +1,6 @@
-# ERD Konseptual Sport PERPAMSI
+# ERD Konseptual Sport PERPAMSI — Kondisi Nyata
+
+Diagram ini menggambarkan relasi nyata yang tersedia pada migration aktif. Entity target yang belum memiliki tabel dicatat setelah diagram dan tidak dicampur sebagai relasi aktif.
 
 ```mermaid
 erDiagram
@@ -6,7 +8,7 @@ erDiagram
     REGIONAL_COMMITTEE ||--o{ COMMITTEE_APPLICATION : requested_by
     REGIONAL_COMMITTEE ||--o{ USER : managed_by
     SPORT ||--o{ SPORT_CATEGORY : has
-    SPORT ||--o{ SPORT_RULE : governed_by
+    SPORT ||--o{ SPORT_REGULATION : governed_by
     SPORT ||--o{ TOURNAMENT_EVENT : competed_as
     USER ||--o{ TOURNAMENT_EVENT : publishes_registration
     SPORT ||--o{ SPORT_ASSIGNMENT : assigned_to
@@ -24,8 +26,11 @@ EVENT_AGENDA ||--o{ MATCH : schedules
     ENTRY_TEAM ||--o{ MATCH : participates
     MATCH ||--|| MATCH_SCORE : records
     MATCH ||--o{ SCORE_AUDIT : audited_by
-    USER ||--o{ AUDIT_LOG : performs
 ```
+
+Audit nyata tidak memakai satu tabel `AUDIT_LOG`. Sistem memakai tabel audit per entity: `committee_application_audits`, `entry_registration_audits`, `entry_team_audits`, `entry_member_audits`, `event_publication_audits`, `event_agenda_audits`, `sport_assignment_audits`, `master_data_audits`, dan `score_audits`.
+
+**TARGET — belum ada tabel aktif:** SeedingSnapshot, Bracket terpisah, Standing, MedalRanking, PublishedView, AuditLog generik, ExportJob, dan ReportSnapshot.
 
 ## Aturan Relasi
 

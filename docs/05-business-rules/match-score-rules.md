@@ -4,13 +4,13 @@
 
 ## Status Match
 
-1. draft: match belum siap dipublish.
-2. terjadwal: match tampil di public jadwal.
-3. berlangsung: scorekeeper dapat input skor.
-4. jeda: scorekeeper dapat input koreksi skor sementara.
-5. selesai: pertandingan selesai, menunggu finalisasi.
-6. final: hasil resmi terkunci.
-7. revisi: hasil final sedang diperbaiki oleh role berwenang.
+Vocabulary nyata, label Indonesia, tone badge, dan gap state machine hanya mengikuti [`STATUS-VOCABULARY.md`](../02-data/STATUS-VOCABULARY.md). Dokumen ini menetapkan rule transisi target, bukan enum baru:
+
+1. Match terjadwal dapat dimulai oleh role dalam scope assignment.
+2. Match berlangsung dapat dijeda, ditunda, diselesaikan normal, atau ditetapkan walkover sesuai izin.
+3. Hasil resmi wajib memiliki satu status final kanonik; keputusan antara `final` dan `verified` masih gap yang harus ditutup sebelum state machine dianggap selesai.
+4. Sengketa/revisi tidak boleh mengubah hasil resmi tanpa alasan dan audit.
+5. Pembatalan mempertahankan histori match dan tidak menghasilkan ranking.
 
 ## Aturan Input Skor
 

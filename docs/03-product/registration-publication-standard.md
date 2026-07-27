@@ -30,15 +30,13 @@ Dokumen ini menjadi sumber kebenaran hubungan Admin, regulasi kompetisi, kategor
 
 ## Status Kompetisi
 
-| Status | Fungsi | Tampil di Portal PD | Bisa Daftar |
-|---|---|---:|---:|
-| `registration_draft` | Admin menyiapkan kompetisi dan regulasi | Tidak | Tidak |
-| `registration_open` | Registrasi resmi dibuka | Ya | Ya, dalam periode |
-| `registration_closed` | Registrasi ditutup | Ya | Tidak |
-| `bracket_locked` | Peserta dan bracket dikunci | Ya bila pernah dipublikasikan | Tidak |
-| `ongoing` | Kompetisi berlangsung | Ya bila pernah dipublikasikan | Tidak |
-| `completed` | Kompetisi selesai | Ya bila pernah dipublikasikan | Tidak |
-| `archived` | Arsip internal | Tidak | Tidak |
+Vocabulary, label, kondisi nyata, dan status target hanya mengikuti [`STATUS-VOCABULARY.md`](../02-data/STATUS-VOCABULARY.md). Dokumen ini tidak mendefinisikan ulang enum. Ringkasannya:
+
+- Nyata dan memiliki transition Admin: `registration_draft`, `registration_open`, `registration_closed`, `bracket_locked`.
+- Dikenal filter/model tetapi belum memiliki transition controller: `ongoing`, `completed`.
+- Target dokumen, belum tersedia sebagai status aktif: `archived`.
+
+Visibility portal PD tetap mensyaratkan `registration_published_at`; kemampuan submit juga mensyaratkan status `registration_open` dan periode aktif.
 
 ## Snapshot Regulasi
 
@@ -91,27 +89,14 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 
 ## Alur Pengurus Daerah
 
-1. Dashboard hanya memuat kompetisi yang dipublikasikan Admin.
-2. PD memilih paket kompetisi resmi, bukan seluruh master kategori.
-3. Sistem membuat satu parent `EventEntry` per PD/kompetisi.
-4. PD membuat `EntryTeam` sampai batas `max_teams_per_pd` pada snapshot.
-5. Portal PD menampilkan label aturan dalam Bahasa Indonesia, sisa kuota team, jumlah pemain per team, batas official, dan kebijakan official bertanding; kode internal seperti `group_or_knockout` tidak ditampilkan.
-6. Tombol `Tambah Tim` tampil ketika `max_teams_per_pd > 1`, jumlah team aktif masih di bawah kuota, dan periode registrasi masih terbuka. Berlaku pada draft maupun parent `pending`; verifikasi team existing bukan syarat penambahan team baru.
-7. Ketika kuota team sudah terpenuhi, tombol `Tambah Tim` disembunyikan dan UI menampilkan keterangan `Kuota {n} tim telah terpenuhi`; backend tetap menolak payload yang melewati snapshot kuota.
-8. Setelah submit, roster team existing terkunci tetapi slot team yang belum dipakai tetap dapat diisi langsung selama periode registrasi terbuka. Admin memakai aksi `Buka Penambahan Tim` hanya sebagai pengecualian setelah periode ditutup dan sebelum bracket dikunci.
-9. Status `pending` ditampilkan sebagai panel informasi portal yang senada dengan card lain: badge status, judul singkat, penjelasan tindakan berikutnya, dan informasi sisa kuota tanpa memberi kesan form dapat langsung diedit.
-10. Jika entry `pending` masih memiliki sisa kuota dan periode registrasi terbuka, portal langsung menampilkan form team baru. Jika periode sudah ditutup, panel menjelaskan bahwa Admin harus membuka izin `Penambahan Tim`.
-11. Penolakan tidak otomatis membuka form. Admin membuka kembali parent sebagai `revision_required` atau mereset/mengubah override team, kemudian PD mendapat tombol pengajuan ulang sesuai lingkup perbaikan.
-12. Pendaftaran yang dibatalkan PD dapat diajukan ulang hanya selama periode pendaftaran masih terbuka; setelah ditutup, data tetap terkunci sebagai histori.
-13. Form dan validasi pemain bekerja per team memakai snapshot anggota per team.
-14. Label team dibentuk server; client tidak mengirim nomor atau nama bebas.
-15. PD submit parent; status parent menjadi default seluruh team.
-16. Admin memverifikasi pemain dan menyetujui team; persetujuan team aktif terakhir memfinalkan parent otomatis tanpa persetujuan kedua.
-17. Hanya team efektif verified masuk seed/bracket.
-18. PD tetap melihat parent/team setelah registrasi ditutup, tetapi tidak dapat membuat team baru.
-19. Pemain dan official mengisi NIK/KTA pada form terpisah; submit memvalidasi dokumen wajib serta aturan rangkap dari snapshot.
+Seluruh semantik parent entry, tambah team, kuota, roster, official, submit/resubmit, verifikasi hybrid, label team, dokumen, dan bracket eligibility **hanya** mengikuti [Standar Entry dan Multi-Team](../02-data/team-entry-standard.md). Status dan badge mengikuti [Status Vocabulary](../02-data/STATUS-VOCABULARY.md).
 
-Semantik lengkap mengikuti [standar multi-team](../02-data/team-entry-standard.md).
+Dokumen publikasi ini hanya menetapkan batas integrasi:
+
+1. Dashboard PD hanya memuat `TournamentEvent` dengan `registration_published_at` terisi.
+2. PD memilih paket kompetisi resmi dan validasi registrasi membaca snapshot publish, bukan master yang dapat berubah.
+3. Publicasi menentukan periode dan availability; aturan perilaku entry/team/member tetap milik standar multi-team.
+4. UI memakai label Bahasa Indonesia dan memisahkan badge status dari informasi progres seperti sisa kuota atau pemain belum lengkap.
 
 ## Perubahan Setelah Publikasi
 

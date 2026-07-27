@@ -1,6 +1,8 @@
 # Audit Alur Phase 1–5
 
-Tanggal audit: 22 Juli 2026. Scope hanya Phase 1–5; Phase 6–7 tetap ditunda sesuai standar eksekusi phase.
+> **SNAPSHOT HISTORIS — bukan sumber status terkini.** Audit ini merekam kondisi 22 Juli 2026. Status phase aktif dan pekerjaan terbuka hanya mengikuti [`development-roadmap.md`](./development-roadmap.md).
+
+Tanggal audit: 22 Juli 2026. Scope hanya Phase 1–5; Phase 6–7 saat audit ini ditunda sesuai standar eksekusi phase.
 
 ## Hasil
 
@@ -9,8 +11,8 @@ Tanggal audit: 22 Juli 2026. Scope hanya Phase 1–5; Phase 6–7 tetap ditunda 
 | 1 | Daftar PD → status pending → revisi/verifikasi/penolakan → aktivasi akun | `committee_applications`, audit, middleware, `CommitteeApplicationTest` | Lengkap |
 | 2 | Master cabor → kategori/kuota → regulasi berversi → audit | Master Admin, constraint, seeder, `MasterDataTest` | Lengkap |
 | 3 | Kompetisi draft → CRUD → preview → snapshot → publish/close/unpublish | `registration_rules`, audit publikasi, `TournamentEventPublicationTest` | Lengkap secara kode; UAT manual terbuka |
-| 4/4B | Portal PD → parent entry → multi-team → submit → verifikasi pemain/team → finalisasi otomatis → roster lock | `EntryTeam`, snapshot kuota, audit override, backfill/seed tim `#1`, `MultiTeamRegistrationTest` | Lengkap secara kode; UAT manual terbuka |
-| 5 | Venue → agenda → konflik → publish → jadwal match → scope panitia | policy deny-default, audit agenda, `VenueAgendaManagementTest`, `StaffMatchScopeTest` | Partial: data operasional belum terhubung |
+| 4/4B | Portal PD → parent entry → multi-team → submit → verifikasi pemain/team → finalisasi otomatis → roster lock | `EntryTeam`, snapshot kuota, audit override, backfill/seed tim `#1`, `MultiTeamRegistrationTest` | Selesai: kode, automated test, UAT manual, dan review final lulus |
+| 5 | Venue → agenda → konflik → publish → jadwal match → scope panitia | policy deny-default, audit agenda, `VenueAgendaManagementTest`, `SportAssignmentTest`, `StaffMatchScopeTest` | Kode dan automated test lulus; UAT manual terbuka |
 
 ## Perbaikan Audit
 
@@ -42,8 +44,8 @@ Daftar Pengurus Daerah
 
 ## Batas Audit
 
-- UAT manual belum dianggap selesai hanya karena automated test lulus.
-- Phase 4B lulus migration dan automated test; UAT manual tetap wajib sebelum Phase 5 ditutup.
+- UAT manual Phase 4B diselesaikan pada 27 Juli 2026 untuk alur multi-team, verifikasi, koreksi, pembatalan, dan pengajuan ulang.
+- Phase 4B lulus migration, 73 automated test dengan 543 assertion, build produksi, UAT manual, serta review route/deadcode pada 27 Juli 2026.
 - Phase 6 tetap beku sampai UAT Phase 4B dan Phase 5 serta review commit selesai.
 - Input skor panitia, finalisasi, revisi hasil, bracket manager, dan klasemen adalah Phase 6.
 - Import/export, load test, backup/restore, dan operasional produksi adalah Phase 7.
@@ -57,4 +59,4 @@ Daftar Pengurus Daerah
 - Tidak ada kompetisi `bracket_locked` tanpa `registration_published_at` setelah cleanup dan normalisasi.
 - Tidak ditemukan orphan member, team tanpa member, roster verified kosong, atau duplikasi `identity_hash` dalam kompetisi sama.
 
-Status Phase 5 tetap `Partial` sampai wiring data operasional, assignment panitia, dan UAT selesai.
+Catatan ini adalah snapshot 22 Juli 2026. Wiring jadwal dan assignment panitia diselesaikan serta diuji pada 27 Juli 2026; UAT manual tetap terbuka.

@@ -34,25 +34,21 @@ Final Result ── MedalStanding EntryTeam ── RegionalCommittee
 2. Registrasi publik tidak membuat PD PERPAMSI baru; registrasi membuat pengajuan akses.
 3. Pengguna memilih provinsi, lalu mengisi penanggung jawab, jabatan, email, telepon, kata sandi, dan dokumen mandat bila diwajibkan.
 4. Satu provinsi hanya boleh memiliki satu pengajuan aktif pada saat yang sama.
-5. Akun berstatus menunggu, perlu perbaikan, ditolak, nonaktif, atau ditangguhkan tidak dapat masuk portal.
+5. Hanya akun dengan `users.account_status = verified` dapat masuk portal PD. Vocabulary nyata dan status target mengikuti [`STATUS-VOCABULARY.md`](./STATUS-VOCABULARY.md); `nonaktif` dan `ditangguhkan` belum tersedia pada kode/DB.
 6. Admin wajib memberi alasan saat menolak atau meminta perbaikan.
 7. Setelah verifikasi, pengguna ditautkan ke PD PERPAMSI provinsinya.
 8. Penambahan pengguna kedua pada PD yang sama harus melalui undangan atau persetujuan Admin.
 
 ## Registrasi Cabor dan Pemain
 
-1. Pengurus Daerah masuk ke portal PD PERPAMSI.
-2. Pengurus Daerah memilih paket kompetisi/cabor/kategori yang telah dipublikasikan Admin.
-3. Sistem membuat satu parent `event_entry` untuk PD PERPAMSI pada kompetisi tersebut.
-4. PD membuat satu atau lebih `entry_teams` sampai batas dinamis hasil technical meeting pada snapshot.
-5. Nama team dibentuk server sebagai `PD PERPAMSI {provinsi} #{team_no}`; client tidak boleh mengirim nama atau nomor bebas.
-6. Pemain disimpan sebagai banyak `entry_members` pada team, bukan langsung sebagai participant parent atau kolom pemain tetap.
-7. Jumlah team serta jumlah/atribut pemain per team divalidasi dari snapshot regulasi kompetisi.
-8. Registrasi diajukan pada parent; Admin memverifikasi default parent dan dapat memberi override eksplisit per team.
-9. Hanya team dengan effective status `verified` yang dapat masuk seed, grup, bracket, match, dan klasemen.
-10. Perpindahan pemain antar-team setelah verified dilarang total.
-11. Parent/team tidak dihapus setelah dipakai pertandingan; gunakan status pembatalan dan audit.
-12. Semantik lengkap mengikuti [standar multi-team](./team-entry-standard.md).
+Dokumen ini hanya menetapkan identitas PD dan kepemilikan data. Seluruh semantik parent entry, multi-team, kuota, pemain/official, snapshot, verifikasi hybrid, roster lock, seeding, hasil, dan medali **hanya** mengikuti [Standar Entry dan Multi-Team](./team-entry-standard.md).
+
+Batas integrasi:
+
+1. Pengurus Daerah memilih `TournamentEvent` yang telah dipublikasikan Admin.
+2. `EventEntry` dimiliki `RegionalCommittee`; `EntryTeam` menjadi unit peserta; `EntryMember` menjadi anggota/official sesuai standar kanonik.
+3. PDAM hanya asal pemain, bukan identitas kontingen.
+4. Status dan label wajib mengikuti [`STATUS-VOCABULARY.md`](./STATUS-VOCABULARY.md).
 
 ## Constraint Wajib
 
@@ -73,7 +69,7 @@ Final Result ── MedalStanding EntryTeam ── RegionalCommittee
 - Pengajuan akses: `committee_applications`.
 - Pengguna: `users`.
 - Registrasi cabor: parent `event_entries`.
-- Unit peserta: target `entry_teams`.
+- Unit peserta nyata: `entry_teams`.
 - Pemain: `entry_members` milik team.
 - Hasil: `matches`, `match_scores`, `score_audits` dengan participant `entry_team_id`.
 - Risiko dan kontrol: `docs/06-security/risk-register.md`.

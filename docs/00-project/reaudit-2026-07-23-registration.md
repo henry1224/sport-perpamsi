@@ -1,5 +1,7 @@
 # Reaudit Data Lomba dan Registrasi PD — 23 Juli 2026
 
+> **SNAPSHOT HISTORIS — bukan source of truth terkini.** Dokumen ini merekam reaudit 23 Juli 2026. Aturan Data Lomba mengikuti `docs/03-product/registration-publication-standard.md`; aturan entry/team/member mengikuti `docs/02-data/team-entry-standard.md`; status mengikuti `docs/02-data/STATUS-VOCABULARY.md`.
+
 ## Scope
 
 Alur yang diperiksa: Data Lomba draft → snapshot aturan registrasi → publikasi → dashboard PD → registrasi tim/pemain/official → verifikasi Admin.

@@ -77,23 +77,24 @@ Exit baseline: PD dapat mendaftarkan pemain tanpa instansi asal; data legacy ter
 - [x] Perpindahan/substitusi pemain antar-team setelah verified atau masuk match dilarang.
 - [x] Entry/member/match legacy dan hasil seed ulang dibackfill ke team `#1` tanpa rebuild hasil lama.
 - [x] Feature test, migration fresh/upgrade, boundary kuota, effective status, dan risk control otomatis lulus.
-- [ ] UAT manual multi-team dan review commit lulus.
+- [x] UAT manual multi-team lulus pada 27 Juli 2026: tambah team sesuai kuota, submit, verifikasi pemain/team, perbaikan, penolakan, pembatalan, dan pengajuan ulang.
+- [x] Review final lulus pada 27 Juli 2026: route/deadcode bersih, build lulus, serta 73 test dengan 543 assertion lulus.
 
 Exit: model participant konsisten dari registrasi sampai medali; seluruh team aktif efektif verified sebelum seed; tidak ada risiko kritis multi-team terbuka.
 
-Phase 4B selesai secara kode dan automated test. Phase 5 boleh ditutup setelah UAT manual multi-team, UAT venue/agenda, dan review commit lulus.
+Phase 4B selesai secara kode, automated test, UAT manual multi-team, dan review final. Phase 5 tetap memerlukan UAT venue/agenda sebelum ditutup.
 
 ## Phase 5 — Venue, Agenda, dan Panitia
 
 - [x] Venue memiliki detail, kontak, peta, fasilitas, status aktif, serta form tambah/edit/nonaktif.
 - [x] Agenda memiliki kompetisi, publikasi, validasi konflik waktu, edit, dan audit revisi.
 - [x] Kamus label status Indonesia terpusat untuk portal utama.
-- [ ] Akun panitia dan assignment per cabor/venue terhubung ke jadwal pertandingan operasional.
+- [x] Akun panitia dan assignment per cabor/venue terhubung ke jadwal pertandingan operasional.
 - [x] Policy dan menu panitia berbasis scope cabor/venue dengan deny-default.
-- [ ] Pertandingan operasional terhubung ke agenda, venue, dan waktu.
+- [x] Pertandingan operasional terhubung ke agenda, venue, dan waktu dengan validasi kompetisi serta cabor.
 - [x] Data pertandingan/skor demo dipisahkan dari data operasional, tidak dibuat otomatis oleh seed baseline, dan dapat dibersihkan melalui command khusus.
 
-Status: `Partial` — CRUD venue/agenda, policy, dan cleanup demo tersedia; wiring pertandingan, assignment panitia operasional, dan UAT masih terbuka.
+Status: `Code Complete, Automated Passed, Manual UAT Pending` — CRUD, audit, wiring pertandingan, assignment panitia, policy deny-default, dan cleanup demo tersedia; 11 test Phase 5 dengan 96 assertion lulus.
 
 Exit: CRUD, audit, restrict delete, wiring jadwal, assignment panitia, cleanup demo, dan UAT lulus.
 
