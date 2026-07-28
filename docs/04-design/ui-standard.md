@@ -51,6 +51,8 @@ Halaman master, konfigurasi, dan daftar data Admin memakai urutan tetap:
 - Semua data besar memakai table dengan search, filter, pagination, export.
 - Form penting menampilkan status simpan dan waktu update terakhir.
 - Aksi delete/archive/finalisasi/revisi memakai konfirmasi.
+- Halaman operasional dengan dua objek berbeda memakai tab kontekstual; `Agenda & Jadwal` memisahkan pengelolaan agenda dari penempatan pertandingan dan tidak menampilkan kedua form sekaligus.
+- Daftar Agenda dikelompokkan per tanggal memakai tree table agar urutan hari dan kegiatan mudah dipindai tanpa menduplikasi informasi.
 
 ## Pengurus Daerah Page
 

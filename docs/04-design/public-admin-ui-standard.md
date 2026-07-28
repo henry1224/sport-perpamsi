@@ -116,6 +116,20 @@ Urutan komponen wajib konsisten:
 
 Form tambah/edit wajib memakai modal light dan kelompok field yang jelas. Section bernomor dipakai untuk form bertahap; form panjang seperti Regulasi boleh memakai kelompok berjudul. Urutan field mengikuti dependensi pengisian: identitas terlebih dahulu, konfigurasi utama berikutnya, lalu aturan atau informasi tambahan.
 
+### Agenda dan Jadwal
+
+- Menu `Agenda & Jadwal` memakai dua tab setara: `Agenda` untuk blok kegiatan dan `Jadwal` untuk penempatan pertandingan.
+- Tab aktif wajib memiliki nomor, judul, penjelasan singkat, dan indikator bawah biru; tab tidak memakai pill berlebihan.
+- Tab `Agenda` hanya menampilkan daftar agenda dan tombol `Tambah Agenda`; form tambah/edit wajib memakai modal light.
+- Tabel Agenda wajib langsung terlihat setelah header daftar dan memiliki filter status `Terpublikasi`/`Draft`, pencarian, serta per halaman.
+- Tabel Agenda memakai tree table per tanggal: parent menampilkan jumlah agenda, venue, terpublikasi, dan draft; children menampilkan detail agenda pada tanggal tersebut.
+- Agenda memakai status Draft, Aktif, dan Nonaktif. Agenda nonaktif tidak tampil pada publik atau pilihan penempatan pertandingan.
+- Aksi child mengikuti standar ikon `Show`, `Edit`, `Publish`, dan `Delete`; delete hanya aktif untuk agenda draft tanpa pertandingan dan wajib memakai modal konfirmasi.
+- Tab `Jadwal` hanya menampilkan form penempatan pertandingan dan tabel status pertandingan terjadwal/belum terjadwal.
+- Pemilihan agenda pada jadwal wajib disaring berdasarkan kompetisi dan cabor pertandingan.
+- Overview maksimal tiga statistik: total agenda, agenda terpublikasi, dan pertandingan terjadwal.
+- Badge agenda dan jadwal memakai radius control, bukan bentuk kapsul penuh.
+
 ### Layout
 
 - Admin dan PD memakai token, card, tabel, form, modal, badge, pagination, dan focus state yang sama.
