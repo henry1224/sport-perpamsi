@@ -83,3 +83,17 @@ Agenda khusus seminar NIWC mengikuti [seminar-standard.md](./seminar-standard.md
 - Venue dan waktu match mengikuti agenda terpilih; perubahan agenda wajib memperbarui atau memvalidasi ulang match terkait.
 - Assignment panitia memakai pasangan cabor dan venue dari match yang sudah terjadwal.
 - Data agenda seed adalah baseline jadwal acara, bukan bukti bahwa match operasional sudah dibuat.
+
+## Urutan Penyusunan Lomba
+
+1. `Data Lomba`: tetapkan cabor, kategori, regulasi, periode pendaftaran, dan kuota.
+2. `Agenda & Jadwal` — tab Agenda: siapkan blok tanggal, waktu, dan venue; agenda umum dapat dibuat sebelum peserta final.
+3. Pendaftaran dan verifikasi: tetapkan `EntryTeam` serta roster peserta yang sah.
+4. Kunci bracket: tetapkan susunan peserta dan bentuk `TournamentMatch`.
+5. `Agenda & Jadwal` — tab Jadwal: tempatkan pertandingan ke agenda aktif setelah match tersedia.
+6. `Panitia & Akses`: tetapkan panitia berdasarkan scope cabor dan venue jadwal final.
+7. Publikasikan jadwal setelah konflik waktu, venue, dan assignment panitia selesai diperiksa.
+
+Menu `Agenda & Jadwal` tetap satu menu dengan dua tab. Agenda menjadi blok operasional, sedangkan Jadwal menghubungkan pertandingan ke blok tersebut. Pemisahan menu tidak diperlukan selama keduanya dikelola Admin yang sama.
+
+Akun panitia boleh dibuat lebih awal untuk persiapan. Assignment cabor dan venue baru dianggap final setelah pertandingan memiliki agenda, venue, dan waktu agar akses tidak salah scope.

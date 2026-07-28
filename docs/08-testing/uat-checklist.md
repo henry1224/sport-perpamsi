@@ -80,6 +80,21 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 
 ## Panitia
 
+- [ ] Navigasi `Penyusunan Lomba` berurutan Data Lomba, Agenda & Jadwal, lalu Panitia & Akses.
+- [ ] Assignment panitia final mengikuti cabor dan venue dari jadwal pertandingan yang sudah ditetapkan.
+- [ ] Admin dapat membuat akun internal melalui menu Pengguna dan akun dapat login sesuai role.
+- [ ] Admin dapat memperbarui identitas, role, password opsional, serta status login akun internal.
+- [ ] Form pengguna dan daftar PD menolak Kata Sandi lemah atau Ulangi Kata Sandi yang tidak cocok.
+- [ ] Ikon mata dapat melihat dan menyembunyikan Kata Sandi pada login, daftar PD, dan modal pengguna.
+- [ ] Super Admin dapat Show, Edit, dan Delete akun internal sesuai proteksi histori.
+- [ ] Hanya Super Admin yang dapat mengaktifkan atau menonaktifkan akun internal melalui ikon daya.
+- [ ] Role Super Admin tidak tampil pada tabel, statistik, filter, atau form Pengguna.
+- [ ] Admin dapat melihat detail semua akun internal, hanya mengubah akun sendiri, dan tidak dapat menghapus.
+- [ ] Akun sendiri tidak dapat dinonaktifkan, diubah role, atau dihapus.
+- [ ] Tab Admin & Panitia tidak mencampur akun PD; tab Pengurus Daerah hanya menampilkan akun PD dan menyediakan tautan menuju Verifikasi Pengurus Daerah.
+- [ ] Filter Pengguna memakai status Aktif/Tidak Aktif dan tetap berada pada tab aktif saat pencarian atau pagination.
+- [ ] Role Pengurus Daerah tidak tersedia pada form Pengguna.
+- [ ] Panitia & Akses hanya mengelola assignment dan tidak menampilkan form pembuatan akun.
 - [x] Admin dapat membuat akun dan assignment panitia per cabor dan venue.
 - [x] Panitia hanya melihat cabor/match tugasnya dan URL di luar assignment diblokir.
 - [ ] Scorekeeper dapat input skor match tugasnya.

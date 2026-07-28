@@ -43,4 +43,11 @@
 
 Admin mengelola master dan publikasi. PD hanya mengelola roster pemain milik PD sendiri. Panitia tidak dapat mengubah master, kuota, atau snapshot registrasi. Informasi teknis publik hanya read-only.
 
+Pembuatan akun login internal dilakukan melalui menu `Pengguna` dan menerima role `super_admin`, `admin_event`, `scorekeeper`, atau `sport_coordinator`. Akun `pd_admin` dipisahkan dan wajib mengikuti registrasi serta verifikasi Pengurus Daerah. Assignment cabor dan venue Panitia tetap dikelola melalui menu `Panitia & Akses`.
+
+- Super Admin dapat melihat detail, membuat, mengubah, menonaktifkan, dan menghapus akun internal lain. Akun sendiri tidak dapat dinonaktifkan, diturunkan role, atau dihapus.
+- Perubahan status Aktif/Nonaktif akun internal hanya dapat dilakukan Super Admin; request langsung dari Admin tetap menghasilkan `403`.
+- Admin (`admin_event`) dapat melihat detail seluruh akun internal, tetapi hanya dapat mengubah nama, email, dan password akun sendiri. Admin tidak dapat membuat, mengubah akun lain, menonaktifkan, atau menghapus pengguna.
+- Penghapusan akun yang sudah memiliki histori aktivitas ditolak; gunakan status Nonaktif agar histori tetap utuh.
+
 Policy wajib memblokir horizontal privilege escalation meski URL diketahui.

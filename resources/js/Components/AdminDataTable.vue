@@ -17,6 +17,7 @@ let timer;
 
 const load = (page = 1) => router.get(window.location.pathname, {
   event: props.filters.event || undefined,
+  tab: props.filters.tab || undefined,
   search: search.value || undefined,
   status: status.value || undefined,
   per_page: perPage.value,

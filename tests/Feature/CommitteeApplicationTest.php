@@ -6,11 +6,26 @@ use App\Models\CommitteeApplication;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class CommitteeApplicationTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_admin_index_shows_application_status_counts(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+
+        $this->actingAs($admin)->get(route('admin.committee-applications.index'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Admin/CommitteeApplications')
+                ->where('stats.pending', CommitteeApplication::query()->where('status', 'pending')->count())
+                ->where('stats.verified', CommitteeApplication::query()->where('status', 'verified')->count())
+                ->where('stats.rejected', CommitteeApplication::query()->where('status', 'rejected')->count()));
+    }
 
     public function test_registration_creates_pending_account_and_blocks_pd_portal(): void
     {
@@ -25,8 +40,8 @@ class CommitteeApplicationTest extends TestCase
             'position' => 'Sekretaris',
             'phone' => '081234567890',
             'email' => 'pengurus-uji@example.test',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
         ]);
 
         $response->assertRedirect(route('registration.status'));
@@ -42,6 +57,26 @@ class CommitteeApplicationTest extends TestCase
         $this->actingAs($user)->get(route('pd.dashboard'))->assertForbidden();
     }
 
+    public function test_registration_requires_strong_and_matching_password(): void
+    {
+        $this->seed();
+        $committee = DB::table('regional_committees')
+            ->whereNotIn('id', DB::table('users')->whereNotNull('regional_committee_id')->pluck('regional_committee_id'))
+            ->first();
+        $payload = [
+            'regional_committee_id' => $committee->id,
+            'name' => 'Pengurus Aman',
+            'position' => 'Sekretaris',
+            'phone' => '081234567899',
+            'email' => 'pengurus-aman@example.test',
+        ];
+
+        $this->post('/register', $payload + ['password' => 'password', 'password_confirmation' => 'password'])
+            ->assertSessionHasErrors('password');
+        $this->post('/register', $payload + ['password' => 'Password123!', 'password_confirmation' => 'Berbeda123!'])
+            ->assertSessionHasErrors('password');
+    }
+
     public function test_one_committee_cannot_have_two_applications(): void
     {
         $this->seed();
@@ -53,8 +88,8 @@ class CommitteeApplicationTest extends TestCase
             'position' => 'Ketua',
             'phone' => '081111111111',
             'email' => 'pertama@example.test',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
         ];
 
         $this->post('/register', $payload)->assertRedirect(route('registration.status'));
@@ -126,6 +161,9 @@ class CommitteeApplicationTest extends TestCase
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
         $this->actingAs($admin)->post(route('admin.committee-applications.reject', $application), ['note' => 'Mandat tidak sesuai'])->assertRedirect();
         $this->assertNull($application->fresh()->active_committee_id);
+        $this->assertNotNull($application->fresh()->reviewed_at);
+        $this->actingAs($admin)->post(route('admin.committee-applications.reject', $application), ['note' => 'Tolak ulang'])->assertRedirect();
+        $this->assertSame(1, DB::table('committee_application_audits')->where('committee_application_id', $application->id)->where('to_status', 'rejected')->count());
         $this->post('/logout');
         $this->get(route('register'))->assertOk();
     }

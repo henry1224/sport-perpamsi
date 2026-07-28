@@ -54,18 +54,6 @@ class SportAssignmentController extends Controller
         ]);
     }
 
-    public function storeUser(Request $request): RedirectResponse
-    {
-        User::query()->create($request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', Rule::in(['scorekeeper', 'sport_coordinator'])],
-        ]) + ['account_status' => 'verified']);
-
-        return back()->with('success', 'Akun panitia berhasil dibuat.');
-    }
-
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([

@@ -32,8 +32,13 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
+        if (! $user->isPdAdmin() && ! $user->isVerified()) {
+            Auth::logout();
+            throw ValidationException::withMessages(['email' => 'Akun tidak aktif. Hubungi administrator.']);
+        }
+
         return match (true) {
-            $user->isSuperAdmin() => redirect()->intended(route('admin.dashboard')),
+            $user->canAccessAdminPortal() => redirect()->intended(route('admin.dashboard')),
             $user->isPdAdmin() && ! $user->isVerified() => redirect()->route('registration.status'),
             $user->isPdAdmin() => redirect()->intended(route('pd.dashboard')),
             in_array($user->role, ['scorekeeper', 'sport_coordinator'], true) => redirect()->intended(route('staff.matches.index')),

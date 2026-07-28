@@ -36,8 +36,8 @@ const menuGroups = computed(() => isAdmin.value ? [
   ] },
   { label: 'Penyusunan Lomba', items: [
     { label: 'Data Lomba', href: '/admin/events', icon: 'trophy' },
-    { label: 'Panitia & Akses', href: '/admin/assignments', icon: 'shield' },
     { label: 'Agenda & Jadwal', href: '/admin/agenda', icon: 'calendar' },
+    { label: 'Panitia & Akses', href: '/admin/assignments', icon: 'shield' },
   ] },
   { label: 'Registrasi', items: [
     { label: 'Verifikasi Pengurus Daerah', href: '/admin/committee-applications', icon: 'building' },
@@ -45,6 +45,9 @@ const menuGroups = computed(() => isAdmin.value ? [
   ] },
   { label: 'Operasional', items: [
     { label: 'Pertandingan & Skor', href: '/admin/skor', icon: 'scoreboard' },
+  ] },
+  { label: 'Sistem', items: [
+    { label: 'Pengguna', href: '/admin/users', icon: 'users' },
   ] },
   { label: 'Pelaporan', items: [
     { label: 'Laporan & Audit', icon: 'report', planned: true },

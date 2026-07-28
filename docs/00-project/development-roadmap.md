@@ -86,6 +86,8 @@ Phase 4B selesai secara kode, automated test, UAT manual multi-team, dan review 
 
 ## Phase 5 — Venue, Agenda, dan Panitia
 
+Urutan operasional Admin: `Data Lomba → Agenda & Jadwal → Panitia & Akses`. Akun panitia boleh disiapkan lebih awal, tetapi assignment final mengikuti cabor dan venue pertandingan yang sudah dijadwalkan.
+
 - [x] Venue memiliki detail, kontak, peta, fasilitas, status aktif, serta form tambah/edit/nonaktif.
 - [x] Agenda memiliki kompetisi, publikasi, validasi konflik waktu, edit, dan audit revisi.
 - [x] Kamus label status Indonesia terpusat untuk portal utama.

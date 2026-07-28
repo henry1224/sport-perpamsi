@@ -21,11 +21,11 @@ class SportAssignmentTest extends TestCase
         $sport = Sport::query()->firstOrFail();
         $venue = Venue::query()->firstOrFail();
 
-        $this->actingAs($admin)->post(route('admin.assignments.users.store'), [
+        $this->actingAs($admin)->post(route('admin.users.store'), [
             'name' => 'Panitia Venue',
             'email' => 'panitia@example.test',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'role' => 'scorekeeper',
         ])->assertRedirect()->assertSessionHasNoErrors();
 
@@ -50,5 +50,6 @@ class SportAssignmentTest extends TestCase
         $pdAdmin = User::query()->where('role', 'pd_admin')->firstOrFail();
 
         $this->actingAs($pdAdmin)->get(route('admin.assignments.index'))->assertForbidden();
+        $this->actingAs($pdAdmin)->get(route('admin.users.index'))->assertForbidden();
     }
 }

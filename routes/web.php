@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminEntryVerificationController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\CommitteeApplicationController;
 use App\Http\Controllers\Admin\MasterDataController;
 use App\Http\Controllers\Admin\PdamController;
@@ -80,9 +81,13 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/events/{event:code}/lock-bracket', [TournamentEventController::class, 'lockBracket'])->name('events.bracket.lock');
     Route::post('/events/{event:code}/unpublish', [TournamentEventController::class, 'unpublish'])->name('events.unpublish');
     Route::get('/assignments', [SportAssignmentController::class, 'index'])->name('assignments.index');
-    Route::post('/assignments/users', [SportAssignmentController::class, 'storeUser'])->name('assignments.users.store');
     Route::post('/assignments', [SportAssignmentController::class, 'store'])->name('assignments.store');
     Route::post('/assignments/{assignment}/revoke', [SportAssignmentController::class, 'revoke'])->name('assignments.revoke');
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+    Route::post('/users/{user}/toggle-status', [AdminUserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
     Route::redirect('/venue-agenda', '/admin/venues');
     Route::get('/venues', [VenueAgendaController::class, 'venues'])->name('venues.index');
     Route::get('/agenda', [VenueAgendaController::class, 'agendas'])->name('agendas.index');

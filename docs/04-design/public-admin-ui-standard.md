@@ -116,8 +116,29 @@ Urutan komponen wajib konsisten:
 
 Form tambah/edit wajib memakai modal light dan kelompok field yang jelas. Section bernomor dipakai untuk form bertahap; form panjang seperti Regulasi boleh memakai kelompok berjudul. Urutan field mengikuti dependensi pengisian: identitas terlebih dahulu, konfigurasi utama berikutnya, lalu aturan atau informasi tambahan.
 
+Field Kata Sandi memakai label Bahasa Indonesia, tombol lihat/sembunyikan berikon, dan satu baris penuh. Form pembuatan atau perubahan Kata Sandi menampilkan indikator kekuatan serta konfirmasi kecocokan secara langsung; form login hanya menampilkan tombol lihat/sembunyikan.
+
+### Overview dan Count Data
+
+- Semua halaman data Admin mengikuti pola visual `Master PDAM`: satu overview card navy setelah judul, konteks singkat di kiri, dan maksimal tiga count di kanan.
+- Count harus membantu keputusan pengguna, bukan mengulang pagination. Utamakan status atau kondisi data, seperti `Cabor Aktif`, `Kategori Aktif`, `Regulasi`, `Menunggu Verifikasi`, `Terverifikasi`, dan `Ditolak`.
+- Count memakai seluruh dataset sesuai kewenangan pengguna dan tidak berubah karena pagination atau pencarian tabel. Filter domain utama boleh memengaruhi count hanya bila scope aktif dijelaskan pada judul atau label.
+- Label count wajib mengikuti vocabulary kanonik. Jangan membuat label baru seperti `Draft` pada domain yang tidak memiliki status `draft`.
+- `Data Tampil` hanya boleh dipakai bila jumlah baris halaman memang penting untuk pekerjaan; default-nya tidak ditampilkan.
+- Setelah overview, tampilkan header daftar berupa surface putih berisi judul, deskripsi, dan maksimal satu tombol aksi utama. Halaman read-only atau verifikasi boleh tanpa tombol tambah.
+
+### Tab Halaman Admin
+
+- Halaman dengan beberapa domain setara mengikuti pola tab `Master Data Lomba`: tab horizontal setelah overview dan sebelum header daftar.
+- Setiap tab menampilkan label domain dan count kecil, seperti `Cabor`, `Kategori`, dan `Regulasi`; active state memakai surface putih dan count biru portal.
+- Tab hanya dipakai untuk dataset atau pekerjaan setara dalam satu konteks. Filter biasa tidak boleh diubah menjadi tab.
+- Pergantian tab mempertahankan konteks halaman, memperbarui URL/query, mereset pagination, dan menampilkan header daftar, filter, tabel, serta aksi yang sesuai tab aktif.
+- Mobile memakai tab horizontal yang dapat digulir atau dibagi rata tanpa memotong label.
+- Jangan membuat variasi visual tab baru. Pengecualian hanya untuk workflow khusus yang sudah ditetapkan pada dokumen SoT menu.
+
 ### Agenda dan Jadwal
 
+- Urutan grup `Penyusunan Lomba` adalah `Data Lomba`, `Agenda & Jadwal`, lalu `Panitia & Akses` sesuai dependency operasional.
 - Menu `Agenda & Jadwal` memakai dua tab setara: `Agenda` untuk blok kegiatan dan `Jadwal` untuk penempatan pertandingan.
 - Tab aktif wajib memiliki nomor, judul, penjelasan singkat, dan indikator bawah biru; tab tidak memakai pill berlebihan.
 - Tab `Agenda` hanya menampilkan daftar agenda dan tombol `Tambah Agenda`; form tambah/edit wajib memakai modal light.
@@ -129,6 +150,25 @@ Form tambah/edit wajib memakai modal light dan kelompok field yang jelas. Sectio
 - Pemilihan agenda pada jadwal wajib disaring berdasarkan kompetisi dan cabor pertandingan.
 - Overview maksimal tiga statistik: total agenda, agenda terpublikasi, dan pertandingan terjadwal.
 - Badge agenda dan jadwal memakai radius control, bukan bentuk kapsul penuh.
+
+### Pengguna dan Akses Panitia
+
+- Menu `Pengguna` berada pada grup `Sistem` dan dipakai untuk membuat akun login internal.
+- Form tambah/edit pengguna memakai modal light dan menyediakan Admin, Scorekeeper, serta Koordinator Cabor. Role Super Admin tidak diekspos pada daftar, statistik, filter, atau form.
+- Halaman menampilkan statistik akun internal, Super Admin, Admin, dan Panitia; tabel menampilkan identitas, role, assignment, status login, tanggal dibuat, serta aksi ikon Show/Edit/Delete.
+- Akun internal dapat diedit dan dinonaktifkan melalui modal yang sama; perubahan password bersifat opsional saat edit.
+- Modal Show menampilkan identitas, status login, hak akses, assignment aktif, dan tanggal dibuat tanpa membuka form edit otomatis.
+- Delete memakai modal konfirmasi bahaya dan ditolak bila akun sudah memiliki histori aktivitas.
+- Halaman memakai tab `Admin & Panitia` dan `Pengurus Daerah`; query, pencarian, status, dan pagination mengikuti tab aktif tanpa mencampur data.
+- Kartu `Kendali Identitas`, tab, header tabel, dan tombol tambah mengikuti hierarchy visual `Agenda & Jadwal`; overview maksimal tiga statistik sesuai tab aktif.
+- Tombol `Tambah Pengguna` berada pada header tabel tab Admin & Panitia, bukan pada kartu overview.
+- Filter tabel kembali memakai status `Aktif` dan `Tidak Aktif`, bukan role.
+- Tab Pengurus Daerah bersifat read-only dan menyediakan akses menuju menu Verifikasi Pengurus Daerah.
+- Super Admin memiliki seluruh aksi. Admin hanya melihat detail akun lain dan mengedit akun sendiri.
+- Aksi Aktif/Nonaktif memakai ikon daya pada tabel dan hanya tampil untuk Super Admin; akun sendiri dan akun PD tidak dapat diubah melalui aksi ini.
+- Akun sendiri tidak dapat dinonaktifkan, diubah role, atau dihapus.
+- Menu `Panitia & Akses` tidak membuat akun; menu ini hanya menetapkan atau mencabut assignment cabor dan venue.
+- Akun Pengurus Daerah tetap berasal dari registrasi dan verifikasi daerah, bukan dari menu Pengguna.
 
 ### Layout
 

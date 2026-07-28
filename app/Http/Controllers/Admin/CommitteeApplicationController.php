@@ -17,8 +17,14 @@ class CommitteeApplicationController extends Controller
         $perPage = min($request->integer('per_page', 10), 100);
         $search = trim((string) $request->query('search'));
         $status = (string) $request->query('status');
+        $stats = CommitteeApplication::query()
+            ->selectRaw("coalesce(sum(case when status = 'pending' then 1 else 0 end), 0) as pending")
+            ->selectRaw("coalesce(sum(case when status = 'verified' then 1 else 0 end), 0) as verified")
+            ->selectRaw("coalesce(sum(case when status = 'rejected' then 1 else 0 end), 0) as rejected")
+            ->first();
 
         return Inertia::render('Admin/CommitteeApplications', [
+            'stats' => $stats,
             'applications' => CommitteeApplication::query()
                 ->with(['committee:id,name', 'user:id,name,email,phone,position'])
                 ->when($status, fn ($query) => $query->where('status', $status))
@@ -38,6 +44,7 @@ class CommitteeApplicationController extends Controller
                     'position' => $application->user->position,
                     'status' => $application->status,
                     'review_note' => $application->review_note,
+                    'reviewed_at' => $application->reviewed_at,
                 ]),
             'filters' => ['search' => $search, 'status' => $status, 'per_page' => $perPage],
         ]);
@@ -64,7 +71,9 @@ class CommitteeApplicationController extends Controller
 
     private function review(Request $request, CommitteeApplication $application, string $status, ?string $note, string $message): RedirectResponse
     {
-        abort_unless(in_array($application->status, ['pending', 'revision_required'], true), 422, 'Pengajuan ini sudah selesai diproses.');
+        if (! in_array($application->status, ['pending', 'revision_required'], true)) {
+            return back()->with('info', 'Pengajuan ini sudah selesai diproses.');
+        }
 
         DB::transaction(function () use ($request, $application, $status, $note) {
             $from = $application->status;

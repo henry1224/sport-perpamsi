@@ -6,7 +6,7 @@ Platform resmi PORPAMNAS untuk pendaftaran PD PERPAMSI, pemain, master lomba, pa
 
 ## Pengguna
 
-**Nyata pada kode saat ini:** Public, Pengurus Daerah (`pd_admin`), Super Admin (`super_admin`), Koordinator Cabor (`sport_coordinator`), dan Scorekeeper (`scorekeeper`).
+**Nyata pada kode saat ini:** Public, Pengurus Daerah (`pd_admin`), Super Admin (`super_admin`), Admin (`admin_event`), Koordinator Cabor (`sport_coordinator`), dan Scorekeeper (`scorekeeper`).
 
 **Target pemisahan role:** Admin Event, Verifikator Peserta, Auditor, dan Content Officer. Role target belum boleh ditampilkan sebagai role aktif sampai tersedia pada backend. Vocabulary kanonik mengikuti [`docs/02-data/STATUS-VOCABULARY.md`](../02-data/STATUS-VOCABULARY.md).
 

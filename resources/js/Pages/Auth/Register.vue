@@ -1,6 +1,7 @@
 <script setup>
 import { Link, useForm } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
+import PasswordField from '../../Components/PasswordField.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
 
 defineProps({ committees: Array });
@@ -50,8 +51,8 @@ const submit = () => form.post('/register');
         <label><span>Jabatan</span><input v-model="form.position" required /><small v-if="form.errors.position">{{ form.errors.position }}</small></label>
         <label><span>Nomor Telepon</span><input v-model="form.phone" type="tel" required /><small v-if="form.errors.phone">{{ form.errors.phone }}</small></label>
         <label><span>Email</span><input v-model="form.email" type="email" autocomplete="username" required /><small v-if="form.errors.email">{{ form.errors.email }}</small></label>
-        <label><span>Kata Sandi</span><input v-model="form.password" type="password" autocomplete="new-password" required /><small v-if="form.errors.password">{{ form.errors.password }}</small></label>
-        <label><span>Ulangi Kata Sandi</span><input v-model="form.password_confirmation" type="password" autocomplete="new-password" required /></label>
+        <PasswordField v-model="form.password" class="wide" label="Kata Sandi" required show-strength theme="dark" :error="form.errors.password" />
+        <PasswordField v-model="form.password_confirmation" class="wide" label="Ulangi Kata Sandi" required confirmation theme="dark" :compare-with="form.password" :error="form.errors.password_confirmation" />
         <button class="wide" type="submit" :disabled="form.processing">{{ form.processing ? 'Mengirim…' : 'Kirim Pengajuan' }}</button>
       </form>
     </section>

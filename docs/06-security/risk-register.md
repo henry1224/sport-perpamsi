@@ -23,6 +23,7 @@ Dokumen ini menjadi daftar risiko aktif. Setiap perubahan alur, data, role, jadw
 | Pengajuan ditolak tanpa alasan | Sedang | Alasan wajib dan audit aktor/waktu | Validation test |
 | Email atau nomor telepon dipakai ulang | Tinggi | Unique email; normalisasi dan unique nomor telepon bila diwajibkan | Migration dan feature test |
 | Akun bersama dipakai banyak orang | Tinggi | Akun personal, reset password, sesi dapat dicabut, audit login | UAT keamanan akun |
+| Kata sandi baru lemah atau salah konfirmasi | Tinggi | Minimal 8 karakter dengan huruf besar, huruf kecil, angka, karakter khusus, dan konfirmasi identik | Feature test registrasi PD dan pengguna internal |
 
 ## Registrasi Cabor dan Pemain
 

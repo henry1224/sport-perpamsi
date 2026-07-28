@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -43,7 +44,13 @@ class CommitteeRegistrationController extends Controller
             'position' => ['required', 'string', 'max:120'],
             'phone' => ['required', 'string', 'max:30'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', 'min:8'],
+            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+        ], [
+            'password.confirmed' => 'Ulangi Kata Sandi tidak cocok.',
+            'password.min' => 'Kata Sandi minimal 8 karakter.',
+            'password.mixed' => 'Kata Sandi harus memuat huruf besar dan huruf kecil.',
+            'password.numbers' => 'Kata Sandi harus memuat angka.',
+            'password.symbols' => 'Kata Sandi harus memuat karakter khusus.',
         ]);
 
         $user = DB::transaction(function () use ($data) {
