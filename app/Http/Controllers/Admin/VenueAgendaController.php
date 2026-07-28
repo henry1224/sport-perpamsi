@@ -43,6 +43,7 @@ class VenueAgendaController extends Controller
     public function agendas(Request $request): Response
     {
         $search = trim((string) $request->query('search'));
+        $status = $request->query('status');
         $perPage = min(max($request->integer('per_page', 10), 10), 100);
 
         return Inertia::render('Admin/VenueAgendas', [
@@ -50,17 +51,25 @@ class VenueAgendaController extends Controller
             'venues' => Venue::query()->orderBy('name')->get(),
             'sports' => Sport::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'events' => TournamentEvent::query()->orderBy('name')->get(['id', 'name', 'sport_id']),
-            'matches' => TournamentMatch::query()->with('tournamentEvent:id,name')->orderBy('code')->get(['id', 'code', 'tournament_event_id', 'event_agenda_id']),
+            'matches' => TournamentMatch::query()->with(['tournamentEvent:id,name,sport_id', 'eventAgenda:id,title', 'venue:id,name'])->orderBy('code')->get(['id', 'code', 'status', 'tournament_event_id', 'event_agenda_id', 'venue_id', 'scheduled_at']),
             'agendas' => EventAgenda::query()->join('venues', 'event_agendas.venue_id', '=', 'venues.id')
                 ->leftJoin('sports', 'event_agendas.sport_id', '=', 'sports.id')
                 ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
                     $query->whereLike('event_agendas.title', "%{$search}%", caseSensitive: false)
                         ->orWhereLike('venues.name', "%{$search}%", caseSensitive: false)
                         ->orWhereLike('sports.name', "%{$search}%", caseSensitive: false);
-                }))->orderBy('event_agendas.date')->orderBy('event_agendas.start_time')
+                }))
+                ->when(in_array($status, ['draft', 'published', 'cancelled'], true), fn ($query) => $query->where('event_agendas.status', $status))
+                ->orderBy('event_agendas.date')->orderBy('event_agendas.start_time')
                 ->select('event_agendas.*', 'venues.name as venue_name', 'sports.name as sport_name')
+                ->withCount('matches')
                 ->paginate($perPage)->withQueryString(),
-            'filters' => ['search' => $search, 'per_page' => $perPage],
+            'agendaStats' => [
+                'total' => EventAgenda::query()->count(),
+                'published' => EventAgenda::query()->where('status', 'published')->count(),
+                'scheduled_matches' => TournamentMatch::query()->whereNotNull('event_agenda_id')->count(),
+            ],
+            'filters' => ['search' => $search, 'status' => $status, 'per_page' => $perPage],
         ]);
     }
 
@@ -116,16 +125,36 @@ class VenueAgendaController extends Controller
     public function publish(Request $request, EventAgenda $agenda): RedirectResponse
     {
         $before = $agenda->toArray();
-        $agenda->update(['published_at' => now()]);
+        $agenda->update(['status' => 'published', 'published_at' => now()]);
         $this->audit($agenda, 'published', $before, $request);
 
         return back()->with('success', 'Agenda berhasil dipublikasikan.');
+    }
+
+    public function toggleAgendaStatus(Request $request, EventAgenda $agenda): RedirectResponse
+    {
+        $before = $agenda->toArray();
+        $active = $agenda->status !== 'published';
+        $agenda->update(['status' => $active ? 'published' : 'cancelled', 'published_at' => $active ? now() : null]);
+        $this->audit($agenda, $active ? 'activated' : 'deactivated', $before, $request);
+
+        return back()->with('success', $active ? 'Agenda berhasil diaktifkan.' : 'Agenda berhasil dinonaktifkan.');
+    }
+
+    public function destroyAgenda(EventAgenda $agenda): RedirectResponse
+    {
+        abort_if($agenda->status !== 'draft', 422, 'Hanya agenda draft yang dapat dihapus.');
+        abort_if($agenda->matches()->exists(), 422, 'Agenda yang sudah memiliki pertandingan tidak dapat dihapus.');
+        $agenda->delete();
+
+        return back()->with('success', 'Agenda berhasil dihapus.');
     }
 
     public function scheduleMatch(Request $request, TournamentMatch $match): RedirectResponse
     {
         $data = $request->validate(['event_agenda_id' => ['required', 'exists:event_agendas,id']]);
         $agenda = EventAgenda::query()->findOrFail($data['event_agenda_id']);
+        abort_unless($agenda->status === 'published', 422, 'Pertandingan hanya dapat ditempatkan pada agenda aktif.');
         abort_if($agenda->tournament_event_id && $agenda->tournament_event_id !== $match->tournament_event_id, 422, 'Agenda tidak sesuai kompetisi pertandingan.');
         abort_if($agenda->sport_id && $agenda->sport_id !== $match->tournamentEvent()->value('sport_id'), 422, 'Agenda tidak sesuai cabang olahraga pertandingan.');
         $match->update(['event_agenda_id' => $agenda->id, 'venue_id' => $agenda->venue_id, 'scheduled_at' => $agenda->date->format('Y-m-d').' '.$agenda->start_time]);

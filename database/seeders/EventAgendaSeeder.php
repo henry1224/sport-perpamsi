@@ -22,6 +22,7 @@ class EventAgendaSeeder extends Seeder
             'start_time' => $row['start_time'],
             'end_time' => $row['end_time'] ?: null,
             'time_note' => $row['time_note'] ?: null,
+            'status' => 'published',
             'published_at' => $now,
             'created_at' => $now,
             'updated_at' => $now,
@@ -30,7 +31,7 @@ class EventAgendaSeeder extends Seeder
         DB::table('event_agendas')->upsert(
             $rows,
             ['date', 'title', 'venue_id', 'start_time'],
-            ['day', 'type', 'sport_id', 'end_time', 'time_note', 'published_at', 'updated_at']
+            ['day', 'type', 'sport_id', 'end_time', 'time_note', 'status', 'published_at', 'updated_at']
         );
     }
 

@@ -139,6 +139,7 @@ class PublicDataService
                 ->leftJoin('sports', 'event_agendas.sport_id', '=', 'sports.id')
                 ->where('venues.is_active', true)
                 ->where(fn ($query) => $query->whereNull('event_agendas.sport_id')->orWhere('sports.is_active', true))
+                ->where('event_agendas.status', 'published')
                 ->whereNotNull('event_agendas.published_at')
                 ->orderBy('event_agendas.date')
                 ->orderBy('event_agendas.start_time')

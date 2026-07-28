@@ -38,6 +38,11 @@ class TournamentMatch extends Model
         return $this->belongsTo(Venue::class);
     }
 
+    public function eventAgenda(): BelongsTo
+    {
+        return $this->belongsTo(EventAgenda::class);
+    }
+
     public function tournamentEvent(): BelongsTo
     {
         return $this->belongsTo(TournamentEvent::class);

@@ -28,6 +28,41 @@ class VenueAgendaManagementTest extends TestCase
         $this->assertDatabaseCount('event_agendas', $agendaCount + 1);
     }
 
+    public function test_agenda_table_filters_status_and_returns_overview_statistics(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+
+        $this->actingAs($admin)->get(route('admin.agendas.index', ['status' => 'published']))
+            ->assertInertia(fn ($page) => $page
+                ->where('filters.status', 'published')
+                ->where('agendas.data', fn ($items) => collect($items)->every(fn ($item) => $item['published_at'] !== null))
+                ->where('agendaStats.total', EventAgenda::query()->count()));
+
+        $this->actingAs($admin)->get(route('admin.agendas.index', ['status' => 'draft']))
+            ->assertInertia(fn ($page) => $page
+                ->where('filters.status', 'draft')
+                ->where('agendas.data', fn ($items) => collect($items)->every(fn ($item) => $item['published_at'] === null)));
+    }
+
+    public function test_only_unused_draft_agenda_can_be_deleted(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $venue = Venue::query()->where('is_active', true)->firstOrFail();
+
+        $this->actingAs($admin)->post(route('admin.agendas.store'), [
+            'date' => '2026-09-12', 'title' => 'Agenda Draft Hapus', 'type' => 'official', 'venue_id' => $venue->id,
+            'start_time' => '08:00', 'end_time' => '09:00',
+        ])->assertSessionHasNoErrors();
+        $draft = EventAgenda::query()->where('title', 'Agenda Draft Hapus')->firstOrFail();
+        $this->actingAs($admin)->delete(route('admin.agendas.destroy', $draft))->assertSessionHasNoErrors();
+        $this->assertDatabaseMissing('event_agendas', ['id' => $draft->id]);
+
+        $published = EventAgenda::query()->whereNotNull('published_at')->firstOrFail();
+        $this->actingAs($admin)->delete(route('admin.agendas.destroy', $published))->assertUnprocessable();
+    }
+
     public function test_pd_admin_cannot_manage_venue_and_agenda(): void
     {
         $this->seed();
@@ -61,6 +96,18 @@ class VenueAgendaManagementTest extends TestCase
 
         $this->assertDatabaseHas('event_agenda_audits', ['event_agenda_id' => $agenda->id, 'action' => 'updated', 'reason' => 'Penyesuaian operasional venue', 'user_id' => $admin->id]);
         $this->assertDatabaseHas('event_agenda_audits', ['event_agenda_id' => $agenda->id, 'action' => 'published', 'user_id' => $admin->id]);
+    }
+
+    public function test_admin_can_deactivate_and_reactivate_agenda(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $agenda = EventAgenda::query()->where('status', 'published')->firstOrFail();
+
+        $this->actingAs($admin)->post(route('admin.agendas.toggle-status', $agenda))->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('event_agendas', ['id' => $agenda->id, 'status' => 'cancelled', 'published_at' => null]);
+        $this->actingAs($admin)->post(route('admin.agendas.toggle-status', $agenda))->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('event_agendas', ['id' => $agenda->id, 'status' => 'published']);
     }
 
     public function test_admin_can_schedule_match_only_on_matching_sport_agenda(): void

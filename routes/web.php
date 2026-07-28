@@ -91,7 +91,9 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::delete('/venues/{venue}', [VenueAgendaController::class, 'destroyVenue'])->name('venues.destroy');
     Route::post('/agendas', [VenueAgendaController::class, 'storeAgenda'])->name('agendas.store');
     Route::put('/agendas/{agenda}', [VenueAgendaController::class, 'updateAgenda'])->name('agendas.update');
+    Route::delete('/agendas/{agenda}', [VenueAgendaController::class, 'destroyAgenda'])->name('agendas.destroy');
     Route::post('/agendas/{agenda}/publish', [VenueAgendaController::class, 'publish'])->name('agendas.publish');
+    Route::post('/agendas/{agenda}/toggle-status', [VenueAgendaController::class, 'toggleAgendaStatus'])->name('agendas.toggle-status');
     Route::post('/matches/{match}/schedule', [VenueAgendaController::class, 'scheduleMatch'])->name('matches.schedule');
     Route::get('/master-data', [MasterDataController::class, 'index'])->name('master-data.index');
     Route::post('/master-data/sports', [MasterDataController::class, 'storeSport'])->name('master-data.sports.store');
