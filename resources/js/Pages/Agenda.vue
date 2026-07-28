@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import PublicLayout from '../Layouts/PublicLayout.vue';
 import SectionTitle from '../Components/SectionTitle.vue';
+import { formatPublicDate, formatTime } from '../lib/date';
 
 const props = defineProps({ agenda: Array });
 const dates = [...new Set(props.agenda.map((i) => i.date))];
@@ -26,7 +27,7 @@ const filtered = computed(() => props.agenda.filter((i) =>
           <label>Tanggal</label>
           <div class="chip-row">
             <button :class="{active: selectedDate==='all'}" @click="selectedDate='all'">Semua</button>
-            <button v-for="d in dates" :key="d" :class="{active: selectedDate===d}" @click="selectedDate=d">{{ d.slice(8,10) }} Okt</button>
+            <button v-for="d in dates" :key="d" :class="{active: selectedDate===d}" @click="selectedDate=d">{{ formatPublicDate(d, false) }}</button>
           </div>
         </div>
         <div class="filter-group">
@@ -39,15 +40,15 @@ const filtered = computed(() => props.agenda.filter((i) =>
       <div class="agenda-list">
         <div v-for="item in filtered" :key="`${item.date}-${item.title}-${item.start_time}`" :class="['agenda-row', item.type]">
           <div class="time-col">
-            <strong>{{ item.start_time }}</strong>
-            <small>{{ item.day }} {{ item.date.slice(8,10) }}/{{ item.date.slice(5,7) }}</small>
+            <strong>{{ formatTime(item.start_time) }}</strong>
+            <small>{{ item.day }} · {{ formatPublicDate(item.date) }}</small>
           </div>
           <div class="event-col">
             <span :class="['type-pill', item.type]">{{ item.type }}</span>
             <strong>{{ item.title }}</strong>
             <small>{{ item.venue }}</small>
           </div>
-          <time v-if="item.end_time">{{ item.start_time }}–{{ item.end_time }}</time>
+          <time v-if="item.end_time">{{ formatTime(item.start_time) }}–{{ formatTime(item.end_time) }}</time>
         </div>
         <p v-if="!filtered.length" class="empty">Tidak ada acara sesuai filter.</p>
       </div>

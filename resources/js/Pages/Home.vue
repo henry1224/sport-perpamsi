@@ -5,6 +5,7 @@ import Panel from '../Components/Panel.vue';
 import MatchCard from '../Components/MatchCard.vue';
 import StatusBadge from '../Components/StatusBadge.vue';
 import { Link } from '@inertiajs/vue3';
+import { formatPublicDate, formatTime } from '../lib/date';
 
 const props = defineProps({
   agenda: Array, sports: Array, results: Array, provinceRankings: Array, assets: Object,
@@ -15,6 +16,7 @@ const dateLabels = [...new Set(props.agenda.map((i) => i.date))].map((date) => {
   return { date, day: item.day, count: props.agenda.filter((a) => a.date === date).length };
 });
 const featuredAgenda = props.agenda.slice(0, 7);
+const agendaPeriod = dates => dates.length ? `${formatPublicDate(dates[0], false)}–${formatPublicDate(dates.at(-1))}` : 'Belum dijadwalkan';
 const sportCards = props.sports.filter((s) => s.type !== 'official');
 const venueCount = new Set(props.agenda.map((i) => i.venue)).size;
 const activityCount = props.agenda.length;
@@ -60,11 +62,11 @@ const sportIcon = (code) => props.assets?.mascots?.[code?.toLowerCase()] || null
 
     <section class="content-grid">
       <Panel>
-        <SectionTitle eyebrow="Tournament Schedule" title="Agenda Kegiatan" meta="06–10 Okt" />
+        <SectionTitle eyebrow="Tournament Schedule" title="Agenda Kegiatan" :meta="agendaPeriod(dateLabels.map((item) => item.date))" />
         <div class="date-tabs">
           <button v-for="d in dateLabels" :key="d.date" type="button">
             <small>{{ d.day }}</small>
-            <strong>{{ d.date.slice(8, 10) }}</strong>
+            <strong>{{ formatPublicDate(d.date, false) }}</strong>
             <span>{{ d.count }} acara</span>
           </button>
         </div>
@@ -75,7 +77,7 @@ const sportIcon = (code) => props.assets?.mascots?.[code?.toLowerCase()] || null
               <strong>{{ item.title }}</strong>
               <small>{{ item.venue }}</small>
             </div>
-            <time>{{ item.start_time }}<template v-if="item.end_time">–{{ item.end_time }}</template></time>
+            <time>{{ formatTime(item.start_time) }}<template v-if="item.end_time">–{{ formatTime(item.end_time) }}</template></time>
           </div>
         </div>
       </Panel>
