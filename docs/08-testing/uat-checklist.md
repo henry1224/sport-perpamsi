@@ -84,6 +84,7 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] Assignment panitia final mengikuti cabor dan venue dari jadwal pertandingan yang sudah ditetapkan.
 - [x] Sistem menolak assignment panitia untuk pasangan cabor dan venue yang belum memiliki pertandingan terjadwal.
 - [x] Sistem menolak aktivasi agenda dan penjadwalan pertandingan ketika venue agenda nonaktif.
+- [x] Bukti otomatis alur agenda → jadwal → assignment → akses → revoke lulus pada 29 Juli 2026.
 - [ ] Admin dapat membuat akun internal melalui menu Pengguna dan akun dapat login sesuai role.
 - [ ] Admin dapat memperbarui identitas, role, password opsional, serta status login akun internal.
 - [ ] Form pengguna dan daftar PD menolak Kata Sandi lemah atau Ulangi Kata Sandi yang tidak cocok.

@@ -8,6 +8,7 @@ Setiap kontrol kritis/tinggi pada [risk-register.md](../06-security/risk-registe
 - Feature test memastikan rentang waktu bertabrakan pada venue dan tanggal sama ditolak.
 - Migration PostgreSQL dan build frontend wajib lulus sebelum merge.
 - Feature test memastikan panitia tanpa assignment melihat daftar kosong dan URL di luar scope menghasilkan `403`.
+- Feature test operasional memastikan Admin membuat dan mempublikasikan agenda, menjadwalkan pertandingan, memberi assignment, lalu pencabutan assignment langsung menghilangkan daftar dan akses detail panitia.
 
 ## Backend Feature Tests
 
@@ -142,6 +143,7 @@ Implementasi otomatis utama: `MultiTeamRegistrationTest`, `TournamentEventPublic
 - Venue dapat dinonaktifkan dan tidak tersedia untuk agenda baru.
 - Update agenda terpublikasi membutuhkan alasan dan menghasilkan audit before/after dengan aktor.
 - Publikasi agenda menghasilkan audit append-only.
+- `StaffMatchScopeTest::test_phase_five_operational_flow_from_agenda_to_revoked_staff_access` membuktikan alur agenda → jadwal → assignment → akses panitia → revoke secara end-to-end.
 - Upgrade migration menyisakan nol kategori nonaktif dan tidak menghapus kategori aktif.
 
 - Semua test P0/P1 lulus.
