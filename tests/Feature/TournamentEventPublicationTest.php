@@ -268,6 +268,9 @@ class TournamentEventPublicationTest extends TestCase
         $this->assertSame([$seeded[0]->id, $seeded[3]->id], [$semifinals[0]->team_a_id, $semifinals[0]->team_b_id]);
         $this->assertSame([$seeded[1]->id, $seeded[2]->id], [$semifinals[1]->team_a_id, $semifinals[1]->team_b_id]);
         $this->assertTrue($semifinals->every(fn ($match) => $match->next_match_id === $final->id));
+        $publicMatches = collect(app(PublicDataService::class)->pageProps()['bracketMatches'])->where('event_code', $event->code);
+        $this->assertCount(3, $publicMatches);
+        $this->assertTrue($publicMatches->every(fn ($match) => isset($match->code, $match->round_name, $match->status) && ! isset($match->identity_number)));
     }
 
     public function test_parent_entry_waits_until_every_player_is_verified(): void

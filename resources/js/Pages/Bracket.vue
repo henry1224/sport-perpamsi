@@ -2,6 +2,7 @@
 import { ref, computed, nextTick, onMounted } from 'vue';
 import PublicLayout from '../Layouts/PublicLayout.vue';
 import SectionTitle from '../Components/SectionTitle.vue';
+import { statusLabel } from '../lib/status';
 
 const props = defineProps({
   pdams: { type: Array, default: () => [] },
@@ -9,6 +10,7 @@ const props = defineProps({
   sportCategories: { type: Array, default: () => [] },
   tournamentEvents: { type: Array, default: () => [] },
   bracketParticipants: { type: Array, default: () => [] },
+  bracketMatches: { type: Array, default: () => [] },
 });
 
 // ponytail: hardcoded demo. Replace with real tournaments/groups/matches data model.
@@ -131,6 +133,16 @@ const current = computed(() => allTournaments.value.find((t) => t.code === activ
 const currentCategories = computed(() => props.sportCategories.filter((category) => category.sport_code === active.value));
 const currentEvent = computed(() => props.tournamentEvents.find((event) => event.sport_code === active.value && (event.category_code || null) === activeCategory.value));
 const currentSeeds = computed(() => props.bracketParticipants.filter((participant) => participant.event_code === currentEvent.value?.code && `${participant.display_name} ${participant.label}`.toLowerCase().includes(search.value.toLowerCase())));
+const realBracketRounds = computed(() => [...props.bracketMatches
+  .filter((match) => match.event_code === currentEvent.value?.code)
+  .reduce((rounds, match) => {
+    const [sa, sb] = match.score_summary?.split(/[-–—]/).map(Number) || [null, null];
+    const team = (name, label, seed) => name ? `${seed ? `#${seed} ` : ''}${name}${label ? ` · ${label}` : ''}` : 'Menunggu pemenang';
+    const round = rounds.get(match.round_no) || { name: match.round_name, matches: [] };
+    round.matches.push({ id: match.code, a: team(match.team_a_name, match.team_a_label, match.team_a_seed), b: team(match.team_b_name, match.team_b_label, match.team_b_seed), ca: match.team_a_id, cb: match.team_b_id, sa, sb, status: statusLabel(match.status), pathCodes: [match.team_a_id, match.team_b_id].filter(Boolean) });
+    rounds.set(match.round_no, round);
+    return rounds;
+  }, new Map()).values()]);
 const selectSport = (code) => {
   active.value = code;
   activeCategory.value = props.sportCategories.find((category) => category.sport_code === code)?.code || null;
@@ -169,7 +181,7 @@ const generatedKnockout = computed(() => {
   }
   return rounds;
 });
-const bracketRounds = computed(() => generatedKnockout.value);
+const bracketRounds = computed(() => realBracketRounds.value.length ? realBracketRounds.value : generatedKnockout.value);
 const mainRounds = computed(() => bracketRounds.value.filter((round) => round.matches.length <= mainLimit.value));
 const earlyRounds = computed(() => bracketRounds.value.filter((round) => round.matches.length > 32));
 const splitRounds = computed(() => {

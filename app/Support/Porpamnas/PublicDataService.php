@@ -192,6 +192,16 @@ class PublicDataService
                 ->orderBy('tournament_events.code')
                 ->orderBy('entry_teams.seed_no')
                 ->get(['tournament_events.code as event_code', 'entry_teams.id', 'entry_teams.label', 'entry_teams.seed_no', 'event_entries.display_name']),
+            'bracketMatches' => DB::table('matches')
+                ->join('tournament_events', 'matches.tournament_event_id', '=', 'tournament_events.id')
+                ->leftJoin('entry_teams as team_a', 'matches.team_a_id', '=', 'team_a.id')
+                ->leftJoin('entry_teams as team_b', 'matches.team_b_id', '=', 'team_b.id')
+                ->leftJoin('event_entries as entry_a', 'matches.entry_a_id', '=', 'entry_a.id')
+                ->leftJoin('event_entries as entry_b', 'matches.entry_b_id', '=', 'entry_b.id')
+                ->orderBy('tournament_events.code')
+                ->orderBy('matches.round_no')
+                ->orderBy('matches.slot_no')
+                ->get(['tournament_events.code as event_code', 'matches.code', 'matches.round_no', 'matches.round_name', 'matches.slot_no', 'matches.score_summary', 'matches.status', 'team_a.id as team_a_id', 'team_a.label as team_a_label', 'team_a.seed_no as team_a_seed', 'entry_a.display_name as team_a_name', 'team_b.id as team_b_id', 'team_b.label as team_b_label', 'team_b.seed_no as team_b_seed', 'entry_b.display_name as team_b_name']),
         ];
     }
 
@@ -228,6 +238,7 @@ class PublicDataService
             'sportRegulations' => collect(),
             'tournamentEvents' => collect(),
             'bracketParticipants' => collect(),
+            'bracketMatches' => collect(),
         ];
     }
 
