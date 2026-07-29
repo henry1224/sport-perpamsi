@@ -4,6 +4,8 @@
 
 Implementasi awal Phase 6 mendukung bracket dua team dengan satu `Final`, serta empat team dengan dua `Semifinal` menuju satu `Final`. Event lama yang sudah `bracket_locked` tanpa pertandingan dapat menjalankan aksi `Buat Pertandingan`. Bracket lebih dari empat team, bye, dan propagasi pemenang belum dibuka sampai bracket manager lengkap tersedia.
 
+Seluruh format memakai aksi operasional `Kunci Peserta`. Format bracket berubah menjadi `bracket_locked` dan menerima seed; format non-bracket berubah menjadi `participants_locked` tanpa seed atau ukuran bracket. Sumber mode tunggal adalah `tournament_events.format`; `uses_bracket` hanya nilai turunan pada snapshot publikasi.
+
 Status implementasi saat ini:
 
 - Knockout: data demo dapat dibentuk oleh seeder, tetapi generator operasional dan aksi lock belum tersedia.

@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Sport;
 use App\Models\SportAssignment;
+use App\Models\TournamentMatch;
 use App\Models\User;
-use App\Models\Venue;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,12 +44,25 @@ class SportAssignmentController extends Controller
                 'assigned_at' => $assignment->assigned_at?->format('d M Y H:i'),
             ]);
 
+        $assignmentScopes = TournamentMatch::query()
+            ->with(['tournamentEvent:id,sport_id', 'tournamentEvent.sport:id,name', 'venue:id,name,city,is_active'])
+            ->whereNotNull('event_agenda_id')->whereNotNull('venue_id')->whereNotNull('scheduled_at')
+            ->get(['id', 'tournament_event_id', 'venue_id'])
+            ->filter(fn ($match) => $match->venue?->is_active && $match->tournamentEvent?->sport)
+            ->unique(fn ($match) => $match->tournamentEvent->sport_id.'-'.$match->venue_id)
+            ->map(fn ($match) => [
+                'sport_id' => $match->tournamentEvent->sport_id,
+                'sport' => $match->tournamentEvent->sport->name,
+                'venue_id' => $match->venue_id,
+                'venue' => $match->venue->name,
+                'city' => $match->venue->city,
+            ])->values();
+
         return Inertia::render('Admin/SportAssignments', [
             'assignments' => $assignments,
             'filters' => ['search' => $search, 'status' => $status, 'per_page' => $perPage],
-            'staff' => User::query()->whereIn('role', ['scorekeeper', 'sport_coordinator'])->orderBy('name')->get(['id', 'name', 'email', 'role']),
-            'sports' => Sport::query()->orderBy('name')->get(['id', 'name']),
-            'venues' => Venue::query()->orderBy('name')->get(['id', 'name', 'city']),
+            'staff' => User::query()->whereIn('role', ['scorekeeper', 'sport_coordinator'])->where('account_status', 'verified')->orderBy('name')->get(['id', 'name', 'email', 'role']),
+            'assignmentScopes' => $assignmentScopes,
         ]);
     }
 
@@ -58,9 +70,13 @@ class SportAssignmentController extends Controller
     {
         $data = $request->validate([
             'user_id' => ['required', Rule::exists('users', 'id')->where(fn ($query) => $query->whereIn('role', ['scorekeeper', 'sport_coordinator'])->where('account_status', 'verified'))],
-            'sport_id' => ['required', 'exists:sports,id'],
-            'venue_id' => ['required', 'exists:venues,id'],
+            'sport_id' => ['required', Rule::exists('sports', 'id')->where('is_active', true)],
+            'venue_id' => ['required', Rule::exists('venues', 'id')->where('is_active', true)],
         ]);
+        abort_unless(TournamentMatch::query()->whereNotNull('event_agenda_id')->whereNotNull('scheduled_at')
+            ->where('venue_id', $data['venue_id'])
+            ->whereHas('tournamentEvent', fn ($query) => $query->where('sport_id', $data['sport_id']))->exists(), 422,
+            'Assignment hanya dapat dibuat untuk pasangan cabor dan venue yang sudah memiliki jadwal pertandingan.');
         $data['assignment_role'] = User::query()->findOrFail($data['user_id'])->role;
 
         DB::transaction(function () use ($data, $request) {

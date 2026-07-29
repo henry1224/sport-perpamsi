@@ -1,12 +1,15 @@
 <script setup>
 import { router, useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import AdminDataTable from '../../Components/AdminDataTable.vue';
 import SectionTitle from '../../Components/SectionTitle.vue';
 import PortalLayout from '../../Layouts/PortalLayout.vue';
 
-defineProps({ assignments: Object, filters: Object, staff: Array, sports: Array, venues: Array });
+const props = defineProps({ assignments: Object, filters: Object, staff: Array, assignmentScopes: Array });
 
 const assignmentForm = useForm({ user_id: '', sport_id: '', venue_id: '' });
+const sports = computed(() => [...new Map(props.assignmentScopes.map((item) => [item.sport_id, { id: item.sport_id, name: item.sport }])).values()]);
+const venues = computed(() => props.assignmentScopes.filter((item) => item.sport_id === Number(assignmentForm.sport_id)));
 
 const assign = () => assignmentForm.post('/admin/assignments', { onSuccess: () => assignmentForm.reset() });
 const revoke = (id) => router.post(`/admin/assignments/${id}/revoke`, {}, { preserveScroll: true });
@@ -21,8 +24,8 @@ const revoke = (id) => router.post(`/admin/assignments/${id}/revoke`, {}, { pres
         <header><span>Assignment Baru</span><h2>Tetapkan Panitia</h2><p>Akun panitia dibuat melalui menu Pengguna. Di sini akses dibatasi berdasarkan cabor dan venue.</p></header>
         <div class="form-body">
         <label>Panitia<select v-model="assignmentForm.user_id" required><option value="">Pilih panitia</option><option v-for="item in staff" :key="item.id" :value="item.id">{{ item.name }} — {{ item.email }}</option></select></label>
-        <label>Cabor<select v-model="assignmentForm.sport_id" required><option value="">Pilih cabor</option><option v-for="item in sports" :key="item.id" :value="item.id">{{ item.name }}</option></select></label>
-        <label>Venue<select v-model="assignmentForm.venue_id" required><option value="">Pilih venue</option><option v-for="item in venues" :key="item.id" :value="item.id">{{ item.name }}{{ item.city ? ` — ${item.city}` : '' }}</option></select></label>
+        <label>Cabor<select v-model="assignmentForm.sport_id" required @change="assignmentForm.venue_id = ''"><option value="">Pilih cabor terjadwal</option><option v-for="item in sports" :key="item.id" :value="item.id">{{ item.name }}</option></select></label>
+        <label>Venue<select v-model="assignmentForm.venue_id" required :disabled="!assignmentForm.sport_id"><option value="">{{ assignmentForm.sport_id ? 'Pilih venue terjadwal' : 'Pilih cabor dahulu' }}</option><option v-for="item in venues" :key="item.venue_id" :value="item.venue_id">{{ item.venue }}{{ item.city ? ` — ${item.city}` : '' }}</option></select></label>
         </div><footer><button :disabled="assignmentForm.processing">{{ assignmentForm.processing ? 'Menyimpan…' : 'Tetapkan Panitia' }}</button></footer>
       </form>
     </div>

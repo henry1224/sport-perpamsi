@@ -32,7 +32,7 @@ Dokumen ini menjadi sumber kebenaran hubungan Admin, regulasi kompetisi, kategor
 
 Vocabulary, label, kondisi nyata, dan status target hanya mengikuti [`STATUS-VOCABULARY.md`](../02-data/STATUS-VOCABULARY.md). Dokumen ini tidak mendefinisikan ulang enum. Ringkasannya:
 
-- Nyata dan memiliki transition Admin: `registration_draft`, `registration_open`, `registration_closed`, `bracket_locked`.
+- Nyata dan memiliki transition Admin: `registration_draft`, `registration_open`, `registration_closed`, `participants_locked`, `bracket_locked`.
 - Dikenal filter/model tetapi belum memiliki transition controller: `ongoing`, `completed`.
 - Target dokumen, belum tersedia sebagai status aktif: `archived`.
 
@@ -46,6 +46,7 @@ Visibility portal PD tetap mensyaratkan `registration_published_at`; kemampuan s
 - Jenis kompetisi.
 - Tipe skor.
 - Format kompetisi.
+- Penanda turunan `uses_bracket`; nilainya berasal dari format Data Lomba, bukan input kedua.
 - Unit peserta: individual, pasangan, atau team.
 - Minimum dan maksimum team per PD; maksimum wajib integer positif.
 - Minimum dan maksimum anggota per team.
@@ -68,7 +69,7 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 5. Tetapkan periode registrasi dan preview paket yang akan dilihat PD.
 6. Publikasikan; sistem membuat snapshot, waktu publikasi, dan aktor publikasi.
 7. Tutup registrasi manual atau otomatis pada batas waktu.
-8. Verifikasi seluruh entry sebelum seeding atau bracket dikunci.
+8. Verifikasi seluruh entry sebelum peserta dikunci.
 
 ## CRUD Data Lomba
 
@@ -82,10 +83,12 @@ Snapshot regulasi berversi tidak berubah ketika master regulasi berikutnya diter
 - Pembuatan kompetisi tidak membuat participant, bracket, match, skor, atau audit skor otomatis.
 - Kompetisi draft tanpa entry dapat diubah atau diarsipkan; kompetisi yang sudah memiliki entry tidak dihapus permanen.
 - `sport_category_id` wajib sesuai dengan `sport_id`; `sport_regulation_id` selalu memakai regulasi aktif terbaru cabor saat publish.
-- Generator bracket/seeding hanya dijalankan melalui aksi terpisah setelah seluruh team efektif verified dan Admin mengonfirmasi peserta.
-- Data Lomba menampilkan progres `team terverifikasi / seluruh team aktif`; tombol `Kunci Bracket` hanya aktif ketika nilainya sama dan minimal dua team tersedia.
-- Penguncian bracket memberi nomor seed deterministik, mengisi `bracket_size` serta `seed_locked_at`, lalu mengubah status menjadi `bracket_locked`.
-- Progres verifikasi Data Lomba menampilkan `pemain verified / seluruh pemain` dan `team verified / seluruh team`; kedua hitungan wajib lengkap sebelum bracket dikunci.
+- Semua format memakai aksi `Kunci Peserta` setelah seluruh team dan pemain efektif verified.
+- `tournament_events.format` adalah sumber tunggal mode kompetisi; `uses_bracket` hanya snapshot turunan untuk audit dan UI.
+- Format bracket memberi nomor seed deterministik, mengisi `bracket_size` serta `seed_locked_at`, lalu mengubah status menjadi `bracket_locked`.
+- Format non-bracket tidak memberi seed atau `bracket_size`, mengisi waktu penguncian, lalu mengubah status menjadi `participants_locked`.
+- Generator pertandingan bracket hanya tersedia untuk format bracket. Swiss, ranking skor/nilai, dan fun games tidak boleh menjalankan generator bracket.
+- Progres verifikasi Data Lomba menampilkan `pemain verified / seluruh pemain` dan `team verified / seluruh team`; kedua hitungan wajib lengkap sebelum peserta dikunci.
 
 ## Alur Pengurus Daerah
 

@@ -27,6 +27,11 @@ class TournamentEvent extends Model
             && (! $this->registration_close_at || $this->registration_close_at->isFuture());
     }
 
+    public function usesBracket(): bool
+    {
+        return in_array($this->format, Sport::BRACKET_FORMATS, true);
+    }
+
     public function sport(): BelongsTo
     {
         return $this->belongsTo(Sport::class);

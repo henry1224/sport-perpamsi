@@ -43,7 +43,7 @@ const rejectMember = (member) => openNoteAction({ title: 'Tolak Pemain', eyebrow
   <PortalLayout portal="admin">
     <div class="page-head"><SectionTitle eyebrow="Verifikasi Pendaftaran" title="Antrian Peserta" /></div>
 
-    <AdminDataTable :paginator="entries" :filters="filters" item-label="pendaftaran" search-placeholder="Cari PD, kompetisi, atau pemain" :filter-options="[{ value: 'registration_open', label: 'Pendaftaran Dibuka' }, { value: 'registration_closed', label: 'Pendaftaran Ditutup' }, { value: 'bracket_locked', label: 'Bracket Dikunci' }]" v-slot="{ rows }">
+    <AdminDataTable :paginator="entries" :filters="filters" item-label="pendaftaran" search-placeholder="Cari PD, kompetisi, atau pemain" :filter-options="[{ value: 'registration_open', label: 'Pendaftaran Dibuka' }, { value: 'registration_closed', label: 'Pendaftaran Ditutup' }, { value: 'participants_locked', label: 'Peserta Dikunci' }, { value: 'bracket_locked', label: 'Bracket Dikunci' }]" v-slot="{ rows }">
       <table class="verification-table">
         <thead><tr><th>Pengurus Daerah</th><th>Kompetisi</th><th>Progres Pemeriksaan</th><th>Status</th><th class="actions-heading">Aksi</th></tr></thead>
         <tbody>

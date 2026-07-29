@@ -96,7 +96,7 @@ Urutan operasional Admin: `Data Lomba → Agenda & Jadwal → Panitia & Akses`. 
 - [x] Pertandingan operasional terhubung ke agenda, venue, dan waktu dengan validasi kompetisi serta cabor.
 - [x] Data pertandingan/skor demo dipisahkan dari data operasional, tidak dibuat otomatis oleh seed baseline, dan dapat dibersihkan melalui command khusus.
 
-Status: `Code Complete, Automated Passed, Manual UAT Pending` — CRUD, audit, wiring pertandingan, assignment panitia, policy deny-default, dan cleanup demo tersedia; 11 test Phase 5 dengan 96 assertion lulus.
+Status: `Code Complete, Automated Passed, Manual UAT Pending` — CRUD, audit, wiring pertandingan, assignment panitia berbasis pasangan cabor–venue terjadwal, policy deny-default, dan cleanup demo tersedia. Gate venue nonaktif, assignment tanpa jadwal, serta akun panitia nonaktif telah diuji otomatis.
 
 Exit: CRUD, audit, restrict delete, wiring jadwal, assignment panitia, cleanup demo, dan UAT lulus.
 

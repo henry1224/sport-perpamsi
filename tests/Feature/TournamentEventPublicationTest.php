@@ -36,6 +36,7 @@ class TournamentEventPublicationTest extends TestCase
         $this->assertSame($category->default_max_teams_per_pd, $event->registration_rules['max_teams_per_pd']);
         $this->assertSame($sport->default_max_officials_per_pd, $event->registration_rules['max_officials_per_pd']);
         $this->assertSame($sport->official_roles ?? [], $event->registration_rules['official_roles']);
+        $this->assertSame(in_array($sport->default_format, Sport::BRACKET_FORMATS, true), $event->registration_rules['uses_bracket']);
         $this->assertDatabaseCount('matches', $matchCount);
         $this->assertSame(0, $event->entries()->count());
         $this->assertSame(0, $event->matches()->count());
@@ -78,6 +79,7 @@ class TournamentEventPublicationTest extends TestCase
         $this->assertSame($event->category->default_max_teams_per_pd, $event->registration_rules['max_teams_per_pd']);
         $this->assertSame($event->sport->default_max_officials_per_pd, $event->registration_rules['max_officials_per_pd']);
         $this->assertSame($event->sport->official_roles ?? [], $event->registration_rules['official_roles']);
+        $this->assertSame($event->usesBracket(), $event->registration_rules['uses_bracket']);
         $this->assertTrue($event->registrationIsOpen());
         $this->assertDatabaseHas('event_publication_audits', ['tournament_event_id' => $event->id, 'action' => 'published']);
 
@@ -208,6 +210,29 @@ class TournamentEventPublicationTest extends TestCase
         $this->actingAs($admin)->post(route('admin.events.matches.generate', $event))->assertSessionHasNoErrors();
         $this->actingAs($admin)->post(route('admin.events.matches.generate', $event))->assertUnprocessable();
         $this->assertSame(1, TournamentMatch::query()->where('tournament_event_id', $event->id)->count());
+    }
+
+    public function test_non_bracket_format_locks_participants_without_seed_or_matches(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereHas('entries.teams.members')->with('entries.teams.members')->firstOrFail();
+
+        $event->matches()->delete();
+        $event->update(['format' => 'swiss', 'status' => 'registration_closed', 'registration_published_at' => now(), 'bracket_size' => null, 'seed_locked_at' => null]);
+        $event->entries()->update(['verification_status' => 'verified']);
+        $event->entries->flatMap->teams->each->update(['verification_status_override' => 'verified', 'cancelled_at' => null, 'seed_no' => null]);
+        $event->entries->flatMap->teams->flatMap->members->where('member_type', 'player')->each->update(['verification_status' => 'verified']);
+
+        $this->actingAs($admin)->post(route('admin.events.participants.lock', $event))->assertRedirect()->assertSessionHasNoErrors();
+
+        $event->refresh();
+        $this->assertSame('participants_locked', $event->status);
+        $this->assertNull($event->bracket_size);
+        $this->assertNotNull($event->seed_locked_at);
+        $this->assertSame(0, $event->eligibleTeams()->whereNotNull('seed_no')->count());
+        $this->assertSame(0, $event->matches()->count());
+        $this->actingAs($admin)->post(route('admin.events.matches.generate', $event))->assertUnprocessable();
     }
 
     public function test_four_team_bracket_creates_two_semifinals_and_one_final(): void

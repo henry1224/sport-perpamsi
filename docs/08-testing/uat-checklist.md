@@ -82,6 +82,8 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 
 - [ ] Navigasi `Penyusunan Lomba` berurutan Data Lomba, Agenda & Jadwal, lalu Panitia & Akses.
 - [ ] Assignment panitia final mengikuti cabor dan venue dari jadwal pertandingan yang sudah ditetapkan.
+- [x] Sistem menolak assignment panitia untuk pasangan cabor dan venue yang belum memiliki pertandingan terjadwal.
+- [x] Sistem menolak aktivasi agenda dan penjadwalan pertandingan ketika venue agenda nonaktif.
 - [ ] Admin dapat membuat akun internal melalui menu Pengguna dan akun dapat login sesuai role.
 - [ ] Admin dapat memperbarui identitas, role, password opsional, serta status login akun internal.
 - [ ] Form pengguna dan daftar PD menolak Kata Sandi lemah atau Ulangi Kata Sandi yang tidak cocok.
@@ -139,6 +141,8 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] Tidak ada match operasional tanpa agenda, venue, atau jadwal.
 - [ ] Tidak ada kompetisi operasional tanpa kategori dan versi regulasi.
 - [ ] Status `bracket_locked` hanya dipakai setelah publikasi dan verifikasi peserta selesai.
+- [ ] Format non-bracket memakai status `participants_locked`, tidak memiliki `seed_no`, `bracket_size`, atau pertandingan bracket.
+- [ ] Tombol `Kunci Peserta` tersedia untuk seluruh format; aksi `Buat Pertandingan` hanya tampil pada format bracket.
 - [ ] Data Lomba menampilkan perbandingan team terverifikasi terhadap total team; selisih sekecil apa pun menonaktifkan `Kunci Bracket`.
 - [ ] Setelah seluruh team terverifikasi, Admin dapat mengunci bracket dan seluruh team memperoleh nomor seed.
 - [ ] Admin melihat hitungan pemain verified terhadap total pemain pada antrian dan Data Lomba.

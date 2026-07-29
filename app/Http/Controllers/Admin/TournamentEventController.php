@@ -59,6 +59,7 @@ class TournamentEventController extends Controller
                     'min_members' => $event->category?->min_members,
                     'max_members' => $event->category?->max_members,
                     'format' => $event->format,
+                    'uses_bracket' => $event->usesBracket(),
                     'status' => $event->status,
                     'published' => (bool) $event->registration_published_at,
                     'open_at' => $event->registration_open_at?->format('Y-m-d\TH:i'),
@@ -145,6 +146,7 @@ class TournamentEventController extends Controller
                     'competition_type' => $category->competition_type,
                     'scoring_type' => $category->scoring_type,
                     'format' => $event->sport->default_format,
+                    'uses_bracket' => in_array($event->sport->default_format, Sport::BRACKET_FORMATS, true),
                     'min_members' => $category->min_members,
                     'max_members' => $category->max_members,
                     'max_teams_per_pd' => $category->default_max_teams_per_pd,
@@ -182,9 +184,9 @@ class TournamentEventController extends Controller
         return back()->with('success', 'Registrasi kompetisi ditutup.');
     }
 
-    public function lockBracket(Request $request, TournamentEvent $event): RedirectResponse
+    public function lockParticipants(Request $request, TournamentEvent $event): RedirectResponse
     {
-        abort_unless($event->registration_published_at && $event->status === 'registration_closed', 422, 'Bracket hanya dapat dikunci setelah pendaftaran ditutup.');
+        abort_unless($event->registration_published_at && $event->status === 'registration_closed', 422, 'Peserta hanya dapat dikunci setelah pendaftaran ditutup.');
 
         $teams = EntryTeam::query()->with('eventEntry')->whereHas('eventEntry', fn ($query) => $query->where('tournament_event_id', $event->id))->whereNull('cancelled_at')->orderBy('id')->get();
         $verified = $teams->filter(fn ($team) => $team->effectiveStatus() === 'verified');
@@ -192,32 +194,44 @@ class TournamentEventController extends Controller
         $playersCount = (clone $players)->count();
         $verifiedPlayersCount = (clone $players)->where('verification_status', 'verified')->count();
 
-        abort_if($teams->count() < 2, 422, 'Minimal dua team diperlukan untuk mengunci bracket.');
-        abort_if($teams->count() !== $verified->count(), 422, $teams->count() - $verified->count().' team belum diverifikasi. Selesaikan verifikasi sebelum mengunci bracket.');
-        abort_if($playersCount === 0 || $playersCount !== $verifiedPlayersCount, 422, $playersCount - $verifiedPlayersCount.' pemain belum diverifikasi. Selesaikan verifikasi pemain sebelum mengunci bracket.');
+        abort_if($teams->isEmpty(), 422, 'Minimal satu team diperlukan untuk mengunci peserta.');
+        abort_if($event->usesBracket() && $teams->count() < 2, 422, 'Minimal dua team diperlukan untuk format bracket.');
+        abort_if($teams->count() !== $verified->count(), 422, $teams->count() - $verified->count().' team belum diverifikasi. Selesaikan verifikasi sebelum mengunci peserta.');
+        abort_if($playersCount === 0 || $playersCount !== $verifiedPlayersCount, 422, $playersCount - $verifiedPlayersCount.' pemain belum diverifikasi. Selesaikan verifikasi pemain sebelum mengunci peserta.');
 
         DB::transaction(function () use ($event, $verified, $request) {
             $before = $this->publicationState($event);
-            $verified->values()->each(fn ($team, $index) => $team->update(['seed_no' => $index + 1]));
+            $usesBracket = $event->usesBracket();
+            $verified->values()->each(fn ($team, $index) => $team->update(['seed_no' => $usesBracket ? $index + 1 : null]));
             $event->update([
-                'status' => 'bracket_locked',
-                'bracket_size' => 2 ** (int) ceil(log($verified->count(), 2)),
+                'status' => $usesBracket ? 'bracket_locked' : 'participants_locked',
+                'bracket_size' => $usesBracket ? 2 ** (int) ceil(log($verified->count(), 2)) : null,
                 'seed_locked_at' => now(),
             ]);
-            if (in_array($verified->count(), [2, 4], true)) {
+            if ($usesBracket && in_array($verified->count(), [2, 4], true)) {
                 $this->createKnockoutMatches($event, $verified->values());
             }
-            $this->audit($event, 'bracket_locked', $before, $this->publicationState($event), $request);
+            $this->audit($event, $usesBracket ? 'bracket_locked' : 'participants_locked', $before, $this->publicationState($event), $request);
         });
+
+        if (! $event->usesBracket()) {
+            return back()->with('success', 'Peserta dikunci. Data siap diproses sesuai format kompetisi.');
+        }
 
         return back()->with('success', in_array($verified->count(), [2, 4], true)
             ? 'Bracket dikunci dan pertandingan berhasil dibuat.'
             : 'Bracket dikunci. Seluruh team terverifikasi telah mendapat nomor seed.');
     }
 
+    public function lockBracket(Request $request, TournamentEvent $event): RedirectResponse
+    {
+        return $this->lockParticipants($request, $event);
+    }
+
     public function generateMatches(Request $request, TournamentEvent $event): RedirectResponse
     {
         abort_unless($event->status === 'bracket_locked', 422, 'Pertandingan hanya dapat dibuat setelah bracket dikunci.');
+        abort_unless($event->usesBracket(), 422, 'Format kompetisi ini tidak menggunakan bracket.');
         abort_if($event->matches()->exists(), 422, 'Pertandingan untuk Data Lomba ini sudah tersedia.');
         $teams = $event->eligibleTeams()->with('eventEntry:id')->orderBy('seed_no')->get();
         abort_unless(in_array($teams->count(), [2, 4], true), 422, 'Generator pertandingan saat ini mendukung bracket dua atau empat team.');
@@ -317,6 +331,7 @@ class TournamentEventController extends Controller
             'allow_member_cross_category' => $sport->allow_member_cross_category,
             'max_categories_per_member' => $sport->max_categories_per_member,
             'official_can_compete' => $sport->official_can_compete,
+            'uses_bracket' => in_array($sport->default_format, Sport::BRACKET_FORMATS, true),
         ];
 
         return $data;

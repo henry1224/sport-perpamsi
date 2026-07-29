@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sport extends Model
 {
+    public const BRACKET_FORMATS = ['knockout', 'group_or_knockout', 'group_then_knockout'];
+
     public const FORMAT_LABELS = [
         'knockout' => 'Sistem Gugur',
         'group' => 'Fase Grup',

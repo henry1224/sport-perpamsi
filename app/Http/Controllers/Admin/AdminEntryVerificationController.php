@@ -130,7 +130,7 @@ class AdminEntryVerificationController extends Controller
         $data = $request->validate(['note' => ['required', 'string', 'max:255']]);
         abort_unless($entry->verification_status === 'pending', 422, 'Penambahan tim hanya dapat dibuka saat pendaftaran menunggu verifikasi.');
         abort_if($entry->team_addition_opened_at, 422, 'Penambahan tim sudah dibuka untuk PD.');
-        abort_if(in_array($entry->tournamentEvent?->status, ['bracket_locked', 'ongoing', 'completed'], true), 422, 'Penambahan tim tidak dapat dibuka setelah bracket dikunci.');
+        abort_if(in_array($entry->tournamentEvent?->status, ['participants_locked', 'bracket_locked', 'ongoing', 'completed'], true), 422, 'Penambahan tim tidak dapat dibuka setelah peserta dikunci.');
         $maximum = $entry->tournamentEvent?->registration_rules['max_teams_per_pd'] ?? 1;
         abort_if($entry->teams()->whereNull('cancelled_at')->count() >= $maximum, 422, 'Kuota tim PD sudah terpenuhi.');
         $before = $this->state($entry);

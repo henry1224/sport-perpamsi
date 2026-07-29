@@ -40,4 +40,11 @@ class StaffMatchScopeTest extends TestCase
         $this->actingAs($staff)->get(route('staff.matches.index'))->assertOk()
             ->assertInertia(fn (Assert $page) => $page->has('matches', 0));
     }
+
+    public function test_suspended_staff_cannot_open_staff_portal(): void
+    {
+        $staff = User::factory()->create(['role' => 'scorekeeper', 'account_status' => 'suspended']);
+
+        $this->actingAs($staff)->get(route('staff.matches.index'))->assertForbidden();
+    }
 }

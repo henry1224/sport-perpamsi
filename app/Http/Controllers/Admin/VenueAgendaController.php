@@ -124,6 +124,7 @@ class VenueAgendaController extends Controller
 
     public function publish(Request $request, EventAgenda $agenda): RedirectResponse
     {
+        abort_unless(Venue::query()->whereKey($agenda->venue_id)->where('is_active', true)->exists(), 422, 'Agenda tidak dapat diaktifkan karena venue tidak aktif.');
         $before = $agenda->toArray();
         $agenda->update(['status' => 'published', 'published_at' => now()]);
         $this->audit($agenda, 'published', $before, $request);
@@ -135,6 +136,7 @@ class VenueAgendaController extends Controller
     {
         $before = $agenda->toArray();
         $active = $agenda->status !== 'published';
+        abort_if($active && ! Venue::query()->whereKey($agenda->venue_id)->where('is_active', true)->exists(), 422, 'Agenda tidak dapat diaktifkan karena venue tidak aktif.');
         $agenda->update(['status' => $active ? 'published' : 'cancelled', 'published_at' => $active ? now() : null]);
         $this->audit($agenda, $active ? 'activated' : 'deactivated', $before, $request);
 
@@ -155,6 +157,7 @@ class VenueAgendaController extends Controller
         $data = $request->validate(['event_agenda_id' => ['required', 'exists:event_agendas,id']]);
         $agenda = EventAgenda::query()->findOrFail($data['event_agenda_id']);
         abort_unless($agenda->status === 'published', 422, 'Pertandingan hanya dapat ditempatkan pada agenda aktif.');
+        abort_unless(Venue::query()->whereKey($agenda->venue_id)->where('is_active', true)->exists(), 422, 'Pertandingan tidak dapat ditempatkan karena venue agenda tidak aktif.');
         abort_if($agenda->tournament_event_id && $agenda->tournament_event_id !== $match->tournament_event_id, 422, 'Agenda tidak sesuai kompetisi pertandingan.');
         abort_if($agenda->sport_id && $agenda->sport_id !== $match->tournamentEvent()->value('sport_id'), 422, 'Agenda tidak sesuai cabang olahraga pertandingan.');
         $match->update(['event_agenda_id' => $agenda->id, 'venue_id' => $agenda->venue_id, 'scheduled_at' => $agenda->date->format('Y-m-d').' '.$agenda->start_time]);

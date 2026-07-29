@@ -82,6 +82,8 @@ Agenda khusus seminar NIWC mengikuti [seminar-standard.md](./seminar-standard.md
 - Match belum dianggap terjadwal sebelum memiliki `event_agenda_id`, `venue_id`, dan `scheduled_at`.
 - Venue dan waktu match mengikuti agenda terpilih; perubahan agenda wajib memperbarui atau memvalidasi ulang match terkait.
 - Assignment panitia memakai pasangan cabor dan venue dari match yang sudah terjadwal.
+- Assignment panitia hanya dapat dibuat untuk pasangan cabor dan venue aktif yang sudah memiliki pertandingan terjadwal; akun panitia nonaktif tidak tersedia sebagai pilihan.
+- Agenda tidak dapat diaktifkan atau dipakai menjadwalkan pertandingan ketika venue terkait nonaktif.
 - Data agenda seed adalah baseline jadwal acara, bukan bukti bahwa match operasional sudah dibuat.
 
 ## Urutan Penyusunan Lomba

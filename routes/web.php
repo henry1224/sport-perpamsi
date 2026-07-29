@@ -78,6 +78,7 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::delete('/events/{event:code}', [TournamentEventController::class, 'destroy'])->name('events.destroy');
     Route::post('/events/{event:code}/publish', [TournamentEventController::class, 'publish'])->name('events.publish');
     Route::post('/events/{event:code}/close', [TournamentEventController::class, 'close'])->name('events.close');
+    Route::post('/events/{event:code}/lock-participants', [TournamentEventController::class, 'lockParticipants'])->name('events.participants.lock');
     Route::post('/events/{event:code}/lock-bracket', [TournamentEventController::class, 'lockBracket'])->name('events.bracket.lock');
     Route::post('/events/{event:code}/generate-matches', [TournamentEventController::class, 'generateMatches'])->name('events.matches.generate');
     Route::post('/events/{event:code}/unpublish', [TournamentEventController::class, 'unpublish'])->name('events.unpublish');

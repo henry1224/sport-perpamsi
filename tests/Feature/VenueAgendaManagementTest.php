@@ -86,6 +86,7 @@ class VenueAgendaManagementTest extends TestCase
         $this->assertDatabaseHas('venues', ['id' => $venue->id, 'is_active' => false]);
 
         $venue->update(['is_active' => true]);
+        Venue::query()->whereKey($agenda->venue_id)->update(['is_active' => true]);
         $this->actingAs($admin)->put(route('admin.agendas.update', $agenda), [
             'date' => $agenda->date->format('Y-m-d'), 'title' => $agenda->title.' Revisi', 'type' => $agenda->type,
             'sport_id' => $agenda->sport_id, 'tournament_event_id' => $agenda->tournament_event_id, 'venue_id' => $agenda->venue_id,
@@ -103,6 +104,7 @@ class VenueAgendaManagementTest extends TestCase
         $this->seed();
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
         $agenda = EventAgenda::query()->where('status', 'published')->firstOrFail();
+        Venue::query()->whereKey($agenda->venue_id)->update(['is_active' => true]);
 
         $this->actingAs($admin)->post(route('admin.agendas.toggle-status', $agenda))->assertSessionHasNoErrors();
         $this->assertDatabaseHas('event_agendas', ['id' => $agenda->id, 'status' => 'cancelled', 'published_at' => null]);
@@ -116,6 +118,7 @@ class VenueAgendaManagementTest extends TestCase
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
         $match = TournamentMatch::query()->with('tournamentEvent')->firstOrFail();
         $agenda = EventAgenda::query()->where('sport_id', $match->tournamentEvent->sport_id)->firstOrFail();
+        Venue::query()->whereKey($agenda->venue_id)->update(['is_active' => true]);
 
         $this->actingAs($admin)->post(route('admin.matches.schedule', $match), ['event_agenda_id' => $agenda->id])->assertSessionHasNoErrors();
         $this->assertDatabaseHas('matches', ['id' => $match->id, 'event_agenda_id' => $agenda->id, 'venue_id' => $agenda->venue_id]);
@@ -123,6 +126,20 @@ class VenueAgendaManagementTest extends TestCase
 
         $wrongAgenda = EventAgenda::query()->whereNotNull('sport_id')->where('sport_id', '!=', $match->tournamentEvent->sport_id)->firstOrFail();
         $this->actingAs($admin)->post(route('admin.matches.schedule', $match), ['event_agenda_id' => $wrongAgenda->id])->assertUnprocessable();
+    }
+
+    public function test_inactive_venue_blocks_agenda_activation_and_match_scheduling(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $match = TournamentMatch::query()->with('tournamentEvent')->firstOrFail();
+        $agenda = EventAgenda::query()->where('sport_id', $match->tournamentEvent->sport_id)->firstOrFail();
+
+        Venue::query()->whereKey($agenda->venue_id)->update(['is_active' => false]);
+        $this->actingAs($admin)->post(route('admin.matches.schedule', $match), ['event_agenda_id' => $agenda->id])->assertUnprocessable();
+
+        $agenda->update(['status' => 'cancelled', 'published_at' => null]);
+        $this->actingAs($admin)->post(route('admin.agendas.toggle-status', $agenda))->assertUnprocessable();
     }
 
     public function test_admin_can_search_paginate_create_and_delete_unused_venue(): void
