@@ -54,7 +54,7 @@ class StaffMatchScopeTest extends TestCase
         $this->seed();
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
         $staff = User::factory()->create(['role' => 'scorekeeper', 'account_status' => 'verified']);
-        $match = TournamentMatch::query()->with('tournamentEvent')->firstOrFail();
+        $match = TournamentMatch::query()->where('status', 'scheduled')->with('tournamentEvent')->firstOrFail();
         $venue = Venue::query()->where('is_active', true)->firstOrFail();
 
         $this->actingAs($admin)->post(route('admin.agendas.store'), [

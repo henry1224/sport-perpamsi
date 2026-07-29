@@ -112,6 +112,7 @@ class VenueAgendaController extends Controller
 
     public function updateAgenda(Request $request, EventAgenda $agenda): RedirectResponse
     {
+        abort_if($agenda->matches()->exists(), 422, 'Agenda yang sudah memiliki pertandingan tidak dapat diubah.');
         $reason = $request->validate(['change_note' => [$agenda->published_at ? 'required' : 'nullable', 'string', 'max:255']])['change_note'] ?? null;
         $data = $this->agendaData($request);
         $this->ensureNoConflict($data, $agenda);
@@ -134,6 +135,7 @@ class VenueAgendaController extends Controller
 
     public function toggleAgendaStatus(Request $request, EventAgenda $agenda): RedirectResponse
     {
+        abort_if($agenda->matches()->exists(), 422, 'Status agenda yang sudah memiliki pertandingan tidak dapat diubah.');
         $before = $agenda->toArray();
         $active = $agenda->status !== 'published';
         abort_if($active && ! Venue::query()->whereKey($agenda->venue_id)->where('is_active', true)->exists(), 422, 'Agenda tidak dapat diaktifkan karena venue tidak aktif.');
@@ -154,6 +156,8 @@ class VenueAgendaController extends Controller
 
     public function scheduleMatch(Request $request, TournamentMatch $match): RedirectResponse
     {
+        abort_unless($match->status === 'scheduled', 422, 'Pertandingan hanya dapat dijadwalkan sebelum dimulai.');
+        abort_if($match->event_agenda_id, 422, 'Pertandingan yang sudah dijadwalkan tidak dapat dipindahkan.');
         $data = $request->validate(['event_agenda_id' => ['required', 'exists:event_agendas,id']]);
         $agenda = EventAgenda::query()->findOrFail($data['event_agenda_id']);
         abort_unless($agenda->status === 'published', 422, 'Pertandingan hanya dapat ditempatkan pada agenda aktif.');
@@ -163,6 +167,30 @@ class VenueAgendaController extends Controller
         $match->update(['event_agenda_id' => $agenda->id, 'venue_id' => $agenda->venue_id, 'scheduled_at' => $agenda->date->format('Y-m-d').' '.$agenda->start_time]);
 
         return back()->with('success', 'Pertandingan berhasil ditempatkan pada agenda.');
+    }
+
+    public function unscheduleMatch(Request $request, TournamentMatch $match): RedirectResponse
+    {
+        $reason = $request->validate(['reason' => ['required', 'string', 'min:5', 'max:255']])['reason'];
+        abort_unless($match->event_agenda_id && $match->status === 'scheduled', 422, 'Jadwal hanya dapat dibatalkan sebelum pertandingan dimulai.');
+
+        DB::transaction(function () use ($match, $reason, $request) {
+            $agendaId = $match->event_agenda_id;
+            $before = $match->toArray();
+            $match->update(['event_agenda_id' => null, 'venue_id' => null, 'scheduled_at' => null]);
+            DB::table('event_agenda_audits')->insert([
+                'event_agenda_id' => $agendaId,
+                'action' => 'match_unscheduled',
+                'reason' => $reason,
+                'before_json' => json_encode($before),
+                'after_json' => json_encode($match->fresh()->toArray()),
+                'user_id' => $request->user()->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
+
+        return back()->with('success', 'Jadwal pertandingan dibatalkan dan dapat dijadwalkan ulang.');
     }
 
     private function venueData(Request $request, ?Venue $venue = null): array

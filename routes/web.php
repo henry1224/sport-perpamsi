@@ -102,6 +102,7 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/agendas/{agenda}/publish', [VenueAgendaController::class, 'publish'])->name('agendas.publish');
     Route::post('/agendas/{agenda}/toggle-status', [VenueAgendaController::class, 'toggleAgendaStatus'])->name('agendas.toggle-status');
     Route::post('/matches/{match}/schedule', [VenueAgendaController::class, 'scheduleMatch'])->name('matches.schedule');
+    Route::post('/matches/{match}/unschedule', [VenueAgendaController::class, 'unscheduleMatch'])->name('matches.unschedule');
     Route::get('/master-data', [MasterDataController::class, 'index'])->name('master-data.index');
     Route::post('/master-data/sports', [MasterDataController::class, 'storeSport'])->name('master-data.sports.store');
     Route::put('/master-data/sports/{sport}', [MasterDataController::class, 'updateSport'])->name('master-data.sports.update');

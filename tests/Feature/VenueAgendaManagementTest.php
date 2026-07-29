@@ -116,13 +116,26 @@ class VenueAgendaManagementTest extends TestCase
     {
         $this->seed();
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
-        $match = TournamentMatch::query()->with('tournamentEvent')->firstOrFail();
+        $match = TournamentMatch::query()->where('status', 'scheduled')->with('tournamentEvent')->firstOrFail();
         $agenda = EventAgenda::query()->where('sport_id', $match->tournamentEvent->sport_id)->firstOrFail();
         Venue::query()->whereKey($agenda->venue_id)->update(['is_active' => true]);
 
         $this->actingAs($admin)->post(route('admin.matches.schedule', $match), ['event_agenda_id' => $agenda->id])->assertSessionHasNoErrors();
         $this->assertDatabaseHas('matches', ['id' => $match->id, 'event_agenda_id' => $agenda->id, 'venue_id' => $agenda->venue_id]);
         $this->assertNotNull($match->fresh()->scheduled_at);
+
+        $this->actingAs($admin)->post(route('admin.matches.schedule', $match), ['event_agenda_id' => $agenda->id])->assertUnprocessable();
+        $this->actingAs($admin)->put(route('admin.agendas.update', $agenda), [
+            'date' => $agenda->date->format('Y-m-d'), 'title' => $agenda->title.' Diubah', 'type' => $agenda->type,
+            'sport_id' => $agenda->sport_id, 'tournament_event_id' => $agenda->tournament_event_id, 'venue_id' => $agenda->venue_id,
+            'start_time' => substr($agenda->start_time, 0, 5), 'end_time' => substr($agenda->end_time, 0, 5), 'change_note' => 'Uji perubahan',
+        ])->assertUnprocessable();
+        $this->actingAs($admin)->post(route('admin.agendas.toggle-status', $agenda))->assertUnprocessable();
+
+        $this->actingAs($admin)->post(route('admin.matches.unschedule', $match), ['reason' => 'Pertandingan ditempatkan pada agenda yang salah.'])->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('matches', ['id' => $match->id, 'event_agenda_id' => null, 'venue_id' => null, 'scheduled_at' => null]);
+        $this->assertDatabaseHas('event_agenda_audits', ['event_agenda_id' => $agenda->id, 'action' => 'match_unscheduled', 'user_id' => $admin->id]);
+        $this->actingAs($admin)->post(route('admin.matches.schedule', $match), ['event_agenda_id' => $agenda->id])->assertSessionHasNoErrors();
 
         $wrongAgenda = EventAgenda::query()->whereNotNull('sport_id')->where('sport_id', '!=', $match->tournamentEvent->sport_id)->firstOrFail();
         $this->actingAs($admin)->post(route('admin.matches.schedule', $match), ['event_agenda_id' => $wrongAgenda->id])->assertUnprocessable();
