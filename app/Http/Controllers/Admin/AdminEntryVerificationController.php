@@ -30,7 +30,6 @@ class AdminEntryVerificationController extends Controller
                 'regionalCommittee:id,name',
                 'tournamentEvent:id,code,name,status,registration_rules',
             ])
-            ->where('verification_status', 'pending')
             ->when($event, fn ($query) => $query->whereHas('tournamentEvent', fn ($query) => $query->where('code', $event)))
             ->when($status, fn ($query) => $query->whereHas('tournamentEvent', fn ($query) => $query->where('status', $status)))
             ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
@@ -47,7 +46,7 @@ class AdminEntryVerificationController extends Controller
                 'verification_status' => $entry->verification_status,
                 'verification_note' => $entry->verification_note,
                 'display_name' => $entry->display_name,
-                'teams' => $entry->teams->map(fn ($team) => ['id' => $team->id, 'label' => $team->label, 'members' => $team->members->map(fn ($member) => $this->memberPayload($member)), 'players_count' => $team->members->count(), 'verified_players_count' => $team->members->where('verification_status', 'verified')->count(), 'override' => $team->verification_status_override, 'effective_status' => $team->effectiveStatus()]),
+                'teams' => $entry->teams->map(fn ($team) => ['id' => $team->id, 'label' => $team->label, 'seed_no' => $team->seed_no, 'members' => $team->members->map(fn ($member) => $this->memberPayload($member)), 'players_count' => $team->members->count(), 'verified_players_count' => $team->members->where('verification_status', 'verified')->count(), 'override' => $team->verification_status_override, 'effective_status' => $team->effectiveStatus()]),
                 'officials' => $entry->members->map(fn ($member) => $this->memberPayload($member) + ['role' => $member->position]),
                 'players_count' => $entry->teams->sum(fn ($team) => $team->members->count()),
                 'verified_players_count' => $entry->teams->sum(fn ($team) => $team->members->where('verification_status', 'verified')->count()),

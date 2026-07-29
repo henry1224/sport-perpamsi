@@ -8,6 +8,7 @@ const props = defineProps({
   sports: { type: Array, default: () => [] },
   sportCategories: { type: Array, default: () => [] },
   tournamentEvents: { type: Array, default: () => [] },
+  bracketParticipants: { type: Array, default: () => [] },
 });
 
 // ponytail: hardcoded demo. Replace with real tournaments/groups/matches data model.
@@ -129,6 +130,7 @@ const allTournaments = computed(() => (props.sports.length ? props.sports : tour
 const current = computed(() => allTournaments.value.find((t) => t.code === active.value) || allTournaments.value[0]);
 const currentCategories = computed(() => props.sportCategories.filter((category) => category.sport_code === active.value));
 const currentEvent = computed(() => props.tournamentEvents.find((event) => event.sport_code === active.value && (event.category_code || null) === activeCategory.value));
+const currentSeeds = computed(() => props.bracketParticipants.filter((participant) => participant.event_code === currentEvent.value?.code && `${participant.display_name} ${participant.label}`.toLowerCase().includes(search.value.toLowerCase())));
 const selectSport = (code) => {
   active.value = code;
   activeCategory.value = props.sportCategories.find((category) => category.sport_code === code)?.code || null;
@@ -233,6 +235,16 @@ onMounted(() => nextTick(() => {
           </tbody>
         </table>
         <p class="legend"><span class="dot" />Lolos ke babak berikutnya</p>
+      </div>
+    </section>
+
+    <section v-if="currentSeeds.length" class="seed-section">
+      <SectionTitle eyebrow="Peserta Terkunci" title="Daftar Seed" :meta="`${currentEvent?.name} · ${currentSeeds.length} tim`" />
+      <div class="seed-grid">
+        <article v-for="participant in currentSeeds" :key="participant.id" class="seed-card">
+          <span>#{{ participant.seed_no }}</span>
+          <div><strong>{{ participant.display_name }}</strong><small>{{ participant.label }}</small></div>
+        </article>
       </div>
     </section>
 
@@ -353,6 +365,13 @@ onMounted(() => nextTick(() => {
 .bracket-tools { position: relative; z-index: 2; display: flex; gap: 8px; margin: 18px 0 8px; }
 .bracket-tools button { padding: 10px 16px; border: 1px solid rgba(255,255,255,.16); background: #08142d; color: #fff; font-size: 11px; font-weight: 1000; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
 .bracket-tools button.active { border-color: #F6C64A; background: #F6C64A; color: #071126; }
+.seed-section { margin: 30px 0; }
+.seed-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin-top: 16px; }
+.seed-card { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: center; gap: 12px; padding: 13px 15px; background: #fff; border: 1px solid #dbe3e8; box-shadow: 4px 4px 0 #e8edf0; }
+.seed-card > span { display: grid; place-items: center; width: 44px; height: 44px; color: #071126; background: #F6C64A; font-size: 14px; font-weight: 1000; }
+.seed-card div { display: grid; gap: 3px; min-width: 0; }
+.seed-card strong { overflow: hidden; color: #12283a; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.seed-card small { color: #71808b; font-size: 10px; font-weight: 800; }
 .early-rounds { position: relative; z-index: 2; display: grid; gap: 18px; margin-top: 18px; }
 .early-card { padding: 18px; background: #08142d; border: 1px solid rgba(255,255,255,.12); }
 .early-card h3 { margin: 0 0 14px; color: #F6C64A; font-size: 13px; font-weight: 1000; letter-spacing: .16em; text-transform: uppercase; }

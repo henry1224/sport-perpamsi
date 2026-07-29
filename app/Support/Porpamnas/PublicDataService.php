@@ -184,6 +184,14 @@ class PublicDataService
                 ->orderBy('tournament_events.name')
                 ->select('tournament_events.code', 'tournament_events.name', 'tournament_events.format', 'tournament_events.status', 'tournament_events.bracket_size', 'sports.code as sport_code', 'sport_categories.code as category_code')
                 ->get(),
+            'bracketParticipants' => DB::table('entry_teams')
+                ->join('event_entries', 'entry_teams.event_entry_id', '=', 'event_entries.id')
+                ->join('tournament_events', 'event_entries.tournament_event_id', '=', 'tournament_events.id')
+                ->whereNull('entry_teams.cancelled_at')
+                ->whereNotNull('entry_teams.seed_no')
+                ->orderBy('tournament_events.code')
+                ->orderBy('entry_teams.seed_no')
+                ->get(['tournament_events.code as event_code', 'entry_teams.id', 'entry_teams.label', 'entry_teams.seed_no', 'event_entries.display_name']),
         ];
     }
 
@@ -219,6 +227,7 @@ class PublicDataService
             'sportCategories' => $this->csv('data/seed/sport_categories.csv'),
             'sportRegulations' => collect(),
             'tournamentEvents' => collect(),
+            'bracketParticipants' => collect(),
         ];
     }
 

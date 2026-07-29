@@ -8,6 +8,7 @@ use App\Models\SportRegulation;
 use App\Models\TournamentEvent;
 use App\Models\TournamentMatch;
 use App\Models\User;
+use App\Support\Porpamnas\PublicDataService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -180,6 +181,9 @@ class TournamentEventPublicationTest extends TestCase
         $this->assertSame('bracket_locked', $event->status);
         $this->assertNotNull($event->seed_locked_at);
         $this->assertSame($event->entries()->withCount('teams')->get()->sum('teams_count'), $event->entries()->with('teams')->get()->flatMap->teams->whereNotNull('seed_no')->count());
+        $publicParticipants = collect(app(PublicDataService::class)->pageProps()['bracketParticipants'])->where('event_code', $event->code);
+        $this->assertNotEmpty($publicParticipants);
+        $this->assertTrue($publicParticipants->every(fn ($participant) => isset($participant->seed_no, $participant->label, $participant->display_name) && ! isset($participant->identity_number)));
     }
 
     public function test_two_team_bracket_creates_single_final_and_can_recover_locked_event(): void

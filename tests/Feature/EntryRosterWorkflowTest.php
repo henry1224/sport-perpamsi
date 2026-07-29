@@ -314,7 +314,7 @@ class EntryRosterWorkflowTest extends TestCase
         $this->actingAs($pd)->post(route('pd.events.entries.store', $event), ['intent' => 'submit', 'teams' => [['members' => $members]]])->assertSessionHasErrors('teams.0.members.0.documents.photo');
     }
 
-    public function test_admin_event_filter_shows_pending_aceh_registration(): void
+    public function test_admin_event_filter_keeps_verified_registration_visible_with_seed(): void
     {
         $this->seed();
         $admin = User::query()->where('role', 'super_admin')->firstOrFail();
@@ -329,18 +329,19 @@ class EntryRosterWorkflowTest extends TestCase
             'regional_committee_id' => $pd->regional_committee_id,
             'pdam_id' => $pdamId,
             'display_name' => 'PD PERPAMSI Aceh',
-            'verification_status' => 'pending',
+            'verification_status' => 'verified',
             'submitted_at' => now(),
         ]);
-        $team = $entry->teams()->create(['public_id' => (string) Str::uuid(), 'team_no' => 1, 'label' => 'Tim 1']);
+        $team = $entry->teams()->create(['public_id' => (string) Str::uuid(), 'team_no' => 1, 'label' => 'Tim 1', 'seed_no' => 2]);
         foreach (['Andre', 'Arhan'] as $index => $name) {
-            $team->members()->create(['event_entry_id' => $entry->id, 'pdam_id' => $pdamId, 'name' => $name, 'normalized_name' => mb_strtolower($name), 'member_type' => 'player', 'verification_status' => 'pending', 'documents' => ['photo' => $index ? 'registrations/test/photo.jpg' : 'registrations/test/photo.pdf']]);
+            $team->members()->create(['event_entry_id' => $entry->id, 'pdam_id' => $pdamId, 'name' => $name, 'normalized_name' => mb_strtolower($name), 'member_type' => 'player', 'verification_status' => 'verified', 'documents' => ['photo' => $index ? 'registrations/test/photo.jpg' : 'registrations/test/photo.pdf']]);
         }
 
         $this->actingAs($admin)->get(route('admin.entries.index', ['event' => 'badminton-mixed-double']))->assertInertia(fn ($page) => $page
             ->where('filters.event', 'badminton-mixed-double')
             ->where('entries.data', fn ($entries) => collect($entries)->contains(fn ($item) => $item['committee'] === 'PD PERPAMSI Aceh'
                 && $item['players_count'] === 2
+                && $item['teams'][0]['seed_no'] === 2
                 && collect($item['teams'][0]['members'])->pluck('name')->all() === ['Andre', 'Arhan']
                 && $item['teams'][0]['members'][0]['documents'][0]['is_image'] === false
                 && $item['teams'][0]['members'][1]['documents'][0]['is_image'] === true)));
