@@ -106,7 +106,10 @@ Audit implementasi: [phase-1-5-flow-audit.md](./phase-1-5-flow-audit.md). Phase 
 
 > Beku sampai seluruh exit criteria Phase 4B terpenuhi; seluruh participant operasi turnamen wajib `EntryTeam`.
 
+Pengecualian tertulis 29 Juli 2026: generator pertandingan minimum untuk bracket dua atau empat team dikerjakan agar hasil penguncian bracket dapat masuk ke Agenda & Jadwal. Generator bracket lebih dari empat team tetap terbuka pada pekerjaan bracket manager.
+
 - [ ] Seeding/grup/bracket manager affiliation-aware.
+- [x] Bracket dua team membuat satu Final; bracket empat team membuat dua Semifinal dan satu Final; event lama yang terkunci tanpa pertandingan dapat dipulihkan.
 - [x] Precondition bracket lock: minimal dua team, seluruh team aktif efektif verified, progres verifikasi terlihat, dan nomor seed tersimpan saat lock.
 - [x] Verifikasi pemain individual dengan audit dan gate parent/bracket agar pengajuan tidak terlewat.
 - [ ] Input skor idempotent.

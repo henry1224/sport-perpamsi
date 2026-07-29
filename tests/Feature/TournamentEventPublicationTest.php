@@ -6,6 +6,7 @@ use App\Models\Sport;
 use App\Models\SportCategory;
 use App\Models\SportRegulation;
 use App\Models\TournamentEvent;
+use App\Models\TournamentMatch;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
@@ -177,6 +178,67 @@ class TournamentEventPublicationTest extends TestCase
         $this->assertSame('bracket_locked', $event->status);
         $this->assertNotNull($event->seed_locked_at);
         $this->assertSame($event->entries()->withCount('teams')->get()->sum('teams_count'), $event->entries()->with('teams')->get()->flatMap->teams->whereNotNull('seed_no')->count());
+    }
+
+    public function test_two_team_bracket_creates_single_final_and_can_recover_locked_event(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereHas('entries.teams')->with('entries.teams.members')->firstOrFail();
+        $teams = $event->entries->flatMap->teams->values();
+        $this->assertGreaterThanOrEqual(2, $teams->count());
+
+        $event->matches()->delete();
+        $event->update(['status' => 'registration_closed', 'registration_published_at' => now()]);
+        $event->entries()->update(['verification_status' => 'verified']);
+        $teams->each(fn ($team, $index) => $team->update([
+            'cancelled_at' => $index < 2 ? null : now(),
+            'verification_status_override' => $index < 2 ? 'verified' : null,
+            'seed_no' => null,
+        ]));
+        $teams->take(2)->flatMap->members->where('member_type', 'player')->each->update(['verification_status' => 'verified']);
+
+        $this->actingAs($admin)->post(route('admin.events.bracket.lock', $event))->assertSessionHasNoErrors();
+        $match = TournamentMatch::query()->where('tournament_event_id', $event->id)->firstOrFail();
+        $this->assertSame('Final', $match->round_name);
+        $this->assertSame($teams[0]->id, $match->team_a_id);
+        $this->assertSame($teams[1]->id, $match->team_b_id);
+
+        $match->delete();
+        $this->actingAs($admin)->post(route('admin.events.matches.generate', $event))->assertSessionHasNoErrors();
+        $this->actingAs($admin)->post(route('admin.events.matches.generate', $event))->assertUnprocessable();
+        $this->assertSame(1, TournamentMatch::query()->where('tournament_event_id', $event->id)->count());
+    }
+
+    public function test_four_team_bracket_creates_two_semifinals_and_one_final(): void
+    {
+        $this->seed();
+        $admin = User::query()->where('role', 'super_admin')->firstOrFail();
+        $event = TournamentEvent::query()->whereHas('entries.teams')->with('entries.teams.members')->firstOrFail();
+        $teams = $event->entries->flatMap->teams->values();
+        $this->assertGreaterThanOrEqual(4, $teams->count());
+
+        $event->matches()->delete();
+        $event->update(['status' => 'registration_closed', 'registration_published_at' => now()]);
+        $event->entries()->update(['verification_status' => 'verified']);
+        $teams->each(fn ($team, $index) => $team->update([
+            'cancelled_at' => $index < 4 ? null : now(),
+            'verification_status_override' => $index < 4 ? 'verified' : null,
+            'seed_no' => null,
+        ]));
+        $teams->take(4)->flatMap->members->where('member_type', 'player')->each->update(['verification_status' => 'verified']);
+
+        $this->actingAs($admin)->post(route('admin.events.bracket.lock', $event))->assertSessionHasNoErrors();
+        $matches = TournamentMatch::query()->where('tournament_event_id', $event->id)->orderBy('round_no')->orderBy('slot_no')->get();
+        $seeded = $event->eligibleTeams()->orderBy('seed_no')->get()->values();
+        $final = $matches->firstWhere('round_name', 'Final');
+        $semifinals = $matches->where('round_name', 'Semifinal')->values();
+
+        $this->assertCount(3, $matches);
+        $this->assertCount(2, $semifinals);
+        $this->assertSame([$seeded[0]->id, $seeded[3]->id], [$semifinals[0]->team_a_id, $semifinals[0]->team_b_id]);
+        $this->assertSame([$seeded[1]->id, $seeded[2]->id], [$semifinals[1]->team_a_id, $semifinals[1]->team_b_id]);
+        $this->assertTrue($semifinals->every(fn ($match) => $match->next_match_id === $final->id));
     }
 
     public function test_parent_entry_waits_until_every_player_is_verified(): void

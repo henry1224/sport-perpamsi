@@ -2,6 +2,8 @@
 
 > Format non-knockout (group stage, round robin, Swiss, time/distance/score ranking) belum memiliki struktur data pendukung. Drift dan aksi lihat `docs/00-project/audit-2026-07-22.md` (D18).
 
+Implementasi awal Phase 6 mendukung bracket dua team dengan satu `Final`, serta empat team dengan dua `Semifinal` menuju satu `Final`. Event lama yang sudah `bracket_locked` tanpa pertandingan dapat menjalankan aksi `Buat Pertandingan`. Bracket lebih dari empat team, bye, dan propagasi pemenang belum dibuka sampai bracket manager lengkap tersedia.
+
 Status implementasi saat ini:
 
 - Knockout: data demo dapat dibentuk oleh seeder, tetapi generator operasional dan aksi lock belum tersedia.

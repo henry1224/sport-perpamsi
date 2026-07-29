@@ -102,6 +102,14 @@ Bukti gate otomatis terbaru: [Eksekusi UAT Otomatis — 22 Juli 2026](./uat-exec
 - [ ] Akun dinonaktifkan langsung kehilangan akses.
 - [ ] Match tugas panitia memiliki agenda, venue, dan waktu yang sama dengan jadwal Admin.
 
+## Bracket dan Jadwal Phase 6
+
+- [ ] Penguncian bracket dua team otomatis membuat satu pertandingan Final.
+- [ ] Penguncian bracket empat team otomatis membuat dua Semifinal dan satu Final dengan jalur pemenang yang benar.
+- [ ] Data Lomba lama berstatus Bracket Dikunci tanpa pertandingan menampilkan aksi Buat Pertandingan.
+- [ ] Aksi Buat Pertandingan tidak dapat membuat pertandingan ganda.
+- [ ] Pertandingan Final yang terbentuk tersedia pada tab Jadwal.
+
 ## Public dan Hasil
 
 - [ ] Public melihat agenda terbit, venue, cabor, bracket, hasil, dan klasemen.

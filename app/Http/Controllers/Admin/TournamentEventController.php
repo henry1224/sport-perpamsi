@@ -7,6 +7,7 @@ use App\Models\Sport;
 use App\Models\SportCategory;
 use App\Models\SportRegulation;
 use App\Models\TournamentEvent;
+use App\Models\TournamentMatch;
 use App\Models\EntryTeam;
 use App\Models\EntryMember;
 use Illuminate\Http\RedirectResponse;
@@ -35,7 +36,7 @@ class TournamentEventController extends Controller
                     'verified_players_count' => EntryMember::query()->selectRaw('count(*)')->join('entry_teams', 'entry_members.entry_team_id', '=', 'entry_teams.id')->join('event_entries', 'entry_teams.event_entry_id', '=', 'event_entries.id')->whereColumn('event_entries.tournament_event_id', 'tournament_events.id')->whereNull('entry_teams.cancelled_at')->where('entry_members.member_type', 'player')->where('entry_members.verification_status', 'verified'),
                 ])
                 ->with(['sport:id,name,default_format,default_max_officials_per_pd,official_roles,allow_member_cross_category,max_categories_per_member,official_can_compete', 'sport.regulations' => fn ($query) => $query->where('is_active', true)->latest('version'), 'category:id,sport_id,name,competition_type,scoring_type,min_members,max_members,default_max_teams_per_pd,is_active', 'regulation:id,sport_id,version,title'])
-                ->withCount('entries')
+                ->withCount(['entries', 'matches'])
                 ->when($status, fn ($query) => $query->where('status', $status))
                 ->when($search, fn ($query) => $query->where(function ($query) use ($search) {
                     $query->whereLike('name', "%{$search}%", caseSensitive: false)
@@ -63,6 +64,7 @@ class TournamentEventController extends Controller
                     'open_at' => $event->registration_open_at?->format('Y-m-d\TH:i'),
                     'close_at' => $event->registration_close_at?->format('Y-m-d\TH:i'),
                     'entries_count' => $event->entries_count,
+                    'matches_count' => $event->matches_count,
                     'teams_count' => (int) $event->teams_count,
                     'verified_teams_count' => (int) $event->verified_teams_count,
                     'players_count' => (int) $event->players_count,
@@ -202,10 +204,30 @@ class TournamentEventController extends Controller
                 'bracket_size' => 2 ** (int) ceil(log($verified->count(), 2)),
                 'seed_locked_at' => now(),
             ]);
+            if (in_array($verified->count(), [2, 4], true)) {
+                $this->createKnockoutMatches($event, $verified->values());
+            }
             $this->audit($event, 'bracket_locked', $before, $this->publicationState($event), $request);
         });
 
-        return back()->with('success', 'Bracket dikunci. Seluruh team terverifikasi telah mendapat nomor seed.');
+        return back()->with('success', in_array($verified->count(), [2, 4], true)
+            ? 'Bracket dikunci dan pertandingan berhasil dibuat.'
+            : 'Bracket dikunci. Seluruh team terverifikasi telah mendapat nomor seed.');
+    }
+
+    public function generateMatches(Request $request, TournamentEvent $event): RedirectResponse
+    {
+        abort_unless($event->status === 'bracket_locked', 422, 'Pertandingan hanya dapat dibuat setelah bracket dikunci.');
+        abort_if($event->matches()->exists(), 422, 'Pertandingan untuk Data Lomba ini sudah tersedia.');
+        $teams = $event->eligibleTeams()->with('eventEntry:id')->orderBy('seed_no')->get();
+        abort_unless(in_array($teams->count(), [2, 4], true), 422, 'Generator pertandingan saat ini mendukung bracket dua atau empat team.');
+
+        DB::transaction(function () use ($event, $teams, $request) {
+            $this->createKnockoutMatches($event, $teams);
+            $this->audit($event, 'matches_generated', $this->publicationState($event), $this->publicationState($event), $request);
+        });
+
+        return back()->with('success', 'Pertandingan berhasil dibuat dan siap dijadwalkan.');
     }
 
     public function unpublish(Request $request, TournamentEvent $event): RedirectResponse
@@ -223,6 +245,39 @@ class TournamentEventController extends Controller
     private function publicationState(TournamentEvent $event): array
     {
         return ['status' => $event->status, 'sport_regulation_id' => $event->sport_regulation_id, 'rules' => $event->registration_rules, 'published_at' => $event->registration_published_at?->toISOString(), 'open_at' => $event->registration_open_at?->toISOString(), 'close_at' => $event->registration_close_at?->toISOString()];
+    }
+
+    private function createKnockoutMatches(TournamentEvent $event, $teams): void
+    {
+        if ($teams->count() === 2) {
+            $this->createMatch($event, 'final-01', 1, 'Final', 1, $teams[0], $teams[1]);
+
+            return;
+        }
+
+        $final = $this->createMatch($event, 'final-01', 2, 'Final', 1);
+        $this->createMatch($event, 'semifinal-01', 1, 'Semifinal', 1, $teams[0], $teams[3], $final->id, 'A');
+        $this->createMatch($event, 'semifinal-02', 1, 'Semifinal', 2, $teams[1], $teams[2], $final->id, 'B');
+    }
+
+    private function createMatch(TournamentEvent $event, string $suffix, int $round, string $roundName, int $slot, $teamA = null, $teamB = null, ?int $nextMatchId = null, ?string $nextSlot = null): TournamentMatch
+    {
+        return TournamentMatch::query()->create([
+            'public_id' => Str::uuid(),
+            'tournament_event_id' => $event->id,
+            'code' => $event->code.'-'.$suffix,
+            'round_no' => $round,
+            'round_name' => $roundName,
+            'side' => $slot === 1 ? 'left' : 'right',
+            'slot_no' => $slot,
+            'entry_a_id' => $teamA?->event_entry_id,
+            'entry_b_id' => $teamB?->event_entry_id,
+            'team_a_id' => $teamA?->id,
+            'team_b_id' => $teamB?->id,
+            'next_match_id' => $nextMatchId,
+            'next_slot' => $nextSlot,
+            'status' => 'scheduled',
+        ]);
     }
 
     private function eventData(Request $request, ?TournamentEvent $event = null): array

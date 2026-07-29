@@ -79,6 +79,7 @@ Route::middleware(['auth', 'super.admin'])->prefix('admin')->name('admin.')->gro
     Route::post('/events/{event:code}/publish', [TournamentEventController::class, 'publish'])->name('events.publish');
     Route::post('/events/{event:code}/close', [TournamentEventController::class, 'close'])->name('events.close');
     Route::post('/events/{event:code}/lock-bracket', [TournamentEventController::class, 'lockBracket'])->name('events.bracket.lock');
+    Route::post('/events/{event:code}/generate-matches', [TournamentEventController::class, 'generateMatches'])->name('events.matches.generate');
     Route::post('/events/{event:code}/unpublish', [TournamentEventController::class, 'unpublish'])->name('events.unpublish');
     Route::get('/assignments', [SportAssignmentController::class, 'index'])->name('assignments.index');
     Route::post('/assignments', [SportAssignmentController::class, 'store'])->name('assignments.store');
